@@ -16,11 +16,23 @@
  */
 package nl.mpi.metadata.api.type;
 
+import java.util.Collection;
+
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public interface MetadataElementType {
 
+    /**
+     * 
+     * @return Name of the element
+     */
     String getName();
+
+    /**
+     * 
+     * @return Attributes supported by the element
+     */
+    Collection<MetadataElementTypeAttribute> getAttributes();
 }

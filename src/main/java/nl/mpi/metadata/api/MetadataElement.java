@@ -16,6 +16,7 @@
  */
 package nl.mpi.metadata.api;
 
+import java.util.Map;
 import javax.xml.xpath.XPath;
 import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.api.type.MetadataContainerElementType;
@@ -43,12 +44,18 @@ public interface MetadataElement {
      * @return Document that this element is part of
      */
     MetadataDocument getDocument();
-    
+
     /**
      * 
      * @return Path of element in document
      */
     XPath getPath();
+
+    /**
+     * 
+     * @return Map(Key=>Value) of attributes this element has
+     */
+    Map<String, String> getAttributes();
 
     /**
      * Registers a @see MetadataElementListener for this element
