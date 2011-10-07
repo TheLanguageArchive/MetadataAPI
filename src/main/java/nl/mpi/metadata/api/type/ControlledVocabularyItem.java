@@ -21,5 +21,43 @@ package nl.mpi.metadata.api.type;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class ControlledVocabularyItem {
-    
+
+    private String value;
+    private String description;
+
+    /**
+     * Get the value of value
+     *
+     * @return the value of value
+     */
+    public String getValue() {
+	return value;
+    }
+
+    /**
+     * Set the value of value
+     *
+     * @param value new value of value
+     */
+    public void setValue(String value) {
+	this.value = value;
+    }
+
+    /**
+     * Get the value of description
+     *
+     * @return the value of description
+     */
+    public String getDescription() {
+	return description;
+    }
+
+    /**
+     * Set the value of description
+     *
+     * @param description new value of description
+     */
+    public void setDescription(String description) {
+	this.description = description;
+    }
 }

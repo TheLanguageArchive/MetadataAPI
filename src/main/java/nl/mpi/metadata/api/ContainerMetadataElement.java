@@ -16,10 +16,12 @@
  */
 package nl.mpi.metadata.api;
 
+import java.util.List;
+
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public interface ContainerMetadataElement extends MetadataElement {
-    
+    List<MetadataElement> getChildren();
 }

@@ -21,4 +21,5 @@ package nl.mpi.metadata.api;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public interface ContainedMetadataElement extends MetadataElement {
+    ContainerMetadataElement getParent();
 }

@@ -16,9 +16,38 @@
  */
 package nl.mpi.metadata.api.type;
 
+import java.util.Collection;
+
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface MetadataType {
+public interface MetadataContainerElementType extends MetadataElementType {
+
+    /**
+     * 
+     * @return Collection of all metadata types that can be contained as a <em>direct</em> child by an instance of this metadata type
+     */
+    Collection<MetadataElementType> getContainableTypes();
+
+    /**
+     * 
+     * @param type Type to check containability for
+     * @return Whether instances of this type can contain as a child an instance of the specified type
+     */
+    boolean canContainType(MetadataElementType type);
+
+    /**
+     * 
+     * @param type
+     * @return 
+     */
+    int getMinOccurencesOfType(MetadataElementType type);
+
+    /**
+     * 
+     * @param type
+     * @return 
+     */
+    int getMaxOccurencesOfType(MetadataElementType type);
 }

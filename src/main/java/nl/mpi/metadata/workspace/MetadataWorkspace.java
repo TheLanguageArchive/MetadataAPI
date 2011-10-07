@@ -16,10 +16,44 @@
  */
 package nl.mpi.metadata.workspace;
 
+import java.io.OutputStream;
+import java.net.URI;
+import nl.mpi.metadata.api.MetadataDocument;
+
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public interface MetadataWorkspace {
-    
+
+    /**
+     * 
+     * @return All metadata documents that are currently opened
+     */
+    Iterable<MetadataDocument> getOpenMetadataDocuments();
+
+    /**
+     * Opens metadata document if not already openend, and retrieves it
+     * @param uri URI of document to open
+     * @return Open MetadataDocument 
+     */
+    MetadataDocument openMetadataDocument(URI uri);
+
+    /**
+     * Closes specified metadata document, i.e. clears it from in-memory storage
+     * @param document Metadata document to close
+     */
+    void closeMetadataDocument(MetadataDocument document);
+
+    /**
+     * Saves opened metadata document
+     * @param os Stream to write to
+     * @param document Document to save
+     */
+    void saveMetadataDocument(OutputStream os, MetadataDocument document);
+
+    /**
+     * Closes all open metadata documents
+     */
+    void closeAllMetadataDocuments();
 }

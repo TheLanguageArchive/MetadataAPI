@@ -16,9 +16,13 @@
  */
 package nl.mpi.metadata.api.type;
 
+import java.net.URI;
+
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface MetadataDocumentType extends MetadataType {
+public interface MetadataDocumentType extends MetadataContainerElementType {
+
+    URI getSchemaLocation();
 }

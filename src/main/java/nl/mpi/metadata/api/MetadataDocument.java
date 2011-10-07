@@ -16,9 +16,66 @@
  */
 package nl.mpi.metadata.api;
 
+import java.net.URI;
+import java.util.Collection;
+import javax.xml.xpath.XPath;
+import nl.mpi.metadata.api.events.MetadataDocumentListener;
+import nl.mpi.metadata.api.type.MetadataDocumentType;
+
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public interface MetadataDocument {
+
+    /**
+     * 
+     * @return Type of the document
+     */
+    MetadataDocumentType getType();
+
+    /**
+     * 
+     * @return Location of the file this document represents (can be null)
+     */
+    URI getFileLocation();
+
+    /**
+     * @return Header information in this document (can be null)
+     * 
+     */
+    Collection<HeaderInfo> getHeaderInformation();
+
+    /**
+     * 
+     * @param path Path for requested element
+     * @return Requested element if found, otherwise null
+     */
+    MetadataElement getElement(XPath path);
+
+    /**
+     * Inserts an element in the specified location
+     * @param path Path of element to insert specified element
+     * @param element Element to insert
+     */
+    void insertElement(XPath path, MetadataElement element);
+
+    /**
+     * Removes an element from the document
+     * @param path Path of element to remove
+     * @return Removed element (null of none removed)
+     */
+    MetadataElement removeElement(XPath path);
+
+    /**
+     * Registers a @see MetadataDocumentListener for this document
+     * @param listener Listener to add
+     */
+    void addMetadataDocumentListener(MetadataDocumentListener listener);
+
+    /**
+     * Unregisters a @see MetadataDocumentListener from this document
+     * @param listener Listener to remove
+     */
+    void removeMetadataDocumentListener(MetadataDocumentListener listener);
 }

@@ -16,10 +16,38 @@
  */
 package nl.mpi.metadata.api.events;
 
+import nl.mpi.metadata.api.MetadataDocument;
+import nl.mpi.metadata.api.MetadataElement;
+
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public interface MetadataDocumentListener {
-    
+
+    /**
+     * Specified document has been saved
+     * @param document 
+     */
+    void documentSaved(MetadataDocument document);
+
+    /**
+     * Specified document has been deleted
+     * @param document 
+     */
+    void documentDeleted(MetadataDocument document);
+
+    /**
+     * Specified element has been inserted into the specified document
+     * @param document
+     * @param insertedElement 
+     */
+    void elementInserted(MetadataDocument document, MetadataElement insertedElement);
+
+    /**
+     * Specified element has been removed from the specified document
+     * @param document
+     * @param removedElement 
+     */
+    void elementRemoved(MetadataDocument document, MetadataElement removedElement);
 }

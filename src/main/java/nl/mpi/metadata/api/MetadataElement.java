@@ -16,10 +16,49 @@
  */
 package nl.mpi.metadata.api;
 
+import javax.xml.xpath.XPath;
+import nl.mpi.metadata.api.events.MetadataElementListener;
+import nl.mpi.metadata.api.type.MetadataContainerElementType;
+
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public interface MetadataElement {
+
+    /**
+     * 
+     * @return Name of this element in the document
+     */
+    String getName();
+
+    /**
+     * 
+     * @return Type of this element
+     */
+    MetadataContainerElementType getType();
+
+    /**
+     * 
+     * @return Document that this element is part of
+     */
+    MetadataDocument getDocument();
     
+    /**
+     * 
+     * @return Path of element in document
+     */
+    XPath getPath();
+
+    /**
+     * Registers a @see MetadataElementListener for this element
+     * @param listener Listener to add
+     */
+    void addMetadataElementListener(MetadataElementListener listener);
+
+    /**
+     * Unregisters a @see MetadataElementListener from this element
+     * @param listener Listener to remove
+     */
+    void removeMetadataElementListener(MetadataElementListener listener);
 }

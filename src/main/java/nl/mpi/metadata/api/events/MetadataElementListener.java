@@ -16,10 +16,31 @@
  */
 package nl.mpi.metadata.api.events;
 
+import nl.mpi.metadata.api.MetadataElement;
+
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public interface MetadataElementListener {
-    
+
+    /**
+     * A new element has been inserted in the specified parent element
+     * @param parentElement Parent element
+     * @param insertedElement Newly inserted child element
+     */
+    void elementInserted(MetadataElement parentElement, MetadataElement insertedElement);
+
+    /**
+     * A new element has been removed from the specified parent element
+     * @param parentElement Parent element
+     * @param insertedElement Removed child element
+     */
+    void elementRemoved(MetadataElement parentElement, MetadataElement removedElement);
+
+    /**
+     * The value of the specified element has been changed
+     * @param element 
+     */
+    void valueChanged(MetadataElement element);
 }

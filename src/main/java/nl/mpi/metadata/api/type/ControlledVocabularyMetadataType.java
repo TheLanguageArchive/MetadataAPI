@@ -16,9 +16,13 @@
  */
 package nl.mpi.metadata.api.type;
 
+import java.util.List;
+
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public interface ControlledVocabularyMetadataType extends MetadataElementType {
+
+    List<ControlledVocabularyItem> getItems();
 }

@@ -16,10 +16,18 @@
  */
 package nl.mpi.metadata.api;
 
+import java.net.URI;
+import java.util.Collection;
+
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public interface ReferencingMetadataElement extends MetadataElement {
-    
+
+    Collection<Reference> getReferences();
+
+    ResourceReference createResourceReference(URI uri, String mimetype);
+
+    MetadataReference createMetadataReference(URI uri, String mimetype);
 }

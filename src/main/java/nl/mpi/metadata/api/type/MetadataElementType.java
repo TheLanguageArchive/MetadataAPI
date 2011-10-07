@@ -20,5 +20,7 @@ package nl.mpi.metadata.api.type;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface MetadataElementType extends MetadataType {
+public interface MetadataElementType {
+
+    String getName();
 }

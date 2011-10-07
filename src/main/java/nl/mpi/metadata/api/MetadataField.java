@@ -20,5 +20,21 @@ package nl.mpi.metadata.api;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface MetadataField extends ContainedMetadataElement {
+public interface MetadataField<T> extends ContainedMetadataElement {
+
+    /**
+     * 
+     * @return Name of field
+     */
+    String getName();
+
+    /**
+     * 
+     * @return Value of field
+     */
+    T getValue();
+
+    void setName(String name);
+
+    void setValue(T value);
 }

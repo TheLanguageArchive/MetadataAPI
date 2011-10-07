@@ -16,10 +16,49 @@
  */
 package nl.mpi.metadata.api;
 
+import java.io.OutputStream;
+import java.net.URI;
+import nl.mpi.metadata.api.type.MetadataDocumentType;
+import nl.mpi.metadata.api.type.MetadataElementType;
+
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public interface MetadataAPI {
-    
+
+    /**
+     * Loads the metadata document at the specified location
+     * @param uri Location of document to open
+     * @return Openen document
+     */
+    MetadataDocument getMetadataDocument(URI uri);
+
+    /**
+     * Creates a metadata document of the specified type
+     * @param type Type of document to create
+     * @return Newly instantiated document of specified type
+     */
+    MetadataDocument createMetadataDocument(MetadataDocumentType type);
+
+    /**
+     * Creates a metadata element of the specified type
+     * @param type Type of element to create
+     * @return Newly instantiated element of specified type
+     */
+    MetadataElement createMetadataElement(MetadataElementType type);
+
+    /**
+     * Validates a metadata document to its schema
+     * @param document Document to validate
+     * @return Whether document was successfully validated
+     */
+    boolean validateMetadataDocument(MetadataDocument document);
+
+    /**
+     * Writes metadatadocument to the specified outputstream
+     * @param os Stream to write to
+     * @param document Document to write to stream
+     */
+    void writeMetadataDocument(OutputStream os, MetadataDocument document);
 }

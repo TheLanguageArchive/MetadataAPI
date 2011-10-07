@@ -16,9 +16,20 @@
  */
 package nl.mpi.metadata.identifierresolver;
 
+import java.net.URI;
+import nl.mpi.metadata.api.MetadataDocument;
+
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class URLResolver implements IdentifierResolver {
+
+    public boolean canResolve(MetadataDocument document, URI identifier) {
+	return identifier.getScheme().equalsIgnoreCase("http");
+    }
+
+    public URI resolveIdentifier(MetadataDocument document, URI identifier) {
+	return document.getFileLocation().resolve(identifier);
+    }
 }

@@ -16,10 +16,13 @@
  */
 package nl.mpi.metadata.api;
 
+import java.net.URI;
+
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public interface Reference extends MetadataElement {
-    
+    URI getURI();
+    String getMimetype();
 }

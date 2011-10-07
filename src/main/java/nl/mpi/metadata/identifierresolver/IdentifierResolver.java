@@ -16,10 +16,28 @@
  */
 package nl.mpi.metadata.identifierresolver;
 
+import java.net.URI;
+import nl.mpi.metadata.api.MetadataDocument;
+
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public interface IdentifierResolver {
-    
+
+    /**
+     * 
+     * @param document Document to resolve from
+     * @param identifier Identifier to resolve
+     * @return Whether specified identifier can be resolved
+     */
+    boolean canResolve(MetadataDocument document, URI identifier);
+
+    /**
+     * Resolves specified identifier
+     * @param document Document to resolve from
+     * @param identifier Identifier to resolve
+     * @return Resolution of identifier. Null if cannot be resolved.
+     */
+    URI resolveIdentifier(MetadataDocument document,URI identifier);
 }
