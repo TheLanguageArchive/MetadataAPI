@@ -1,0 +1,16 @@
+<bindings xmlns="http://java.sun.com/xml/ns/jaxb"
+          xmlns:xs="http://www.w3.org/2001/XMLSchema"
+          version="2.0"> 
+<!-- 
+	This has been copied from the Clarin ComponentRegistry source at http://svn.clarin.eu/ComponentRegistry/trunk/ComponentRegistry/src/main/binding/
+	An up-to-date version of the general-component-schema.xsd is available at http://www.clarin.eu/cmd/general-component-schema.xsd
+-->
+   <bindings schemaLocation="general-component-schema.xsd"
+     node="/xs:schema/xs:complexType[@name='CMD_Element_type']/xs:sequence/xs:element[@name='ValueScheme']">
+      <property name="ValueScheme" />
+   </bindings>
+   <bindings schemaLocation="general-component-schema.xsd"
+     node="/xs:schema/xs:attributeGroup[@name='clarin_element_attributes']/xs:attribute[@name='ValueScheme']">
+      <property name="ValueSchemeAttribute" />
+   </bindings>
+</bindings>

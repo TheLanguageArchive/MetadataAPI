@@ -1,3 +1,4 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -26,6 +27,59 @@
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	<netbeans.hint.license>gpl30</netbeans.hint.license>
     </properties>
+    
+    <build>
+	<resources>
+	    <resource>
+		<filtering>false</filtering>
+		<directory>src/generated/jaxb</directory>
+	    </resource>
+	    <resource>
+		<filtering>true</filtering>
+		<directory>src/main/resources</directory>
+	    </resource>
+	    <resource>
+		<filtering>false</filtering>
+		<directory>src/main/java</directory>
+		<includes>
+		    <include>**/*.html</include>
+		</includes>
+	    </resource>
+	</resources>
+	<plugins>
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-compiler-plugin</artifactId>
+		<configuration>
+		    <source>1.6</source>
+		    <target>1.6</target>
+		</configuration>
+	    </plugin>
+	    <plugin>
+		<groupId>org.jvnet.jaxb2.maven2</groupId>
+		<artifactId>maven-jaxb2-plugin</artifactId>
+		<executions>
+		    <execution>
+			<goals>
+			    <goal>generate</goal>
+			</goals>
+		    </execution>
+		</executions>
+		<configuration>
+		    <schemaDirectory>src/main/binding</schemaDirectory>
+		    <schemaIncludes>
+			<include>general-component-schema.xsd</include>
+		    </schemaIncludes>
+		    <bindingDirectory>src/main/binding</bindingDirectory>
+		    <extension>true</extension>
+		    <generateDirectory>${basedir}/src/generated/jaxb</generateDirectory>
+		    <generatePackage>nl.mpi.metadata.cmdi.type.schema</generatePackage>
+		    <catalog>src/main/resources/catalog.cat</catalog>
+		    <catalogResolver>org.jvnet.jaxb2.maven2.resolver.tools.ClasspathCatalogResolver</catalogResolver>
+		</configuration>
+	    </plugin>
+	</plugins>
+    </build>
 
     <dependencies>
 	<dependency>
@@ -34,10 +88,10 @@
 	    <version>4.6</version>
 	    <scope>test</scope>
 	</dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.6.2</version>
-        </dependency>
+	<dependency>
+	    <groupId>org.slf4j</groupId>
+	    <artifactId>slf4j-log4j12</artifactId>
+	    <version>1.6.2</version>
+	</dependency>
     </dependencies>
 </project>
