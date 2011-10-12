@@ -24,7 +24,10 @@ import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategory;
 import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategoryType;
 
 /**
- *
+ * This class represents a CMDI component definition, defined by http://www.clarin.eu/cmd/general-component-schema.xsd
+ * 
+ * For example components, see http://www.clarin.eu/cmd/example/
+ * 
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class ComponentType implements MetadataContainerElementType, DataCategoryType {

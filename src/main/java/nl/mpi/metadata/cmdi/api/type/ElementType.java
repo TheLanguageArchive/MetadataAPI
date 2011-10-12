@@ -23,7 +23,8 @@ import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategory;
 import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategoryType;
 
 /**
- *
+ * This class represents an element definition inside a CMDI component, defined by http://www.clarin.eu/cmd/general-component-schema.xsd
+ * 
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class ElementType implements MetadataElementType, DataCategoryType {

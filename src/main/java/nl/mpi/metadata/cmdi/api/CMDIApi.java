@@ -25,7 +25,8 @@ import nl.mpi.metadata.api.type.MetadataDocumentType;
 import nl.mpi.metadata.api.type.MetadataElementType;
 
 /**
- *
+ * CMDI implementation of the @see MetadataAPI
+ * 
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIApi implements MetadataAPI {

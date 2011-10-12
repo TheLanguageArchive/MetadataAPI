@@ -20,7 +20,10 @@ import java.net.URI;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
 
 /**
- *
+ * This class represents a CMDI profile, defined by http://www.clarin.eu/cmd/general-component-schema.xsd
+ * 
+ * For an example profile, see http://www.clarin.eu/cmd/example/example-profile-instance.xml
+ * For an example profile schema file, see http://www.clarin.eu/cmd/example/example-md-schema.xsd
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIProfile extends ComponentType implements MetadataDocumentType {

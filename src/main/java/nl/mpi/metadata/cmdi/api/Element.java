@@ -28,7 +28,8 @@ import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
 
 /**
- *
+ * A CMDI Element. Instance of @see nl.mpi.metadata.cmdi.api.type.ElementType
+ * 
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class Element implements MetadataField, ReferencingMetadataElement {

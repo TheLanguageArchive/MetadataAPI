@@ -25,15 +25,14 @@ import nl.mpi.metadata.api.ContainerMetadataElement;
 import nl.mpi.metadata.api.MetadataDocument;
 import nl.mpi.metadata.api.MetadataElement;
 import nl.mpi.metadata.api.MetadataElementAttribute;
-import nl.mpi.metadata.api.MetadataReference;
 import nl.mpi.metadata.api.Reference;
 import nl.mpi.metadata.api.ReferencingMetadataElement;
-import nl.mpi.metadata.api.ResourceReference;
 import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 
 /**
- *
+ * A CMDI Component. Instance of @see nl.mpi.metadata.cmdi.api.type.ComponentType
+ * 
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class Component implements ContainerMetadataElement, ContainedMetadataElement, ReferencingMetadataElement {

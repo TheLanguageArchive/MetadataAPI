@@ -26,7 +26,7 @@ import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 
 /**
- *
+ * A CMDI metadata document. Instance of a @see nl.mpi.metadata.cmdi.api.type.CMDIProfile
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIDocument extends Component implements MetadataDocument {
