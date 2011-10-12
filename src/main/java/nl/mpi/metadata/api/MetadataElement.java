@@ -19,7 +19,7 @@ package nl.mpi.metadata.api;
 import java.util.Collection;
 import javax.xml.xpath.XPath;
 import nl.mpi.metadata.api.events.MetadataElementListener;
-import nl.mpi.metadata.api.type.MetadataContainerElementType;
+import nl.mpi.metadata.api.type.MetadataElementType;
 
 /**
  *
@@ -37,7 +37,7 @@ public interface MetadataElement {
      * 
      * @return Type of this element
      */
-    MetadataContainerElementType getType();
+    MetadataElementType getType();
 
     /**
      * 

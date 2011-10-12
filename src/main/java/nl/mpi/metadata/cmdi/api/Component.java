@@ -30,7 +30,7 @@ import nl.mpi.metadata.api.Reference;
 import nl.mpi.metadata.api.ReferencingMetadataElement;
 import nl.mpi.metadata.api.ResourceReference;
 import nl.mpi.metadata.api.events.MetadataElementListener;
-import nl.mpi.metadata.api.type.MetadataContainerElementType;
+import nl.mpi.metadata.cmdi.api.type.ComponentType;
 
 /**
  *
@@ -46,7 +46,7 @@ public class Component implements ContainerMetadataElement, ContainedMetadataEle
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public MetadataContainerElementType getType() {
+    public ComponentType getType() {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -70,7 +70,7 @@ public class Component implements ContainerMetadataElement, ContainedMetadataEle
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public ContainerMetadataElement getParent() {
+    public Component getParent() {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -78,12 +78,11 @@ public class Component implements ContainerMetadataElement, ContainedMetadataEle
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public ResourceReference createResourceReference(URI uri, String mimetype) {
+    public DataResourceProxy createResourceReference(URI uri, String mimetype) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public MetadataReference createMetadataReference(URI uri, String mimetype) {
+    public MetadataResourceProxy createMetadataReference(URI uri, String mimetype) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
-    
 }

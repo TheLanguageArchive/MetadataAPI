@@ -23,7 +23,7 @@ import nl.mpi.metadata.api.HeaderInfo;
 import nl.mpi.metadata.api.MetadataDocument;
 import nl.mpi.metadata.api.MetadataElement;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
-import nl.mpi.metadata.api.type.MetadataDocumentType;
+import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 
 /**
  *
@@ -31,7 +31,8 @@ import nl.mpi.metadata.api.type.MetadataDocumentType;
  */
 public class CMDIDocument extends Component implements MetadataDocument {
 
-    public MetadataDocumentType getType() {
+    @Override
+    public CMDIProfile getType() {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 

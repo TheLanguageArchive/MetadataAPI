@@ -23,13 +23,13 @@ import nl.mpi.metadata.api.MetadataDocument;
 import nl.mpi.metadata.api.MetadataElementAttribute;
 import nl.mpi.metadata.api.Reference;
 import nl.mpi.metadata.api.events.MetadataElementListener;
-import nl.mpi.metadata.api.type.MetadataContainerElementType;
+import nl.mpi.metadata.api.type.MetadataElementType;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class ResourceProxy implements Reference{
+public class ResourceProxy implements Reference {
 
     public URI getURI() {
 	throw new UnsupportedOperationException("Not supported yet.");
@@ -43,7 +43,7 @@ public class ResourceProxy implements Reference{
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public MetadataContainerElementType getType() {
+    public MetadataElementType getType() {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -66,5 +66,4 @@ public class ResourceProxy implements Reference{
     public void removeMetadataElementListener(MetadataElementListener listener) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
-    
 }
