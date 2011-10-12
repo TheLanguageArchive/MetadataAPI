@@ -4585,7 +4585,7 @@
 								<property htmlValue="" name="documentation" type="htmlString" value=""/>
 								<property name="pmAuthor" type="string" value="twagoo"/>
 								<property name="pmCreateDateTime" type="string" value="1317728877839"/>
-								<property name="pmLastModified" type="string" value="1318413437688"/>
+								<property name="pmLastModified" type="string" value="1318419884242"/>
 							</properties>
 							<vpumlChildModelRefs>
 								<modelRef value="CmDdc0yFYEAyIgrF"/>
@@ -4614,7 +4614,6 @@
 								<modelRef value="T3jSu0yFYEAyIgxJ"/>
 								<modelRef value="FnFXy0yFYEAyIgyh"/>
 								<modelRef value="Wuqx70yFYEAyKAc1"/>
-								<modelRef value="LInx70yFYEAyKAed"/>
 							</vpumlChildModelRefs>
 						</vpumlModel>
 						<vpumlModel id="CL9Dc0yFYEAyIgvz" modelType="ModelRelationshipContainer">
@@ -4652,7 +4651,7 @@
 								<property htmlValue="" name="documentation" type="htmlString" value=""/>
 								<property name="pmAuthor" type="string" value="twagoo"/>
 								<property name="pmCreateDateTime" type="string" value="1317728877841"/>
-								<property name="pmLastModified" type="string" value="1317990450227"/>
+								<property name="pmLastModified" type="string" value="1318419884243"/>
 							</properties>
 							<vpumlChildModelRefs>
 								<modelRef value="5eDdc0yFYEAyIgra"/>
@@ -4672,6 +4671,7 @@
 								<modelRef value="Xa6Ke0yFYEAyIg0v"/>
 								<modelRef value="rvIae0yFYEAyIg.J"/>
 								<modelRef value="YlmmK0yFYEAyIhc_"/>
+								<modelRef value="p1VP70yFYEAyKA_W"/>
 							</vpumlChildModelRefs>
 						</vpumlModel>
 						<vpumlModel id="iL9Dc0yFYEAyIgv1" modelType="ModelRelationshipContainer">
@@ -13060,7 +13060,7 @@
 					<businessModel xmi:value="false"/>
 				</xmi:Extension>
 				<ownedOperation isAbstract="false" isLeaf="false" isQuery="false" name="getDataCategory" ownerScope="instance" visibility="public" xmi:id="Wh4OK0yFYEAyIhjG" xmi:type="uml:Operation">
-					<ownedParameter isOrdered="false" isUnique="true" kind="return" type="_sn770yFYEAyKA.1" xmi:id="Wh4OK0yFYEAyIhjG_return" xmi:type="uml:Parameter"/>
+					<ownedParameter isOrdered="false" isUnique="true" kind="return" type="w9TP70yFYEAyKA_p" xmi:id="Wh4OK0yFYEAyIhjG_return" xmi:type="uml:Parameter"/>
 					<xmi:Extension extender="Visual Paradigm for UML">
 						<returnTypeDocumentation xmi:value=""/>
 					</xmi:Extension>
@@ -13080,7 +13080,7 @@
 					<businessModel xmi:value="false"/>
 				</xmi:Extension>
 				<ownedOperation isAbstract="false" isLeaf="false" isQuery="false" name="getDataCategory" ownerScope="instance" visibility="public" xmi:id="izVxK0yFYEAyIhsi" xmi:type="uml:Operation">
-					<ownedParameter isOrdered="false" isUnique="true" kind="return" type="_sn770yFYEAyKA.1" xmi:id="izVxK0yFYEAyIhsi_return" xmi:type="uml:Parameter"/>
+					<ownedParameter isOrdered="false" isUnique="true" kind="return" type="w9TP70yFYEAyKA_p" xmi:id="izVxK0yFYEAyIhsi_return" xmi:type="uml:Parameter"/>
 					<xmi:Extension extender="Visual Paradigm for UML">
 						<returnTypeDocumentation xmi:value=""/>
 					</xmi:Extension>
@@ -13101,6 +13101,7 @@
 					<modelType value="Class"/>
 					<businessModel xmi:value="false"/>
 				</xmi:Extension>
+				<generalization general="BYMNe0yFYEAyIhB_" xmi:id="p1VP70yFYEAyKA_W" xmi:type="uml:Generalization"/>
 			</ownedMember>
 		</ownedMember>
 		<ownedMember isAbstract="false" isLeaf="false" name="nl.mpi.metadata.identityresolver" visibility="public" xmi:id="hhd3y0yFYEAyIg1y" xmi:type="uml:Package">
@@ -13453,14 +13454,14 @@
 				</ownedOperation>
 				<ownedOperation isAbstract="false" isLeaf="false" isQuery="false" name="addMetadataDocumentListener" ownerScope="instance" visibility="public" xmi:id="NTQ3G0yFYEAyIgze" xmi:type="uml:Operation">
 					<ownedParameter isOrdered="false" isUnique="true" kind="return" xmi:id="NTQ3G0yFYEAyIgze_return" xmi:type="uml:Parameter"/>
-					<ownedParameter kind="inout" name="listener" type="Ecn770yFYEAyKA.2" xmi:id="PnI3G0yFYEAyIgzg" xmi:type="uml:Parameter"/>
+					<ownedParameter kind="inout" name="listener" type="s9TP70yFYEAyKA_q" xmi:id="PnI3G0yFYEAyIgzg" xmi:type="uml:Parameter"/>
 					<xmi:Extension extender="Visual Paradigm for UML">
 						<returnTypeDocumentation xmi:value=""/>
 					</xmi:Extension>
 				</ownedOperation>
 				<ownedOperation isAbstract="false" isLeaf="false" isQuery="false" name="removeMetadataDocumentListener" ownerScope="instance" visibility="public" xmi:id="CnJ3G0yFYEAyIg0h" xmi:type="uml:Operation">
 					<ownedParameter isOrdered="false" isUnique="true" kind="return" xmi:id="CnJ3G0yFYEAyIg0h_return" xmi:type="uml:Parameter"/>
-					<ownedParameter kind="inout" name="listener" type="Ecn770yFYEAyKA.2" xmi:id="inJ3G0yFYEAyIg0i" xmi:type="uml:Parameter"/>
+					<ownedParameter kind="inout" name="listener" type="s9TP70yFYEAyKA_q" xmi:id="inJ3G0yFYEAyIg0i" xmi:type="uml:Parameter"/>
 					<xmi:Extension extender="Visual Paradigm for UML">
 						<returnTypeDocumentation xmi:value=""/>
 					</xmi:Extension>
@@ -13516,7 +13517,7 @@
 				</ownedOperation>
 				<ownedOperation isAbstract="false" isLeaf="false" isQuery="false" name="removeMetadataElementListener" ownerScope="instance" visibility="public" xmi:id="DL53G0yFYEAyIg0p" xmi:type="uml:Operation">
 					<ownedParameter isOrdered="false" isUnique="true" kind="return" xmi:id="DL53G0yFYEAyIg0p_return" xmi:type="uml:Parameter"/>
-					<ownedParameter kind="inout" name="listener" type="Ucn770yFYEAyKA.3" xmi:id="rL53G0yFYEAyIg0q" xmi:type="uml:Parameter"/>
+					<ownedParameter kind="inout" name="listener" type="89TP70yFYEAyKA_r" xmi:id="rL53G0yFYEAyIg0q" xmi:type="uml:Parameter"/>
 					<xmi:Extension extender="Visual Paradigm for UML">
 						<returnTypeDocumentation xmi:value=""/>
 					</xmi:Extension>
@@ -13865,16 +13866,16 @@
 				</ownedOperation>
 				<ownedOperation isAbstract="false" isLeaf="false" isQuery="false" name="elementInserted" ownerScope="instance" visibility="public" xmi:id="o2gvG0yFYEAyIg2X" xmi:type="uml:Operation">
 					<ownedParameter isOrdered="false" isUnique="true" kind="return" xmi:id="o2gvG0yFYEAyIg2X_return" xmi:type="uml:Parameter"/>
-					<ownedParameter kind="inout" name="document" type="acn770yFYEAyKA.4" xmi:id="6SOYm0yFYEAyIhAw" xmi:type="uml:Parameter"/>
-					<ownedParameter kind="inout" name="element" type="acn770yFYEAyKA.5" xmi:id="42gvG0yFYEAyIg2Y" xmi:type="uml:Parameter"/>
+					<ownedParameter kind="inout" name="document" type="69TP70yFYEAyKA_s" xmi:id="6SOYm0yFYEAyIhAw" xmi:type="uml:Parameter"/>
+					<ownedParameter kind="inout" name="element" type="69TP70yFYEAyKA_t" xmi:id="42gvG0yFYEAyIg2Y" xmi:type="uml:Parameter"/>
 					<xmi:Extension extender="Visual Paradigm for UML">
 						<returnTypeDocumentation xmi:value=""/>
 					</xmi:Extension>
 				</ownedOperation>
 				<ownedOperation isAbstract="false" isLeaf="false" isQuery="false" name="elementRemoved" ownerScope="instance" visibility="public" xmi:id="_kZYm0yFYEAyIhBA" xmi:type="uml:Operation">
 					<ownedParameter isOrdered="false" isUnique="true" kind="return" xmi:id="_kZYm0yFYEAyIhBA_return" xmi:type="uml:Parameter"/>
-					<ownedParameter kind="inout" name="document" type="acn770yFYEAyKA.4" xmi:id="AUZYm0yFYEAyIhBB" xmi:type="uml:Parameter"/>
-					<ownedParameter kind="inout" name="element" type="acn770yFYEAyKA.5" xmi:id="gUZYm0yFYEAyIhBC" xmi:type="uml:Parameter"/>
+					<ownedParameter kind="inout" name="document" type="69TP70yFYEAyKA_s" xmi:id="AUZYm0yFYEAyIhBB" xmi:type="uml:Parameter"/>
+					<ownedParameter kind="inout" name="element" type="69TP70yFYEAyKA_t" xmi:id="gUZYm0yFYEAyIhBC" xmi:type="uml:Parameter"/>
 					<xmi:Extension extender="Visual Paradigm for UML">
 						<returnTypeDocumentation xmi:value=""/>
 					</xmi:Extension>
@@ -13943,7 +13944,6 @@
 		<ownedMember client="d3jSu0yFYEAyIgxH" realizingClassifier="vT28u0yFYEAyIgqe" supplier="vT28u0yFYEAyIgqe" xmi:id="T3jSu0yFYEAyIgxJ" xmi:type="uml:Realization"/>
 		<ownedMember client="2WxXy0yFYEAyIgyK" realizingClassifier="L8dqe0yFYEAyIg9B" supplier="L8dqe0yFYEAyIg9B" xmi:id="FnFXy0yFYEAyIgyh" xmi:type="uml:Realization"/>
 		<ownedMember client="Kzsx70yFYEAyKAcf" realizingClassifier="0TcR70yFYEAyKAZB" supplier="0TcR70yFYEAyKAZB" xmi:id="Wuqx70yFYEAyKAc1" xmi:type="uml:Realization"/>
-		<ownedMember client=".qtx70yFYEAyKAd4" realizingClassifier="BYMNe0yFYEAyIhB_" supplier="BYMNe0yFYEAyIhB_" xmi:id="LInx70yFYEAyKAed" xmi:type="uml:Realization"/>
 		<ownedMember isAbstract="false" isDerived="false" isLeaf="false" xmi:id="pmDdc0yFYEAyIgrH" xmi:type="uml:Association">
 			<memberEnd xmi:idref="PmDdc0yFYEAyIgrJ"/>
 			<ownedEnd aggregation="none" association="pmDdc0yFYEAyIgrH" isDerived="false" isNavigable="false" type="sEDdc0yFYEAyIgcg" xmi:id="PmDdc0yFYEAyIgrJ" xmi:type="uml:Property">
@@ -14288,10 +14288,10 @@
 		<ownedMember name="java.util.Map" visibility="public" xmi:id="java.util.Map_id" xmi:type="uml:DataType"/>
 		<ownedMember name="org.xml.sax.SAXParseException" visibility="public" xmi:id="org.xml.sax.SAXParseException_id" xmi:type="uml:DataType"/>
 		<ownedMember name="org.w3c.dom.Element" visibility="public" xmi:id="org.w3c.dom.Element_id" xmi:type="uml:DataType"/>
-		<ownedMember name="Metadata API class diagram.nl.mpi.metadata.api.MetadataDocument" visibility="public" xmi:id="acn770yFYEAyKA.4" xmi:type="uml:DataType"/>
+		<ownedMember name="Metadata API class diagram.nl.mpi.metadata.api.MetadataDocument" visibility="public" xmi:id="69TP70yFYEAyKA_s" xmi:type="uml:DataType"/>
 		<ownedMember name="OutputStream" visibility="public" xmi:id="OutputStream_id" xmi:type="uml:DataType"/>
 		<ownedMember name="org.w3c.dom.Node" visibility="public" xmi:id="org.w3c.dom.Node_id" xmi:type="uml:DataType"/>
-		<ownedMember name="Metadata API class diagram.nl.mpi.metadata.api.cmdi.type.DataCategory" visibility="public" xmi:id="_sn770yFYEAyKA.1" xmi:type="uml:DataType"/>
+		<ownedMember name="Metadata API class diagram.nl.mpi.metadata.api.cmdi.type.DataCategory" visibility="public" xmi:id="w9TP70yFYEAyKA_p" xmi:type="uml:DataType"/>
 		<ownedMember name="java.util.Vector" visibility="public" xmi:id="java.util.Vector_id" xmi:type="uml:DataType"/>
 		<ownedMember name="nl.mpi.util.OurURL" visibility="public" xmi:id="nl.mpi.util.OurURL_id" xmi:type="uml:DataType"/>
 		<ownedMember name="org.w3c.dom.Document" visibility="public" xmi:id="org.w3c.dom.Document_id" xmi:type="uml:DataType"/>
@@ -14300,15 +14300,15 @@
 		<ownedMember name="javax.xml.transform.stream.StreamSource" visibility="public" xmi:id="javax.xml.transform.stream.StreamSource_id" xmi:type="uml:DataType"/>
 		<ownedMember name="List" visibility="public" xmi:id="List_id" xmi:type="uml:DataType"/>
 		<ownedMember name="URI" visibility="public" xmi:id="URI_id" xmi:type="uml:DataType"/>
-		<ownedMember name="Metadata API class diagram.nl.mpi.metadata.api.events.MetadataElementListener" visibility="public" xmi:id="Ucn770yFYEAyKA.3" xmi:type="uml:DataType"/>
+		<ownedMember name="Metadata API class diagram.nl.mpi.metadata.api.events.MetadataElementListener" visibility="public" xmi:id="89TP70yFYEAyKA_r" xmi:type="uml:DataType"/>
 		<ownedMember name="javax.xml.parsers.DocumentBuilder" visibility="public" xmi:id="javax.xml.parsers.DocumentBuilder_id" xmi:type="uml:DataType"/>
 		<ownedMember name="Collection" visibility="public" xmi:id="Collection_id" xmi:type="uml:DataType"/>
 		<ownedMember name="Map" visibility="public" xmi:id="Map_id" xmi:type="uml:DataType"/>
 		<ownedMember name="int" visibility="public" xmi:id="int_id" xmi:type="uml:DataType"/>
 		<ownedMember name="java.util.Hashtable" visibility="public" xmi:id="java.util.Hashtable_id" xmi:type="uml:DataType"/>
 		<ownedMember name="void" visibility="public" xmi:id="void_id" xmi:type="uml:DataType"/>
-		<ownedMember name="Metadata API class diagram.nl.mpi.metadata.api.events.MetadataDocumentListener" visibility="public" xmi:id="Ecn770yFYEAyKA.2" xmi:type="uml:DataType"/>
-		<ownedMember name="Metadata API class diagram.nl.mpi.metadata.api.MetadataElement" visibility="public" xmi:id="acn770yFYEAyKA.5" xmi:type="uml:DataType"/>
+		<ownedMember name="Metadata API class diagram.nl.mpi.metadata.api.events.MetadataDocumentListener" visibility="public" xmi:id="s9TP70yFYEAyKA_q" xmi:type="uml:DataType"/>
+		<ownedMember name="Metadata API class diagram.nl.mpi.metadata.api.MetadataElement" visibility="public" xmi:id="69TP70yFYEAyKA_t" xmi:type="uml:DataType"/>
 		<ownedMember name="nl.mpi.corpusstructure.ArchiveObjectsDB" visibility="public" xmi:id="nl.mpi.corpusstructure.ArchiveObjectsDB_id" xmi:type="uml:DataType"/>
 		<ownedMember name="org.xml.sax.EntityResolver" visibility="public" xmi:id="org.xml.sax.EntityResolver_id" xmi:type="uml:DataType"/>
 		<ownedMember name="String" visibility="public" xmi:id="String_id" xmi:type="uml:DataType"/>
@@ -15591,7 +15591,7 @@
 			<properties>
 				<apmAuthor value="twagoo"/>
 				<apmCreateDateTime value="1317990161886"/>
-				<apmLastModified value="1318418561328"/>
+				<apmLastModified value="1318419895396"/>
 				<ashowPackageNameStyle value="0"/>
 				<ashowConnectorName value="0"/>
 				<apaintConnectorThroughLabel value="0"/>
@@ -15619,7 +15619,7 @@
 				<ax value="0"/>
 				<ay value="0"/>
 				<awidth value="1497"/>
-				<aheight value="847"/>
+				<aheight value="841"/>
 				<aparentModel value="sFRqe0yFYEAyIg8j"/>
 				<a_globalPaletteOption value="true"/>
 				<a_alwaysShowReferenceAndSubdiagramResource value="false"/>
@@ -15654,7 +15654,7 @@
 					<properties>
 						<abackground value="Cr:122,207,245,255"/>
 						<aforeground value="Cr:0,0,0,255"/>
-						<azOrder value="146"/>
+						<azOrder value="147"/>
 						<aselectable value="true"/>
 						<arequestResetCaption value="false"/>
 						<arequestResetCaptionSize value="false"/>
@@ -16468,7 +16468,7 @@
 					<properties>
 						<abackground value="Cr:122,207,245,255"/>
 						<aforeground value="Cr:0,0,0,255"/>
-						<azOrder value="144"/>
+						<azOrder value="145"/>
 						<aselectable value="true"/>
 						<arequestResetCaption value="false"/>
 						<arequestResetCaptionSize value="false"/>
@@ -16892,7 +16892,7 @@
 					<properties>
 						<abackground value="Cr:94,160,189,255"/>
 						<aforeground value="Cr:0,0,0,255"/>
-						<azOrder value="142"/>
+						<azOrder value="143"/>
 						<aselectable value="true"/>
 						<arequestResetCaption value="false"/>
 						<arequestResetCaptionSize value="false"/>
@@ -17676,7 +17676,7 @@
 					<properties>
 						<abackground value="Cr:94,160,189,255"/>
 						<aforeground value="Cr:0,0,0,255"/>
-						<azOrder value="140"/>
+						<azOrder value="141"/>
 						<aselectable value="true"/>
 						<arequestResetCaption value="false"/>
 						<arequestResetCaptionSize value="false"/>
@@ -19109,7 +19109,7 @@
 				<elementFont bold="false" color="Cr:0,0,0,255" italic="false" name="Dialog" size="11" style="0"/>
 				<elementLine color="Cr:0,0,0,255" style="1" transparency="0" weight="1.0"/>
 			</uml:DiagramElement>
-			<uml:DiagramElement geometry="1200,399;1200,380;" preferredShapeType="Generalization" subject="YlmmK0yFYEAyIhc_" xmi:id="BmBqe0yFYEAyIg6E">
+			<uml:DiagramElement geometry="1200,398;1200,380;" preferredShapeType="Generalization" subject="YlmmK0yFYEAyIhc_" xmi:id="BmBqe0yFYEAyIg6E">
 				<xmi:Extension extender="Visual Paradigm for UML">
 					<captionBounds value="1201,412,20,0"/>
 					<captionInternalWidth value="-2147483648"/>
@@ -19179,7 +19179,7 @@
 				<elementFont bold="false" color="Cr:0,0,0,255" italic="false" name="Dialog" size="11" style="0"/>
 				<elementLine color="Cr:0,0,0,255" style="1" transparency="0" weight="1.0"/>
 			</uml:DiagramElement>
-			<uml:DiagramElement geometry="1210,730;1210,749;" preferredShapeType="Dependency" subject="YGUxK0yFYEAyIhq7" xmi:id="FmBqe0yFYEAyIg6K">
+			<uml:DiagramElement geometry="1210,730;1210,748;" preferredShapeType="Dependency" subject="YGUxK0yFYEAyIhq7" xmi:id="FmBqe0yFYEAyIg6K">
 				<xmi:Extension extender="Visual Paradigm for UML">
 					<captionBounds value="1211,737,20,0"/>
 					<captionInternalWidth value="-2147483648"/>
@@ -19214,7 +19214,7 @@
 				<elementFont bold="false" color="Cr:0,0,0,255" italic="false" name="Dialog" size="11" style="0"/>
 				<elementLine color="Cr:0,0,0,255" style="1" transparency="0" weight="1.0"/>
 			</uml:DiagramElement>
-			<uml:DiagramElement geometry="1400,340;1489,340;" preferredShapeType="Realization" subject="FxRXy0yFYEAyIgyB" xmi:id="NmBqe0yFYEAyIg6N">
+			<uml:DiagramElement geometry="1400,340;1488,340;" preferredShapeType="Realization" subject="FxRXy0yFYEAyIgyB" xmi:id="NmBqe0yFYEAyIg6N">
 				<xmi:Extension extender="Visual Paradigm for UML">
 					<captionBounds value="1407,335,20,0"/>
 					<captionInternalWidth value="-2147483648"/>
@@ -19351,7 +19351,7 @@
 				<elementFont bold="false" color="Cr:0,0,0,255" italic="false" name="Dialog" size="11" style="0"/>
 				<elementLine color="Cr:0,0,0,255" style="1" transparency="0" weight="1.0"/>
 			</uml:DiagramElement>
-			<uml:DiagramElement geometry="1400,770;1479,770;" preferredShapeType="Generalization" subject="GXJxK0yFYEAyIhsL" xmi:id="mWBqe0yFYEAyIg6Y">
+			<uml:DiagramElement geometry="1400,770;1478,770;" preferredShapeType="Generalization" subject="GXJxK0yFYEAyIhsL" xmi:id="mWBqe0yFYEAyIg6Y">
 				<xmi:Extension extender="Visual Paradigm for UML">
 					<captionBounds value="1417,771,20,0"/>
 					<captionInternalWidth value="-2147483648"/>
@@ -19453,7 +19453,7 @@
 				<elementFont bold="false" color="Cr:0,0,0,255" italic="false" name="Dialog" size="11" style="0"/>
 				<elementLine color="Cr:0,0,0,255" style="1" transparency="0" weight="1.0"/>
 			</uml:DiagramElement>
-			<uml:DiagramElement geometry="1400,460;1420,460;1420,420;1489,420;" preferredShapeType="Realization" subject="FnFXy0yFYEAyIgyh" xmi:id="1WBqe0yFYEAyIg6g">
+			<uml:DiagramElement geometry="1400,460;1420,460;1420,420;1488,420;" preferredShapeType="Realization" subject="FnFXy0yFYEAyIgyh" xmi:id="1WBqe0yFYEAyIg6g">
 				<xmi:Extension extender="Visual Paradigm for UML">
 					<captionBounds value="1401,421,20,0"/>
 					<captionInternalWidth value="-2147483648"/>
@@ -19759,7 +19759,7 @@
 				<elementFont bold="false" color="Cr:0,0,0,255" italic="false" name="Dialog" size="11" style="0"/>
 				<elementLine color="Cr:0,0,0,255" style="1" transparency="0" weight="1.0"/>
 			</uml:DiagramElement>
-			<uml:DiagramElement geometry="1400,700;1479,700;" preferredShapeType="Realization" subject="c_QxK0yFYEAyIhqb" xmi:id="52Bqe0yFYEAyIg64">
+			<uml:DiagramElement geometry="1400,700;1478,700;" preferredShapeType="Realization" subject="c_QxK0yFYEAyIhqb" xmi:id="52Bqe0yFYEAyIg64">
 				<xmi:Extension extender="Visual Paradigm for UML">
 					<captionBounds value="1414,701,20,0"/>
 					<captionInternalWidth value="-2147483648"/>
@@ -20972,7 +20972,7 @@
 				<elementFont bold="false" color="Cr:0,0,0,255" italic="false" name="Dialog" size="11" style="0"/>
 				<elementLine color="Cr:0,0,0,255" style="1" transparency="0" weight="1.0"/>
 			</uml:DiagramElement>
-			<uml:DiagramElement geometry="1200,509;1200,490;" preferredShapeType="Generalization" subject="rvIae0yFYEAyIg.J" xmi:id="rvIae0yFYEAyIg.K">
+			<uml:DiagramElement geometry="1200,508;1200,490;" preferredShapeType="Generalization" subject="rvIae0yFYEAyIg.J" xmi:id="rvIae0yFYEAyIg.K">
 				<xmi:Extension extender="Visual Paradigm for UML">
 					<captionBounds value="1200,500,20,0"/>
 					<captionInternalWidth value="-2147483648"/>
@@ -21288,42 +21288,6 @@
 				<elementFont bold="false" color="Cr:0,0,0,255" italic="false" name="Dialog" size="11" style="0"/>
 				<elementLine color="Cr:0,0,0,255" style="1" transparency="0" weight="1.0"/>
 			</uml:DiagramElement>
-			<uml:DiagramElement geometry="1340,630;1470,630;1470,530;1488,530;" preferredShapeType="Realization" subject="LInx70yFYEAyKAed" xmi:id="LInx70yFYEAyKAee">
-				<xmi:Extension extender="Visual Paradigm for UML">
-					<captionBounds value="1454,630,20,0"/>
-					<captionInternalWidth value="-2147483648"/>
-					<captionInternalHeight value="-2147483648"/>
-					<captionVisible value="true"/>
-					<captionSide value="1"/>
-					<properties>
-						<abackground value="Cr:122,207,245,255"/>
-						<aforeground value="Cr:0,0,0,255"/>
-						<azOrder value="-1"/>
-						<acreatorDiagramType value="ClassDiagram"/>
-						<aselectable value="true"/>
-						<arequestResetCaption value="false"/>
-						<arequestResetCaptionSize value="false"/>
-						<aconnectorStyle value="3"/>
-						<aconnectorLineJumps value="4"/>
-						<aconnectorLabelOrientation value="4"/>
-						<afromShapeXDiff value="0"/>
-						<afromShapeYDiff value="0"/>
-						<atoShapeXDiff value="0"/>
-						<atoShapeYDiff value="0"/>
-						<afromConnectType value="0"/>
-						<atoConnectType value="0"/>
-						<auseFromShapeCenter value="true"/>
-						<auseToShapeCenter value="true"/>
-						<afromPinType value="1"/>
-						<atoPinType value="1"/>
-						<arequestRebuild value="false"/>
-						<ashowConnectorName value="2"/>
-						<apaintThroughLabel value="2"/>
-					</properties>
-				</xmi:Extension>
-				<elementFont bold="false" color="Cr:0,0,0,255" italic="false" name="Dialog" size="11" style="0"/>
-				<elementLine color="Cr:0,0,0,255" style="1" transparency="0" weight="1.0"/>
-			</uml:DiagramElement>
 			<uml:DiagramElement geometry="1590,578;1590,540;" preferredShapeType="Association" subject="auQJ70yFYEAyKAev" xmi:id="auQJ70yFYEAyKAe0">
 				<xmi:Extension extender="Visual Paradigm for UML">
 					<captionBounds value="1590,560,20,0"/>
@@ -21455,6 +21419,42 @@
 						<aassociationEndPropertyStringsAInternalHeight value="-2147483648"/>
 						<aassociationEndPropertyStringsBInternalWidth value="-2147483648"/>
 						<aassociationEndPropertyStringsBInternalHeight value="-2147483648"/>
+					</properties>
+				</xmi:Extension>
+				<elementFont bold="false" color="Cr:0,0,0,255" italic="false" name="Dialog" size="11" style="0"/>
+				<elementLine color="Cr:0,0,0,255" style="1" transparency="0" weight="1.0"/>
+			</uml:DiagramElement>
+			<uml:DiagramElement geometry="1340,630;1470,630;1470,520;1488,520;" preferredShapeType="Generalization" subject="p1VP70yFYEAyKA_W" xmi:id="p1VP70yFYEAyKA_X">
+				<xmi:Extension extender="Visual Paradigm for UML">
+					<captionBounds value="1458,624,20,0"/>
+					<captionInternalWidth value="-2147483648"/>
+					<captionInternalHeight value="-2147483648"/>
+					<captionVisible value="true"/>
+					<captionSide value="1"/>
+					<properties>
+						<abackground value="Cr:255,255,255,255"/>
+						<aforeground value="Cr:0,0,0,255"/>
+						<azOrder value="-1"/>
+						<acreatorDiagramType value="ClassDiagram"/>
+						<aselectable value="true"/>
+						<arequestResetCaption value="false"/>
+						<arequestResetCaptionSize value="false"/>
+						<aconnectorStyle value="3"/>
+						<aconnectorLineJumps value="4"/>
+						<aconnectorLabelOrientation value="4"/>
+						<afromShapeXDiff value="0"/>
+						<afromShapeYDiff value="0"/>
+						<atoShapeXDiff value="0"/>
+						<atoShapeYDiff value="0"/>
+						<afromConnectType value="0"/>
+						<atoConnectType value="0"/>
+						<auseFromShapeCenter value="true"/>
+						<auseToShapeCenter value="true"/>
+						<afromPinType value="1"/>
+						<atoPinType value="1"/>
+						<arequestRebuild value="false"/>
+						<ashowConnectorName value="2"/>
+						<apaintThroughLabel value="2"/>
 					</properties>
 				</xmi:Extension>
 				<elementFont bold="false" color="Cr:0,0,0,255" italic="false" name="Dialog" size="11" style="0"/>
