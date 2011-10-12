@@ -19,7 +19,6 @@ package nl.mpi.metadata.cmdi.api;
 import java.net.URI;
 import java.util.Collection;
 import javax.xml.xpath.XPath;
-import nl.mpi.metadata.api.ContainerMetadataElement;
 import nl.mpi.metadata.api.MetadataDocument;
 import nl.mpi.metadata.api.MetadataElementAttribute;
 import nl.mpi.metadata.api.MetadataField;

@@ -17,10 +17,7 @@
 package nl.mpi.metadata.cmdi.api.type;
 
 import java.net.URI;
-import java.util.Collection;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
-import nl.mpi.metadata.api.type.MetadataElementAttributeType;
-import nl.mpi.metadata.api.type.MetadataElementType;
 
 /**
  *
@@ -29,30 +26,6 @@ import nl.mpi.metadata.api.type.MetadataElementType;
 public class CMDIProfile extends ComponentType implements MetadataDocumentType {
 
     public URI getSchemaLocation() {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Collection<MetadataElementType> getContainableTypes() {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public boolean canContainType(MetadataElementType type) {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public int getMinOccurencesOfType(MetadataElementType type) {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public int getMaxOccurencesOfType(MetadataElementType type) {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getName() {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Collection<MetadataElementAttributeType> getAttributes() {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 }

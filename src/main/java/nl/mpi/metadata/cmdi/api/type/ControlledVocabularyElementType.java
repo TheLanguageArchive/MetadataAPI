@@ -16,11 +16,9 @@
  */
 package nl.mpi.metadata.cmdi.api.type;
 
-import java.util.Collection;
 import java.util.List;
 import nl.mpi.metadata.api.type.ControlledVocabularyItem;
 import nl.mpi.metadata.api.type.ControlledVocabularyMetadataType;
-import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 
 /**
  *
@@ -29,14 +27,6 @@ import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 public class ControlledVocabularyElementType extends ElementType implements ControlledVocabularyMetadataType {
 
     public List<ControlledVocabularyItem> getItems() {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getName() {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Collection<MetadataElementAttributeType> getAttributes() {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 }
