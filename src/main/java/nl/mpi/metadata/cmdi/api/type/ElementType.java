@@ -33,6 +33,10 @@ public class ElementType implements MetadataElementType, DataCategoryType {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    public String getDescription() {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
     public Collection<MetadataElementAttributeType> getAttributes() {
 	throw new UnsupportedOperationException("Not supported yet.");
     }

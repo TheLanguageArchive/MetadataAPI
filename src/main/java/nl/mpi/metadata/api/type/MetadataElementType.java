@@ -26,13 +26,19 @@ public interface MetadataElementType {
 
     /**
      * 
-     * @return Name of the element
+     * @return Name of this element type
      */
     String getName();
+    
+    /**
+     * 
+     * @return Description for this element type
+     */
+    String getDescription();
 
     /**
      * 
-     * @return Attributes supported by the element
+     * @return Attribute types supported by this element type
      */
     Collection<MetadataElementAttributeType> getAttributes();
 }
