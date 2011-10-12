@@ -20,7 +20,7 @@ package nl.mpi.metadata.api.type;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class MetadataElementTypeAttribute {
+public class MetadataElementAttributeType {
 
     private String name;
     private String type;

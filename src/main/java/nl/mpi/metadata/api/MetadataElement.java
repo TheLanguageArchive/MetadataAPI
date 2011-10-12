@@ -16,7 +16,7 @@
  */
 package nl.mpi.metadata.api;
 
-import java.util.Map;
+import java.util.Collection;
 import javax.xml.xpath.XPath;
 import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.api.type.MetadataContainerElementType;
@@ -53,9 +53,9 @@ public interface MetadataElement {
 
     /**
      * 
-     * @return Map(Key=>Value) of attributes this element has
+     * @return Collection of attributes this element has
      */
-    Map<String, String> getAttributes();
+    Collection<MetadataElementAttribute> getAttributes();
 
     /**
      * Registers a @see MetadataElementListener for this element

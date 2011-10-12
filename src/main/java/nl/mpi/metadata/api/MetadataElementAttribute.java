@@ -14,25 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.api.type;
+package nl.mpi.metadata.api;
 
-import java.util.Collection;
+import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface MetadataElementType {
+public interface MetadataElementAttribute {
 
-    /**
-     * 
-     * @return Name of the element
-     */
-    String getName();
+    MetadataElementAttributeType getType();
 
-    /**
-     * 
-     * @return Attributes supported by the element
-     */
-    Collection<MetadataElementAttributeType> getAttributes();
+    String getKey();
+
+    String getValue();
 }
