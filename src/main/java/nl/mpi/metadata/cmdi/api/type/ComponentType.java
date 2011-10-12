@@ -16,12 +16,24 @@
  */
 package nl.mpi.metadata.cmdi.api.type;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Collection;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.validation.Schema;
 import nl.mpi.metadata.api.type.MetadataContainerElementType;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.api.type.MetadataElementType;
 import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategory;
 import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategoryType;
+import nl.mpi.metadata.cmdi.type.schema.CMDComponentSpec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class represents a CMDI component definition, defined by http://www.clarin.eu/cmd/general-component-schema.xsd
@@ -31,6 +43,12 @@ import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategoryType;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class ComponentType implements MetadataContainerElementType, DataCategoryType {
+
+    private static Logger logger = LoggerFactory.getLogger(ComponentType.class);
+
+    public ComponentType(URL schemaUrl) {
+	CMDComponentSpec spec = unmarshal(CMDComponentSpec.class, schemaUrl, null);
+    }
 
     public Collection<MetadataElementType> getContainableTypes() {
 	throw new UnsupportedOperationException("Not supported yet.");
@@ -62,5 +80,41 @@ public class ComponentType implements MetadataContainerElementType, DataCategory
 
     public DataCategory getDataCategory() {
 	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /**
+     * Helper method that logs errors and returns null if unmarshal failed
+     */
+    public static <T> T unmarshal(Class<T> docClass, URL url, Schema schema) {
+	T result = null;
+	try {
+	    result = unmarshal(docClass, url.openStream(), schema);
+	} catch (JAXBException e) {
+	    logger.error("Cannot unmarshal xml file: " + url, e);
+	} catch (IOException e) {
+	    logger.error("Cannot retrieve content from file: " + url, e);
+	}
+	return result;
+    }
+
+    /**
+     * 
+     * @param docClass
+     * @param inputStream
+     * @param schema to validate against, can be null for no validation.
+     * @return
+     * @throws JAXBException
+     */
+    public static <T> T unmarshal(Class<T> docClass, InputStream inputStream, Schema schema) throws JAXBException {
+	String packageName = docClass.getPackage().getName();
+	JAXBContext jc = JAXBContext.newInstance(packageName);
+	Unmarshaller u = jc.createUnmarshaller();
+
+	if (schema != null) {
+	    u.setSchema(schema);
+	}
+	Object unmarshal = u.unmarshal(inputStream);
+	T doc = (T) unmarshal;
+	return doc;
     }
 }
