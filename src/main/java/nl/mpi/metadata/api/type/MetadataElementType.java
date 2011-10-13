@@ -29,7 +29,7 @@ public interface MetadataElementType {
      * @return Name of this element type
      */
     String getName();
-    
+
     /**
      * 
      * @return Description for this element type
@@ -41,4 +41,8 @@ public interface MetadataElementType {
      * @return Attribute types supported by this element type
      */
     Collection<MetadataElementAttributeType> getAttributes();
+
+    int getMinOccurences(MetadataContainerElementType container);
+
+    int getMaxOccurences(MetadataContainerElementType container);
 }

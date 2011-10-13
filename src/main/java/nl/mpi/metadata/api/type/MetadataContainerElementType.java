@@ -36,18 +36,4 @@ public interface MetadataContainerElementType extends MetadataElementType {
      * @return Whether instances of this type can contain as a child an instance of the specified type
      */
     boolean canContainType(MetadataElementType type);
-
-    /**
-     * 
-     * @param type
-     * @return 
-     */
-    int getMinOccurencesOfType(MetadataElementType type);
-
-    /**
-     * 
-     * @param type
-     * @return 
-     */
-    int getMaxOccurencesOfType(MetadataElementType type);
 }
