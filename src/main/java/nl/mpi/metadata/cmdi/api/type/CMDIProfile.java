@@ -48,6 +48,7 @@ public class CMDIProfile extends ComponentType implements MetadataDocumentType {
     private URI schemaLocation;
 
     public CMDIProfile(URI schemaLocation) throws IOException, CMDITypeException {
+	super(null, null);
 	this.schemaLocation = schemaLocation;
 	setSchemaElement(loadSchema());
 	readSchema();

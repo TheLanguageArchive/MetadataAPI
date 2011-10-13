@@ -16,17 +16,13 @@
  */
 package nl.mpi.metadata.cmdi.api.type;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import javax.xml.namespace.QName;
 import nl.mpi.metadata.api.type.MetadataContainerElementType;
-import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.api.type.MetadataElementType;
-import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategory;
-import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategoryType;
 import org.apache.xmlbeans.SchemaProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,51 +34,19 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class ComponentType implements MetadataContainerElementType, DataCategoryType {
+public class ComponentType extends CMDIProfileElement implements MetadataContainerElementType {
 
     private static Logger logger = LoggerFactory.getLogger(ComponentType.class);
-    private ComponentType parent;
-    private SchemaProperty schemaElement;
-    private QName qName;
-    private String description;
-    private DataCategory dataCategory;
-    private Collection<MetadataElementAttributeType> attributes;
     private List<MetadataElementType> children;
+    private String componentId;
 
+    /**
+     * Constructor. Does not read actual data, for this call @see readChildren()
+     * @param schemaElement SchemaProperty that represents this component type
+     * @param parent Parent component type
+     */
     public ComponentType(SchemaProperty schemaElement, ComponentType parent) {
-	this.schemaElement = schemaElement;
-    }
-
-    public int getMinOccurences(MetadataContainerElementType container) {
-	return schemaElement.getMinOccurs().intValue();
-    }
-
-    public int getMaxOccurences(MetadataContainerElementType container) {
-	if (schemaElement.getMaxOccurs() != null) {
-	    return schemaElement.getMaxOccurs().intValue();
-	} else {
-	    return -1;
-	}
-    }
-
-    public String getName() {
-	if (qName.getLocalPart() != null) {
-	    return qName.getLocalPart();
-	} else {
-	    return qName.toString();
-	}
-    }
-
-    public String getDescription() {
-	return description;
-    }
-
-    public DataCategory getDataCategory() {
-	return dataCategory;
-    }
-
-    public Collection<MetadataElementAttributeType> getAttributes() {
-	return attributes;
+	super(schemaElement, parent);
     }
 
     public Collection<MetadataElementType> getContainableTypes() {
@@ -93,70 +57,51 @@ public class ComponentType implements MetadataContainerElementType, DataCategory
 	return children.contains(type);
     }
 
-    public SchemaProperty getSchemaElement() {
-	return schemaElement;
+    public String getComponentId() {
+	return componentId;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-	if (obj == null) {
-	    return false;
-	}
-	if (getClass() != obj.getClass()) {
-	    return false;
-	}
-	final ComponentType other = (ComponentType) obj;
-	if (this.parent != other.parent && (this.parent == null || !this.parent.equals(other.parent))) {
-	    return false;
-	}
-	if (this.qName != other.qName && (this.qName == null || !this.qName.equals(other.qName))) {
-	    return false;
-	}
-	return true;
-    }
-
-    @Override
-    public int hashCode() {
-	int hash = 7;
-	hash = 67 * hash + (this.parent != null ? this.parent.hashCode() : 0);
-	hash = 67 * hash + (this.qName != null ? this.qName.hashCode() : 0);
-	return hash;
-    }
-
-    @Override
-    public String toString() {
-	return qName.toString();
-    }
-
-    protected ComponentType() {
-    }
-
+    /**
+     * Reads schema for this component type
+     * @throws CMDITypeException  If schema has not been set or loaded
+     */
     protected void readSchema() throws CMDITypeException {
 	if (getSchemaElement() == null) {
-	    throw new CMDITypeException("Cannot read schema, it has not been loaded");
+	    throw new CMDITypeException("Cannot read schema, it has not been set or loaded");
 	}
-	logger.debug("Reading schema for {}", schemaElement.getName());
+	logger.debug("Reading schema for {}", getSchemaElement().getName());
 	readProperties();
 	readChildren();
     }
 
-    protected final void setSchemaElement(SchemaProperty element) {
-	this.schemaElement = element;
-    }
-
-    private void readProperties() {
-	qName = schemaElement.getName();
-    }
-
+    /**
+     * Recursively loads children (components, elements) for this component
+     * @throws CMDITypeException 
+     */
     private void readChildren() throws CMDITypeException {
 	SchemaProperty[] elements = schemaElement.getType().getElementProperties();
 
 	if (elements != null && elements.length > 0) {
 	    children = new ArrayList<MetadataElementType>(elements.length);
 	    for (SchemaProperty child : elements) {
-		ComponentType componentType = new ComponentType(child, this);
-		componentType.readSchema();
-		children.add(componentType);
+
+		CMDIProfileElement childElement;
+
+		SchemaProperty componentIdProperty = child.getType().getAttributeProperty(new QName("ComponentId"));
+
+		if (componentIdProperty != null) {
+		    // Non-leaf, create component
+		    logger.debug("Creating child component type {}", child.getName().toString());
+		    childElement = new ComponentType(child, this);
+		    ((ComponentType) childElement).readSchema();
+		} else {
+		    // Leaf, create element
+		    logger.debug("Creating child element type {}", child.getName().toString());
+		    childElement = new ElementType(child, this);
+		    childElement.readProperties();
+		}
+
+		children.add(childElement);
 	    }
 	} else {
 	    children = Collections.emptyList();

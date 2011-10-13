@@ -19,12 +19,17 @@ package nl.mpi.metadata.cmdi.api.type;
 import java.util.List;
 import nl.mpi.metadata.api.type.ControlledVocabularyItem;
 import nl.mpi.metadata.api.type.ControlledVocabularyMetadataType;
+import org.apache.xmlbeans.SchemaProperty;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class ControlledVocabularyElementType extends ElementType implements ControlledVocabularyMetadataType {
+
+    public ControlledVocabularyElementType(SchemaProperty schemaElement, ComponentType parent) {
+	super(schemaElement, parent);
+    }
 
     public List<ControlledVocabularyItem> getItems() {
 	throw new UnsupportedOperationException("Not supported yet.");

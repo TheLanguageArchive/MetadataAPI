@@ -16,41 +16,18 @@
  */
 package nl.mpi.metadata.cmdi.api.type;
 
-import java.util.Collection;
-import nl.mpi.metadata.api.type.MetadataContainerElementType;
-import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.api.type.MetadataElementType;
-import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategory;
 import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategoryType;
+import org.apache.xmlbeans.SchemaProperty;
 
 /**
  * This class represents an element definition inside a CMDI component, defined by http://www.clarin.eu/cmd/general-component-schema.xsd
  * 
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class ElementType implements MetadataElementType, DataCategoryType {
+public class ElementType extends CMDIProfileElement implements MetadataElementType, DataCategoryType {
 
-    public String getName() {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getDescription() {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Collection<MetadataElementAttributeType> getAttributes() {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public DataCategory getDataCategory() {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public int getMinOccurences(MetadataContainerElementType container) {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public int getMaxOccurences(MetadataContainerElementType container) {
-	throw new UnsupportedOperationException("Not supported yet.");
+    public ElementType(SchemaProperty schemaElement, ComponentType parent) {
+	super(schemaElement, parent);
     }
 }
