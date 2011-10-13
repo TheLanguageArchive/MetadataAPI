@@ -14,45 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api.type.datacategory;
+package nl.mpi.metadata.cmdi.util;
 
-import java.net.URI;
+import java.io.IOException;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class DataCategory {
+public class CMDIEntityResolver implements EntityResolver {
 
-    private URI identifier;
-
-    public DataCategory(URI identifier) {
-	this.identifier = identifier;
-    }
-
-    public URI getIdentifier() {
-	return identifier;
-    }
-
-    @Override
-    public int hashCode() {
-	int hash = 5;
-	hash = 53 * hash + (this.identifier != null ? this.identifier.hashCode() : 0);
-	return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-	if (obj == null) {
-	    return false;
+    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+	if (systemId.endsWith("xml.xsd")) {
+	    return new InputSource(CMDIEntityResolver.class.getResourceAsStream("/xsd/xml.xsd"));
+	} else {
+	    return new InputSource(systemId);
 	}
-	if (getClass() != obj.getClass()) {
-	    return false;
-	}
-	final DataCategory other = (DataCategory) obj;
-	if (this.identifier != other.identifier && (this.identifier == null || !this.identifier.equals(other.identifier))) {
-	    return false;
-	}
-	return true;
     }
 }

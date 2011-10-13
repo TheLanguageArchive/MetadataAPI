@@ -17,6 +17,7 @@
 package nl.mpi.metadata.cmdi.api.type;
 
 import java.util.Collection;
+import nl.mpi.metadata.api.type.MetadataContainerElementType;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.api.type.MetadataElementType;
 import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategory;
@@ -42,6 +43,14 @@ public class ElementType implements MetadataElementType, DataCategoryType {
     }
 
     public DataCategory getDataCategory() {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public int getMinOccurences(MetadataContainerElementType container) {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public int getMaxOccurences(MetadataContainerElementType container) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 }

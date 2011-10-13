@@ -16,19 +16,97 @@
  */
 package nl.mpi.metadata.cmdi.api.type;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
+import javax.xml.namespace.QName;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
+import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
+import org.apache.xmlbeans.SchemaProperty;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.SchemaTypeSystem;
+import org.apache.xmlbeans.XmlBeans;
+import org.apache.xmlbeans.XmlException;
+import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.XmlOptions;
 
 /**
  * This class represents a CMDI profile, defined by http://www.clarin.eu/cmd/general-component-schema.xsd
  * 
  * For an example profile, see http://www.clarin.eu/cmd/example/example-profile-instance.xml
  * For an example profile schema file, see http://www.clarin.eu/cmd/example/example-md-schema.xsd
+ * 
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIProfile extends ComponentType implements MetadataDocumentType {
 
+    public static final String CMD_NAMESPACE = "http://www.clarin.eu/cmd/";
+    public final static QName CMD_TYPE_NAME = new QName(CMD_NAMESPACE, "CMD");
+    public final static QName COMPONENTS_TYPE_NAME = new QName(CMD_NAMESPACE, "Components");
+    public final static QName HEADER_TYPE_NAME = new QName(CMD_NAMESPACE, "Header");
+    private URI schemaLocation;
+
+    public CMDIProfile(URI schemaLocation) throws IOException, CMDITypeException {
+	this.schemaLocation = schemaLocation;
+	setSchemaElement(loadSchema());
+	readSchema();
+    }
+
     public URI getSchemaLocation() {
-	throw new UnsupportedOperationException("Not supported yet.");
+	return schemaLocation;
+    }
+
+    private SchemaProperty loadSchema() throws IOException, CMDITypeException {
+	URL schemaUrl = schemaLocation.toURL();
+	InputStream inputStream = schemaUrl.openStream();
+	try {
+	    XmlOptions xmlOptions = new XmlOptions();
+	    xmlOptions.setCharacterEncoding("UTF-8");
+	    xmlOptions.setEntityResolver(new CMDIEntityResolver());
+
+	    // Compile schema
+	    SchemaTypeSystem sts = XmlBeans.compileXsd(new XmlObject[]{XmlObject.Factory.parse(inputStream, xmlOptions)}, XmlBeans.getBuiltinTypeSystem(), xmlOptions);
+	    // Find document root element type (CMD)
+	    SchemaType cmdType = findCmdType(sts);
+	    // Find components root element type (CMD/Component)
+	    SchemaProperty componentsElement = findComponentsElement(cmdType);
+	    // Find child, there should be only one
+	    return findRootComponentElement(componentsElement);
+
+	} catch (XmlException ex) {
+	    throw new CMDITypeException("XML exception while loading schema " + schemaUrl, ex);
+	} finally {
+	    inputStream.close();
+	}
+    }
+
+    private SchemaType findCmdType(SchemaTypeSystem sts) throws CMDITypeException {
+	// Get CMD root element
+	SchemaType[] documentTypes = sts.documentTypes();
+	if (documentTypes.length != 1) {
+	    throw new CMDITypeException("DocumentTypes count for profile schema should be exactly 1, found " + documentTypes.length);
+	}
+	SchemaType cmdType = documentTypes[0].getElementProperty(CMD_TYPE_NAME).getType();
+	if (cmdType == null) {
+	    throw new CMDITypeException("Element CMD not found in profile schema");
+	}
+	return cmdType;
+    }
+
+    private SchemaProperty findComponentsElement(SchemaType cmdType) throws CMDITypeException {
+	SchemaProperty componentsType = cmdType.getElementProperty(COMPONENTS_TYPE_NAME);
+	if (componentsType == null) {
+	    throw new CMDITypeException("Element Components not found in profile schema");
+	}
+	return componentsType;
+    }
+
+    private SchemaProperty findRootComponentElement(SchemaProperty componentsElement) throws CMDITypeException {
+	SchemaProperty[] componentsChildren = componentsElement.getType().getElementProperties();
+	if (componentsChildren.length != 1) {
+	    throw new CMDITypeException("Expecting 1 root component for profile, found " + componentsChildren.length);
+	}
+	return componentsChildren[0];
     }
 }

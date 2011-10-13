@@ -14,45 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api.type.datacategory;
-
-import java.net.URI;
+package nl.mpi.metadata.cmdi.api.type;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class DataCategory {
+public class CMDITypeException extends Exception {
 
-    private URI identifier;
-
-    public DataCategory(URI identifier) {
-	this.identifier = identifier;
+    public CMDITypeException(String message) {
+	super(message);
     }
 
-    public URI getIdentifier() {
-	return identifier;
-    }
-
-    @Override
-    public int hashCode() {
-	int hash = 5;
-	hash = 53 * hash + (this.identifier != null ? this.identifier.hashCode() : 0);
-	return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-	if (obj == null) {
-	    return false;
-	}
-	if (getClass() != obj.getClass()) {
-	    return false;
-	}
-	final DataCategory other = (DataCategory) obj;
-	if (this.identifier != other.identifier && (this.identifier == null || !this.identifier.equals(other.identifier))) {
-	    return false;
-	}
-	return true;
+    public CMDITypeException(String message, Throwable cause) {
+	super(message, cause);
     }
 }
