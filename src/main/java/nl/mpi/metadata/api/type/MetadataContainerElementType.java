@@ -29,6 +29,13 @@ public interface MetadataContainerElementType extends MetadataElementType {
      * @return Collection of all metadata types that can be contained as a <em>direct</em> child by an instance of this metadata type
      */
     Collection<MetadataElementType> getContainableTypes();
+    
+    /**
+     * Gets a containable type by name
+     * @param name Name of type to be returned
+     * @return The type of that name, if found. Otherwise null
+     */
+    MetadataElementType getType(String name);
 
     /**
      * 

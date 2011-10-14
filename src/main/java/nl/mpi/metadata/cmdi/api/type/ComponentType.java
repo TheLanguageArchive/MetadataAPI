@@ -53,6 +53,15 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
 	return Collections.unmodifiableList(children);
     }
 
+    public MetadataElementType getType(String name) {
+	for (MetadataElementType type : children) {
+	    if (type.getName().equals(name)) {
+		return type;
+	    }
+	}
+	return null;
+    }
+
     public boolean canContainType(MetadataElementType type) {
 	return children.contains(type);
     }
@@ -65,12 +74,9 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
      * Reads schema for this component type
      * @throws CMDITypeException  If schema has not been set or loaded
      */
+    @Override
     protected void readSchema() throws CMDITypeException {
-	if (getSchemaElement() == null) {
-	    throw new CMDITypeException("Cannot read schema, it has not been set or loaded");
-	}
-	logger.debug("Reading schema for {}", getSchemaElement().getName());
-	readProperties();
+	super.readSchema();
 	readChildren();
     }
 

@@ -16,7 +16,10 @@
  */
 package nl.mpi.metadata.cmdi.api.type;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import javax.xml.namespace.QName;
 import nl.mpi.metadata.api.type.MetadataContainerElementType;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
@@ -24,6 +27,8 @@ import nl.mpi.metadata.api.type.MetadataElementType;
 import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategory;
 import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategoryType;
 import org.apache.xmlbeans.SchemaProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class for Component and Element types
@@ -32,6 +37,7 @@ import org.apache.xmlbeans.SchemaProperty;
  */
 public abstract class CMDIProfileElement implements DataCategoryType, MetadataElementType {
 
+    private static Logger logger = LoggerFactory.getLogger(CMDIProfileElement.class);
     protected ComponentType parent;
     protected SchemaProperty schemaElement;
     protected QName qName;
@@ -111,8 +117,36 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
 	return qName.toString();
     }
 
+    protected void readSchema() throws CMDITypeException {
+	if (getSchemaElement() == null) {
+	    throw new CMDITypeException("Cannot read schema, it has not been set or loaded");
+	}
+	logger.debug("Reading schema for {}", getSchemaElement().getName());
+	readProperties();
+	readAttributes();
+    }
+
     protected void readProperties() {
 	qName = schemaElement.getName();
+    }
+
+    protected void readAttributes() {
+	SchemaProperty[] attributeProperties = getSchemaElement().getType().getAttributeProperties();
+	if (attributeProperties != null && attributeProperties.length > 0) {
+	    attributes = new ArrayList<MetadataElementAttributeType>(attributeProperties.length);
+	    for (SchemaProperty attributeProperty : attributeProperties) {
+		logger.debug("Creating attribute {}", attributeProperty.getName());
+
+		MetadataElementAttributeType attribute = new MetadataElementAttributeType();
+		attribute.setName(attributeProperty.getName().getLocalPart());
+		attribute.setType(attributeProperty.getType().getName().getLocalPart());
+		attribute.setDefaultValue(attributeProperty.getDefaultText());
+		attribute.setMandatory(attributeProperty.getMinOccurs().compareTo(BigInteger.ZERO) > 0);
+		attributes.add(attribute);
+	    }
+	} else {
+	    attributes = Collections.emptySet();
+	}
     }
 
     protected final void setSchemaElement(SchemaProperty element) {

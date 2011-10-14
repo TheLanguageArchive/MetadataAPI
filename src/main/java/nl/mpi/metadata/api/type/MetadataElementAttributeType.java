@@ -25,6 +25,7 @@ public class MetadataElementAttributeType {
     private String name;
     private String type;
     private boolean mandatory;
+    protected String defaultValue;
 
     /**
      * 
@@ -69,4 +70,24 @@ public class MetadataElementAttributeType {
     public void setMandatory(boolean mandatory) {
 	this.mandatory = mandatory;
     }
+    
+    
+    /**
+     * Get the default value of this attribute
+     *
+     * @return the value of defaultValue
+     */
+    public String getDefaultValue() {
+	return defaultValue;
+    }
+
+    /**
+     * Set the default value of this attribute
+     *
+     * @param defaultValue new value of defaultValue
+     */
+    public void setDefaultValue(String defaultValue) {
+	this.defaultValue = defaultValue;
+    }
+
 }
