@@ -50,8 +50,10 @@ public class ControlledVocabularyElementType extends ElementType implements Cont
 	if (itemTypes != null && itemTypes.length > 0) {
 	    items = new ArrayList<ControlledVocabularyItem>();
 	    for (XmlAnySimpleType itemType : getSchemaElement().getType().getEnumerationValues()) {
-		ControlledVocabularyItem item = new ControlledVocabularyItem();
+		CMDIControlledVocabularyItem item = new CMDIControlledVocabularyItem();
 		item.setValue(itemType.getStringValue());
+		// TODO: item.setDescription(itemDescription);
+		// TODO: item.setDataCategory(itemDataCategory);
 		items.add(item);
 	    }
 	} else {

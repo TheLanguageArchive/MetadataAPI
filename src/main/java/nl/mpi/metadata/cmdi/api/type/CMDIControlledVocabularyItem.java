@@ -23,9 +23,15 @@ import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategoryType;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class ControlledVocabularyItem extends nl.mpi.metadata.api.type.ControlledVocabularyItem implements DataCategoryType {
+public class CMDIControlledVocabularyItem extends nl.mpi.metadata.api.type.ControlledVocabularyItem implements DataCategoryType {
 
+    private DataCategory dataCategory;
+    
+    public void setDataCategory(DataCategory dataCategory){
+	this.dataCategory = dataCategory;
+    }
+    
     public DataCategory getDataCategory() {
-	throw new UnsupportedOperationException("Not supported yet.");
+	return dataCategory;
     }
 }
