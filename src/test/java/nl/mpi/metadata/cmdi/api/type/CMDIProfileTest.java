@@ -16,7 +16,6 @@
  */
 package nl.mpi.metadata.cmdi.api.type;
 
-import java.net.URL;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

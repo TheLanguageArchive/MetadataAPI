@@ -106,14 +106,13 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
 		    // Non-leaf, create component
 		    logger.debug("Creating child component type {}", child.getName().toString());
 		    childElement = new ComponentType(child, this);
-		    ((ComponentType) childElement).readSchema();
 		} else {
 		    // Leaf, create element
 		    logger.debug("Creating child element type {}", child.getName().toString());
 		    childElement = new ElementType(child, this);
-		    childElement.readProperties();
-		}
 
+		}
+		childElement.readSchema();
 		children.add(childElement);
 	    }
 	} else {

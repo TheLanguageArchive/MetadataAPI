@@ -50,7 +50,7 @@ public class CMDIProfile extends ComponentType implements MetadataDocumentType {
     private EntityResolver entityResolver;
 
     public CMDIProfile(URI schemaLocation) throws IOException, CMDITypeException {
-	this(schemaLocation, null);
+	this(schemaLocation, new CMDIEntityResolver());
     }
 
     public CMDIProfile(URI schemaLocation, EntityResolver entityResolver) throws IOException, CMDITypeException {

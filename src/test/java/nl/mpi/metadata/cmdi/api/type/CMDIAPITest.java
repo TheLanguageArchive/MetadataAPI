@@ -22,7 +22,7 @@ import java.net.URL;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIAPITest {
+public abstract class CMDIAPITest {
 
     public final static URL testSchema = CMDIProfileTest.class.getResource("/xsd/imdi-profile-instance.xsd");
 }
