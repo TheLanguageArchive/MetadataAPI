@@ -19,6 +19,8 @@ package nl.mpi.metadata.cmdi.api.type;
 import java.net.URL;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -31,8 +33,24 @@ public class CMDIProfileTest {
     @Test
     public void testLoadSchema() throws Exception {
 	CMDIProfile profile = new CMDIProfile(testSchema.toURI());
+	
 	assertEquals(profile.getName(),"Session");
+	// Session has 7 children (descriptions, MDGroup, ...)
 	assertEquals(profile.getContainableTypes().size(), 7);
-
+	// Has 2 attributes (ref, componentId)
+	assertEquals(profile.getAttributes().size(), 2);
+	
+	ComponentType descriptionsType = (ComponentType) profile.getType("descriptions");
+	ElementType descriptionType = (ElementType) descriptionsType.getType("Description");
+	
+	// Test containability
+	assertFalse(profile.canContainType(descriptionType));
+	assertTrue(descriptionsType.canContainType(descriptionType));
+	
+	//Test cardinality	
+	assertEquals(descriptionsType.getMinOccurences(profile), 0);
+	assertEquals(descriptionsType.getMaxOccurences(profile), 1);
+	assertEquals(descriptionType.getMinOccurences(descriptionsType), 0);
+	assertEquals(descriptionType.getMaxOccurences(descriptionsType), -1);
     }
 }
