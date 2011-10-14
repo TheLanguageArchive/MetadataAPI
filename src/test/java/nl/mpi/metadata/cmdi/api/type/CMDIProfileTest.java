@@ -26,27 +26,25 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIProfileTest {
-
-    public final static URL testSchema = CMDIProfileTest.class.getResource("/xsd/imdi-profile-instance.xsd");
+public class CMDIProfileTest extends CMDIAPITest {
 
     @Test
     public void testLoadSchema() throws Exception {
 	CMDIProfile profile = new CMDIProfile(testSchema.toURI());
-	
-	assertEquals(profile.getName(),"Session");
+
+	assertEquals(profile.getName(), "Session");
 	// Session has 7 children (descriptions, MDGroup, ...)
 	assertEquals(profile.getContainableTypes().size(), 7);
 	// Has 2 attributes (ref, componentId)
 	assertEquals(profile.getAttributes().size(), 2);
-	
+
 	ComponentType descriptionsType = (ComponentType) profile.getType("descriptions");
 	ElementType descriptionType = (ElementType) descriptionsType.getType("Description");
-	
+
 	// Test containability
 	assertFalse(profile.canContainType(descriptionType));
 	assertTrue(descriptionsType.canContainType(descriptionType));
-	
+
 	//Test cardinality	
 	assertEquals(descriptionsType.getMinOccurences(profile), 0);
 	assertEquals(descriptionsType.getMaxOccurences(profile), 1);

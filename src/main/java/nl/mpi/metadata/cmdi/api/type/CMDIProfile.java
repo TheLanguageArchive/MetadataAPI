@@ -30,6 +30,7 @@ import org.apache.xmlbeans.XmlBeans;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
+import org.xml.sax.EntityResolver;
 
 /**
  * This class represents a CMDI profile, defined by http://www.clarin.eu/cmd/general-component-schema.xsd
@@ -46,10 +47,16 @@ public class CMDIProfile extends ComponentType implements MetadataDocumentType {
     public final static QName COMPONENTS_TYPE_NAME = new QName(CMD_NAMESPACE, "Components");
     public final static QName HEADER_TYPE_NAME = new QName(CMD_NAMESPACE, "Header");
     private URI schemaLocation;
+    private EntityResolver entityResolver;
 
     public CMDIProfile(URI schemaLocation) throws IOException, CMDITypeException {
+	this(schemaLocation, null);
+    }
+
+    public CMDIProfile(URI schemaLocation, EntityResolver entityResolver) throws IOException, CMDITypeException {
 	super(null, null);
 	this.schemaLocation = schemaLocation;
+	this.entityResolver = entityResolver;
 	setSchemaElement(loadSchema());
 	readSchema();
     }
@@ -70,7 +77,9 @@ public class CMDIProfile extends ComponentType implements MetadataDocumentType {
 	try {
 	    XmlOptions xmlOptions = new XmlOptions();
 	    xmlOptions.setCharacterEncoding("UTF-8");
-	    xmlOptions.setEntityResolver(new CMDIEntityResolver());
+	    if (entityResolver != null) {
+		xmlOptions.setEntityResolver(entityResolver);
+	    }
 
 	    // Compile schema
 	    SchemaTypeSystem sts = XmlBeans.compileXsd(new XmlObject[]{XmlObject.Factory.parse(inputStream, xmlOptions)}, XmlBeans.getBuiltinTypeSystem(), xmlOptions);
