@@ -80,6 +80,12 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
 	readChildren();
     }
 
+    @Override
+    protected void readProperties() {
+	super.readProperties();
+	componentId = getSchemaElement().getType().getAttributeProperty(new QName("ComponentId")).getDefaultText();
+    }
+
     /**
      * Recursively loads children (components, elements) for this component
      * @throws CMDITypeException 
@@ -93,6 +99,7 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
 
 		CMDIProfileElement childElement;
 
+		// Is the element a Component (if so, it has ComponentId property)
 		SchemaProperty componentIdProperty = child.getType().getAttributeProperty(new QName("ComponentId"));
 
 		if (componentIdProperty != null) {

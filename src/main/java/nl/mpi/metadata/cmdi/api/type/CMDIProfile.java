@@ -58,6 +58,12 @@ public class CMDIProfile extends ComponentType implements MetadataDocumentType {
 	return schemaLocation;
     }
 
+    /**
+     * Loads the schema file, i.e. finds the root component element 
+     * @return
+     * @throws IOException
+     * @throws CMDITypeException 
+     */
     private SchemaProperty loadSchema() throws IOException, CMDITypeException {
 	URL schemaUrl = schemaLocation.toURL();
 	InputStream inputStream = schemaUrl.openStream();
