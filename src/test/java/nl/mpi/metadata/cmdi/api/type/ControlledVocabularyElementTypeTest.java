@@ -16,26 +16,25 @@
  */
 package nl.mpi.metadata.cmdi.api.type;
 
-import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategory;
-import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategoryType;
+import java.util.List;
+import nl.mpi.metadata.api.type.ControlledVocabularyItem;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIControlledVocabularyItem extends nl.mpi.metadata.api.type.ControlledVocabularyItem implements DataCategoryType {
+public class ControlledVocabularyElementTypeTest extends CMDIAPITest {
 
-    private DataCategory dataCategory;
-    
-    /**
-     * Set the data category
-     * @param dataCategory 
-     */
-    protected void setDataCategory(DataCategory dataCategory){
-	this.dataCategory = dataCategory;
-    }
-    
-    public DataCategory getDataCategory() {
-	return dataCategory;
+    @Test
+    public void testCVItems() throws Exception {
+	CMDIProfile profile = new CMDIProfile(testSchema.toURI());
+	ComponentType mdGroupType = (ComponentType) profile.getType("MDGroup");
+	ComponentType locationType = (ComponentType) mdGroupType.getType("Location");
+	ControlledVocabularyElementType continentCV = (ControlledVocabularyElementType) locationType.getType("Continent");
+	List<ControlledVocabularyItem> items = continentCV.getItems();
+	// 8 continents + unknown, unspecified
+	assertEquals(items.size(), 10);
     }
 }
