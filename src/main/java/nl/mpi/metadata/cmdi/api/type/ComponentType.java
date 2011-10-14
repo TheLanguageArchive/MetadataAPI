@@ -100,17 +100,20 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
 		CMDIProfileElement childElement;
 
 		// Is the element a Component (if so, it has ComponentId property)
-		SchemaProperty componentIdProperty = child.getType().getAttributeProperty(new QName("ComponentId"));
-
-		if (componentIdProperty != null) {
-		    // Non-leaf, create component
+		boolean isComponent = null != child.getType().getAttributeProperty(new QName("ComponentId"));
+		if (isComponent) {
+		    // Component id found, so create component
 		    logger.debug("Creating child component type {}", child.getName().toString());
 		    childElement = new ComponentType(child, this);
 		} else {
-		    // Leaf, create element
-		    logger.debug("Creating child element type {}", child.getName().toString());
-		    childElement = new ElementType(child, this);
-
+		    // Not a component, so create element
+		    if (child.getType().hasStringEnumValues()) {
+			logger.debug("Creating child CV element type {}", child.getName().toString());
+			childElement = new ControlledVocabularyElementType(child, this);
+		    } else {
+			logger.debug("Creating child element type {}", child.getName().toString());
+			childElement = new ElementType(child, this);
+		    }
 		}
 		childElement.readSchema();
 		children.add(childElement);

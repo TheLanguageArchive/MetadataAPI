@@ -16,10 +16,13 @@
  */
 package nl.mpi.metadata.cmdi.api.type;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import nl.mpi.metadata.api.type.ControlledVocabularyItem;
 import nl.mpi.metadata.api.type.ControlledVocabularyMetadataType;
 import org.apache.xmlbeans.SchemaProperty;
+import org.apache.xmlbeans.XmlAnySimpleType;
 
 /**
  *
@@ -27,11 +30,36 @@ import org.apache.xmlbeans.SchemaProperty;
  */
 public class ControlledVocabularyElementType extends ElementType implements ControlledVocabularyMetadataType {
 
+    private List<ControlledVocabularyItem> items;
+
     public ControlledVocabularyElementType(SchemaProperty schemaElement, ComponentType parent) {
 	super(schemaElement, parent);
     }
 
+    @Override
+    protected void readProperties() {
+	super.readProperties();
+	readItems();
+    }
+
+    /**
+     * Reads the allowed controlled vocabulary items from the element type
+     */
+    private void readItems() {
+	XmlAnySimpleType[] itemTypes = getSchemaElement().getType().getEnumerationValues();
+	if (itemTypes != null && itemTypes.length > 0) {
+	    items = new ArrayList<ControlledVocabularyItem>();
+	    for (XmlAnySimpleType itemType : getSchemaElement().getType().getEnumerationValues()) {
+		ControlledVocabularyItem item = new ControlledVocabularyItem();
+		item.setValue(itemType.getStringValue());
+		items.add(item);
+	    }
+	} else {
+	    items = Collections.emptyList();
+	}
+    }
+
     public List<ControlledVocabularyItem> getItems() {
-	throw new UnsupportedOperationException("Not supported yet.");
+	return Collections.unmodifiableList(items);
     }
 }

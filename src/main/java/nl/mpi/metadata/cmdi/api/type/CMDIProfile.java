@@ -67,6 +67,7 @@ public class CMDIProfile extends ComponentType implements MetadataDocumentType {
 
     /**
      * Loads the schema file, i.e. finds the root component element 
+     * 
      * @return
      * @throws IOException
      * @throws CMDITypeException 
