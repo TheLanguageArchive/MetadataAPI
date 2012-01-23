@@ -22,13 +22,15 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- *
+ * Default entity resolver for CMDI that resolves w3org's xml.xsd to a copy stored as an internal resource
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIEntityResolver implements EntityResolver {
 
+    private static final String W3ORG_XML_XSD_URI = "http://www.w3.org/2001/xml.xsd";
+
     public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-	if (systemId.endsWith("xml.xsd")) {
+	if (systemId.equalsIgnoreCase(W3ORG_XML_XSD_URI)) {
 	    return new InputSource(CMDIEntityResolver.class.getResourceAsStream("/xsd/xml.xsd"));
 	} else {
 	    return new InputSource(systemId);
