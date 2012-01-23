@@ -16,6 +16,7 @@
  */
 package nl.mpi.metadata.api;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -64,13 +65,14 @@ public class HeaderInfo {
 	this.value = value;
     }
 
+
     /**
-     * Gets the attributes of this header element
+     * Gets the attributes of this header element associated with the provided key
      *
      * @return the value of attributes
      */
-    public Map<String, String> getAttributes() {
-	return attributes;
+    public String getAttribute(String key) {
+	return getAttributes().get(key);
     }
 
     /**
@@ -81,9 +83,21 @@ public class HeaderInfo {
      */
     public void setAttribute(String key, String value) {
 	if (value == null) {
-	    attributes.remove(key);
+	    getAttributes().remove(key);
 	} else {
-	    attributes.put(key, value);
+	    getAttributes().put(key, value);
 	}
+    }
+
+    /**
+     * Gets the attributes map of this header element
+     *
+     * @return the value of attributes
+     */
+    protected synchronized Map<String, String> getAttributes() {
+	if (attributes == null) {
+	    attributes = new HashMap<String, String>();
+	}
+	return attributes;
     }
 }
