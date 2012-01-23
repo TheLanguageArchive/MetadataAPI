@@ -36,7 +36,7 @@ public class CMDIProfileContainerTest extends CMDIAPITest {
 
     @Test
     public void testGetProfile() throws Exception {
-	URI testUri = testSchema.toURI();
+	URI testUri = testSchemaSession.toURI();
 	CMDIProfileContainer container = new CMDIProfileContainer();
 	// Is empty
 	assertFalse(container.containsProfile(testUri));
@@ -71,7 +71,7 @@ public class CMDIProfileContainerTest extends CMDIAPITest {
 	// Resolver should not have been hit
 	assertFalse(myER.hit);
 	// Request new schema from container, so it has to be created
-	container.getProfile(testSchema.toURI());
+	container.getProfile(testSchemaSession.toURI());
 	// Should have been hit for xml.xsd
 	assertTrue(myER.hit);
     }

@@ -29,12 +29,12 @@ public class ControlledVocabularyElementTypeTest extends CMDIAPITest {
 
     @Test
     public void testCVItems() throws Exception {
-	CMDIProfile profile = new CMDIProfile(testSchema.toURI());
-	ComponentType mdGroupType = (ComponentType) profile.getType("MDGroup");
-	ComponentType locationType = (ComponentType) mdGroupType.getType("Location");
-	ControlledVocabularyElementType continentCV = (ControlledVocabularyElementType) locationType.getType("Continent");
-	List<ControlledVocabularyItem> items = continentCV.getItems();
+	CMDIProfile profile = new CMDIProfile(testSchemaSession.toURI());
+	ComponentType collectionType = (ComponentType) profile.getType("Collection");
+	ComponentType collectionTypeType = (ComponentType) collectionType.getType("CollectionType");
+	ControlledVocabularyElementType collectionTypeCV = (ControlledVocabularyElementType) collectionTypeType.getType("CollectionType");
+	List<ControlledVocabularyItem> items = collectionTypeCV.getItems();
 	// 8 continents + unknown, unspecified
-	assertEquals(items.size(), 10);
+	assertEquals(items.size(), 5);
     }
 }

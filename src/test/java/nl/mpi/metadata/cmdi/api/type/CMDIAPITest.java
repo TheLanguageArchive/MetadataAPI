@@ -24,5 +24,12 @@ import java.net.URL;
  */
 public abstract class CMDIAPITest {
 
-    public final static URL testSchema = CMDIProfileTest.class.getResource("/xsd/imdi-profile-instance.xsd");
+    /**
+     * Test schema 1
+     */
+    public final static URL testSchemaSession = CMDIProfileTest.class.getResource("/xsd/TextCorpusProfile.xsd");
+    /**
+     * Test schema 2 (CLARINWebservice http://catalog.clarin.eu/ds/ComponentRegistry?item=clarin.eu:cr1:p_1311927752335)
+     */
+    public final static URL testSchemaWebservice = CMDIProfileTest.class.getResource("/xsd/clarin-webservice.xsd");
 }
