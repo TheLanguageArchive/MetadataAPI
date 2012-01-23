@@ -25,6 +25,7 @@ import org.xml.sax.EntityResolver;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -49,7 +50,7 @@ public class CMDIProfileContainerTest extends CMDIAPITest {
 
 	// Request again, should be the same object
 	CMDIProfile profile2 = container.getProfile(testUri);
-	assertTrue(profile == profile2);
+	assertSame(profile, profile2);
     }
 
     @Test
