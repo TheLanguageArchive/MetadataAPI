@@ -45,7 +45,7 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
     protected DataCategory dataCategory;
     protected Collection<MetadataElementAttributeType> attributes;
 
-    public CMDIProfileElement(SchemaProperty schemaElement, ComponentType parent) {
+    protected CMDIProfileElement(SchemaProperty schemaElement, ComponentType parent) {
 	this.schemaElement = schemaElement;
 	this.parent = parent;
     }

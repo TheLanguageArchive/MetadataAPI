@@ -49,6 +49,13 @@ public class CMDIProfile extends ComponentType implements MetadataDocumentType {
     private URI schemaLocation;
     private EntityResolver entityResolver;
 
+    /**
+     * Constructor. Loads schema but does not actually read data, for this call readSchema()
+     * Will use the default CMDI Entity Resolver
+     * @param schemaLocation Location of the CMDI profile schema to load
+     * @see #readSchema()
+     * @see CMDIEntityResolver
+     */
     public CMDIProfile(URI schemaLocation) throws IOException, CMDITypeException {
 	this(schemaLocation, new CMDIEntityResolver());
     }
