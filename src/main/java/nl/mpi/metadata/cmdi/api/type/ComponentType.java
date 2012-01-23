@@ -84,7 +84,9 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
     @Override
     protected void readProperties() {
 	super.readProperties();
-	componentId = getSchemaElement().getType().getAttributeProperty(new QName("ComponentId")).getDefaultText();
+	SchemaProperty componentIdAttribute = getSchemaElement().getType().getAttributeProperty(new QName("ComponentId"));
+	// attribute may not be present, e.g. for profile root component
+	componentId = (componentIdAttribute == null) ? null : componentIdAttribute.getDefaultText();
     }
 
     /**

@@ -139,7 +139,9 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
 
 		MetadataElementAttributeType attribute = new MetadataElementAttributeType();
 		attribute.setName(attributeProperty.getName().getLocalPart());
-		attribute.setType(attributeProperty.getType().getName().getLocalPart());
+		
+		attribute.setType(attributeProperty.getType().toString());  // consider .getName().getLocalPart()) but getName can
+									    // be null, see documentation
 		attribute.setDefaultValue(attributeProperty.getDefaultText());
 		attribute.setMandatory(attributeProperty.getMinOccurs().compareTo(BigInteger.ZERO) > 0);
 		attributes.add(attribute);
