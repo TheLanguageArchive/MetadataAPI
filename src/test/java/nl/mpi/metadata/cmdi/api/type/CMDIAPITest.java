@@ -25,7 +25,7 @@ import java.net.URL;
 public abstract class CMDIAPITest {
 
     /**
-     * Test schema 1
+     * Test schema 1 (TextCorpusProfile http://catalog.clarin.eu/ds/ComponentRegistry?item=clarin.eu:cr1:p_1271859438164)
      */
     public final static URL testSchemaSession = CMDIProfileTest.class.getResource("/xsd/TextCorpusProfile.xsd");
     /**

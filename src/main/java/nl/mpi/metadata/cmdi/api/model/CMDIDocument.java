@@ -14,14 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api;
+package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
 import java.util.Collection;
 import javax.xml.xpath.XPath;
-import nl.mpi.metadata.api.HeaderInfo;
-import nl.mpi.metadata.api.MetadataDocument;
-import nl.mpi.metadata.api.MetadataElement;
+import nl.mpi.metadata.api.model.HeaderInfo;
+import nl.mpi.metadata.api.model.MetadataDocument;
+import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 

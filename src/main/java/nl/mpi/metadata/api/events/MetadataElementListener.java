@@ -16,7 +16,7 @@
  */
 package nl.mpi.metadata.api.events;
 
-import nl.mpi.metadata.api.MetadataElement;
+import nl.mpi.metadata.api.model.MetadataElement;
 
 /**
  *

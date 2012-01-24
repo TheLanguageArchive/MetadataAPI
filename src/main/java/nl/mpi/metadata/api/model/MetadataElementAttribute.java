@@ -14,11 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.api;
+package nl.mpi.metadata.api.model;
+
+import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface ResourceReference extends Reference {
+public interface MetadataElementAttribute {
+
+    MetadataElementAttributeType getType();
+
+    String getKey();
+
+    String getValue();
 }

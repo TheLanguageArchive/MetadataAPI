@@ -18,7 +18,7 @@ package nl.mpi.metadata.workspace;
 
 import java.io.OutputStream;
 import java.net.URI;
-import nl.mpi.metadata.api.MetadataDocument;
+import nl.mpi.metadata.api.model.MetadataDocument;
 
 /**
  *

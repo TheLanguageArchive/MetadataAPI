@@ -19,8 +19,8 @@ package nl.mpi.metadata.cmdi.api;
 import java.io.OutputStream;
 import java.net.URI;
 import nl.mpi.metadata.api.MetadataAPI;
-import nl.mpi.metadata.api.MetadataDocument;
-import nl.mpi.metadata.api.MetadataElement;
+import nl.mpi.metadata.api.model.MetadataDocument;
+import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
 import nl.mpi.metadata.api.type.MetadataElementType;
 

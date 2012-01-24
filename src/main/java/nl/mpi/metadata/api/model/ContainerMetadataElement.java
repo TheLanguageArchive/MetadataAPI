@@ -14,27 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.api;
+package nl.mpi.metadata.api.model;
+
+import java.util.List;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface MetadataField<T> extends ContainedMetadataElement {
-
-    /**
-     * 
-     * @return Name of field
-     */
-    String getName();
-
-    /**
-     * 
-     * @return Value of field
-     */
-    T getValue();
-
-    void setName(String name);
-
-    void setValue(T value);
+public interface ContainerMetadataElement extends MetadataElement {
+    List<MetadataElement> getChildren();
 }

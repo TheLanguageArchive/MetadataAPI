@@ -17,7 +17,7 @@
 package nl.mpi.metadata.identifierresolver;
 
 import java.net.URI;
-import nl.mpi.metadata.api.MetadataDocument;
+import nl.mpi.metadata.api.model.MetadataDocument;
 
 /**
  *

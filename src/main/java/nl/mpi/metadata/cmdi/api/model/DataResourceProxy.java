@@ -14,12 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.api;
+package nl.mpi.metadata.cmdi.api.model;
+
+import nl.mpi.metadata.api.model.ResourceReference;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface ContainedMetadataElement extends MetadataElement {
-    ContainerMetadataElement getParent();
+public class DataResourceProxy extends ResourceProxy implements ResourceReference{
+    
 }

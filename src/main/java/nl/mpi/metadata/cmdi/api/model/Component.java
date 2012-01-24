@@ -14,28 +14,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api;
+package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.List;
 import javax.xml.xpath.XPath;
-import nl.mpi.metadata.api.MetadataDocument;
-import nl.mpi.metadata.api.MetadataElementAttribute;
-import nl.mpi.metadata.api.Reference;
+import nl.mpi.metadata.api.model.ContainedMetadataElement;
+import nl.mpi.metadata.api.model.ContainerMetadataElement;
+import nl.mpi.metadata.api.model.MetadataDocument;
+import nl.mpi.metadata.api.model.MetadataElement;
+import nl.mpi.metadata.api.model.MetadataElementAttribute;
+import nl.mpi.metadata.api.model.Reference;
+import nl.mpi.metadata.api.model.ReferencingMetadataElement;
 import nl.mpi.metadata.api.events.MetadataElementListener;
-import nl.mpi.metadata.api.type.MetadataElementType;
+import nl.mpi.metadata.cmdi.api.type.ComponentType;
 
 /**
- *
+ * A CMDI Component. Instance of @see nl.mpi.metadata.cmdi.api.type.ComponentType
+ * 
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class ResourceProxy implements Reference {
+public class Component implements ContainerMetadataElement, ContainedMetadataElement, ReferencingMetadataElement {
 
-    public URI getURI() {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getMimetype() {
+    public List<MetadataElement> getChildren() {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -43,7 +45,7 @@ public class ResourceProxy implements Reference {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public MetadataElementType getType() {
+    public ComponentType getType() {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -64,6 +66,22 @@ public class ResourceProxy implements Reference {
     }
 
     public void removeMetadataElementListener(MetadataElementListener listener) {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public Component getParent() {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public Collection<Reference> getReferences() {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public DataResourceProxy createResourceReference(URI uri, String mimetype) {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public MetadataResourceProxy createMetadataReference(URI uri, String mimetype) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 }

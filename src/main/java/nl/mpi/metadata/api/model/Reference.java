@@ -14,14 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.api;
+package nl.mpi.metadata.api.model;
 
-import java.util.List;
+import java.net.URI;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface ContainerMetadataElement extends MetadataElement {
-    List<MetadataElement> getChildren();
+public interface Reference extends MetadataElement {
+    URI getURI();
+    String getMimetype();
 }

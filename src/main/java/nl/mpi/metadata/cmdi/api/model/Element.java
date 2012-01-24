@@ -14,38 +14,47 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api;
+package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
 import java.util.Collection;
-import java.util.List;
 import javax.xml.xpath.XPath;
-import nl.mpi.metadata.api.ContainedMetadataElement;
-import nl.mpi.metadata.api.ContainerMetadataElement;
-import nl.mpi.metadata.api.MetadataDocument;
-import nl.mpi.metadata.api.MetadataElement;
-import nl.mpi.metadata.api.MetadataElementAttribute;
-import nl.mpi.metadata.api.Reference;
-import nl.mpi.metadata.api.ReferencingMetadataElement;
+import nl.mpi.metadata.api.model.MetadataDocument;
+import nl.mpi.metadata.api.model.MetadataElementAttribute;
+import nl.mpi.metadata.api.model.MetadataField;
+import nl.mpi.metadata.api.model.Reference;
+import nl.mpi.metadata.api.model.ReferencingMetadataElement;
 import nl.mpi.metadata.api.events.MetadataElementListener;
-import nl.mpi.metadata.cmdi.api.type.ComponentType;
+import nl.mpi.metadata.cmdi.api.type.ElementType;
 
 /**
- * A CMDI Component. Instance of @see nl.mpi.metadata.cmdi.api.type.ComponentType
+ * A CMDI Element. Instance of @see nl.mpi.metadata.cmdi.api.type.ElementType
  * 
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class Component implements ContainerMetadataElement, ContainedMetadataElement, ReferencingMetadataElement {
-
-    public List<MetadataElement> getChildren() {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
+public class Element implements MetadataField, ReferencingMetadataElement {
 
     public String getName() {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public ComponentType getType() {
+    public Object getValue() {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void setName(String name) {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void setValue(Object value) {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public Component getParent() {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public ElementType getType() {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -66,10 +75,6 @@ public class Component implements ContainerMetadataElement, ContainedMetadataEle
     }
 
     public void removeMetadataElementListener(MetadataElementListener listener) {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Component getParent() {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 

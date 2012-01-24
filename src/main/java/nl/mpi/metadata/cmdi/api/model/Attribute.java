@@ -14,11 +14,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.api;
+package nl.mpi.metadata.cmdi.api.model;
+
+import nl.mpi.metadata.api.model.MetadataElementAttribute;
+import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface MetadataReference extends Reference {
+public class Attribute implements MetadataElementAttribute {
+
+    public MetadataElementAttributeType getType() {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public String getKey() {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public String getValue() {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
 }

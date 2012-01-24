@@ -14,47 +14,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api;
+package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
 import java.util.Collection;
 import javax.xml.xpath.XPath;
-import nl.mpi.metadata.api.MetadataDocument;
-import nl.mpi.metadata.api.MetadataElementAttribute;
-import nl.mpi.metadata.api.MetadataField;
-import nl.mpi.metadata.api.Reference;
-import nl.mpi.metadata.api.ReferencingMetadataElement;
+import nl.mpi.metadata.api.model.MetadataDocument;
+import nl.mpi.metadata.api.model.MetadataElementAttribute;
+import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.api.events.MetadataElementListener;
-import nl.mpi.metadata.cmdi.api.type.ElementType;
+import nl.mpi.metadata.api.type.MetadataElementType;
 
 /**
- * A CMDI Element. Instance of @see nl.mpi.metadata.cmdi.api.type.ElementType
- * 
+ *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class Element implements MetadataField, ReferencingMetadataElement {
+public class ResourceProxy implements Reference {
+
+    public URI getURI() {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public String getMimetype() {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
 
     public String getName() {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public Object getValue() {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void setName(String name) {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void setValue(Object value) {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Component getParent() {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public ElementType getType() {
+    public MetadataElementType getType() {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -75,18 +64,6 @@ public class Element implements MetadataField, ReferencingMetadataElement {
     }
 
     public void removeMetadataElementListener(MetadataElementListener listener) {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Collection<Reference> getReferences() {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public DataResourceProxy createResourceReference(URI uri, String mimetype) {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public MetadataResourceProxy createMetadataReference(URI uri, String mimetype) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 }

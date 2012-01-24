@@ -20,7 +20,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import nl.mpi.metadata.api.MetadataDocument;
+import nl.mpi.metadata.api.model.MetadataDocument;
 
 /**
  * Identifier resolver that passes resolution requests on to 
