@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 The Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2011 Max Planck Institute for Psycholinguistics
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
