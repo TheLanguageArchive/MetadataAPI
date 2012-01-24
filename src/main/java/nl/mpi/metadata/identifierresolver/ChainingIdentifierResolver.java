@@ -17,7 +17,8 @@
 package nl.mpi.metadata.identifierresolver;
 
 import java.net.URI;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import nl.mpi.metadata.api.MetadataDocument;
 
@@ -30,13 +31,13 @@ import nl.mpi.metadata.api.MetadataDocument;
  */
 public class ChainingIdentifierResolver implements IdentifierResolver {
 
-    private Collection<IdentifierResolver> chain;
+    private List<IdentifierResolver> chain;
 
     public ChainingIdentifierResolver() {
 	this(new CopyOnWriteArrayList<IdentifierResolver>());
     }
 
-    public ChainingIdentifierResolver(Collection<IdentifierResolver> chain) {
+    public ChainingIdentifierResolver(List<IdentifierResolver> chain) {
 	this.chain = new CopyOnWriteArrayList(chain);
     }
 
@@ -56,5 +57,19 @@ public class ChainingIdentifierResolver implements IdentifierResolver {
 	    }
 	}
 	return null;
+    }
+
+    /**
+     * @return A <em>copy</em> of the identifiers chain
+     */
+    public List<IdentifierResolver> getChain() {
+	return new ArrayList<IdentifierResolver>(chain);
+    }
+
+    /**
+     * @param chain the identifiers chain to use (instead of the current one)
+     */
+    public void setChain(List<IdentifierResolver> chain) {
+	this.chain = new CopyOnWriteArrayList(chain);
     }
 }
