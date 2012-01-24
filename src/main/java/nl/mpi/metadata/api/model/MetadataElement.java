@@ -17,7 +17,6 @@
 package nl.mpi.metadata.api.model;
 
 import java.util.Collection;
-import javax.xml.xpath.XPath;
 import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.api.type.MetadataElementType;
 
@@ -49,7 +48,7 @@ public interface MetadataElement {
      * 
      * @return Path of element in document
      */
-    XPath getPath();
+    String getPath();
 
     /**
      * 

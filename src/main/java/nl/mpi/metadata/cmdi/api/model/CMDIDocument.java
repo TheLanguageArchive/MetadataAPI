@@ -18,7 +18,10 @@ package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
 import java.util.Collection;
-import javax.xml.xpath.XPath;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.model.MetadataElement;
@@ -26,41 +29,98 @@ import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 
 /**
- * A CMDI metadata document. Instance of a @see nl.mpi.metadata.cmdi.api.type.CMDIProfile
+ * A CMDI metadata document. Instance of a CMDIProfile
+ * @see CMDIProfile
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIDocument extends Component implements MetadataDocument {
 
+    private CMDIProfile profile;
+    private URI fileLocation;
+    private final Collection<HeaderInfo> headerInfo;
+    private final Map<String, MetadataElement> metadataElements;
+    private final Collection<MetadataDocumentListener> listeners;
+
+    /**
+     * Construct an unsaved profile instance (no location associated)
+     * @param profile 
+     */
+    public CMDIDocument(CMDIProfile profile) {
+	this(profile, null);
+    }
+
+    /**
+     * Create a profile instance that has a location associated
+     * @param profile
+     * @param fileLocation 
+     */
+    public CMDIDocument(CMDIProfile profile, URI fileLocation) {
+	this.profile = profile;
+	this.fileLocation = fileLocation;
+
+	this.metadataElements = new HashMap<String, MetadataElement>();
+	this.headerInfo = new HashSet<HeaderInfo>();
+	this.listeners = new HashSet<MetadataDocumentListener>();
+    }
+
     @Override
     public CMDIProfile getType() {
-	throw new UnsupportedOperationException("Not supported yet.");
+	return profile;
+    }
+
+    public void setType(CMDIProfile profile) {
+	this.profile = profile;
     }
 
     public URI getFileLocation() {
-	throw new UnsupportedOperationException("Not supported yet.");
+	return fileLocation;
     }
 
+    /**
+     * 
+     * @return An <em>unmodifiable</em> copy of the collection of header info entries
+     */
     public Collection<HeaderInfo> getHeaderInformation() {
-	throw new UnsupportedOperationException("Not supported yet.");
+	return Collections.unmodifiableCollection(headerInfo);
     }
 
-    public MetadataElement getElement(XPath path) {
-	throw new UnsupportedOperationException("Not supported yet.");
+    public synchronized MetadataElement getElement(String path) {
+	return metadataElements.get(path);
     }
 
-    public void insertElement(XPath path, MetadataElement element) {
-	throw new UnsupportedOperationException("Not supported yet.");
+    public synchronized String insertElement(String path, MetadataElement element) {
+	
+	if(metadataElements.containsKey(path)){
+	}
+	metadataElements.put(path, element);
+	for (MetadataDocumentListener listener : listeners) {
+	    listener.elementInserted(this, element);
+	}
+	return path;
     }
 
-    public MetadataElement removeElement(XPath path) {
-	throw new UnsupportedOperationException("Not supported yet.");
+    public synchronized MetadataElement removeElement(String path) {
+	MetadataElement result = metadataElements.remove(path);
+	if (result != null) {
+	    for (MetadataDocumentListener listener : listeners) {
+		listener.elementRemoved(this, result);
+	    }
+	}
+	return result;
     }
 
-    public void addMetadataDocumentListener(MetadataDocumentListener listener) {
-	throw new UnsupportedOperationException("Not supported yet.");
+    public synchronized void addMetadataDocumentListener(MetadataDocumentListener listener) {
+	listeners.add(listener);
     }
 
-    public void removeMetadataDocumentListener(MetadataDocumentListener listener) {
-	throw new UnsupportedOperationException("Not supported yet.");
+    public synchronized void removeMetadataDocumentListener(MetadataDocumentListener listener) {
+	listeners.remove(listener);
+    }
+
+    /**
+     * @return an <em>unmodifiable</em> copy of the MetadataDocumentListeners collection
+     */
+    public Collection<MetadataDocumentListener> getMetadataDocumentListeners() {
+	return Collections.unmodifiableCollection(listeners);
     }
 }

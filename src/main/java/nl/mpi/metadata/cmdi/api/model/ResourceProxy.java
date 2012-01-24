@@ -18,7 +18,6 @@ package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
 import java.util.Collection;
-import javax.xml.xpath.XPath;
 import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.model.MetadataElementAttribute;
 import nl.mpi.metadata.api.model.Reference;
@@ -51,7 +50,7 @@ public class ResourceProxy implements Reference {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public XPath getPath() {
+    public String getPath() {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 

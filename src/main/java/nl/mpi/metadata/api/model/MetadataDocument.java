@@ -18,7 +18,6 @@ package nl.mpi.metadata.api.model;
 
 import java.net.URI;
 import java.util.Collection;
-import javax.xml.xpath.XPath;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
 
@@ -51,21 +50,22 @@ public interface MetadataDocument {
      * @param path Path for requested element
      * @return Requested element if found, otherwise null
      */
-    MetadataElement getElement(XPath path);
+    MetadataElement getElement(String path);
 
     /**
      * Inserts an element in the specified location
-     * @param path Path of element to insert specified element
+     * @param path Path of element to insert specified element into
      * @param element Element to insert
+     * @return Resulting path of the inserted element
      */
-    void insertElement(XPath path, MetadataElement element);
+    String insertElement(String path, MetadataElement element);
 
     /**
      * Removes an element from the document
      * @param path Path of element to remove
      * @return Removed element (null of none removed)
      */
-    MetadataElement removeElement(XPath path);
+    MetadataElement removeElement(String path);
 
     /**
      * Registers a @see MetadataDocumentListener for this document

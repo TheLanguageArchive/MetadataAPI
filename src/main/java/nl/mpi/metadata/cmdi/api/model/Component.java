@@ -19,7 +19,6 @@ package nl.mpi.metadata.cmdi.api.model;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
-import javax.xml.xpath.XPath;
 import nl.mpi.metadata.api.model.ContainedMetadataElement;
 import nl.mpi.metadata.api.model.ContainerMetadataElement;
 import nl.mpi.metadata.api.model.MetadataDocument;
@@ -31,7 +30,8 @@ import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 
 /**
- * A CMDI Component. Instance of @see nl.mpi.metadata.cmdi.api.type.ComponentType
+ * A CMDI Component. Instance of ComponentType
+ * @see ComponentType
  * 
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
@@ -53,7 +53,7 @@ public class Component implements ContainerMetadataElement, ContainedMetadataEle
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public XPath getPath() {
+    public String getPath() {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
