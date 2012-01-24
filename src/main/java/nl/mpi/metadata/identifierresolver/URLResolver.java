@@ -26,7 +26,11 @@ import nl.mpi.metadata.api.MetadataDocument;
 public class URLResolver implements IdentifierResolver {
 
     public boolean canResolve(MetadataDocument document, URI identifier) {
-	return identifier.getScheme().equalsIgnoreCase("http");
+	final String scheme = identifier.getScheme();
+	return !identifier.isAbsolute()
+		|| scheme.equalsIgnoreCase("http")
+		|| scheme.equalsIgnoreCase("https")
+		|| scheme.equalsIgnoreCase("file");
     }
 
     public URI resolveIdentifier(MetadataDocument document, URI identifier) {
