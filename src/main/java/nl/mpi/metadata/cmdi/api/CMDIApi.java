@@ -19,6 +19,7 @@ package nl.mpi.metadata.cmdi.api;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import javax.xml.parsers.DocumentBuilderFactory;
 import nl.mpi.metadata.api.MetadataAPI;
 import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.MetadataDocumentReader;
@@ -41,8 +42,7 @@ public class CMDIApi implements MetadataAPI<CMDIMetadataElement, CMDIContainerMe
     public CMDIApi() {
 	this(new CMDIDocumentReader());
     }
-    
-    
+
     public CMDIApi(MetadataDocumentReader<CMDIDocument> documentReader) {
 	this.documentReader = documentReader;
     }
@@ -57,22 +57,31 @@ public class CMDIApi implements MetadataAPI<CMDIMetadataElement, CMDIContainerMe
     }
 
     public CMDIDocument createMetadataDocument(MetadataDocumentType type) {
+	// Create new DOM instance
+	// Add boilerplate (using schema(?)...)
+	// Create new MetadataDocument
+	// Construct a minimal instance using createMetadataElement
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public MetadataElement createMetadataElement(MetadataElementType type) {
+    public MetadataElement createMetadataElement(CMDIContainerMetadataElement parent, MetadataElementType type) {
+	// Take the type of the parent
+	// Check if child type is allowed
+	// Add to DOM
+	// Instantiate
+	// Add to parent
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public MetadataElement removeElement(CMDIMetadataElement element) throws MetadataDocumentException {
+	// Find parent
+	// Remove from DOM
+	// Remove as child in parent
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public boolean validateMetadataDocument(CMDIDocument document) {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String insertElement(CMDIContainerMetadataElement parent, CMDIMetadataElement element) throws MetadataDocumentException {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public MetadataElement removeElement(CMDIContainerMetadataElement parent, CMDIMetadataElement element) throws MetadataDocumentException {
+	// Use stock validator. Resolve schema and execute
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
