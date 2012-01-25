@@ -26,7 +26,6 @@ import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /**
@@ -40,15 +39,15 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
     private URI fileLocation;
     private final Collection<HeaderInfo> headerInfo;
     private final Collection<MetadataDocumentListener> listeners;
-    private Document domDocument;
+    private Node domRootNode;
     private final Map<Node, CMDIMetadataElement> elementsMap;
 
     /**
      * Construct an unsaved profile instance (no location associated)
      * @param profile 
      */
-    public CMDIDocument(Document domDocument, CMDIProfile profile) {
-	this(domDocument, profile, null);
+    public CMDIDocument(Node domRootNode, CMDIProfile profile) {
+	this(domRootNode, profile, null);
     }
 
     /**
@@ -56,12 +55,12 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
      * @param profile
      * @param fileLocation 
      */
-    public CMDIDocument(Document domDocument, CMDIProfile profile, URI fileLocation) {
+    public CMDIDocument(Node domRootNode, CMDIProfile profile, URI fileLocation) {
 	super(profile);
 
 	this.profile = profile;
 	this.fileLocation = fileLocation;
-	this.domDocument = domDocument;
+	this.domRootNode = domRootNode;
 
 	this.elementsMap = Collections.synchronizedMap(new HashMap<Node, CMDIMetadataElement>());
 
@@ -116,7 +115,7 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
      */
     @Override
     public Node getDomNode() {
-	return domDocument;
+	return domRootNode;
     }
 
     protected void addElementToMap(CMDIMetadataElement element) {
