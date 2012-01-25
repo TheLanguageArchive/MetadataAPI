@@ -49,10 +49,11 @@ public interface MetadataAPI<M extends MetadataElement, C extends MetadataContai
 
     /**
      * Creates a metadata element of the specified type
+     * @param parentElement Element to create new type in
      * @param type Type of element to create
      * @return Newly instantiated element of specified type
      */
-    MetadataElement createMetadataElement(MetadataElementType type);
+    MetadataElement createMetadataElement(C parentElement, MetadataElementType type);
 
     /**
      * Validates a metadata document to its schema
@@ -62,17 +63,9 @@ public interface MetadataAPI<M extends MetadataElement, C extends MetadataContai
     boolean validateMetadataDocument(D document);
 
     /**
-     * Inserts an element in the specified location
-     * @param path Path of element to insert specified element into
-     * @param element Element to insert
-     * @return Resulting path of the inserted element
-     */
-    String insertElement(C parent, M element) throws MetadataDocumentException;
-
-    /**
      * Removes an element from the document
-     * @param path Path of element to remove
+     * @param element Element to remove
      * @return Removed element (null of none removed)
      */
-    MetadataElement removeElement(C parent, M element) throws MetadataDocumentException;
+    MetadataElement removeElement(M element) throws MetadataDocumentException;
 }
