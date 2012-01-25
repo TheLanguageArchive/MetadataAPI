@@ -17,7 +17,7 @@
 package nl.mpi.metadata.cmdi.api.model;
 
 import nl.mpi.metadata.api.model.ContainedMetadataElement;
-import nl.mpi.metadata.api.model.ContainerMetadataElement;
+import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 
 /**
@@ -35,7 +35,7 @@ public class Component extends CMDIContainerMetadataElement implements Contained
 	this.parent = parent;
     }
 
-    public ContainerMetadataElement<CMDIMetadataElement> getParent() {
+    public MetadataContainer<CMDIMetadataElement> getParent() {
 	return parent;
     }
 

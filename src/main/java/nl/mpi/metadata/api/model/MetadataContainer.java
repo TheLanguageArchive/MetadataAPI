@@ -22,7 +22,7 @@ import java.util.List;
  * @param <M> Type of MetadataElement that can be contained in this container element
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface ContainerMetadataElement<M extends MetadataElement> extends MetadataElement {
+public interface MetadataContainer<M extends MetadataElement> {
 
     /**
      * @param path Path for requested element

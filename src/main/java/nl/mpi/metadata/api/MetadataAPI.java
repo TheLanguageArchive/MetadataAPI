@@ -19,28 +19,32 @@ package nl.mpi.metadata.api;
 import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.model.MetadataElement;
 import java.net.URI;
+import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
 import nl.mpi.metadata.api.type.MetadataElementType;
 
 /**
  *
+ * @param <M> Metadata element type
+ * @param <C> Metadata container type
+ * @param <D> Metadata document type
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface MetadataAPI {
+public interface MetadataAPI<M extends MetadataElement, C extends MetadataContainer<M>, D extends MetadataDocument<M>> {
 
     /**
      * Loads the metadata document at the specified location
      * @param uri Location of document to open
      * @return Openen document
      */
-    MetadataDocument getMetadataDocument(URI uri);
+    D getMetadataDocument(URI uri);
 
     /**
      * Creates a metadata document of the specified type
      * @param type Type of document to create
      * @return Newly instantiated document of specified type
      */
-    MetadataDocument createMetadataDocument(MetadataDocumentType type);
+    D createMetadataDocument(MetadataDocumentType type);
 
     /**
      * Creates a metadata element of the specified type
@@ -54,7 +58,7 @@ public interface MetadataAPI {
      * @param document Document to validate
      * @return Whether document was successfully validated
      */
-    boolean validateMetadataDocument(MetadataDocument document);
+    boolean validateMetadataDocument(D document);
 
     /**
      * Inserts an element in the specified location
@@ -62,12 +66,12 @@ public interface MetadataAPI {
      * @param element Element to insert
      * @return Resulting path of the inserted element
      */
-    String insertElement(MetadataElement parent, MetadataElement element) throws MetadataDocumentException;
+    String insertElement(C parent, M element) throws MetadataDocumentException;
 
     /**
      * Removes an element from the document
      * @param path Path of element to remove
      * @return Removed element (null of none removed)
      */
-    MetadataElement removeElement(MetadataElement parent, MetadataElement element) throws MetadataDocumentException;
+    MetadataElement removeElement(C parent, M element) throws MetadataDocumentException;
 }

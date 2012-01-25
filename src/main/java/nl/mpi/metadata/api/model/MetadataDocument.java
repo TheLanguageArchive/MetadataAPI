@@ -18,7 +18,6 @@ package nl.mpi.metadata.api.model;
 
 import java.net.URI;
 import java.util.Collection;
-import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
 
@@ -27,7 +26,7 @@ import nl.mpi.metadata.api.type.MetadataDocumentType;
  * @see MetadataElement
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface MetadataDocument<M extends  MetadataElement> {
+public interface MetadataDocument<M extends  MetadataElement> extends MetadataContainer<M> {
 
     /**
      * 

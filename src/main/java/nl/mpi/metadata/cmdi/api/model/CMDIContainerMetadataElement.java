@@ -21,9 +21,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import nl.mpi.metadata.api.MetadataElementException;
 import nl.mpi.metadata.api.events.MetadataElementListener;
-import nl.mpi.metadata.api.model.ContainerMetadataElement;
+import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataElementAttribute;
 import nl.mpi.metadata.api.model.MetadataReference;
 import nl.mpi.metadata.api.model.Reference;
@@ -36,7 +35,7 @@ import nl.mpi.metadata.cmdi.api.type.ComponentType;
  * @see CMDIDocument
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public abstract class CMDIContainerMetadataElement implements CMDIMetadataElement, ContainerMetadataElement<CMDIMetadataElement> {
+public abstract class CMDIContainerMetadataElement implements CMDIMetadataElement, MetadataContainer<CMDIMetadataElement> {
 
     private String path;
     private ComponentType type;

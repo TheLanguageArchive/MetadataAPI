@@ -23,5 +23,5 @@ package nl.mpi.metadata.api.model;
  */
 public interface ContainedMetadataElement<M extends MetadataElement> extends MetadataElement {
 
-    ContainerMetadataElement<M> getParent();
+    MetadataContainer<M> getParent();
 }

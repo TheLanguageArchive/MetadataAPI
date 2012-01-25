@@ -24,19 +24,22 @@ import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
 import nl.mpi.metadata.api.type.MetadataElementType;
+import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
+import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
+import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
 
 /**
  * CMDI implementation of the @see MetadataAPI
  * 
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIApi implements MetadataAPI {
+public class CMDIApi implements MetadataAPI<CMDIMetadataElement, CMDIContainerMetadataElement, CMDIDocument> {
 
-    public MetadataDocument getMetadataDocument(URI uri) {
+    public CMDIDocument getMetadataDocument(URI uri) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public MetadataDocument createMetadataDocument(MetadataDocumentType type) {
+    public CMDIDocument createMetadataDocument(MetadataDocumentType type) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -44,20 +47,15 @@ public class CMDIApi implements MetadataAPI {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public boolean validateMetadataDocument(MetadataDocument document) {
+    public boolean validateMetadataDocument(CMDIDocument document) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void writeMetadataDocument(OutputStream os, MetadataDocument document) {
+    public String insertElement(CMDIContainerMetadataElement parent, CMDIMetadataElement element) throws MetadataDocumentException {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public String insertElement(MetadataElement parent, MetadataElement element) throws MetadataDocumentException {
+    public MetadataElement removeElement(CMDIContainerMetadataElement parent, CMDIMetadataElement element) throws MetadataDocumentException {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
-
-    public MetadataElement removeElement(MetadataElement parent, MetadataElement element) throws MetadataDocumentException {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-    
 }

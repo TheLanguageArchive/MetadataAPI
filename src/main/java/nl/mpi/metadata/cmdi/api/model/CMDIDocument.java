@@ -22,12 +22,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import nl.mpi.metadata.api.MetadataDocumentException;
-import nl.mpi.metadata.api.MetadataElementException;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
-import nl.mpi.metadata.api.model.ContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import org.w3c.dom.Document;
 
@@ -103,10 +100,10 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
 //	} else {
 //	    // Add to child identified by XPath
 //	    CMDIMetadataElement parentElement = metadataElements.get(path);
-//	    if (parentElement instanceof ContainerMetadataElement) {
+//	    if (parentElement instanceof MetadataContainer) {
 //		try {
 //		    // Add to element object
-//		    ((ContainerMetadataElement) parentElement).addChild(element);
+//		    ((MetadataContainer) parentElement).addChild(element);
 //		    // Add to elements table
 //		    metadataElements.put(path, element);
 //		} catch (MetadataElementException elEx) {
