@@ -22,10 +22,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import nl.mpi.metadata.api.MetadataDocumentException;
+import nl.mpi.metadata.api.MetadataElementException;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.api.model.MetadataDocument;
-import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
+import nl.mpi.metadata.api.model.ContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 
 /**
@@ -33,12 +35,12 @@ import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
  * @see CMDIProfile
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIDocument extends Component implements MetadataDocument {
+public class CMDIDocument extends CMDIContainerMetadataElement implements MetadataDocument<CMDIMetadataElement> {
 
     private CMDIProfile profile;
     private URI fileLocation;
     private final Collection<HeaderInfo> headerInfo;
-    private final Map<String, MetadataElement> metadataElements;
+    private final Map<String, CMDIMetadataElement> metadataElements;
     private final Collection<MetadataDocumentListener> listeners;
 
     /**
@@ -55,10 +57,12 @@ public class CMDIDocument extends Component implements MetadataDocument {
      * @param fileLocation 
      */
     public CMDIDocument(CMDIProfile profile, URI fileLocation) {
+	super(profile);
+
 	this.profile = profile;
 	this.fileLocation = fileLocation;
 
-	this.metadataElements = new HashMap<String, MetadataElement>();
+	this.metadataElements = new HashMap<String, CMDIMetadataElement>();
 	this.headerInfo = new HashSet<HeaderInfo>();
 	this.listeners = new HashSet<MetadataDocumentListener>();
     }
@@ -84,29 +88,68 @@ public class CMDIDocument extends Component implements MetadataDocument {
 	return Collections.unmodifiableCollection(headerInfo);
     }
 
-    public synchronized MetadataElement getElement(String path) {
+    public synchronized CMDIMetadataElement getElement(String path) {
 	return metadataElements.get(path);
     }
 
-    public synchronized String insertElement(String path, MetadataElement element) {
-	
-	if(metadataElements.containsKey(path)){
+    public synchronized String insertElement(String path, CMDIMetadataElement element) throws MetadataDocumentException {
+	if (path == null) {
+	    // Add to root
+	    metadataElements.put(null, element);
+	} else {
+	    // Add to child identified by XPath
+	    CMDIMetadataElement parentElement = metadataElements.get(path);
+	    if (parentElement instanceof ContainerMetadataElement) {
+		try {
+		    // Add to element object
+		    ((ContainerMetadataElement) parentElement).addChild(element);
+		    // Add to elements table
+		    metadataElements.put(path, element);
+		} catch (MetadataElementException elEx) {
+		    throw new MetadataDocumentException(this, "Error while adding element to child element of document", elEx);
+		}
+	    } else {
+		throw new MetadataDocumentException(this, "Attempt to insert element failed. Parent XPath not found or node cannot contain children: " + path);
+	    }
 	}
-	metadataElements.put(path, element);
+
+	final String newElementPath = appendToXpath(path, element.getName());
+	((CMDIMetadataElement) element).setPath(newElementPath);
+
 	for (MetadataDocumentListener listener : listeners) {
 	    listener.elementInserted(this, element);
 	}
-	return path;
+	return newElementPath;
     }
 
-    public synchronized MetadataElement removeElement(String path) {
-	MetadataElement result = metadataElements.remove(path);
+    public synchronized CMDIMetadataElement removeElement(String path) {
+	CMDIMetadataElement result = metadataElements.remove(path);
 	if (result != null) {
 	    for (MetadataDocumentListener listener : listeners) {
 		listener.elementRemoved(this, result);
 	    }
 	}
 	return result;
+    }
+
+    @Override
+    public void addChild(CMDIMetadataElement child) throws MetadataElementException {
+	try {
+	    insertElement(null, child);
+	} catch (MetadataDocumentException docEx) {
+	    throw new MetadataElementException(child, "Could not add child as element to document", docEx);
+	}
+	super.addChild(child);
+    }
+
+    @Override
+    public void removeChild(CMDIMetadataElement child) throws MetadataElementException {
+	if (child.equals(metadataElements.get(child.getPath()))) {
+	    removeElement(child.getPath());
+	} else {
+	    throw new MetadataElementException(this, "Element not found as child of this document");
+	}
+	super.removeChild(child);
     }
 
     public synchronized void addMetadataDocumentListener(MetadataDocumentListener listener) {
@@ -122,5 +165,23 @@ public class CMDIDocument extends Component implements MetadataDocument {
      */
     public Collection<MetadataDocumentListener> getMetadataDocumentListeners() {
 	return Collections.unmodifiableCollection(listeners);
+    }
+
+    private String appendToXpath(String xPath, String bitToAdd) {
+	final StringBuilder pathBuilder = new StringBuilder();
+	if (xPath != null) {
+	    pathBuilder.append(xPath);
+	}
+	pathBuilder.append("\\").append(bitToAdd);
+	return pathBuilder.toString();
+    }
+
+    /**
+     * 
+     * @return This document
+     */
+    @Override
+    public CMDIDocument getDocument() {
+	return this;
     }
 }

@@ -22,7 +22,6 @@ import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.model.MetadataElementAttribute;
 import nl.mpi.metadata.api.model.MetadataField;
 import nl.mpi.metadata.api.model.Reference;
-import nl.mpi.metadata.api.model.ReferencingMetadataElement;
 import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
 
@@ -31,38 +30,49 @@ import nl.mpi.metadata.cmdi.api.type.ElementType;
  * 
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class Element implements MetadataField, ReferencingMetadataElement {
+public class Element<T> implements CMDIMetadataElement, MetadataField<T, CMDIMetadataElement> {
+
+    private ElementType elementType;
+    private T value;
+    private CMDIContainerMetadataElement parent;
+    private String path;
+
+    public Element(ElementType elementType, CMDIContainerMetadataElement parent, T value) {
+	this.elementType = elementType;
+	this.value = value;
+	this.parent = parent;
+    }
 
     public String getName() {
-	throw new UnsupportedOperationException("Not supported yet.");
+	return elementType.getName();
     }
 
-    public Object getValue() {
-	throw new UnsupportedOperationException("Not supported yet.");
+    public T getValue() {
+	return value;
     }
 
-    public void setName(String name) {
-	throw new UnsupportedOperationException("Not supported yet.");
+    public void setValue(T value) {
+	this.value = value;
     }
 
-    public void setValue(Object value) {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Component getParent() {
-	throw new UnsupportedOperationException("Not supported yet.");
+    public CMDIContainerMetadataElement getParent() {
+	return parent;
     }
 
     public ElementType getType() {
-	throw new UnsupportedOperationException("Not supported yet.");
+	return elementType;
     }
 
     public MetadataDocument getDocument() {
-	throw new UnsupportedOperationException("Not supported yet.");
+	return parent.getDocument();
     }
 
     public String getPath() {
-	throw new UnsupportedOperationException("Not supported yet.");
+	return path;
+    }
+
+    public void setPath(String path) {
+	this.path = path;
     }
 
     public Collection<MetadataElementAttribute> getAttributes() {
