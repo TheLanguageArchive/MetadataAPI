@@ -16,6 +16,7 @@
  */
 package nl.mpi.metadata.cmdi.api.type;
 
+import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import java.io.IOException;
 import java.net.URI;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;

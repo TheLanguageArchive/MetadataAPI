@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api.type;
+package nl.mpi.metadata.cmdi.api;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,6 +24,9 @@ import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
+import nl.mpi.metadata.cmdi.api.type.CMDIProfileTest;
+import nl.mpi.metadata.cmdi.api.type.CMDITypeException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 

@@ -20,7 +20,7 @@ import java.net.URISyntaxException;
 import java.util.Collection;
 import javax.xml.transform.TransformerException;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
-import nl.mpi.metadata.cmdi.api.type.CMDIAPITestCase;
+import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import org.apache.xpath.XPathAPI;

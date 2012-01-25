@@ -16,6 +16,7 @@
  */
 package nl.mpi.metadata.cmdi.api.type;
 
+import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

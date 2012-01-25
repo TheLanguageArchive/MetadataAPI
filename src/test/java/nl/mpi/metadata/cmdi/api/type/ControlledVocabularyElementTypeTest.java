@@ -16,6 +16,7 @@
  */
 package nl.mpi.metadata.cmdi.api.type;
 
+import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import java.util.List;
 import nl.mpi.metadata.api.type.ControlledVocabularyItem;
 import org.junit.Test;
