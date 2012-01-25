@@ -18,7 +18,6 @@ package nl.mpi.metadata.api;
 
 import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.model.MetadataElement;
-import java.io.OutputStream;
 import java.net.URI;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
 import nl.mpi.metadata.api.type.MetadataElementType;
@@ -58,9 +57,17 @@ public interface MetadataAPI {
     boolean validateMetadataDocument(MetadataDocument document);
 
     /**
-     * Writes metadatadocument to the specified outputstream
-     * @param os Stream to write to
-     * @param document Document to write to stream
+     * Inserts an element in the specified location
+     * @param path Path of element to insert specified element into
+     * @param element Element to insert
+     * @return Resulting path of the inserted element
      */
-    void writeMetadataDocument(OutputStream os, MetadataDocument document);
+    String insertElement(MetadataElement parent, MetadataElement element) throws MetadataDocumentException;
+
+    /**
+     * Removes an element from the document
+     * @param path Path of element to remove
+     * @return Removed element (null of none removed)
+     */
+    MetadataElement removeElement(MetadataElement parent, MetadataElement element) throws MetadataDocumentException;
 }

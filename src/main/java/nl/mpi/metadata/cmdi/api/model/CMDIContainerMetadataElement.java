@@ -47,12 +47,8 @@ public abstract class CMDIContainerMetadataElement implements CMDIMetadataElemen
 	this.children = new ArrayList<CMDIMetadataElement>();
     }
 
-    public synchronized void addChild(CMDIMetadataElement child) throws MetadataElementException {
-	children.add(child);
-    }
-
-    public synchronized void removeChild(CMDIMetadataElement child) throws MetadataElementException {
-	children.remove(child);
+    public CMDIMetadataElement getChildElement(String path) {
+	throw new UnsupportedOperationException("Not supported yet.");
     }
 
     /**

@@ -46,12 +46,6 @@ public interface MetadataElement {
 
     /**
      * 
-     * @return Path of element in document
-     */
-    String getPath();
-
-    /**
-     * 
      * @return Collection of attributes this element has
      */
     Collection<MetadataElementAttribute> getAttributes();

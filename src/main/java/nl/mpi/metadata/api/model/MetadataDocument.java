@@ -48,28 +48,6 @@ public interface MetadataDocument<M extends  MetadataElement> {
     Collection<HeaderInfo> getHeaderInformation();
 
     /**
-     * 
-     * @param path Path for requested element
-     * @return Requested element if found, otherwise null
-     */
-    M getElement(String path);
-
-    /**
-     * Inserts an element in the specified location
-     * @param path Path of element to insert specified element into
-     * @param element Element to insert
-     * @return Resulting path of the inserted element
-     */
-    String insertElement(String path, M element) throws MetadataDocumentException;
-
-    /**
-     * Removes an element from the document
-     * @param path Path of element to remove
-     * @return Removed element (null of none removed)
-     */
-    M removeElement(String path) throws MetadataDocumentException;
-
-    /**
      * Registers a @see MetadataDocumentListener for this document
      * @param listener Listener to add
      */

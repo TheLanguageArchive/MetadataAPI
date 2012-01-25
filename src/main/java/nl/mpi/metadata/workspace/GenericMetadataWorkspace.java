@@ -46,7 +46,7 @@ public class GenericMetadataWorkspace implements MetadataWorkspace {
     }
 
     public void saveMetadataDocument(OutputStream os, MetadataDocument document) {
-	api.writeMetadataDocument(os, document);
+	throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public void closeAllMetadataDocuments() {

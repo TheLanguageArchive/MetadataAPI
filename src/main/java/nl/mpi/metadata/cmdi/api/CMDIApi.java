@@ -19,6 +19,7 @@ package nl.mpi.metadata.cmdi.api;
 import java.io.OutputStream;
 import java.net.URI;
 import nl.mpi.metadata.api.MetadataAPI;
+import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
@@ -48,6 +49,14 @@ public class CMDIApi implements MetadataAPI {
     }
 
     public void writeMetadataDocument(OutputStream os, MetadataDocument document) {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public String insertElement(MetadataElement parent, MetadataElement element) throws MetadataDocumentException {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public MetadataElement removeElement(MetadataElement parent, MetadataElement element) throws MetadataDocumentException {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
     
