@@ -16,13 +16,22 @@
  */
 package nl.mpi.metadata.cmdi.api.type;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public abstract class CMDIAPITest {
+public abstract class CMDIAPITestCase {
 
     /**
      * Test schema 1 (TextCorpusProfile http://catalog.clarin.eu/ds/ComponentRegistry?item=clarin.eu:cr1:p_1271859438164)
@@ -32,4 +41,21 @@ public abstract class CMDIAPITest {
      * Test schema 2 (CLARINWebservice http://catalog.clarin.eu/ds/ComponentRegistry?item=clarin.eu:cr1:p_1311927752335)
      */
     public final static URL testSchemaWebservice = CMDIProfileTest.class.getResource("/xsd/clarin-webservice.xsd");
+
+    public CMDIProfile getNewTestProfileAndRead() throws IOException, CMDITypeException, URISyntaxException {
+	return getNewTestProfileAndRead(testSchemaSession.toURI());
+    }
+
+    public CMDIProfile getNewTestProfileAndRead(URI uri) throws IOException, CMDITypeException {
+	final CMDIProfile profile = new CMDIProfile(uri);
+	profile.readSchema();
+	return profile;
+    }
+
+    protected Document getDomDocumentForResource(final String documentResourceLocation) throws ParserConfigurationException, IOException, SAXException {
+	final InputStream documentStream = getClass().getResourceAsStream(documentResourceLocation);
+	DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+	DocumentBuilder builder = domFactory.newDocumentBuilder();
+	return builder.parse(documentStream);
+    }
 }

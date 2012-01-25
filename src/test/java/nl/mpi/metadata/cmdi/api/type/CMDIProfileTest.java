@@ -26,7 +26,7 @@ import static org.junit.Assert.assertNotNull;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIProfileTest extends CMDIAPITest {
+public class CMDIProfileTest extends CMDIAPITestCase {
 
     @Test
     public void testLoadSchema() throws Exception {

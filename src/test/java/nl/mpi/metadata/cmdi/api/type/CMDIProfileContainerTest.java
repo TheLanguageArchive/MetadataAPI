@@ -33,7 +33,7 @@ import org.xml.sax.SAXException;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIProfileContainerTest extends CMDIAPITest {
+public class CMDIProfileContainerTest extends CMDIAPITestCase {
 
     @Test
     public void testGetProfile() throws Exception {

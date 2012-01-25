@@ -25,7 +25,7 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class ControlledVocabularyElementTypeTest extends CMDIAPITest {
+public class ControlledVocabularyElementTypeTest extends CMDIAPITestCase {
 
     @Test
     public void testCVItems() throws Exception {
