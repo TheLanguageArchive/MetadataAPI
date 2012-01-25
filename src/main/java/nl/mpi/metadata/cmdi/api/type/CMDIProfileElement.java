@@ -117,7 +117,7 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
 	return qName.toString();
     }
 
-    protected void readSchema() throws CMDITypeException {
+    public void readSchema() throws CMDITypeException {
 	if (getSchemaElement() == null) {
 	    throw new CMDITypeException("Cannot read schema, it has not been set or loaded");
 	}

@@ -76,7 +76,7 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
      * @throws CMDITypeException  If schema has not been set or loaded
      */
     @Override
-    protected void readSchema() throws CMDITypeException {
+    public void readSchema() throws CMDITypeException {
 	super.readSchema();
 	readChildren();
     }
