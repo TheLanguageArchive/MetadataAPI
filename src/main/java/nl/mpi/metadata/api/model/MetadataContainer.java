@@ -17,6 +17,7 @@
 package nl.mpi.metadata.api.model;
 
 import java.util.List;
+import nl.mpi.metadata.api.MetadataDocumentException;
 
 /**
  * @param <M> Type of MetadataElement that can be contained in this container element
@@ -27,8 +28,9 @@ public interface MetadataContainer<M extends MetadataElement> {
     /**
      * @param path Path for requested element
      * @return Requested element if found, otherwise null
+     * @throws IllegalArgumentException when path is incorrect or invalid
      */
-    M getChildElement(String path);
+    M getChildElement(String path) throws IllegalArgumentException;
 
     List<M> getChildren();
 }

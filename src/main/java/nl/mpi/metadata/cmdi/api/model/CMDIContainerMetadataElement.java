@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import javax.xml.transform.TransformerException;
 import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataElementAttribute;
@@ -28,6 +29,8 @@ import nl.mpi.metadata.api.model.MetadataReference;
 import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.api.model.ResourceReference;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
+import org.apache.xpath.XPathAPI;
+import org.w3c.dom.Node;
 
 /**
  * Abstract base class for Component and Profile instance classes
@@ -43,11 +46,30 @@ public abstract class CMDIContainerMetadataElement implements CMDIMetadataElemen
 
     public CMDIContainerMetadataElement(ComponentType type) {
 	this.type = type;
-	this.children = new ArrayList<CMDIMetadataElement>();
+	this.children = Collections.synchronizedList(new ArrayList<CMDIMetadataElement>());
     }
 
-    public CMDIMetadataElement getChildElement(String path) {
-	throw new UnsupportedOperationException("Not supported yet.");
+    public CMDIMetadataElement getChildElement(String path) throws IllegalArgumentException {
+	try {
+	    Node domNode = XPathAPI.selectSingleNode(getDomNode(), path);
+	    if (domNode == null) {
+		return null;
+	    } else {
+		return getMetadataDocument().getElementFromMap(domNode);
+	    }
+	} catch (TransformerException transformerException) {
+	    throw new IllegalArgumentException("Could not apply provided XPath to document: " + path, transformerException);
+	}
+    }
+
+    public void addChildElement(CMDIMetadataElement element) {
+	getMetadataDocument().addElementToMap(element);
+	children.add(element);
+    }
+
+    public void removeChildElement(CMDIMetadataElement element) {
+	getMetadataDocument().removeElementFromMap(element);
+	children.remove(element);
     }
 
     /**
@@ -96,8 +118,7 @@ public abstract class CMDIContainerMetadataElement implements CMDIMetadataElemen
 
     public ComponentType getType() {
 	return type;
-    }    
-    
+    }
 //    public synchronized String insertElement(String path, CMDIMetadataElement element) throws MetadataDocumentException {
 //	if (path == null) {
 //	    // Add to root
