@@ -18,8 +18,10 @@ package nl.mpi.metadata.api.model;
 
 /**
  *
+ * @param <M> Type of element that can be contained by the parent
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface ContainedMetadataElement extends MetadataElement {
-    ContainerMetadataElement getParent();
+public interface ContainedMetadataElement<M extends MetadataElement> extends MetadataElement {
+
+    ContainerMetadataElement<M> getParent();
 }

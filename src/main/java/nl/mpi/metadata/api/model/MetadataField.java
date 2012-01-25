@@ -17,10 +17,11 @@
 package nl.mpi.metadata.api.model;
 
 /**
- *
+ * @param <T> Field type
+ * @param <M> Type of element that can be contained by the parent
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface MetadataField<T> extends ContainedMetadataElement {
+public interface MetadataField<T, M extends MetadataElement> extends ContainedMetadataElement<M> {
 
     /**
      * 
@@ -33,8 +34,6 @@ public interface MetadataField<T> extends ContainedMetadataElement {
      * @return Value of field
      */
     T getValue();
-
-    void setName(String name);
 
     void setValue(T value);
 }

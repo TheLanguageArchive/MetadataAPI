@@ -18,14 +18,16 @@ package nl.mpi.metadata.api.model;
 
 import java.net.URI;
 import java.util.Collection;
+import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
 
 /**
- *
+ * @param <M> Type of MetadataElement that can be contained in this document
+ * @see MetadataElement
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface MetadataDocument {
+public interface MetadataDocument<M extends  MetadataElement> {
 
     /**
      * 
@@ -50,7 +52,7 @@ public interface MetadataDocument {
      * @param path Path for requested element
      * @return Requested element if found, otherwise null
      */
-    MetadataElement getElement(String path);
+    M getElement(String path);
 
     /**
      * Inserts an element in the specified location
@@ -58,14 +60,14 @@ public interface MetadataDocument {
      * @param element Element to insert
      * @return Resulting path of the inserted element
      */
-    String insertElement(String path, MetadataElement element);
+    String insertElement(String path, M element) throws MetadataDocumentException;
 
     /**
      * Removes an element from the document
      * @param path Path of element to remove
      * @return Removed element (null of none removed)
      */
-    MetadataElement removeElement(String path);
+    M removeElement(String path) throws MetadataDocumentException;
 
     /**
      * Registers a @see MetadataDocumentListener for this document
