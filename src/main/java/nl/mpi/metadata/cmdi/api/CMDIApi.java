@@ -16,11 +16,12 @@
  */
 package nl.mpi.metadata.cmdi.api;
 
-import java.io.OutputStream;
-import java.net.URI;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import nl.mpi.metadata.api.MetadataAPI;
 import nl.mpi.metadata.api.MetadataDocumentException;
-import nl.mpi.metadata.api.model.MetadataDocument;
+import nl.mpi.metadata.api.MetadataDocumentReader;
 import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
 import nl.mpi.metadata.api.type.MetadataElementType;
@@ -35,8 +36,24 @@ import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
  */
 public class CMDIApi implements MetadataAPI<CMDIMetadataElement, CMDIContainerMetadataElement, CMDIDocument> {
 
-    public CMDIDocument getMetadataDocument(URI uri) {
-	throw new UnsupportedOperationException("Not supported yet.");
+    private MetadataDocumentReader<CMDIDocument> documentReader;
+
+    public CMDIApi() {
+	this(new CMDIDocumentReader());
+    }
+    
+    
+    public CMDIApi(MetadataDocumentReader<CMDIDocument> documentReader) {
+	this.documentReader = documentReader;
+    }
+
+    public CMDIDocument getMetadataDocument(URL url) throws IOException {
+	InputStream documentStream = url.openStream();
+	try {
+	    return documentReader.read(documentStream);
+	} finally {
+	    documentStream.close();
+	}
     }
 
     public CMDIDocument createMetadataDocument(MetadataDocumentType type) {
@@ -57,5 +74,14 @@ public class CMDIApi implements MetadataAPI<CMDIMetadataElement, CMDIContainerMe
 
     public MetadataElement removeElement(CMDIContainerMetadataElement parent, CMDIMetadataElement element) throws MetadataDocumentException {
 	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /**
+     * Get the value of documentReader
+     *
+     * @return the value of documentReader
+     */
+    public MetadataDocumentReader<CMDIDocument> getDocumentReader() {
+	return documentReader;
     }
 }

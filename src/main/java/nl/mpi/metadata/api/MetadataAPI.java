@@ -16,9 +16,10 @@
  */
 package nl.mpi.metadata.api;
 
+import java.io.IOException;
+import java.net.URL;
 import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.model.MetadataElement;
-import java.net.URI;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
 import nl.mpi.metadata.api.type.MetadataElementType;
@@ -37,7 +38,7 @@ public interface MetadataAPI<M extends MetadataElement, C extends MetadataContai
      * @param uri Location of document to open
      * @return Openen document
      */
-    D getMetadataDocument(URI uri);
+    D getMetadataDocument(URL url) throws IOException, IllegalArgumentException;
 
     /**
      * Creates a metadata document of the specified type

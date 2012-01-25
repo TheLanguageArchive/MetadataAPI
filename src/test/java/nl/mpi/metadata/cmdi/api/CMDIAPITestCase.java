@@ -24,10 +24,14 @@ import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileTest;
 import nl.mpi.metadata.cmdi.api.type.CMDITypeException;
+import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
@@ -60,5 +64,12 @@ public abstract class CMDIAPITestCase {
 	DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
 	DocumentBuilder builder = domFactory.newDocumentBuilder();
 	return builder.parse(documentStream);
+    }
+
+    protected CMDIDocument getNewTestDocument() throws IOException, CMDITypeException, ParserConfigurationException, SAXException, TransformerException, URISyntaxException {
+	CMDIProfile profile = getNewTestProfileAndRead(testSchemaSession.toURI());
+	Document domDocument = getDomDocumentForResource("/cmdi/TextCorpusProfile-instance.cmdi");
+	Node documentRootNode = XPathAPI.selectSingleNode(domDocument, "/CMD/Components/TextCorpusProfile");
+	return new CMDIDocument(documentRootNode, profile, testSchemaSession.toURI());
     }
 }
