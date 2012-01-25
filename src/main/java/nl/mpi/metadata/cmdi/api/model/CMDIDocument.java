@@ -19,14 +19,13 @@ package nl.mpi.metadata.cmdi.api.model;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 /**
  * A CMDI metadata document. Instance of a CMDIProfile
@@ -38,17 +37,15 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
     private CMDIProfile profile;
     private URI fileLocation;
     private final Collection<HeaderInfo> headerInfo;
-    private final Map<String, CMDIMetadataElement> metadataElements;
     private final Collection<MetadataDocumentListener> listeners;
+    private Document domDocument;
 
-    private Document document;
-    
     /**
      * Construct an unsaved profile instance (no location associated)
      * @param profile 
      */
-    public CMDIDocument(Document document, CMDIProfile profile) {
-	this(document, profile, null);
+    public CMDIDocument(Document domDocument, CMDIProfile profile) {
+	this(domDocument, profile, null);
     }
 
     /**
@@ -56,14 +53,13 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
      * @param profile
      * @param fileLocation 
      */
-    public CMDIDocument(Document document, CMDIProfile profile, URI fileLocation) {
+    public CMDIDocument(Document domDocument, CMDIProfile profile, URI fileLocation) {
 	super(profile);
 
 	this.profile = profile;
 	this.fileLocation = fileLocation;
-	this.document = document;
+	this.domDocument = domDocument;
 
-	this.metadataElements = new HashMap<String, CMDIMetadataElement>();
 	this.headerInfo = new HashSet<HeaderInfo>();
 	this.listeners = new HashSet<MetadataDocumentListener>();
     }
@@ -88,51 +84,7 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
     public Collection<HeaderInfo> getHeaderInformation() {
 	return Collections.unmodifiableCollection(headerInfo);
     }
-
-    public synchronized CMDIMetadataElement getElement(String path) {
-	return metadataElements.get(path);
-    }
-
-//    public synchronized String insertElement(String path, CMDIMetadataElement element) throws MetadataDocumentException {
-//	if (path == null) {
-//	    // Add to root
-//	    metadataElements.put(null, element);
-//	} else {
-//	    // Add to child identified by XPath
-//	    CMDIMetadataElement parentElement = metadataElements.get(path);
-//	    if (parentElement instanceof MetadataContainer) {
-//		try {
-//		    // Add to element object
-//		    ((MetadataContainer) parentElement).addChild(element);
-//		    // Add to elements table
-//		    metadataElements.put(path, element);
-//		} catch (MetadataElementException elEx) {
-//		    throw new MetadataDocumentException(this, "Error while adding element to child element of document", elEx);
-//		}
-//	    } else {
-//		throw new MetadataDocumentException(this, "Attempt to insert element failed. Parent XPath not found or node cannot contain children: " + path);
-//	    }
-//	}
-//
-//	final String newElementPath = appendToXpath(path, element.getName());
-//	((CMDIMetadataElement) element).setPath(newElementPath);
-//
-//	for (MetadataDocumentListener listener : listeners) {
-//	    listener.elementInserted(this, element);
-//	}
-//	return newElementPath;
-//    }
-//
-//    public synchronized CMDIMetadataElement removeElement(String path) {
-//	CMDIMetadataElement result = metadataElements.remove(path);
-//	if (result != null) {
-//	    for (MetadataDocumentListener listener : listeners) {
-//		listener.elementRemoved(this, result);
-//	    }
-//	}
-//	return result;
-//    }
-
+    
     public synchronized void addMetadataDocumentListener(MetadataDocumentListener listener) {
 	listeners.add(listener);
     }
@@ -148,21 +100,17 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
 	return Collections.unmodifiableCollection(listeners);
     }
 
-    private String appendToXpath(String xPath, String bitToAdd) {
-	final StringBuilder pathBuilder = new StringBuilder();
-	if (xPath != null) {
-	    pathBuilder.append(xPath);
-	}
-	pathBuilder.append("\\").append(bitToAdd);
-	return pathBuilder.toString();
-    }
-
     /**
      * 
      * @return This document
      */
     @Override
-    public CMDIDocument getDocument() {
+    public CMDIDocument getMetadataDocument() {
 	return this;
+    }
+
+    @Override
+    public Node getDomNode() {
+	return domDocument;
     }
 }

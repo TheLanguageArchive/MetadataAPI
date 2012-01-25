@@ -42,8 +42,9 @@ public interface MetadataElement {
      * 
      * @return Document that this element is part of
      */
-    MetadataDocument getDocument();
+    MetadataDocument getMetadataDocument();
 
+    
     /**
      * 
      * @return Collection of attributes this element has

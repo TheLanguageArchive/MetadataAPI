@@ -18,12 +18,12 @@ package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
 import java.util.Collection;
-import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.model.MetadataElementAttribute;
 import nl.mpi.metadata.api.model.MetadataField;
 import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
+import org.w3c.dom.Node;
 
 /**
  * A CMDI Element. Instance of @see nl.mpi.metadata.cmdi.api.type.ElementType
@@ -32,15 +32,19 @@ import nl.mpi.metadata.cmdi.api.type.ElementType;
  */
 public class Element<T> implements CMDIMetadataElement, MetadataField<T, CMDIMetadataElement> {
 
-    private ElementType elementType;
-    private T value;
+    private final CMDIDocument metadataDocument;
     private CMDIContainerMetadataElement parent;
+    private Node domNode;
+    private ElementType elementType;
     private String path;
+    private T value;
 
-    public Element(ElementType elementType, CMDIContainerMetadataElement parent, T value) {
+    public Element(Node domNode, ElementType elementType, CMDIContainerMetadataElement parent, T value) {
 	this.elementType = elementType;
 	this.value = value;
+	this.domNode = domNode;
 	this.parent = parent;
+	this.metadataDocument = parent.getMetadataDocument();
     }
 
     public String getName() {
@@ -63,8 +67,8 @@ public class Element<T> implements CMDIMetadataElement, MetadataField<T, CMDIMet
 	return elementType;
     }
 
-    public MetadataDocument getDocument() {
-	return parent.getDocument();
+    public CMDIDocument getMetadataDocument() {
+	return metadataDocument;
     }
 
     public String getPath() {
@@ -73,6 +77,10 @@ public class Element<T> implements CMDIMetadataElement, MetadataField<T, CMDIMet
 
     public void setPath(String path) {
 	this.path = path;
+    }
+
+    public Node getDomNode() {
+	return domNode;
     }
 
     public Collection<MetadataElementAttribute> getAttributes() {

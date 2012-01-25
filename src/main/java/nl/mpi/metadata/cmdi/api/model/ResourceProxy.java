@@ -46,7 +46,7 @@ public class ResourceProxy implements Reference {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public MetadataDocument getDocument() {
+    public MetadataDocument getMetadataDocument() {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 

@@ -17,6 +17,7 @@
 package nl.mpi.metadata.cmdi.api.model;
 
 import nl.mpi.metadata.api.model.ReferencingMetadataElement;
+import org.w3c.dom.Node;
 
 /**
  *
@@ -25,4 +26,13 @@ import nl.mpi.metadata.api.model.ReferencingMetadataElement;
 public interface CMDIMetadataElement extends ReferencingMetadataElement {
 
     void setPath(String path);
+    
+    /**
+     * 
+     * @return The CMDI document this container belongs to (more type specific than interface implemented)
+     * @see nl.mpi.metadata.api.model.MetadataElement#getMetadataDocument() 
+     */
+    CMDIDocument getMetadataDocument();
+    
+    Node getDomNode();
 }

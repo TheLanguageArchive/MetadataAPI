@@ -96,11 +96,45 @@ public abstract class CMDIContainerMetadataElement implements CMDIMetadataElemen
 
     public ComponentType getType() {
 	return type;
-    }
-
-    /**
-     * 
-     * @return The document this container belongs to
-     */
-    public abstract CMDIDocument getDocument();
+    }    
+    
+//    public synchronized String insertElement(String path, CMDIMetadataElement element) throws MetadataDocumentException {
+//	if (path == null) {
+//	    // Add to root
+//	    metadataElements.put(null, element);
+//	} else {
+//	    // Add to child identified by XPath
+//	    CMDIMetadataElement parentElement = metadataElements.get(path);
+//	    if (parentElement instanceof MetadataContainer) {
+//		try {
+//		    // Add to element object
+//		    ((MetadataContainer) parentElement).addChild(element);
+//		    // Add to elements table
+//		    metadataElements.put(path, element);
+//		} catch (MetadataElementException elEx) {
+//		    throw new MetadataDocumentException(this, "Error while adding element to child element of document", elEx);
+//		}
+//	    } else {
+//		throw new MetadataDocumentException(this, "Attempt to insert element failed. Parent XPath not found or node cannot contain children: " + path);
+//	    }
+//	}
+//
+//	final String newElementPath = appendToXpath(path, element.getName());
+//	((CMDIMetadataElement) element).setPath(newElementPath);
+//
+//	for (MetadataDocumentListener listener : listeners) {
+//	    listener.elementInserted(this, element);
+//	}
+//	return newElementPath;
+//    }
+//
+//    public synchronized CMDIMetadataElement removeElement(String path) {
+//	CMDIMetadataElement result = metadataElements.remove(path);
+//	if (result != null) {
+//	    for (MetadataDocumentListener listener : listeners) {
+//		listener.elementRemoved(this, result);
+//	    }
+//	}
+//	return result;
+//    }
 }
