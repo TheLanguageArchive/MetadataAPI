@@ -19,16 +19,19 @@ package nl.mpi.metadata.cmdi.api;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import javax.xml.parsers.DocumentBuilderFactory;
 import nl.mpi.metadata.api.MetadataAPI;
 import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.MetadataDocumentReader;
 import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
 import nl.mpi.metadata.api.type.MetadataElementType;
+import nl.mpi.metadata.api.validation.MetadataValidator;
 import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
+import nl.mpi.metadata.cmdi.api.validation.DefaultCMDIValidator;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
 
 /**
  * CMDI implementation of the @see MetadataAPI
@@ -38,19 +41,25 @@ import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
 public class CMDIApi implements MetadataAPI<CMDIMetadataElement, CMDIContainerMetadataElement, CMDIDocument> {
 
     private MetadataDocumentReader<CMDIDocument> documentReader;
+    private MetadataValidator<CMDIDocument> cmdiValidator;
 
     public CMDIApi() {
 	this(new CMDIDocumentReader());
     }
 
     public CMDIApi(MetadataDocumentReader<CMDIDocument> documentReader) {
+	this(documentReader, new DefaultCMDIValidator());
+    }
+
+    public CMDIApi(MetadataDocumentReader<CMDIDocument> documentReader, MetadataValidator<CMDIDocument> cmdiValidator) {
 	this.documentReader = documentReader;
+	this.cmdiValidator = cmdiValidator;
     }
 
     public CMDIDocument getMetadataDocument(URL url) throws IOException {
 	InputStream documentStream = url.openStream();
 	try {
-	    return documentReader.read(documentStream);
+	    return getDocumentReader().read(documentStream);
 	} finally {
 	    documentStream.close();
 	}
@@ -80,9 +89,8 @@ public class CMDIApi implements MetadataAPI<CMDIMetadataElement, CMDIContainerMe
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public boolean validateMetadataDocument(CMDIDocument document) {
-	// Use stock validator. Resolve schema and execute
-	throw new UnsupportedOperationException("Not supported yet.");
+    public void validateMetadataDocument(CMDIDocument document, ErrorHandler errorHandler) throws SAXException {
+	getCmdiValidator().validateMetadataDocument(document, errorHandler);
     }
 
     /**
@@ -92,5 +100,19 @@ public class CMDIApi implements MetadataAPI<CMDIMetadataElement, CMDIContainerMe
      */
     public MetadataDocumentReader<CMDIDocument> getDocumentReader() {
 	return documentReader;
+    }
+
+    /**
+     * @return the cmdiValidator
+     */
+    public MetadataValidator<CMDIDocument> getCmdiValidator() {
+	return cmdiValidator;
+    }
+
+    /**
+     * @param cmdiValidator the cmdiValidator to set
+     */
+    public void setCmdiValidator(MetadataValidator<CMDIDocument> cmdiValidator) {
+	this.cmdiValidator = cmdiValidator;
     }
 }

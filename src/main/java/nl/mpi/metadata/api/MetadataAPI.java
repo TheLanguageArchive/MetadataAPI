@@ -23,6 +23,8 @@ import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
 import nl.mpi.metadata.api.type.MetadataElementType;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -60,7 +62,7 @@ public interface MetadataAPI<M extends MetadataElement, C extends MetadataContai
      * @param document Document to validate
      * @return Whether document was successfully validated
      */
-    boolean validateMetadataDocument(D document);
+    void validateMetadataDocument(D document, ErrorHandler errorHandler) throws SAXException;
 
     /**
      * Removes an element from the document
