@@ -17,8 +17,9 @@
 package nl.mpi.metadata.cmdi.api;
 
 import java.net.URL;
+import nl.mpi.metadata.api.SimpleErrorHandler;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
-import org.junit.After;
+import nl.mpi.metadata.cmdi.api.validation.MockCMDIValidator;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -38,10 +39,6 @@ public class CMDIApiTest extends CMDIAPITestCase {
 	CMDIDocument testDocument = getNewTestDocument();
 	documentReader = new MockCMDIDocumentReader(testDocument);
 	api = new CMDIApi(documentReader);
-    }
-
-    @After
-    public void tearDown() {
     }
 
     /**
@@ -65,6 +62,33 @@ public class CMDIApiTest extends CMDIAPITestCase {
     }
 
     /**
+     * Test of validateMetadataDocument method, of class CMDIApi.
+     */
+    @Test
+    public void testValidateValidMetadataDocument() throws Exception {
+	// Check several combinations of produced/found warnings, errors, fatal errors
+	testValidateValidMetadataDocument(0, 0, 0);
+	testValidateValidMetadataDocument(0, 0, 1);
+	testValidateValidMetadataDocument(0, 1, 1);
+	testValidateValidMetadataDocument(1, 0, 0);
+	testValidateValidMetadataDocument(1, 0, 1);
+	testValidateValidMetadataDocument(1, 1, 1);
+    }
+
+    private void testValidateValidMetadataDocument(int warnings, int errors, int fatalErrors) throws Exception {
+	// Simple error handler that just collects errors
+	SimpleErrorHandler errorHandler = new SimpleErrorHandler();
+	// Set a mock validator that produces the number of errors as specified
+	api.setCmdiValidator(new MockCMDIValidator(warnings, errors, fatalErrors));
+	// Validate using this mock handler (against simple handler)
+	api.validateMetadataDocument(getNewTestDocument(), errorHandler);
+	// Check if numbers match
+	assertEquals(warnings, errorHandler.getWarnings().size());
+	assertEquals(errors, errorHandler.getErrors().size());
+	assertEquals(fatalErrors, errorHandler.getFatalErrors().size());
+    }
+
+    /**
      * Test of createMetadataDocument method, of class CMDIApi.
      */
     @Test
@@ -78,14 +102,6 @@ public class CMDIApiTest extends CMDIAPITestCase {
     @Test
     @Ignore
     public void testCreateMetadataElement() {
-    }
-
-    /**
-     * Test of validateMetadataDocument method, of class CMDIApi.
-     */
-    @Test
-    @Ignore
-    public void testValidateMetadataDocument() {
     }
 
     /**

@@ -43,14 +43,17 @@ public abstract class CMDIAPITestCase {
     /**
      * Test schema 1 (TextCorpusProfile http://catalog.clarin.eu/ds/ComponentRegistry?item=clarin.eu:cr1:p_1271859438164)
      */
-    public final static URL testSchemaSession = CMDIProfileTest.class.getResource("/xsd/TextCorpusProfile.xsd");
+    public final static URL testSchemaTextCorpus = CMDIProfileTest.class.getResource("/xsd/TextCorpusProfile.xsd");
+    public final static String TEXT_CORPUS_PROFILE_ROOT_NODE_PATH = "/CMD/Components/TextCorpusProfile";
     /**
      * Test schema 2 (CLARINWebservice http://catalog.clarin.eu/ds/ComponentRegistry?item=clarin.eu:cr1:p_1311927752335)
      */
     public final static URL testSchemaWebservice = CMDIProfileTest.class.getResource("/xsd/clarin-webservice.xsd");
+    public final static URL testSchemaSmall = CMDIProfileTest.class.getResource("/xsd/SmallTestProfile.xsd");
+    public final static String SMALL_PROFILE_ROOT_NODE_PATH = "/CMD/Components/SmallTestProfile";
 
     public CMDIProfile getNewTestProfileAndRead() throws IOException, CMDITypeException, URISyntaxException {
-	return getNewTestProfileAndRead(testSchemaSession.toURI());
+	return getNewTestProfileAndRead(testSchemaTextCorpus.toURI());
     }
 
     public CMDIProfile getNewTestProfileAndRead(URI uri) throws IOException, CMDITypeException {
@@ -67,9 +70,13 @@ public abstract class CMDIAPITestCase {
     }
 
     protected CMDIDocument getNewTestDocument() throws IOException, CMDITypeException, ParserConfigurationException, SAXException, TransformerException, URISyntaxException {
-	CMDIProfile profile = getNewTestProfileAndRead(testSchemaSession.toURI());
-	Document domDocument = getDomDocumentForResource("/cmdi/TextCorpusProfile-instance.cmdi");
-	Node documentRootNode = XPathAPI.selectSingleNode(domDocument, "/CMD/Components/TextCorpusProfile");
-	return new CMDIDocument(documentRootNode, profile, testSchemaSession.toURI());
+	return getNewTestDocument(testSchemaTextCorpus.toURI(), "/cmdi/TextCorpusProfile-instance.cmdi", TEXT_CORPUS_PROFILE_ROOT_NODE_PATH);
+    }
+
+    protected CMDIDocument getNewTestDocument(final URI schemaURI, final String documentResourceLocation, final String rootNodePath) throws IOException, CMDITypeException, ParserConfigurationException, SAXException, TransformerException, URISyntaxException {
+	CMDIProfile profile = getNewTestProfileAndRead(schemaURI);
+	Document domDocument = getDomDocumentForResource(documentResourceLocation);
+	Node documentRootNode = XPathAPI.selectSingleNode(domDocument, rootNodePath);
+	return new CMDIDocument(documentRootNode, profile, getClass().getResource(documentResourceLocation).toURI());
     }
 }

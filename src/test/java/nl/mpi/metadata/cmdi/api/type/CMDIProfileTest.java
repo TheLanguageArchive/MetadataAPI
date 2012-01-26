@@ -31,7 +31,7 @@ public class CMDIProfileTest extends CMDIAPITestCase {
 
     @Test
     public void testLoadSchema() throws Exception {
-	CMDIProfile profile = new CMDIProfile(testSchemaSession.toURI());
+	CMDIProfile profile = new CMDIProfile(testSchemaTextCorpus.toURI());
 	profile.readSchema();
 
 	assertEquals(profile.getName(), "TextCorpusProfile");
@@ -58,8 +58,8 @@ public class CMDIProfileTest extends CMDIAPITestCase {
 
     @Test
     public void testEquals() throws Exception {
-	CMDIProfile profile1 = new CMDIProfile(testSchemaSession.toURI());
-	CMDIProfile profile2 = new CMDIProfile(testSchemaSession.toURI());
+	CMDIProfile profile1 = new CMDIProfile(testSchemaTextCorpus.toURI());
+	CMDIProfile profile2 = new CMDIProfile(testSchemaTextCorpus.toURI());
 	assertTrue("Expected equality of profiles", profile1.equals(profile2));
 	assertTrue("Expected equality of profiles", profile2.equals(profile1));
 	CMDIProfile profile3 = new CMDIProfile(testSchemaWebservice.toURI());

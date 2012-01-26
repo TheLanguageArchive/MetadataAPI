@@ -46,10 +46,10 @@ public class CMDIDocumentTest extends CMDIAPITestCase {
 
     @Before
     public void setUp() throws Exception {
-	profile = getNewTestProfileAndRead(testSchemaSession.toURI());
+	profile = getNewTestProfileAndRead(testSchemaTextCorpus.toURI());
 	domDocument = getDomDocumentForResource("/cmdi/TextCorpusProfile-instance.cmdi");
 	documentRootNode = XPathAPI.selectSingleNode(domDocument, "/CMD/Components/TextCorpusProfile");
-	document = new CMDIDocument(documentRootNode, profile, testSchemaSession.toURI());
+	document = new CMDIDocument(documentRootNode, profile, testSchemaTextCorpus.toURI());
     }
 
     /**
@@ -65,7 +65,7 @@ public class CMDIDocumentTest extends CMDIAPITestCase {
      */
     @Test
     public void testGetFileLocation() throws URISyntaxException {
-	assertEquals(testSchemaSession.toURI(), document.getFileLocation());
+	assertEquals(testSchemaTextCorpus.toURI(), document.getFileLocation());
     }
 
     /**

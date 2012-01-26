@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CMD xmlns="http://www.clarin.eu/cmd/"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     CMDVersion="1.1"
+     xsi:schemaLocation="http://www.clarin.eu/cmd/ ../xsd/SmallTestProfile.xsd ">
+   <Header/>
+   <Resources>
+      <ResourceProxyList/>
+      <JournalFileProxyList/>
+      <ResourceRelationList/>
+   </Resources>
+   <Components>
+      <SmallTestProfile>
+         <stringEement>valid</stringEement>
+         <TestComponent>
+            <booleanElement>true</booleanElement>
+         </TestComponent>
+      </SmallTestProfile>
+   </Components>
+</CMD>
