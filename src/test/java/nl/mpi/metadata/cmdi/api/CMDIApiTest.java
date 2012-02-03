@@ -19,7 +19,9 @@ package nl.mpi.metadata.cmdi.api;
 import java.net.URL;
 import nl.mpi.metadata.api.SimpleErrorHandler;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
+import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.validation.MockCMDIValidator;
+import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -39,6 +41,7 @@ public class CMDIApiTest extends CMDIAPITestCase {
 	CMDIDocument testDocument = getNewTestDocument();
 	documentReader = new MockCMDIDocumentReader(testDocument);
 	api = new CMDIApi(documentReader);
+	api.setEntityResolver(new CMDIEntityResolver());
     }
 
     /**
@@ -92,8 +95,10 @@ public class CMDIApiTest extends CMDIAPITestCase {
      * Test of createMetadataDocument method, of class CMDIApi.
      */
     @Test
-    @Ignore
-    public void testCreateMetadataDocument() {
+    public void testCreateMetadataDocument() throws Exception {
+	CMDIProfile profile = getNewTestProfileAndRead(testSchemaSmall.toURI());
+	CMDIDocument document = api.createMetadataDocument(profile);
+	assertNotNull(document);
     }
 
     /**
