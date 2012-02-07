@@ -38,37 +38,37 @@ public interface MetadataAPI<T extends MetadataDocumentType, M extends MetadataE
 
     /**
      * Loads the metadata document at the specified location
-     * @param uri Location of document to open
-     * @return Openen document
+     * @param uri location of document to open
+     * @return opened document
      */
     D getMetadataDocument(URL url) throws IOException, IllegalArgumentException;
 
     /**
      * Creates a metadata document of the specified type
-     * @param type Type of document to create
-     * @return Newly instantiated document of specified type
+     * @param type type of document to create
+     * @return newly instantiated document of specified type
      */
     D createMetadataDocument(T type) throws MetadataDocumentException;
 
     /**
      * Creates a metadata element of the specified type
-     * @param parentElement Element to create new type in
-     * @param type Type of element to create
-     * @return Newly instantiated element of specified type
+     * @param parentElement element to create new type in
+     * @param type type of element to create
+     * @return newly instantiated element of specified type
      */
     MetadataElement createMetadataElement(C parentElement, MetadataElementType type);
 
     /**
      * Validates a metadata document to its schema
-     * @param document Document to validate
-     * @return Whether document was successfully validated
+     * @param document document to validate
+     * @return whether document was successfully validated
      */
     void validateMetadataDocument(D document, ErrorHandler errorHandler) throws SAXException;
 
     /**
      * Removes an element from the document
-     * @param element Element to remove
-     * @return Removed element (null of none removed)
+     * @param element element to remove
+     * @return removed element (null of none removed)
      */
     MetadataElement removeElement(M element) throws MetadataDocumentException;
 }

@@ -41,24 +41,60 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
 /**
- * CMDI implementation of the @see MetadataAPI
+ * CMDI implementation of the MetadataAPI
  * 
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CMDIContainerMetadataElement, CMDIDocument> {
 
-    private MetadataDocumentReader<CMDIDocument> documentReader;
-    private MetadataValidator<CMDIDocument> cmdiValidator;
+    /**
+     * SAX entity resolver for custom resolving of resources while parsing
+     */
     private EntityResolver entityResolver;
+    /**
+     * Service that reads deserializes an existing CMDI document on disk into a CMDIDocument object
+     */
+    private MetadataDocumentReader<CMDIDocument> documentReader;
+    /**
+     * Service that validates an existing CMDI Document instance on disk
+     */
+    private MetadataValidator<CMDIDocument> cmdiValidator;
+    /**
+     * Service that manipulates DOM representation of CMDI documents
+     * TODO: Extract interface and support arbitrary implementations
+     */
+    private CMDIComponentBuilder componentBuilder = new CMDIComponentBuilder() {
 
+	@Override
+	protected EntityResolver getEntityResolver() {
+	    return entityResolver;
+	}
+    };
+
+    /**
+     * Creates an instance of CMDIApi with a CMDIDocumentReader
+     * @see CMDIDocumentReader
+     * @see #CMDIApi(nl.mpi.metadata.api.MetadataDocumentReader) 
+     */
     public CMDIApi() {
 	this(new CMDIDocumentReader());
     }
 
+    /**
+     * Creates an instance of CMDIApi with the specified MetadataDocumentReader and a DefaultCMDIValidator
+     * @param documentReader the MetadataDocumentReader to use
+     * @see DefaultCMDIValidator
+     * @see #CMDIApi(nl.mpi.metadata.api.MetadataDocumentReader, nl.mpi.metadata.api.validation.MetadataValidator) 
+     */
     public CMDIApi(MetadataDocumentReader<CMDIDocument> documentReader) {
 	this(documentReader, new DefaultCMDIValidator());
     }
 
+    /**
+     * Creates an instance of CMDIApi with the specified MetadataDocumentReader and MetadataValidator for CMDIDocuments
+     * @param documentReader the MetadataDocumentReader to use
+     * @param cmdiValidator the MetadataValidator to use
+     */
     public CMDIApi(MetadataDocumentReader<CMDIDocument> documentReader, MetadataValidator<CMDIDocument> cmdiValidator) {
 	this.documentReader = documentReader;
 	this.cmdiValidator = cmdiValidator;
@@ -75,10 +111,9 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
 
     public CMDIDocument createMetadataDocument(CMDIProfile type) throws MetadataDocumentException {
 	// Create new DOM instance
-	final DocumentBuilder documentBuilder = getDocumentBuilder();
+	final DocumentBuilder documentBuilder = newDOMBuilder();
 	final Document document = documentBuilder.newDocument();
 
-	CMDIComponentBuilder componentBuilder = new CMDIComponentBuilder(entityResolver);
 	try {
 	    componentBuilder.readSchema(document, type.getSchemaLocation(), true);
 	    // TODO: Handle errors properly
@@ -114,65 +149,93 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
 	getCmdiValidator().validateMetadataDocument(document, errorHandler);
     }
 
-    protected DocumentBuilder getDocumentBuilder() {
-	try {
-	    final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-	    configureDocumentBuilderFactory(factory);
-	    return factory.newDocumentBuilder();
-	} catch (ParserConfigurationException pcEx) {
-	    throw new RuntimeException(pcEx);
-	}
-    }
-
-    protected void configureDocumentBuilderFactory(final DocumentBuilderFactory factory) {
-	factory.setNamespaceAware(true);
-	factory.setAttribute("http://java.sun.com/xml/jaxp/properties/schemaLanguage", "http://www.w3.org/2001/XMLSchema");
-    }
-
-    protected void configureDocumentBuilder(final DocumentBuilder builder) {
-	if (getEntityResolver() != null) {
-	    builder.setEntityResolver(getEntityResolver());
-	}
-    }
-
     /**
-     * Get the value of documentReader
-     *
-     * @return the value of documentReader
+     * Gets the CMDI Docuent reader used
+     * @return the CMDI Docuent reader used
      */
     public MetadataDocumentReader<CMDIDocument> getDocumentReader() {
 	return documentReader;
     }
 
+    /**
+     * Sets the CMDI Docuent reader to use
+     * @param documentReader the CMDI Document reader to use
+     */
     public void setDocumentReader(MetadataDocumentReader<CMDIDocument> documentReader) {
 	this.documentReader = documentReader;
     }
 
     /**
-     * @return the cmdiValidator
+     * Gets the CMDI Validator being used
+     * @return the CMDI Validator being used
      */
     public MetadataValidator<CMDIDocument> getCmdiValidator() {
 	return cmdiValidator;
     }
 
     /**
-     * @param cmdiValidator the cmdiValidator to set
+     * Sets the CMDI Validator to use
+     * @param cmdiValidator the CMDI Validator to use
      */
     public void setCmdiValidator(MetadataValidator<CMDIDocument> cmdiValidator) {
 	this.cmdiValidator = cmdiValidator;
     }
 
     /**
-     * @param entityResolver the entityResolver to set
+     * Sets the SAX EntityResolver to use
+     * @param entityResolver the SAX EntityResolver to use
      */
     public void setEntityResolver(EntityResolver entityResolver) {
 	this.entityResolver = entityResolver;
     }
 
     /**
-     * @return the entityResolver
+     * Gets the SAX EntityResolver being used
+     * @return the SAX EntityResolver being used
      */
     protected EntityResolver getEntityResolver() {
 	return entityResolver;
+    }
+
+    /**
+     * Creates a fresh instance of DocumentBuilder. A new factory is requested from the DocumentBuilderFactory, which then gets
+     * configured by {@code configureDocumentBuilderFactory(DocumentBuilderFactory)} . On this factory {@code newDocumentBuilder()} is called. The resulting
+     * builder gets configured by {@code configureDocumentBuilder(DocumentBuilder)} and is then returned.
+     * @return a newly instantiated and configured DocumentBuilder from the DocumentBuilderFactory
+     * @see DocumentBuilderFactory
+     * @see #configureDocumentBuilderFactory(javax.xml.parsers.DocumentBuilderFactory) 
+     * @see #configureDocumentBuilder(javax.xml.parsers.DocumentBuilder) 
+     */
+    protected DocumentBuilder newDOMBuilder() {
+	try {
+	    final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	    configureDocumentBuilderFactory(factory);
+	    DocumentBuilder documentBuilder = factory.newDocumentBuilder();
+	    //configureDocumentBuilder(documentBuilder);
+	    return documentBuilder;
+	} catch (ParserConfigurationException pcEx) {
+	    throw new RuntimeException(pcEx);
+	}
+    }
+
+    /**
+     * Configures a newly instantiated document factory. This gets called from {@code newDOMBuilder()} in this implementation
+     * @param factory a new instance of DocumentFactory
+     * @see #newDOMBuilder() 
+     */
+    protected void configureDocumentBuilderFactory(final DocumentBuilderFactory factory) {
+	factory.setNamespaceAware(true);
+	factory.setAttribute("http://java.sun.com/xml/jaxp/properties/schemaLanguage", "http://www.w3.org/2001/XMLSchema");
+    }
+
+    /**
+     * Configures a newly instantiated document builder. This gets called from {@code newDOMBuilder()} in this implementation
+     * @param builder a new instance of DocumentBuilder
+     * @see #newDOMBuilder() 
+     */
+    protected void configureDocumentBuilder(final DocumentBuilder builder) {
+	if (getEntityResolver() != null) {
+	    builder.setEntityResolver(getEntityResolver());
+	}
     }
 }

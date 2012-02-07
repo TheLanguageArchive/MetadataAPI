@@ -43,19 +43,41 @@ import org.xml.sax.EntityResolver;
  * 
  * @author Twan Goosen <twan.goosen@mpi.nl>
  * @author Peter.Withers@mpi.nl
+ * @see <a href="http://tla.mpi.nl/tools/tla-tools/arbil">Arbil Metadata editor</a>
  */
 public class CMDIComponentBuilder {
 
-    private EntityResolver entityResolver;
+    private final EntityResolver entityResolver;
 
+    /**
+     * Creates CMDIComponentBuilder with no EntityResolver specified
+     * @see #CMDIComponentBuilder(org.xml.sax.EntityResolver) 
+     */
+    public CMDIComponentBuilder() {
+	this(null);
+    }
+
+    /**
+     * Creates CMDIComponentBuilder with a specified EntityResolver
+     * @param entityResolver 
+     * @see #getEntityResolver() 
+     */
     public CMDIComponentBuilder(EntityResolver entityResolver) {
 	this.entityResolver = entityResolver;
     }
 
-    public void readSchema(Document workingDocument, URI xsdFile, boolean addDummyData) throws FileNotFoundException, XmlException, IOException {
+    public final void readSchema(Document workingDocument, URI xsdFile, boolean addDummyData) throws FileNotFoundException, XmlException, IOException {
 	File schemaFile = new File(xsdFile);
 	SchemaType schemaType = getFirstSchemaType(schemaFile);
 	constructXml(schemaType.getElementProperties()[0], "documentTypes", workingDocument, xsdFile.toString(), null, addDummyData);
+    }
+
+    /**
+     * @return the EntityResolver used by XmlBeans
+     * @see XmlOptions#setEntityResolver(org.xml.sax.EntityResolver) 
+     */
+    protected EntityResolver getEntityResolver() {
+	return entityResolver;
     }
 
     private SchemaType getFirstSchemaType(File schemaFile) throws FileNotFoundException, XmlException, IOException {
@@ -64,7 +86,7 @@ public class CMDIComponentBuilder {
 	    //Since we're dealing with xml schema files here the character encoding is assumed to be UTF-8
 	    XmlOptions xmlOptions = new XmlOptions();
 	    xmlOptions.setCharacterEncoding("UTF-8");
-	    xmlOptions.setEntityResolver(entityResolver);
+	    xmlOptions.setEntityResolver(getEntityResolver());
 	    SchemaTypeSystem sts = XmlBeans.compileXsd(new XmlObject[]{XmlObject.Factory.parse(inputStream, xmlOptions)}, XmlBeans.getBuiltinTypeSystem(), xmlOptions);
 	    // there can only be a single root node so we just get the first one, note that the IMDI schema specifies two (METATRANSCRIPT and VocabularyDef)
 	    return sts.documentTypes()[0];
