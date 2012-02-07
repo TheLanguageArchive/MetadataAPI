@@ -100,6 +100,26 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
 	this.cmdiValidator = cmdiValidator;
     }
 
+    public MetadataElement createMetadataElement(CMDIContainerMetadataElement parent, MetadataElementType type) {
+	// Take the type of the parent
+	// Check if child type is allowed
+	// Add to DOM
+	// Instantiate
+	// Add to parent
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public MetadataElement removeElement(CMDIMetadataElement element) throws MetadataDocumentException {
+	// Find parent
+	// Remove from DOM
+	// Remove as child in parent
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void validateMetadataDocument(CMDIDocument document, ErrorHandler errorHandler) throws SAXException {
+	getCmdiValidator().validateMetadataDocument(document, errorHandler);
+    }
+
     public CMDIDocument getMetadataDocument(URL url) throws IOException {
 	InputStream documentStream = url.openStream();
 	try {
@@ -127,74 +147,6 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
 
 
 	return new CMDIDocument(document, type);
-    }
-
-    public MetadataElement createMetadataElement(CMDIContainerMetadataElement parent, MetadataElementType type) {
-	// Take the type of the parent
-	// Check if child type is allowed
-	// Add to DOM
-	// Instantiate
-	// Add to parent
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public MetadataElement removeElement(CMDIMetadataElement element) throws MetadataDocumentException {
-	// Find parent
-	// Remove from DOM
-	// Remove as child in parent
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void validateMetadataDocument(CMDIDocument document, ErrorHandler errorHandler) throws SAXException {
-	getCmdiValidator().validateMetadataDocument(document, errorHandler);
-    }
-
-    /**
-     * Gets the CMDI Docuent reader used
-     * @return the CMDI Docuent reader used
-     */
-    public MetadataDocumentReader<CMDIDocument> getDocumentReader() {
-	return documentReader;
-    }
-
-    /**
-     * Sets the CMDI Docuent reader to use
-     * @param documentReader the CMDI Document reader to use
-     */
-    public void setDocumentReader(MetadataDocumentReader<CMDIDocument> documentReader) {
-	this.documentReader = documentReader;
-    }
-
-    /**
-     * Gets the CMDI Validator being used
-     * @return the CMDI Validator being used
-     */
-    public MetadataValidator<CMDIDocument> getCmdiValidator() {
-	return cmdiValidator;
-    }
-
-    /**
-     * Sets the CMDI Validator to use
-     * @param cmdiValidator the CMDI Validator to use
-     */
-    public void setCmdiValidator(MetadataValidator<CMDIDocument> cmdiValidator) {
-	this.cmdiValidator = cmdiValidator;
-    }
-
-    /**
-     * Sets the SAX EntityResolver to use
-     * @param entityResolver the SAX EntityResolver to use
-     */
-    public void setEntityResolver(EntityResolver entityResolver) {
-	this.entityResolver = entityResolver;
-    }
-
-    /**
-     * Gets the SAX EntityResolver being used
-     * @return the SAX EntityResolver being used
-     */
-    protected EntityResolver getEntityResolver() {
-	return entityResolver;
     }
 
     /**
@@ -238,4 +190,55 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
 	    builder.setEntityResolver(getEntityResolver());
 	}
     }
+
+    //<editor-fold defaultstate="collapsed" desc="Getters and setters">
+    /**
+     * Gets the CMDI Docuent reader used
+     * @return the CMDI Docuent reader used
+     */
+    public MetadataDocumentReader<CMDIDocument> getDocumentReader() {
+	return documentReader;
+    }
+
+    /**
+     * Sets the CMDI Docuent reader to use
+     * @param documentReader the CMDI Document reader to use
+     */
+    public void setDocumentReader(MetadataDocumentReader<CMDIDocument> documentReader) {
+	this.documentReader = documentReader;
+    }
+
+    /**
+     * Gets the CMDI Validator being used
+     * @return the CMDI Validator being used
+     */
+    public MetadataValidator<CMDIDocument> getCmdiValidator() {
+	return cmdiValidator;
+    }
+
+    /**
+     * Sets the CMDI Validator to use
+     * @param cmdiValidator the CMDI Validator to use
+     */
+    public void setCmdiValidator(MetadataValidator<CMDIDocument> cmdiValidator) {
+	this.cmdiValidator = cmdiValidator;
+    }
+
+    /**
+     * Gets the SAX EntityResolver being used
+     * @return the SAX EntityResolver being used
+     */
+    protected EntityResolver getEntityResolver() {
+	return entityResolver;
+    }
+
+    /**
+     * Sets the SAX EntityResolver to use
+     * @param entityResolver the SAX EntityResolver to use
+     */
+    public void setEntityResolver(EntityResolver entityResolver) {
+	this.entityResolver = entityResolver;
+    }
+    
+    //</editor-fold>
 }
