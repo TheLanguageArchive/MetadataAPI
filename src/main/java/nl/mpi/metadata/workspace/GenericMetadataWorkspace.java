@@ -18,7 +18,6 @@ package nl.mpi.metadata.workspace;
 
 import java.io.OutputStream;
 import java.net.URI;
-import nl.mpi.metadata.api.MetadataAPI;
 import nl.mpi.metadata.api.model.MetadataDocument;
 
 /**
@@ -27,11 +26,11 @@ import nl.mpi.metadata.api.model.MetadataDocument;
  */
 public class GenericMetadataWorkspace implements MetadataWorkspace {
 
-    private MetadataAPI api;
-
-    public GenericMetadataWorkspace(MetadataAPI api) {
-	this.api = api;
-    }
+//    private MetadataAPI api;
+//
+//    public GenericMetadataWorkspace(MetadataAPI api) {
+//	this.api = api;
+//    }
 
     public Iterable<MetadataDocument> getOpenMetadataDocuments() {
 	throw new UnsupportedOperationException("Not supported yet.");
