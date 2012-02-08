@@ -41,7 +41,7 @@ public interface MetadataAPI<T extends MetadataDocumentType, M extends MetadataE
      * @param uri location of document to open
      * @return opened document
      */
-    D getMetadataDocument(URL url) throws IOException, IllegalArgumentException;
+    D getMetadataDocument(URL url) throws IOException, MetadataDocumentException, IllegalArgumentException;
 
     /**
      * Creates a metadata document of the specified type

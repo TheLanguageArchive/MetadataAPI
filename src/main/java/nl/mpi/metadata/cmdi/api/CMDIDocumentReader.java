@@ -18,8 +18,10 @@ package nl.mpi.metadata.cmdi.api;
 
 import java.io.IOException;
 import java.io.InputStream;
+import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.MetadataDocumentReader;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
+import org.w3c.dom.Document;
 
 /**
  *
@@ -27,7 +29,7 @@ import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
  */
 public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> {
 
-    public CMDIDocument read(InputStream inputStream) throws IOException {
+    public CMDIDocument read(Document document) throws MetadataDocumentException {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 }

@@ -120,10 +120,13 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
 	getCmdiValidator().validateMetadataDocument(document, errorHandler);
     }
 
-    public CMDIDocument getMetadataDocument(URL url) throws IOException {
+    public CMDIDocument getMetadataDocument(URL url) throws IOException, MetadataDocumentException {
 	InputStream documentStream = url.openStream();
 	try {
-	    return getDocumentReader().read(documentStream);
+	    Document document = newDOMBuilder().parse(documentStream, url.toExternalForm());
+	    return getDocumentReader().read(document);
+	} catch (SAXException saxEx) {
+	    throw new MetadataDocumentException(null, "SAXException while building document from " + url, saxEx);
 	} finally {
 	    documentStream.close();
 	}
@@ -146,7 +149,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
 	}
 
 
-	return new CMDIDocument(document, type);
+	return documentReader.read(document);
     }
 
     /**
@@ -239,6 +242,5 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
     public void setEntityResolver(EntityResolver entityResolver) {
 	this.entityResolver = entityResolver;
     }
-    
     //</editor-fold>
 }

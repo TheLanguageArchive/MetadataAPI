@@ -16,7 +16,8 @@
  */
 package nl.mpi.metadata.cmdi.api;
 
-import java.net.URL;
+import org.w3c.dom.Document;
+import java.io.InputStream;
 import nl.mpi.metadata.api.SimpleErrorHandler;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
@@ -57,11 +58,11 @@ public class CMDIApiTest extends CMDIAPITestCase {
      */
     @Test
     public void testGetMetadataDocument() throws Exception {
-	CMDIDocument document = api.getMetadataDocument(new URL("http://google.com"));
+	CMDIDocument document = api.getMetadataDocument(testSchemaSmall);
 	// Mock reader will simply return the document passed in the constructor
-	assertEquals(documentReader.getDocument(), document);
-	// It will also store the input stream
-	assertNotNull(documentReader.getInputStream());
+	assertEquals(documentReader.getCmdiDocument(), document);
+	// It will also store the input document
+	assertNotNull(documentReader.getDocument());
     }
 
     /**

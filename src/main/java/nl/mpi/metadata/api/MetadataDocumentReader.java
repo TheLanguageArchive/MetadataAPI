@@ -16,9 +16,8 @@
  */
 package nl.mpi.metadata.api;
 
-import java.io.IOException;
-import java.io.InputStream;
 import nl.mpi.metadata.api.model.MetadataDocument;
+import org.w3c.dom.Document;
 
 /**
  *
@@ -26,5 +25,5 @@ import nl.mpi.metadata.api.model.MetadataDocument;
  */
 public interface MetadataDocumentReader<T extends MetadataDocument> {
     
-    T read(InputStream inputStream) throws IOException;
+    T read(Document document) throws MetadataDocumentException;
 }

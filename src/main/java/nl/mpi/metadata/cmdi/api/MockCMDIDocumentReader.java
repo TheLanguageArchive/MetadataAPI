@@ -16,10 +16,10 @@
  */
 package nl.mpi.metadata.cmdi.api;
 
-import java.io.IOException;
-import java.io.InputStream;
+import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.MetadataDocumentReader;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
+import org.w3c.dom.Document;
 
 /**
  *
@@ -27,39 +27,35 @@ import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
  */
 public class MockCMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> {
 
-    private CMDIDocument document;
-    private InputStream inputStream;
+    private CMDIDocument cmdiDocument;
+    protected Document document;
 
     /**
      * 
      * @param document Document to return
      */
     public MockCMDIDocumentReader(CMDIDocument document) {
-	this.document = document;
+	this.cmdiDocument = document;
     }
 
-    /**
-     * 
-     * @param inputStream
-     * @return Always the document passed into the constructor
-     * @throws IOException 
-     */
-    public CMDIDocument read(InputStream inputStream) {
-	this.inputStream = inputStream;
-	return document;
+    public CMDIDocument read(Document document) throws MetadataDocumentException {
+	this.document = document;
+	return cmdiDocument;
     }
 
     /**
      * @return the document
      */
-    public CMDIDocument getDocument() {
-	return document;
+    public CMDIDocument getCmdiDocument() {
+	return cmdiDocument;
     }
 
     /**
-     * @return the inputStream
+     * Get the value of document
+     *
+     * @return the value of document
      */
-    public InputStream getInputStream() {
-	return inputStream;
+    public Document getDocument() {
+	return document;
     }
 }
