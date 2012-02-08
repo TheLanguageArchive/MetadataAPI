@@ -32,6 +32,8 @@ import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
 import org.xml.sax.EntityResolver;
 
+import static nl.mpi.metadata.cmdi.api.CMDIConstants.CMD_NAMESPACE;
+
 /**
  * This class represents a CMDI profile, defined by http://www.clarin.eu/cmd/general-component-schema.xsd
  * 
@@ -42,7 +44,6 @@ import org.xml.sax.EntityResolver;
  */
 public class CMDIProfile extends ComponentType implements MetadataDocumentType {
 
-    public static final String CMD_NAMESPACE = "http://www.clarin.eu/cmd/";
     public final static QName CMD_TYPE_NAME = new QName(CMD_NAMESPACE, "CMD");
     public final static QName COMPONENTS_TYPE_NAME = new QName(CMD_NAMESPACE, "Components");
     public final static QName HEADER_TYPE_NAME = new QName(CMD_NAMESPACE, "Header");
