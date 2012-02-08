@@ -33,6 +33,7 @@ import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
+import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
 import nl.mpi.metadata.cmdi.api.validation.DefaultCMDIValidator;
 import org.apache.xmlbeans.XmlException;
 import org.w3c.dom.Document;
@@ -66,28 +67,37 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
     private CMDIComponentBuilder componentBuilder = new CMDIComponentBuilder() {
 
 	@Override
-	protected EntityResolver getEntityResolver() {
-	    return entityResolver;
+	protected synchronized EntityResolver getEntityResolver() {
+	    return CMDIApi.this.entityResolver;
+	}
+    };
+    /**
+     * Service that caches CMDIProfile's and ensures that only one copy of each profile is opened.
+     */
+    private CMDIProfileContainer profileContainer = new CMDIProfileContainer() {
+
+	@Override
+	public synchronized EntityResolver getEntityResolver() {
+	    return CMDIApi.this.entityResolver;
 	}
     };
 
     /**
-     * Creates an instance of CMDIApi with a CMDIDocumentReader
+     * Creates an instance of CMDIApi with a {@link CMDIDocumentReader} and a {@link DefaultCMDIValidator}
      * @see CMDIDocumentReader
-     * @see #CMDIApi(nl.mpi.metadata.api.MetadataDocumentReader) 
      */
     public CMDIApi() {
-	this(new CMDIDocumentReader());
+	this.documentReader = new CMDIDocumentReader(profileContainer);
+	this.cmdiValidator = new DefaultCMDIValidator();
     }
 
     /**
-     * Creates an instance of CMDIApi with the specified MetadataDocumentReader and a DefaultCMDIValidator
+     * Creates an instance of CMDIApi with the specified MetadataDocumentReader and a {@link DefaultCMDIValidator}
      * @param documentReader the MetadataDocumentReader to use
-     * @see DefaultCMDIValidator
-     * @see #CMDIApi(nl.mpi.metadata.api.MetadataDocumentReader, nl.mpi.metadata.api.validation.MetadataValidator) 
      */
     public CMDIApi(MetadataDocumentReader<CMDIDocument> documentReader) {
-	this(documentReader, new DefaultCMDIValidator());
+	this.documentReader = documentReader;
+	this.cmdiValidator = new DefaultCMDIValidator();
     }
 
     /**
@@ -141,13 +151,12 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
 	    componentBuilder.readSchema(document, type.getSchemaLocation(), true);
 	    // TODO: Handle errors properly
 	} catch (FileNotFoundException ex) {
-	    throw new MetadataDocumentException(null, ex);
+	    throw new MetadataDocumentException(ex);
 	} catch (XmlException ex) {
-	    throw new MetadataDocumentException(null, ex);
+	    throw new MetadataDocumentException(ex);
 	} catch (IOException ex) {
-	    throw new MetadataDocumentException(null, ex);
+	    throw new MetadataDocumentException(ex);
 	}
-
 
 	return documentReader.read(document);
     }

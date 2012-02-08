@@ -40,7 +40,19 @@ public class MetadataDocumentException extends Exception {
 	super(message, cause);
 	this.document = document;
     }
-    
+
+    public MetadataDocumentException(String message) {
+	this(null, message);
+    }
+
+    public MetadataDocumentException(String message, Throwable cause) {
+	this(null, message, cause);
+    }
+
+    public MetadataDocumentException(Throwable cause) {
+	this(null, null, cause);
+    }
+
     /**
      * Get the value of document
      *

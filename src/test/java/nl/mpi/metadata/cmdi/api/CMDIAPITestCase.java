@@ -46,6 +46,10 @@ public abstract class CMDIAPITestCase {
     public final static URL testSchemaTextCorpus = CMDIProfileTest.class.getResource("/xsd/TextCorpusProfile.xsd");
     public final static String TEXT_CORPUS_PROFILE_ROOT_NODE_PATH = "/CMD/Components/TextCorpusProfile";
     /**
+     * Test schema 1 instance location
+     */
+    public static final String TEXT_CORPUS_INSTANCE_LOCATION = "/cmdi/TextCorpusProfile-instance.cmdi";
+    /**
      * Test schema 2 (CLARINWebservice http://catalog.clarin.eu/ds/ComponentRegistry?item=clarin.eu:cr1:p_1311927752335)
      */
     public final static URL testSchemaWebservice = CMDIProfileTest.class.getResource("/xsd/clarin-webservice.xsd");
@@ -70,7 +74,7 @@ public abstract class CMDIAPITestCase {
     }
 
     protected CMDIDocument getNewTestDocument() throws IOException, CMDITypeException, ParserConfigurationException, SAXException, TransformerException, URISyntaxException {
-	return getNewTestDocument(testSchemaTextCorpus.toURI(), "/cmdi/TextCorpusProfile-instance.cmdi", TEXT_CORPUS_PROFILE_ROOT_NODE_PATH);
+	return getNewTestDocument(testSchemaTextCorpus.toURI(), TEXT_CORPUS_INSTANCE_LOCATION, TEXT_CORPUS_PROFILE_ROOT_NODE_PATH);
     }
 
     protected CMDIDocument getNewTestDocument(final URI schemaURI, final String documentResourceLocation, final String rootNodePath) throws IOException, CMDITypeException, ParserConfigurationException, SAXException, TransformerException, URISyntaxException {
