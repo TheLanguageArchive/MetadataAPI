@@ -32,12 +32,20 @@ public class MockCMDIDocumentReader implements MetadataDocumentReader<CMDIDocume
 
     /**
      * 
-     * @param document Document to return
+     * @param document Document to be returned by {@link #read(org.w3c.dom.Document) }
+     * @see #read(org.w3c.dom.Document) 
      */
     public MockCMDIDocumentReader(CMDIDocument document) {
 	this.cmdiDocument = document;
     }
 
+    /**
+     * 
+     * @param document will be ignored
+     * @return The document specified in the constructor
+     * @throws MetadataDocumentException won't be thrown in this implementation
+     * @see #MockCMDIDocumentReader(nl.mpi.metadata.cmdi.api.model.CMDIDocument) 
+     */
     public CMDIDocument read(Document document) throws MetadataDocumentException {
 	this.document = document;
 	return cmdiDocument;
