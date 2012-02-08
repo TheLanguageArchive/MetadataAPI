@@ -34,29 +34,44 @@ public class CMDIProfileContainer {
     private Map<URI, CMDIProfile> profileMap;
     private EntityResolver entityResolver;
 
+    /**
+     * Creates a profile container with no entityresolver set. In this implementation, {@link #getEntityResolver() } 
+     * will instantiate a new instance of {@link CMDIEntityResolver} on first request.
+     */
     public CMDIProfileContainer() {
-	this(new CMDIEntityResolver());
+	profileMap = new HashMap<URI, CMDIProfile>();
     }
 
     public CMDIProfileContainer(EntityResolver entityResolver) {
+	this();
 	this.entityResolver = entityResolver;
-	profileMap = Collections.synchronizedMap(new HashMap<URI, CMDIProfile>());
     }
 
-    public CMDIProfile getProfile(URI profileUri) throws IOException, CMDITypeException {
+    public synchronized CMDIProfile getProfile(URI profileUri) throws IOException, CMDITypeException {
 	CMDIProfile profile = profileMap.get(profileUri);
 	if (profile == null) {
-	    profile = new CMDIProfile(profileUri, entityResolver);
+	    profile = new CMDIProfile(profileUri, getEntityResolver());
 	    profileMap.put(profileUri, profile);
 	}
 	return profile;
     }
 
-    public boolean containsProfile(URI profileUri) {
+    public synchronized boolean containsProfile(URI profileUri) {
 	return profileMap.containsKey(profileUri);
     }
 
-    public boolean containsProfile(CMDIProfile profile) {
+    public synchronized boolean containsProfile(CMDIProfile profile) {
 	return profileMap.containsValue(profile);
+    }
+
+    /**
+     * 
+     * @return an instance of {@link CMDIEntityResolver}
+     */
+    public synchronized EntityResolver getEntityResolver() {
+	if (entityResolver == null) {
+	    entityResolver = new CMDIEntityResolver();
+	}
+	return entityResolver;
     }
 }
