@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import javax.xml.namespace.QName;
 import nl.mpi.metadata.api.type.MetadataContainerElementType;
-import nl.mpi.metadata.api.type.MetadataElementType;
 import org.apache.xmlbeans.SchemaProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,10 +33,10 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class ComponentType extends CMDIProfileElement implements MetadataContainerElementType {
+public class ComponentType extends CMDIProfileElement implements MetadataContainerElementType<CMDIProfileElement> {
 
     private static Logger logger = LoggerFactory.getLogger(ComponentType.class);
-    private List<MetadataElementType> children;
+    private List<CMDIProfileElement> children;
     private String componentId;
 
     /**
@@ -50,12 +49,12 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
 	super(schemaElement, parent);
     }
 
-    public Collection<MetadataElementType> getContainableTypes() {
+    public Collection<CMDIProfileElement> getContainableTypes() {
 	return Collections.unmodifiableList(children);
     }
 
-    public MetadataElementType getType(String name) {
-	for (MetadataElementType type : children) {
+    public CMDIProfileElement getType(String name) {
+	for (CMDIProfileElement type : children) {
 	    if (type.getName().equals(name)) {
 		return type;
 	    }
@@ -63,7 +62,7 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
 	return null;
     }
 
-    public boolean canContainType(MetadataElementType type) {
+    public boolean canContainType(CMDIProfileElement type) {
 	return children.contains(type);
     }
 
@@ -97,7 +96,7 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
 	SchemaProperty[] elements = schemaElement.getType().getElementProperties();
 
 	if (elements != null && elements.length > 0) {
-	    children = new ArrayList<MetadataElementType>(elements.length);
+	    children = new ArrayList<CMDIProfileElement>(elements.length);
 	    for (SchemaProperty child : elements) {
 
 		CMDIProfileElement childElement;

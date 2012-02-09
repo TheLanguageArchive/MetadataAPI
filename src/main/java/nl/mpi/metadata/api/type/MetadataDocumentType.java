@@ -22,7 +22,7 @@ import java.net.URI;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface MetadataDocumentType extends MetadataContainerElementType {
+public interface MetadataDocumentType<T extends MetadataElementType> extends MetadataContainerElementType<T> {
 
     URI getSchemaLocation();
 }

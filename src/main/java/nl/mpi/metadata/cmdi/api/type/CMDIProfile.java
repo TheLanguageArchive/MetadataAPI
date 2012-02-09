@@ -42,7 +42,7 @@ import static nl.mpi.metadata.cmdi.api.CMDIConstants.CMD_NAMESPACE;
  * 
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIProfile extends ComponentType implements MetadataDocumentType {
+public class CMDIProfile extends ComponentType implements MetadataDocumentType<CMDIProfileElement> {
 
     public final static QName CMD_TYPE_NAME = new QName(CMD_NAMESPACE, "CMD");
     public final static QName COMPONENTS_TYPE_NAME = new QName(CMD_NAMESPACE, "Components");

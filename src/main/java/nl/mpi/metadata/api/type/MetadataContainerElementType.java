@@ -22,25 +22,25 @@ import java.util.Collection;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface MetadataContainerElementType extends MetadataElementType {
+public interface MetadataContainerElementType<T extends MetadataElementType> extends MetadataElementType {
 
     /**
      * 
      * @return Collection of all metadata types that can be contained as a <em>direct</em> child by an instance of this metadata type
      */
-    Collection<MetadataElementType> getContainableTypes();
-    
+    Collection<T> getContainableTypes();
+
     /**
      * Gets a containable type by name
      * @param name Name of type to be returned
      * @return The type of that name, if found. Otherwise null
      */
-    MetadataElementType getType(String name);
+    T getType(String name);
 
     /**
      * 
      * @param type Type to check containability for
      * @return Whether instances of this type can contain as a child an instance of the specified type
      */
-    boolean canContainType(MetadataElementType type);
+    boolean canContainType(T type);
 }
