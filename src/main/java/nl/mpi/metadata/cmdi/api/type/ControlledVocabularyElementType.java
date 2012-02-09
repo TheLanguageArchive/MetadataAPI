@@ -32,8 +32,8 @@ public class ControlledVocabularyElementType extends ElementType implements Cont
 
     private List<ControlledVocabularyItem> items;
 
-    public ControlledVocabularyElementType(SchemaProperty schemaElement, ComponentType parent) {
-	super(schemaElement, parent);
+    public ControlledVocabularyElementType(SchemaProperty schemaElement, ComponentType parent, CharSequence path) {
+	super(schemaElement, parent, path);
     }
 
     @Override

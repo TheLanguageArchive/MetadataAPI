@@ -62,10 +62,17 @@ public class CMDIProfile extends ComponentType implements MetadataDocumentType<C
     }
 
     public CMDIProfile(URI schemaLocation, EntityResolver entityResolver) throws IOException, CMDITypeException {
-	super(null, null);
+	super(null, null, null);
 	this.schemaLocation = schemaLocation;
 	this.entityResolver = entityResolver;
+	
+	// Find the schema element
 	setSchemaElement(loadSchema());
+	
+	// Set path for root component
+	setPath(new StringBuilder("/CMD/Components/").append(getSchemaElement().getName().getLocalPart()));
+
+	// Read all of the schema
 	readSchema();
     }
 
@@ -106,7 +113,7 @@ public class CMDIProfile extends ComponentType implements MetadataDocumentType<C
 	}
     }
 
-    private SchemaType findCmdType(SchemaTypeSystem sts) throws CMDITypeException {
+    private static SchemaType findCmdType(SchemaTypeSystem sts) throws CMDITypeException {
 	// Get CMD root element
 	SchemaType[] documentTypes = sts.documentTypes();
 	if (documentTypes.length != 1) {
@@ -119,7 +126,7 @@ public class CMDIProfile extends ComponentType implements MetadataDocumentType<C
 	return cmdType;
     }
 
-    private SchemaProperty findComponentsElement(SchemaType cmdType) throws CMDITypeException {
+    private static SchemaProperty findComponentsElement(SchemaType cmdType) throws CMDITypeException {
 	SchemaProperty componentsType = cmdType.getElementProperty(COMPONENTS_TYPE_NAME);
 	if (componentsType == null) {
 	    throw new CMDITypeException("Element Components not found in profile schema");
@@ -127,7 +134,7 @@ public class CMDIProfile extends ComponentType implements MetadataDocumentType<C
 	return componentsType;
     }
 
-    private SchemaProperty findRootComponentElement(SchemaProperty componentsElement) throws CMDITypeException {
+    private static SchemaProperty findRootComponentElement(SchemaProperty componentsElement) throws CMDITypeException {
 	SchemaProperty[] componentsChildren = componentsElement.getType().getElementProperties();
 	if (componentsChildren.length != 1) {
 	    throw new CMDITypeException("Expecting 1 root component for profile, found " + componentsChildren.length);

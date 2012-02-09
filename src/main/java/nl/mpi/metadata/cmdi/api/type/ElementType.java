@@ -27,7 +27,16 @@ import org.apache.xmlbeans.SchemaProperty;
  */
 public class ElementType extends CMDIProfileElement implements MetadataElementType, DataCategoryType {
 
-    public ElementType(SchemaProperty schemaElement, ComponentType parent) {
+    private final String path;
+
+    public ElementType(SchemaProperty schemaElement, ComponentType parent, CharSequence path) {
 	super(schemaElement, parent);
+	// Convert path to String, it's immutable and won't be extended (in contrast to ComponentTypes)
+	this.path = path.toString();
+    }
+
+    @Override
+    public String getPathString() {
+	return path.toString();
     }
 }

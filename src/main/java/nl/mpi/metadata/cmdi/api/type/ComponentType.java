@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 public class ComponentType extends CMDIProfileElement implements MetadataContainerElementType<CMDIProfileElement> {
 
     private static Logger logger = LoggerFactory.getLogger(ComponentType.class);
+    private StringBuilder path;
     private List<CMDIProfileElement> children;
     private String componentId;
 
@@ -45,8 +46,9 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
      * @param parent Parent component type
      * @see #readSchema() 
      */
-    protected ComponentType(SchemaProperty schemaElement, ComponentType parent) {
+    protected ComponentType(SchemaProperty schemaElement, ComponentType parent, StringBuilder path) {
 	super(schemaElement, parent);
+	this.path = path;
     }
 
     public Collection<CMDIProfileElement> getContainableTypes() {
@@ -93,7 +95,7 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
      * @throws CMDITypeException 
      */
     private void readChildren() throws CMDITypeException {
-	SchemaProperty[] elements = schemaElement.getType().getElementProperties();
+	SchemaProperty[] elements = getSchemaElement().getType().getElementProperties();
 
 	if (elements != null && elements.length > 0) {
 	    children = new ArrayList<CMDIProfileElement>(elements.length);
@@ -102,19 +104,20 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
 		CMDIProfileElement childElement;
 
 		// Is the element a Component (if so, it has ComponentId property)
-		boolean isComponent = null != child.getType().getAttributeProperty(new QName("ComponentId"));
+		boolean isComponent = null != child.getType().getAttributeProperty(new QName("ComponentId"))
+			|| child.getType().getElementProperties().length > 0;
 		if (isComponent) {
 		    // Component id found, so create component
 		    logger.debug("Creating child component type {}", child.getName().toString());
-		    childElement = new ComponentType(child, this);
+		    childElement = new ComponentType(child, this, createChildPath(child));
 		} else {
 		    // Not a component, so create element
 		    if (child.getType().hasStringEnumValues()) {
 			logger.debug("Creating child CV element type {}", child.getName().toString());
-			childElement = new ControlledVocabularyElementType(child, this);
+			childElement = new ControlledVocabularyElementType(child, this, createChildPath(child));
 		    } else {
 			logger.debug("Creating child element type {}", child.getName().toString());
-			childElement = new ElementType(child, this);
+			childElement = new ElementType(child, this, createChildPath(child));
 		    }
 		}
 		childElement.readSchema();
@@ -123,5 +126,18 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
 	} else {
 	    children = Collections.emptyList();
 	}
+    }
+
+    private StringBuilder createChildPath(SchemaProperty child) {
+	return new StringBuilder(path).append("/").append(child.getName().getLocalPart());
+    }
+
+    protected final void setPath(StringBuilder path) {
+	this.path = path;
+    }
+
+    @Override
+    public String getPathString() {
+	return path.toString();
     }
 }

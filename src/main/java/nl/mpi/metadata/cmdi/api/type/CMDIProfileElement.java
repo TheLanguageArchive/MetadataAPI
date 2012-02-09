@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public abstract class CMDIProfileElement implements DataCategoryType, MetadataElementType {
 
     private static Logger logger = LoggerFactory.getLogger(CMDIProfileElement.class);
-    protected ComponentType parent;
+    protected final ComponentType parent;
     protected SchemaProperty schemaElement;
     protected QName qName;
     protected String description;
@@ -49,6 +49,14 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
 	this.schemaElement = schemaElement;
 	this.parent = parent;
     }
+
+    /**
+     * Returns an XPath that, when applied to an <em>instance</em> of this profile element, returns a list 
+     * of the nodes in that instance that are of this type.
+     * @see org.apache.xpath.XPathAPI#selectNodeList(org.w3c.dom.Node, java.lang.String) 
+     * @return XPath string to find instances
+     */
+    public abstract String getPathString();
 
     public Collection<MetadataElementAttributeType> getAttributes() {
 	return attributes;
@@ -63,15 +71,15 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
     }
 
     public int getMaxOccurences(MetadataContainerElementType container) {
-	if (schemaElement.getMaxOccurs() != null) {
-	    return schemaElement.getMaxOccurs().intValue();
+	if (getSchemaElement().getMaxOccurs() != null) {
+	    return getSchemaElement().getMaxOccurs().intValue();
 	} else {
 	    return -1;
 	}
     }
 
     public int getMinOccurences(MetadataContainerElementType container) {
-	return schemaElement.getMinOccurs().intValue();
+	return getSchemaElement().getMinOccurs().intValue();
     }
 
     public String getName() {
@@ -84,6 +92,44 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
 
     public SchemaProperty getSchemaElement() {
 	return schemaElement;
+    }
+
+    public void readSchema() throws CMDITypeException {
+	if (getSchemaElement() == null) {
+	    throw new CMDITypeException("Cannot read schema, it has not been set or loaded");
+	}
+	logger.debug("Reading schema for {}", getSchemaElement().getName());
+	readProperties();
+	readAttributes();
+    }
+
+    protected void readProperties() {
+	qName = getSchemaElement().getName();
+    }
+
+    protected void readAttributes() {
+	SchemaProperty[] attributeProperties = getSchemaElement().getType().getAttributeProperties();
+	if (attributeProperties != null && attributeProperties.length > 0) {
+	    attributes = new ArrayList<MetadataElementAttributeType>(attributeProperties.length);
+	    for (SchemaProperty attributeProperty : attributeProperties) {
+		logger.debug("Creating attribute type '{}' of type {}", attributeProperty.getName(), attributeProperty.getType());
+
+		MetadataElementAttributeType attribute = new MetadataElementAttributeType();
+		attribute.setName(attributeProperty.getName().getLocalPart());
+
+		attribute.setType(attributeProperty.getType().toString());  // consider .getName().getLocalPart()) but getName can
+		// be null, see documentation
+		attribute.setDefaultValue(attributeProperty.getDefaultText());
+		attribute.setMandatory(attributeProperty.getMinOccurs().compareTo(BigInteger.ZERO) > 0);
+		attributes.add(attribute);
+	    }
+	} else {
+	    attributes = Collections.emptySet();
+	}
+    }
+
+    protected final void setSchemaElement(SchemaProperty element) {
+	this.schemaElement = element;
     }
 
     @Override
@@ -115,43 +161,5 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
     @Override
     public String toString() {
 	return qName.toString();
-    }
-
-    public void readSchema() throws CMDITypeException {
-	if (getSchemaElement() == null) {
-	    throw new CMDITypeException("Cannot read schema, it has not been set or loaded");
-	}
-	logger.debug("Reading schema for {}", getSchemaElement().getName());
-	readProperties();
-	readAttributes();
-    }
-
-    protected void readProperties() {
-	qName = schemaElement.getName();
-    }
-
-    protected void readAttributes() {
-	SchemaProperty[] attributeProperties = getSchemaElement().getType().getAttributeProperties();
-	if (attributeProperties != null && attributeProperties.length > 0) {
-	    attributes = new ArrayList<MetadataElementAttributeType>(attributeProperties.length);
-	    for (SchemaProperty attributeProperty : attributeProperties) {
-		logger.debug("Creating attribute type '{}' of type {}", attributeProperty.getName(), attributeProperty.getType());
-
-		MetadataElementAttributeType attribute = new MetadataElementAttributeType();
-		attribute.setName(attributeProperty.getName().getLocalPart());
-		
-		attribute.setType(attributeProperty.getType().toString());  // consider .getName().getLocalPart()) but getName can
-									    // be null, see documentation
-		attribute.setDefaultValue(attributeProperty.getDefaultText());
-		attribute.setMandatory(attributeProperty.getMinOccurs().compareTo(BigInteger.ZERO) > 0);
-		attributes.add(attribute);
-	    }
-	} else {
-	    attributes = Collections.emptySet();
-	}
-    }
-
-    protected final void setSchemaElement(SchemaProperty element) {
-	this.schemaElement = element;
     }
 }
