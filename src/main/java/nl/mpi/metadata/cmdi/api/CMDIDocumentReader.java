@@ -23,11 +23,19 @@ import javax.xml.transform.TransformerException;
 import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.MetadataDocumentReader;
 import nl.mpi.metadata.api.model.HeaderInfo;
+import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
+import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
+import nl.mpi.metadata.cmdi.api.model.Component;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
+import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.CMDITypeException;
+import nl.mpi.metadata.cmdi.api.type.ComponentType;
+import nl.mpi.metadata.cmdi.api.type.ElementType;
 import org.apache.xpath.CachedXPathAPI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -40,6 +48,7 @@ import org.w3c.dom.NodeList;
  */
 public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> {
 
+    private static Logger logger = LoggerFactory.getLogger(CMDIDocumentReader.class);
     private final CMDIProfileContainer profileContainer;
 
     /**
@@ -60,11 +69,31 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
     public CMDIDocument read(final Document document) throws MetadataDocumentException, IOException {
 	final CachedXPathAPI xPathAPI = new CachedXPathAPI();
 	final CMDIProfile profile = getProfileForDocument(document, xPathAPI);
-	final CMDIDocument cmdiDocument = new CMDIDocument(document, profile);
+	final CMDIDocument cmdiDocument = createCMDIDocument(xPathAPI, document, profile);
+	
 	readHeader(cmdiDocument, document, xPathAPI);
 	//readResources(cmdiDocument, document);
-	//readComponents(cmdiDocument, document);
+	readComponents(cmdiDocument, document, xPathAPI);
+	
 	return cmdiDocument;
+    }
+
+    private CMDIDocument createCMDIDocument(final CachedXPathAPI xPathAPI, final Document document, final CMDIProfile profile) throws MetadataDocumentException {
+	final String rootComponentNodePath = profile.getPathString();
+	try {
+	    final Node rootComponentNode = xPathAPI.selectSingleNode(document, rootComponentNodePath);
+
+	    if (rootComponentNode == null) {
+		throw new MetadataDocumentException(String.format("Root component node not found at specified path: %1$s", rootComponentNodePath));
+	    }
+
+	    logger.debug("Found documentNode at {}", rootComponentNodePath);
+	    return new CMDIDocument(rootComponentNode, profile);
+	} catch (TransformerException tEx) {
+	    throw new MetadataDocumentException(
+		    String.format("TransormationException while looking up root component node at specified path: %1$s", rootComponentNodePath),
+		    tEx);
+	}
     }
 
     /**
@@ -83,7 +112,7 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	    try {
 		return profileContainer.getProfile(profileURI);
 	    } catch (CMDITypeException ctEx) {
-		throw new MetadataDocumentException(String.format("CMDITypeException occurred while trying to retrieve profile %1$s. See nested exception for details.", profileURI), ctEx);
+		throw new MetadataDocumentException(String.format("CMDITypeException occurred while trying to retrieve profile $1%s. See nested exception for details.", profileURI), ctEx);
 	    }
 	} catch (TransformerException tEx) {
 	    throw new MetadataDocumentException("TransformationException while looking for profile URI in metadata document. See nested exception for details.", tEx);
@@ -148,17 +177,97 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	headerInfo.setName(headerChild.getNodeName());
 	// Take value from text content
 	headerInfo.setValue(headerChild.getTextContent());
-	// CMDI header does not support attributes
-
+	// (CMDI header does not support attributes)
 	// Put into metadata document
 	cmdiDocument.putHeaderInformation(headerInfo);
     }
 
-//    private void readResources(CMDIDocument cmdiDocument, Document document) {
-//	throw new UnsupportedOperationException("Not yet implemented");
-//    }
-//
-//    private void readComponents(CMDIDocument cmdiDocument, Document document) {
-//	throw new UnsupportedOperationException("Not yet implemented");
-//    }
+    private void readComponents(final CMDIDocument cmdiDocument, final Document domDocument, final CachedXPathAPI xPathAPI) throws MetadataDocumentException {
+	final CMDIProfile profile = cmdiDocument.getType();
+	try {
+	    for (CMDIProfileElement profileElement : profile.getContainableTypes()) {
+		readComponents(cmdiDocument, profileElement, domDocument, xPathAPI);
+	    }
+	} catch (TransformerException tEx) {
+	    throw new MetadataDocumentException(cmdiDocument,
+		    "TransformationException while reading components in document. See nested exception for details.", tEx);
+	}
+    }
+
+    private void readComponents(final CMDIDocument cmdiDocument, final CMDIProfileElement type, final Document domDocument, final CachedXPathAPI xPathAPI) throws TransformerException, MetadataDocumentException {
+	readElementInstances(cmdiDocument, type, domDocument, xPathAPI);
+	// Recurse for children
+	if (type instanceof ComponentType) {
+	    for (CMDIProfileElement profileElement : ((ComponentType) type).getContainableTypes()) {
+		readComponents(cmdiDocument, profileElement, domDocument, xPathAPI);
+	    }
+	}
+    }
+
+    private void readElementInstances(final CMDIDocument cmdiDocument, final CMDIProfileElement type, final Document domDocument, final CachedXPathAPI xPathAPI) throws DOMException, MetadataDocumentException, TransformerException {
+	// Get the XPath for the type instances
+	final String elementTypePath = type.getPathString();
+
+	logger.debug("Looking up instances of element {} by XPath {}", type.getName(), elementTypePath);
+
+	// Get all type instances
+	final NodeList elementInstances = xPathAPI.selectNodeList(domDocument, elementTypePath);
+
+	if (elementInstances != null) {
+	    // Traverse type instances
+	    for (int i = 0; i < elementInstances.getLength(); i++) {
+		// Get node for this instance
+		final Node instanceNode = elementInstances.item(i);
+		logger.debug("Found instance of {}: {}", type.getName(), instanceNode.toString());
+
+		// Get parent element
+		CMDIContainerMetadataElement parentElement = getParentElementForNode(instanceNode, cmdiDocument);
+
+		// Create instance for child
+		CMDIMetadataElement instanceElement = createElementInstance(parentElement, instanceNode, type);
+
+		// And add it to parent
+		parentElement.addChildElement(instanceElement);
+	    }
+	}
+    }
+
+    /**
+     * 
+     * @param instanceNode
+     * @param cmdiDocument
+     * @return
+     * @throws MetadataDocumentException If parent element is not found or not a container node
+     */
+    private CMDIContainerMetadataElement getParentElementForNode(final Node instanceNode, final CMDIDocument cmdiDocument) throws MetadataDocumentException {
+	// Find parent DOM node
+	final Node parentNode = instanceNode.getParentNode();
+
+	if (parentNode == cmdiDocument.getDomNode()) {
+	    // Parent is document DOM node
+	    return cmdiDocument;
+	} else {
+	    // Retrieve the metadata element for parent
+	    CMDIMetadataElement parentElement = cmdiDocument.getElementFromMap(parentNode);
+	    if (parentElement instanceof CMDIContainerMetadataElement) {
+		return (CMDIContainerMetadataElement) parentElement;
+	    } else {
+		throw new MetadataDocumentException(cmdiDocument, "Instance node found and parent node present, but no container metadata element for parent in document");
+	    }
+	}
+    }
+
+    private CMDIMetadataElement createElementInstance(final CMDIContainerMetadataElement parentElement, final Node instanceNode, final CMDIProfileElement type) throws AssertionError {
+	if (type instanceof ElementType) {
+	    logger.debug("Adding {} as CMDI element child to {}", type.getName(), parentElement.getName());
+	    return new nl.mpi.metadata.cmdi.api.model.Element(instanceNode, (ElementType) type, parentElement, instanceNode.getTextContent());
+	} else if (type instanceof ComponentType) {
+	    return new Component(instanceNode, (ComponentType) type, parentElement);
+	} else {
+	    // None of the above types
+	    throw new AssertionError("Cannot handle CMDIMetadataElement type " + type.getClass().getName());
+	}
+
+	//TODO: Read attributes!
+    }
 }

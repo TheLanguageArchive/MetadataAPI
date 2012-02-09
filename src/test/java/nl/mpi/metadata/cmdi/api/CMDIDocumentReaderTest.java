@@ -16,8 +16,13 @@
  */
 package nl.mpi.metadata.cmdi.api;
 
+import java.net.URISyntaxException;
+import nl.mpi.metadata.api.MetadataDocumentException;
+import nl.mpi.metadata.cmdi.api.model.Element;
+import nl.mpi.metadata.cmdi.api.model.Component;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
+import org.apache.xpath.XPathAPI;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,11 +57,11 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
     @Test
     public void testRead() throws Exception {
 	Document dom = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
-	
+
 	// Read from DOM
 	CMDIDocument cmdi = reader.read(dom);
 	assertNotNull(cmdi);
-	
+
 	// Profile should be loaded from specified schemaLocation
 	assertEquals("http://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/profiles/clarin.eu:cr1:p_1271859438164/xsd", cmdi.getType().getSchemaLocation().toString());
 
@@ -65,5 +70,73 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 	assertEquals("2009-11-18", cmdi.getHeaderInformation(CMD_HEADER_MD_CREATION_DATE).getValue());
 	assertEquals("clarin.eu:cr1:p_1271859438164", cmdi.getHeaderInformation(CMD_HEADER_MD_PROFILE).getValue());
 	assertEquals("Metadata API test instances", cmdi.getHeaderInformation(CMD_HEADER_MD_COLLECTION_DISPLAY_NAME).getValue());
+
+	/* Component structure:
+	 * 
+	 * <TextCorpusProfile>
+	 *  <Collection>
+	 *	<GeneralInfo>
+	 *	    <Name>TextCorpus test</Name>
+	 *	</GeneralInfo>
+	 *	<OriginLocation>
+	 *	    <Location><Country><Code>NL</Code>..</Location>
+	 *	    <Location><Country><Code>BE</Code>..</Location>
+	 *	</OriginLocation>
+	 *	...
+	 *  </Collection>
+	 *  <Corpus>...</Corpus>
+	 *  <TextCorpus>...</TextCorpus>
+	 * </TextCorpusProfile>
+	 */
+	assertEquals(3, cmdi.getChildren().size());
+
+	Component collection = (Component) cmdi.getChildElement("Collection");
+	assertNotNull(collection);
+
+	// Get Collection/GeneralInfo/Name element
+	Element name = (Element) cmdi.getChildElement("Collection/GeneralInfo/Name");
+	assertNotNull(name);
+	// Name should also be retrievable from Collection component
+	assertEquals(name, collection.getChildElement("GeneralInfo/Name"));
+	// Value should match document
+	assertEquals("TextCorpus test", name.getValue());
+
+	Component originLocation = (Component) cmdi.getChildElement("Collection/OriginLocation");
+	assertEquals(2, originLocation.getChildren().size());
+	Element location1code = (Element) originLocation.getChildElement("Location[1]/Country/Code");
+	assertEquals("NL", location1code.getValue());
+	Element location2code = (Element) originLocation.getChildElement("Location[2]/Country/Code");
+	assertEquals("BE", location2code.getValue());
+    }
+
+    /**
+     * Test of read method, of class CMDIDocumentReader.
+     */
+    @Test(expected = MetadataDocumentException.class)
+    public void testReadProfileUriMissing() throws Exception {
+	Document dom = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
+	// Remove schema location info
+	org.w3c.dom.Element cmdElement = (org.w3c.dom.Element) XPathAPI.selectSingleNode(dom, "/CMD");
+	cmdElement.removeAttribute("xsi:schemaLocation");
+	// Read from DOM. Should fail because of missing URI
+	reader.read(dom);
+    }
+
+    /**
+     * Test of read method, of class CMDIDocumentReader.
+     */
+    @Test
+    public void testReadProfileUriSyntax() throws Exception {
+	Document dom = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
+	// Replace schema location info by illegal URI
+	org.w3c.dom.Element cmdElement = (org.w3c.dom.Element) XPathAPI.selectSingleNode(dom, "/CMD");
+	cmdElement.setAttribute("xsi:schemaLocation", CMDIConstants.CMD_NAMESPACE + " http://\"illegal\"");
+	// Read from DOM. Should fail because of syntax error
+	try {
+	    reader.read(dom);
+	    fail("Expected URISyntaxException nested in MetadataException");
+	} catch (MetadataDocumentException mdEx) {
+	    assertEquals(URISyntaxException.class, mdEx.getCause().getClass());
+	}
     }
 }

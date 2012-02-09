@@ -20,12 +20,20 @@
       <TextCorpusProfile>
          <Collection>
             <GeneralInfo>
-               <Name/>
+               <Name>TextCorpus test</Name>
             </GeneralInfo>
             <OriginLocation>
                <Location>
                   <Country>
                      <Code>NL</Code>
+                  </Country>
+                  <Continent>
+                     <Code>EU</Code>
+                  </Continent>
+               </Location>
+               <Location>
+                  <Country>
+                     <Code>BE</Code>
                   </Country>
                   <Continent>
                      <Code>EU</Code>

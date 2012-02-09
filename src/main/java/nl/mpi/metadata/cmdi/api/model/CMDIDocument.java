@@ -138,7 +138,7 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
 	elementsMap.remove(element.getDomNode());
     }
 
-    protected CMDIMetadataElement getElementFromMap(Node node) {
-	return elementsMap.get(node);
+    public CMDIMetadataElement getElementFromMap(Node domNode) {
+	return elementsMap.get(domNode);
     }
 }
