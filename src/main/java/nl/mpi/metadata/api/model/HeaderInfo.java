@@ -23,10 +23,10 @@ import java.util.Map;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class HeaderInfo {
+public class HeaderInfo<V> {
 
     private String name;
-    private String value;
+    private V value;
     private Map<String, String> attributes;
 
     /**
@@ -52,7 +52,7 @@ public class HeaderInfo {
      *
      * @return the value of value
      */
-    public String getValue() {
+    public V getValue() {
 	return value;
     }
 
@@ -61,7 +61,7 @@ public class HeaderInfo {
      *
      * @param value new value of value
      */
-    public void setValue(String value) {
+    public void setValue(V value) {
 	this.value = value;
     }
 

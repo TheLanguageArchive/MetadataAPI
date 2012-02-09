@@ -23,6 +23,11 @@ package nl.mpi.metadata.cmdi.api;
 public final class CMDIConstants {
 
     public final static String CMD_NAMESPACE = "http://www.clarin.eu/cmd/";
+    public final static String CMD_HEADER_MD_CREATOR = "MdCreator";
+    public final static String CMD_HEADER_MD_CREATION_DATE = "MdCreationDate";
+    public final static String CMD_HEADER_MD_SELF_LINK = "MdSelfLink";
+    public final static String CMD_HEADER_MD_PROFILE = "MdProfile";
+    public final static String CMD_HEADER_MD_COLLECTION_DISPLAY_NAME = "MdCollectionDisplayName";
 
     /**
      * Prevents instantiation

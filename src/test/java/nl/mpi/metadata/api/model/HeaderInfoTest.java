@@ -29,7 +29,7 @@ import static org.junit.Assert.*;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class HeaderInfoTest {
-    
+
     public HeaderInfoTest() {
     }
 
@@ -40,11 +40,11 @@ public class HeaderInfoTest {
     @AfterClass
     public static void tearDownClass() throws Exception {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -67,9 +67,9 @@ public class HeaderInfoTest {
      */
     @Test
     public void testGetValue() {
-	HeaderInfo instance = new HeaderInfo();
+	HeaderInfo<String> instance = new HeaderInfo<String>();
 	String expResult = "My value";
-	
+
 	instance.setValue(expResult);
 	String result = instance.getValue();
 	assertEquals(expResult, result);
@@ -85,9 +85,9 @@ public class HeaderInfoTest {
 	String value = "value";
 	Map result = instance.getAttributes();
 	assertNotNull(result);
-	assertEquals(0,result.size());
+	assertEquals(0, result.size());
 	instance.setAttribute(key, value);
-	assertEquals(1,result.size());
+	assertEquals(1, result.size());
 	assertEquals(value, instance.getAttribute(key));
 	assertEquals(null, instance.getAttribute("otherKey"));
     }

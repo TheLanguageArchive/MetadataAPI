@@ -22,13 +22,17 @@ import java.net.URISyntaxException;
 import javax.xml.transform.TransformerException;
 import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.MetadataDocumentReader;
+import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
 import nl.mpi.metadata.cmdi.api.type.CMDITypeException;
-import org.apache.xpath.XPathAPI;
+import org.apache.xpath.CachedXPathAPI;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  *
@@ -38,27 +42,46 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 
     private final CMDIProfileContainer profileContainer;
 
+    /**
+     * Creates a CMDI document reader that uses the specified profile container
+     * @param profileContainer profile container that gets used to retrieve CMDI profiles
+     */
     public CMDIDocumentReader(CMDIProfileContainer profileContainer) {
 	this.profileContainer = profileContainer;
     }
 
-    public CMDIDocument read(final Document document) throws MetadataDocumentException {
-	CMDIProfile profile = getProfileForDocument(document);
-	CMDIDocument cmdiDocument = new CMDIDocument(document, profile);
-	// Do actual reading
+    /**
+     * Reads the specified document into a new {@link CMDIDocument} instance
+     * @param document
+     * @return
+     * @throws MetadataDocumentException if an unexpected circumstance is detected while reading the document
+     * @throws IOException if an I/O error occurs while reading the profile schema through the {@link CMDIProfileContainer} referenced in the document
+     */
+    public CMDIDocument read(final Document document) throws MetadataDocumentException, IOException {
+	final CachedXPathAPI xPathAPI = new CachedXPathAPI();
+	final CMDIProfile profile = getProfileForDocument(document, xPathAPI);
+	final CMDIDocument cmdiDocument = new CMDIDocument(document, profile);
+	readHeader(cmdiDocument, document, xPathAPI);
+	//readResources(cmdiDocument, document);
+	//readComponents(cmdiDocument, document);
 	return cmdiDocument;
     }
 
-    private CMDIProfile getProfileForDocument(final Document document) throws MetadataDocumentException {
+    /**
+     * Determines the URI of the profile schema and loads the schema through the {@link CMDIProfileContainer} of this instance.
+     * @param document DOM of document to load profile for
+     * @return profile referenced by the document
+     * @throws MetadataDocumentException
+     * @throws IOException 
+     */
+    private CMDIProfile getProfileForDocument(final Document document, final CachedXPathAPI xPathAPI) throws MetadataDocumentException, IOException {
 	try {
-	    URI profileURI = getProfileURI(document);
+	    final URI profileURI = getProfileURI(document, xPathAPI);
 	    if (profileURI == null) {
 		throw new MetadataDocumentException("No profile URI found in metadata document");
 	    }
 	    try {
 		return profileContainer.getProfile(profileURI);
-	    } catch (IOException ioEx) {
-		throw new MetadataDocumentException(String.format("IOException occurred while trying to retrieve profile %1$s. See nested exception for details.", profileURI), ioEx);
 	    } catch (CMDITypeException ctEx) {
 		throw new MetadataDocumentException(String.format("CMDITypeException occurred while trying to retrieve profile %1$s. See nested exception for details.", profileURI), ctEx);
 	    }
@@ -69,11 +92,21 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	}
     }
 
-    private URI getProfileURI(final Document document) throws TransformerException, URISyntaxException {
-	Node schemaLocationNode = XPathAPI.selectSingleNode(document, "/CMD/@schemaLocation");
+    /**
+     * Locates the schemaLocation specification and extracts the location of the schema specified for the CMD namespace.
+     * @param document DOM of document to find schema URI for
+     * @return URI of schema, null if not present
+     * @throws TransformerException 
+     * @throws URISyntaxException 
+     */
+    private URI getProfileURI(final Document document, final CachedXPathAPI xPathAPI) throws TransformerException, URISyntaxException {
+	// Find the <CMD xsi:schemaLocation="..."> attribute
+	final Node schemaLocationNode = xPathAPI.selectSingleNode(document, "/CMD/@schemaLocation");
 	if (schemaLocationNode != null) {
-	    String schemaLocationString = schemaLocationNode.getNodeValue().trim();
-	    String[] schemaLocationTokens = schemaLocationString.split("\\s");
+	    // SchemaLocation value consists of {namespace,location} pairs. Find CMD namespace and get the location of its schema
+	    final String schemaLocationString = schemaLocationNode.getNodeValue().trim();
+	    // Tokenize
+	    final String[] schemaLocationTokens = schemaLocationString.split("\\s");
 	    for (int i = 0; i < schemaLocationTokens.length; i += 2) {
 		// Check if namespace matches CMD namespace
 		if (schemaLocationTokens[i].equals(CMDIConstants.CMD_NAMESPACE)) {
@@ -82,6 +115,50 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 		}
 	    }
 	}
+	// No schemaLocation specified (so null)
 	return null;
     }
+
+    private void readHeader(final CMDIDocument cmdiDocument, final Document document, final CachedXPathAPI xPathAPI) throws MetadataDocumentException {
+	try {
+	    // Find the <Header> Element. Should be there!
+	    final Node headerNode = xPathAPI.selectSingleNode(document, "/CMD/Header");
+	    if (headerNode == null) {
+		throw new MetadataDocumentException(cmdiDocument, "Header node not found in CMDI document");
+	    }
+	    // Get the Header child elements
+	    final NodeList headerChildren = headerNode.getChildNodes();
+	    for (int i = 0; i < headerChildren.getLength(); i++) {
+		final Node headerChild = headerChildren.item(i);
+		if (headerChildren.item(i) instanceof Element) {
+		    addHeaderInformationFromDocument((Element) headerChild, cmdiDocument);
+		}
+	    }
+	} catch (TransformerException tEx) {
+	    throw new MetadataDocumentException(cmdiDocument,
+		    "TransformationException while reading header information in document. See nested exception for details.", tEx);
+	}
+    }
+
+    private void addHeaderInformationFromDocument(final Element headerChild, final CMDIDocument cmdiDocument) throws DOMException {
+	// Put String values in header info
+	// TODO: Some fields should have different type (e.g. URI or Date)
+	HeaderInfo<String> headerInfo = new HeaderInfo<String>();
+	// Take name from element name
+	headerInfo.setName(headerChild.getNodeName());
+	// Take value from text content
+	headerInfo.setValue(headerChild.getTextContent());
+	// CMDI header does not support attributes
+
+	// Put into metadata document
+	cmdiDocument.putHeaderInformation(headerInfo);
+    }
+
+//    private void readResources(CMDIDocument cmdiDocument, Document document) {
+//	throw new UnsupportedOperationException("Not yet implemented");
+//    }
+//
+//    private void readComponents(CMDIDocument cmdiDocument, Document document) {
+//	throw new UnsupportedOperationException("Not yet implemented");
+//    }
 }

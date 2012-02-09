@@ -158,7 +158,13 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
 	    throw new MetadataDocumentException(ex);
 	}
 
-	return documentReader.read(document);
+	try {
+	    return documentReader.read(document);
+	} catch (IOException ex) {
+	    throw new MetadataDocumentException(
+		    "I/O exception while reading newly created metadata document. "
+		    + "Most likely the profile schema is not readable. See the inner exception for details.", ex);
+	}
     }
 
     /**

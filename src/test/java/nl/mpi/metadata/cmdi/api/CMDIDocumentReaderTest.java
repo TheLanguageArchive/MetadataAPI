@@ -22,6 +22,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
+import static nl.mpi.metadata.cmdi.api.CMDIConstants.*;
 import static org.junit.Assert.*;
 
 /**
@@ -51,8 +52,18 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
     @Test
     public void testRead() throws Exception {
 	Document dom = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
+	
+	// Read from DOM
 	CMDIDocument cmdi = reader.read(dom);
 	assertNotNull(cmdi);
+	
+	// Profile should be loaded from specified schemaLocation
 	assertEquals("http://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/profiles/clarin.eu:cr1:p_1271859438164/xsd", cmdi.getType().getSchemaLocation().toString());
+
+	// Header information should match
+	assertEquals("Joe Unit", cmdi.getHeaderInformation(CMD_HEADER_MD_CREATOR).getValue());
+	assertEquals("2009-11-18", cmdi.getHeaderInformation(CMD_HEADER_MD_CREATION_DATE).getValue());
+	assertEquals("clarin.eu:cr1:p_1271859438164", cmdi.getHeaderInformation(CMD_HEADER_MD_PROFILE).getValue());
+	assertEquals("Metadata API test instances", cmdi.getHeaderInformation(CMD_HEADER_MD_COLLECTION_DISPLAY_NAME).getValue());
     }
 }

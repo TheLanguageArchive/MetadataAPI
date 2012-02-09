@@ -37,7 +37,7 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
 
     private CMDIProfile profile;
     private URI fileLocation;
-    private final Collection<HeaderInfo> headerInfo;
+    private final Map<String, HeaderInfo> headerInfo;
     private final Collection<MetadataDocumentListener> listeners;
     private Node domRootNode;
     private final Map<Node, CMDIMetadataElement> elementsMap;
@@ -64,7 +64,7 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
 
 	this.elementsMap = Collections.synchronizedMap(new HashMap<Node, CMDIMetadataElement>());
 
-	this.headerInfo = new HashSet<HeaderInfo>();
+	this.headerInfo = new HashMap<String, HeaderInfo>();
 	this.listeners = new HashSet<MetadataDocumentListener>();
     }
 
@@ -77,12 +77,24 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
 	return fileLocation;
     }
 
+    public synchronized void putHeaderInformation(HeaderInfo headerInfoItem) {
+	headerInfo.put(headerInfoItem.getName(), headerInfoItem);
+    }
+
+    public synchronized HeaderInfo getHeaderInformation(String name) {
+	return headerInfo.get(name);
+    }
+
+    public synchronized void removeHeaderInformation(String name) {
+	headerInfo.remove(name);
+    }
+
     /**
      * 
      * @return An <em>unmodifiable</em> copy of the collection of header info entries
      */
-    public Collection<HeaderInfo> getHeaderInformation() {
-	return Collections.unmodifiableCollection(headerInfo);
+    public synchronized Collection<HeaderInfo> getHeaderInformation() {
+	return Collections.unmodifiableCollection(headerInfo.values());
     }
 
     public synchronized void addMetadataDocumentListener(MetadataDocumentListener listener) {
