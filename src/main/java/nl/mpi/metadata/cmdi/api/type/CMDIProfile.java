@@ -93,7 +93,7 @@ public class CMDIProfile extends ComponentType implements MetadataDocumentType<C
      * @throws CMDITypeException 
      */
     private SchemaProperty loadSchema() throws IOException, CMDITypeException {
-	InputStream inputStream = getSchemaInputStream();
+	InputStream inputStream = CMDIEntityResolver.getInputStreamForURI(entityResolver, getSchemaLocation());
 	try {
 	    XmlOptions xmlOptions = new XmlOptions();
 	    xmlOptions.setCharacterEncoding("UTF-8");
@@ -144,22 +144,5 @@ public class CMDIProfile extends ComponentType implements MetadataDocumentType<C
 	    throw new CMDITypeException("Expecting 1 root component for profile, found " + componentsChildren.length);
 	}
 	return componentsChildren[0];
-    }
-
-    private InputStream getSchemaInputStream() throws IOException {
-	if (entityResolver != null) {
-	    try {
-		InputSource resolvedEntity = entityResolver.resolveEntity(null, schemaLocation.toString());
-		final InputStream byteStream = resolvedEntity.getByteStream();
-		if (byteStream != null) {
-		    return byteStream;
-		} else if (resolvedEntity.getSystemId() != null) {
-		    return new URL(resolvedEntity.getSystemId()).openStream();
-		}
-	    } catch (SAXException sEx) {
-		logger.warn("SAXException while resolving schema location. Proceeding with unresolved location: " + schemaLocation.toString(), sEx);
-	    }
-	}
-	return schemaLocation.toURL().openStream();
     }
 }

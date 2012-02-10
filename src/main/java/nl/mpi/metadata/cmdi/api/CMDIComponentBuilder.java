@@ -16,13 +16,13 @@
  */
 package nl.mpi.metadata.cmdi.api;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.net.URI;
+import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.apache.xmlbeans.SchemaProperty;
 import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.SchemaTypeSystem;
@@ -66,9 +66,8 @@ public class CMDIComponentBuilder {
 	this.entityResolver = entityResolver;
     }
 
-    public final void readSchema(Document workingDocument, URI xsdFile, boolean addDummyData) throws FileNotFoundException, XmlException, IOException {
-	File schemaFile = new File(xsdFile);
-	SchemaType schemaType = getFirstSchemaType(schemaFile);
+    public final void readSchema(Document workingDocument, URI xsdFile, boolean addDummyData) throws FileNotFoundException, XmlException, MalformedURLException, IOException {
+	SchemaType schemaType = getFirstSchemaType(xsdFile);
 	constructXml(schemaType.getElementProperties()[0], "documentTypes", workingDocument, xsdFile.toString(), null, addDummyData);
     }
 
@@ -80,8 +79,8 @@ public class CMDIComponentBuilder {
 	return entityResolver;
     }
 
-    private SchemaType getFirstSchemaType(File schemaFile) throws FileNotFoundException, XmlException, IOException {
-	InputStream inputStream = new FileInputStream(schemaFile);
+    private SchemaType getFirstSchemaType(URI uri) throws FileNotFoundException, XmlException, MalformedURLException, IOException {
+	final InputStream inputStream = CMDIEntityResolver.getInputStreamForURI(entityResolver, uri);
 	try {
 	    //Since we're dealing with xml schema files here the character encoding is assumed to be UTF-8
 	    XmlOptions xmlOptions = new XmlOptions();
