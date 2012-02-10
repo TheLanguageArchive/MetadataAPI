@@ -29,6 +29,8 @@ import static org.junit.Assert.*;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class HeaderInfoTest {
+    public static final String KEY = "KEY";
+    public static final String VALUE = "VALUE";
 
     public HeaderInfoTest() {
     }
@@ -68,7 +70,7 @@ public class HeaderInfoTest {
     @Test
     public void testGetValue() {
 	HeaderInfo<String> instance = new HeaderInfo<String>();
-	String expResult = "My value";
+	String expResult = "My VALUE";
 
 	instance.setValue(expResult);
 	String result = instance.getValue();
@@ -81,14 +83,29 @@ public class HeaderInfoTest {
     @Test
     public void testGetAttributes() {
 	HeaderInfo instance = new HeaderInfo();
-	String key = "key";
-	String value = "value";
 	Map result = instance.getAttributes();
 	assertNotNull(result);
 	assertEquals(0, result.size());
-	instance.setAttribute(key, value);
+	instance.setAttribute(KEY, VALUE);
 	assertEquals(1, result.size());
-	assertEquals(value, instance.getAttribute(key));
+	assertEquals(VALUE, instance.getAttribute(KEY));
 	assertEquals(null, instance.getAttribute("otherKey"));
+    }
+    
+     /**
+     * Test of getAttributes method, of class HeaderInfo.
+     */
+    @Test
+    public void testRemoveAttribute() {
+	HeaderInfo instance = new HeaderInfo();
+	Map result = instance.getAttributes();
+	assertEquals(0, result.size());
+	instance.setAttribute(KEY, VALUE);
+	instance.setAttribute("otherKEY", VALUE);
+	assertEquals(2, result.size());
+	instance.setAttribute(KEY, null);
+	assertEquals(1, result.size());
+	instance.setAttribute("otherKEY", null);
+	assertEquals(0, result.size());
     }
 }
