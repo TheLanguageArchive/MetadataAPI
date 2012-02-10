@@ -23,7 +23,7 @@ import java.util.Collection;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface ReferencingMetadataElement extends MetadataElement {
+public interface ReferencingMetadataElement<A extends MetadataElementAttribute> extends MetadataElement<A> {
 
     Collection<Reference> getReferences();
 

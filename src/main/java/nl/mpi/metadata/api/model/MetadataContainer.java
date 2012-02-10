@@ -17,7 +17,6 @@
 package nl.mpi.metadata.api.model;
 
 import java.util.List;
-import nl.mpi.metadata.api.MetadataDocumentException;
 
 /**
  * @param <M> Type of MetadataElement that can be contained in this container element

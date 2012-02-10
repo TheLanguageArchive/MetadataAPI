@@ -21,7 +21,7 @@ package nl.mpi.metadata.api.model;
  * @param <M> Type of element that can be contained by the parent
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface MetadataField<T, M extends MetadataElement> extends ContainedMetadataElement<M> {
+public interface MetadataField<T, M extends MetadataElement, A extends MetadataElementAttribute> extends ContainedMetadataElement<M,A> {
 
     /**
      * 

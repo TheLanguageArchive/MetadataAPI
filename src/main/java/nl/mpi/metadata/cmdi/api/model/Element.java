@@ -18,7 +18,6 @@ package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
 import java.util.Collection;
-import nl.mpi.metadata.api.model.MetadataElementAttribute;
 import nl.mpi.metadata.api.model.MetadataField;
 import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.api.events.MetadataElementListener;
@@ -30,7 +29,7 @@ import org.w3c.dom.Node;
  * 
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class Element<T> implements CMDIMetadataElement, MetadataField<T, CMDIMetadataElement> {
+public class Element<T> implements CMDIMetadataElement, MetadataField<T, CMDIMetadataElement, Attribute> {
 
     private final CMDIDocument metadataDocument;
     private CMDIContainerMetadataElement parent;
@@ -83,7 +82,7 @@ public class Element<T> implements CMDIMetadataElement, MetadataField<T, CMDIMet
 	return domNode;
     }
 
-    public Collection<MetadataElementAttribute> getAttributes() {
+    public Collection<Attribute> getAttributes() {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 

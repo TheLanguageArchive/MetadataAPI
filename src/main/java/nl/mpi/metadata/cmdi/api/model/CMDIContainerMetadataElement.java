@@ -24,7 +24,6 @@ import java.util.List;
 import javax.xml.transform.TransformerException;
 import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.api.model.MetadataContainer;
-import nl.mpi.metadata.api.model.MetadataElementAttribute;
 import nl.mpi.metadata.api.model.MetadataReference;
 import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.api.model.ResourceReference;
@@ -80,7 +79,7 @@ public abstract class CMDIContainerMetadataElement implements CMDIMetadataElemen
 	return Collections.unmodifiableList(children);
     }
 
-    public Collection<MetadataElementAttribute> getAttributes() {
+    public Collection<Attribute> getAttributes() {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 

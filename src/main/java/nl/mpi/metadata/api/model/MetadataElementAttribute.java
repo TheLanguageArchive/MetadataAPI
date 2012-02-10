@@ -22,11 +22,11 @@ import nl.mpi.metadata.api.type.MetadataElementAttributeType;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface MetadataElementAttribute {
+public interface MetadataElementAttribute<T> {
 
     MetadataElementAttributeType getType();
 
-    String getKey();
+    T getValue();
 
-    String getValue();
+    void setValue(T value);
 }

@@ -24,7 +24,7 @@ import nl.mpi.metadata.api.type.MetadataElementType;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface MetadataElement {
+public interface MetadataElement<A extends MetadataElementAttribute> {
 
     /**
      * 
@@ -49,7 +49,7 @@ public interface MetadataElement {
      * 
      * @return Collection of attributes this element has
      */
-    Collection<MetadataElementAttribute> getAttributes();
+    Collection<A> getAttributes();
 
     /**
      * Registers a @see MetadataElementListener for this element

@@ -23,18 +23,39 @@ import nl.mpi.metadata.api.type.MetadataElementAttributeType;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class Attribute implements MetadataElementAttribute {
+public class Attribute<T> implements MetadataElementAttribute<T> {
 
+    private final MetadataElementAttributeType type;
+    private T value;
+
+    public Attribute(MetadataElementAttributeType type) {
+	this.type = type;
+    }
+
+    /**
+     * Get the value of type
+     *
+     * @return the value of type
+     */
     public MetadataElementAttributeType getType() {
-	throw new UnsupportedOperationException("Not supported yet.");
+	return type;
     }
 
-    public String getKey() {
-	throw new UnsupportedOperationException("Not supported yet.");
+    /**
+     * Get the value of value
+     *
+     * @return the value of value
+     */
+    public T getValue() {
+	return value;
     }
 
-    public String getValue() {
-	throw new UnsupportedOperationException("Not supported yet.");
+    /**
+     * Set the value of value
+     *
+     * @param value new value of value
+     */
+    public void setValue(T value) {
+	this.value = value;
     }
-    
 }

@@ -23,7 +23,7 @@ import org.w3c.dom.Node;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface CMDIMetadataElement extends ReferencingMetadataElement {
+public interface CMDIMetadataElement extends ReferencingMetadataElement<Attribute> {
 
     void setPath(String path);
     

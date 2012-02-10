@@ -27,7 +27,7 @@ import org.w3c.dom.Node;
  * 
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class Component extends CMDIContainerMetadataElement implements ContainedMetadataElement<CMDIMetadataElement> {
+public class Component extends CMDIContainerMetadataElement implements ContainedMetadataElement<CMDIMetadataElement, Attribute> {
 
     private final CMDIDocument metadataDocument;
     private CMDIContainerMetadataElement parent;
