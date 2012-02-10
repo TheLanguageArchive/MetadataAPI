@@ -16,6 +16,8 @@
  */
 package nl.mpi.metadata.cmdi.api;
 
+import java.util.Collection;
+import nl.mpi.metadata.cmdi.api.model.Attribute;
 import java.net.URISyntaxException;
 import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.cmdi.api.model.Element;
@@ -56,10 +58,10 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
      */
     @Test
     public void testRead() throws Exception {
-	Document dom = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
+	final Document dom = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
 
 	// Read from DOM
-	CMDIDocument cmdi = reader.read(dom);
+	final CMDIDocument cmdi = reader.read(dom);
 	assertNotNull(cmdi);
 
 	// Profile should be loaded from specified schemaLocation
@@ -90,23 +92,42 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 	 */
 	assertEquals(3, cmdi.getChildren().size());
 
-	Component collection = (Component) cmdi.getChildElement("Collection");
+	final Component collection = (Component) cmdi.getChildElement("Collection");
 	assertNotNull(collection);
 
 	// Get Collection/GeneralInfo/Name element
-	Element name = (Element) cmdi.getChildElement("Collection/GeneralInfo/Name");
+	final Element name = (Element) cmdi.getChildElement("Collection/GeneralInfo/Name");
 	assertNotNull(name);
 	// Name should also be retrievable from Collection component
 	assertEquals(name, collection.getChildElement("GeneralInfo/Name"));
 	// Value should match document
 	assertEquals("TextCorpus test", name.getValue());
 
-	Component originLocation = (Component) cmdi.getChildElement("Collection/OriginLocation");
+	// Check component with multiple occurences
+	final Component originLocation = (Component) cmdi.getChildElement("Collection/OriginLocation");
 	assertEquals(2, originLocation.getChildren().size());
 	Element location1code = (Element) originLocation.getChildElement("Location[1]/Country/Code");
 	assertEquals("NL", location1code.getValue());
 	Element location2code = (Element) originLocation.getChildElement("Location[2]/Country/Code");
 	assertEquals("BE", location2code.getValue());
+
+	// Check attributes
+	Collection<Attribute> attributes = name.getAttributes();
+	assertEquals(1, attributes.size());
+	for (Attribute attribute : attributes) {
+	    assertEquals("en", attribute.getValue());
+	    assertEquals("lang", attribute.getType().getName());
+	    assertEquals("http://www.w3.org/XML/1998/namespace", attribute.getType().getNamespaceURI());
+	}
+
+	final Element description = (Element) cmdi.getChildElement("Collection/GeneralInfo/Description/Description");
+	attributes = description.getAttributes();
+	assertEquals(1, attributes.size());
+	for (Attribute attribute : attributes) {
+	    assertEquals("nl", attribute.getValue());
+	    assertEquals("LanguageID", attribute.getType().getName());
+	    assertEquals("", attribute.getType().getNamespaceURI()); // default namespace
+	}
     }
 
     /**

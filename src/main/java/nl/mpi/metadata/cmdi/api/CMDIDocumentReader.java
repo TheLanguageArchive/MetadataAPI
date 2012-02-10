@@ -23,10 +23,13 @@ import javax.xml.transform.TransformerException;
 import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.MetadataDocumentReader;
 import nl.mpi.metadata.api.model.HeaderInfo;
+import nl.mpi.metadata.api.type.MetadataElementAttributeType;
+import nl.mpi.metadata.cmdi.api.model.Attribute;
 import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.Component;
+import nl.mpi.metadata.cmdi.api.model.Element;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
@@ -38,7 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -66,15 +69,15 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
      * @throws MetadataDocumentException if an unexpected circumstance is detected while reading the document
      * @throws IOException if an I/O error occurs while reading the profile schema through the {@link CMDIProfileContainer} referenced in the document
      */
-    public CMDIDocument read(final Document document) throws MetadataDocumentException, IOException {
+    public CMDIDocument read(final Document document) throws MetadataDocumentException, DOMException, IOException {
 	final CachedXPathAPI xPathAPI = new CachedXPathAPI();
 	final CMDIProfile profile = getProfileForDocument(document, xPathAPI);
 	final CMDIDocument cmdiDocument = createCMDIDocument(xPathAPI, document, profile);
-	
+
 	readHeader(cmdiDocument, document, xPathAPI);
 	//readResources(cmdiDocument, document);
 	readComponents(cmdiDocument, document, xPathAPI);
-	
+
 	return cmdiDocument;
     }
 
@@ -159,8 +162,8 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	    final NodeList headerChildren = headerNode.getChildNodes();
 	    for (int i = 0; i < headerChildren.getLength(); i++) {
 		final Node headerChild = headerChildren.item(i);
-		if (headerChildren.item(i) instanceof Element) {
-		    addHeaderInformationFromDocument((Element) headerChild, cmdiDocument);
+		if (headerChildren.item(i) instanceof org.w3c.dom.Element) {
+		    addHeaderInformationFromDocument(headerChild, cmdiDocument);
 		}
 	    }
 	} catch (TransformerException tEx) {
@@ -169,7 +172,7 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	}
     }
 
-    private void addHeaderInformationFromDocument(final Element headerChild, final CMDIDocument cmdiDocument) throws DOMException {
+    private void addHeaderInformationFromDocument(final Node headerChild, final CMDIDocument cmdiDocument) throws DOMException {
 	// Put String values in header info
 	// TODO: Some fields should have different type (e.g. URI or Date)
 	HeaderInfo<String> headerInfo = new HeaderInfo<String>();
@@ -182,7 +185,7 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	cmdiDocument.putHeaderInformation(headerInfo);
     }
 
-    private void readComponents(final CMDIDocument cmdiDocument, final Document domDocument, final CachedXPathAPI xPathAPI) throws MetadataDocumentException {
+    private void readComponents(final CMDIDocument cmdiDocument, final Document domDocument, final CachedXPathAPI xPathAPI) throws DOMException, MetadataDocumentException {
 	final CMDIProfile profile = cmdiDocument.getType();
 	try {
 	    for (CMDIProfileElement profileElement : profile.getContainableTypes()) {
@@ -194,7 +197,7 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	}
     }
 
-    private void readComponents(final CMDIDocument cmdiDocument, final CMDIProfileElement type, final Document domDocument, final CachedXPathAPI xPathAPI) throws TransformerException, MetadataDocumentException {
+    private void readComponents(final CMDIDocument cmdiDocument, final CMDIProfileElement type, final Document domDocument, final CachedXPathAPI xPathAPI) throws DOMException, TransformerException, MetadataDocumentException {
 	readElementInstances(cmdiDocument, type, domDocument, xPathAPI);
 	// Recurse for children
 	if (type instanceof ComponentType) {
@@ -221,10 +224,11 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 		logger.debug("Found instance of {}: {}", type.getName(), instanceNode.toString());
 
 		// Get parent element
-		CMDIContainerMetadataElement parentElement = getParentElementForNode(instanceNode, cmdiDocument);
-
+		final CMDIContainerMetadataElement parentElement = getParentElementForNode(instanceNode, cmdiDocument);
 		// Create instance for child
-		CMDIMetadataElement instanceElement = createElementInstance(parentElement, instanceNode, type);
+		final CMDIMetadataElement instanceElement = createElementInstance(parentElement, instanceNode, type);
+		// Read attributes from DOM into element
+		readAttributes(instanceElement, instanceNode, type);
 
 		// And add it to parent
 		parentElement.addChildElement(instanceElement);
@@ -233,10 +237,10 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
     }
 
     /**
-     * 
-     * @param instanceNode
-     * @param cmdiDocument
-     * @return
+     * For a DOM node, looks up metadata element that should serve as a parent for that node
+     * @param instanceNode DOM node to find parent element for
+     * @param cmdiDocument Document containing 
+     * @return Parent metadata element node
      * @throws MetadataDocumentException If parent element is not found or not a container node
      */
     private CMDIContainerMetadataElement getParentElementForNode(final Node instanceNode, final CMDIDocument cmdiDocument) throws MetadataDocumentException {
@@ -260,14 +264,35 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
     private CMDIMetadataElement createElementInstance(final CMDIContainerMetadataElement parentElement, final Node instanceNode, final CMDIProfileElement type) throws AssertionError {
 	if (type instanceof ElementType) {
 	    logger.debug("Adding {} as CMDI element child to {}", type.getName(), parentElement.getName());
-	    return new nl.mpi.metadata.cmdi.api.model.Element(instanceNode, (ElementType) type, parentElement, instanceNode.getTextContent());
+	    return new Element(instanceNode, (ElementType) type, parentElement, instanceNode.getTextContent());
 	} else if (type instanceof ComponentType) {
 	    return new Component(instanceNode, (ComponentType) type, parentElement);
 	} else {
 	    // None of the above types
 	    throw new AssertionError("Cannot handle CMDIMetadataElement type " + type.getClass().getName());
 	}
+    }
 
-	//TODO: Read attributes!
+    private void readAttributes(final CMDIMetadataElement metadataElement, final Node instanceNode, final CMDIProfileElement type) throws TransformerException, DOMException {
+	final NamedNodeMap attributesMap = instanceNode.getAttributes();
+	if (attributesMap.getLength() > 0) {
+	    for (MetadataElementAttributeType attributeType : type.getAttributes()) {
+		final Node attributeNode = getAttributeNodeByType(attributesMap, attributeType);
+		if (attributeNode != null) {
+		    Attribute<String> attribute = new Attribute<String>(attributeType);
+		    attribute.setValue(attributeNode.getNodeValue());
+		    metadataElement.addAttribute(attribute);
+		}
+	    }
+	}
+    }
+
+    private Node getAttributeNodeByType(final NamedNodeMap attributesMap, final MetadataElementAttributeType attributeType) throws DOMException {
+	//final Node attributeNode = xPathAPI.selectSingleNode(instanceNode, "@" + attributeType.getName());
+	if (CMDIConstants.XML_NAMESPACE.equals(attributeType.getNamespaceURI())) {
+	    return attributesMap.getNamedItem("xml:" + attributeType.getName());
+	} else {
+	    return attributesMap.getNamedItemNS(attributeType.getNamespaceURI(), attributeType.getName());
+	}
     }
 }

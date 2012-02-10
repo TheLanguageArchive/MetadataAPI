@@ -23,9 +23,10 @@ package nl.mpi.metadata.api.type;
 public class MetadataElementAttributeType {
 
     private String name;
+    private String namespaceURI;
     private String type;
     private boolean mandatory;
-    protected String defaultValue;
+    private String defaultValue;
 
     /**
      * 
@@ -70,8 +71,7 @@ public class MetadataElementAttributeType {
     public void setMandatory(boolean mandatory) {
 	this.mandatory = mandatory;
     }
-    
-    
+
     /**
      * Get the default value of this attribute
      *
@@ -90,4 +90,26 @@ public class MetadataElementAttributeType {
 	this.defaultValue = defaultValue;
     }
 
+    /**
+     * Get the value of namespace
+     *
+     * @return the value of namespace
+     */
+    public String getNamespaceURI() {
+	return namespaceURI;
+    }
+
+    /**
+     * Set the value of namespace
+     *
+     * @param namespace new value of namespace
+     */
+    public void setNamespaceURI(String namespace) {
+	this.namespaceURI = namespace;
+    }
+
+    @Override
+    public String toString() {
+	return getType().toString();
+    }
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CMD xmlns="http://www.clarin.eu/cmd/"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
      CMDVersion="1.1"
      xsi:schemaLocation="http://www.clarin.eu/cmd/ http://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/profiles/clarin.eu:cr1:p_1271859438164/xsd ">
    <Header>
@@ -20,7 +21,10 @@
       <TextCorpusProfile>
          <Collection>
             <GeneralInfo>
-               <Name>TextCorpus test</Name>
+               <Name xml:lang="en">TextCorpus test</Name>
+               <Description>
+                  <Description LanguageID="nl">Test voor TextCorpus</Description>
+               </Description>
             </GeneralInfo>
             <OriginLocation>
                <Location>
