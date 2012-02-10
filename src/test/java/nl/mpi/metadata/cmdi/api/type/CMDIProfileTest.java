@@ -16,12 +16,11 @@
  */
 package nl.mpi.metadata.cmdi.api.type;
 
+import java.net.URI;
+import java.net.URL;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -31,7 +30,7 @@ public class CMDIProfileTest extends CMDIAPITestCase {
 
     @Test
     public void testLoadSchema() throws Exception {
-	CMDIProfile profile = new CMDIProfile(testSchemaTextCorpus.toURI());
+	CMDIProfile profile = new CMDIProfile(testSchemaTextCorpus.toURI(), CMDI_API_TEST_ENTITY_RESOLVER);
 	profile.readSchema();
 
 	assertEquals(profile.getName(), "TextCorpusProfile");
@@ -65,5 +64,30 @@ public class CMDIProfileTest extends CMDIAPITestCase {
 	CMDIProfile profile3 = new CMDIProfile(testSchemaWebservice.toURI());
 	assertFalse("Expected non-equality of profiles", profile1.equals(profile3));
 	assertFalse("Expected non-equality of profiles", profile3.equals(profile1));
+    }
+
+    @Test
+    public void testCustomEntityResolver() throws Exception {
+	final URL remoteURL = new URL(REMOTE_TEXT_CORPUS_SCHEMA_URL);
+
+	TestEntityResolver testResolver = new TestEntityResolver(remoteURL, testSchemaTextCorpus);
+	assertEquals(0, testResolver.byteStreamRequested);
+
+	// Read schema
+	CMDIProfile profile = new CMDIProfile(remoteURL.toURI(), testResolver);
+	profile.readSchema();
+	// This should cause the entity resolver to be triggered once
+	assertEquals(1, testResolver.byteStreamRequested);
+	// Should still match REMOTE schema location
+	assertEquals(new URI(REMOTE_TEXT_CORPUS_SCHEMA_URL), profile.getSchemaLocation());
+    }
+
+    @Test
+    public void testNoEntityResolver() throws Exception {
+	// Small schema has no xml:lang import
+	CMDIProfile profile = new CMDIProfile(testSchemaSmall.toURI(), null);
+	profile.readSchema();
+	// Schema location should match
+	assertEquals(testSchemaSmall.toURI(), profile.getSchemaLocation());
     }
 }

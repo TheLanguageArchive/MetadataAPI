@@ -16,19 +16,12 @@
  */
 package nl.mpi.metadata.cmdi.api.type;
 
+import java.net.URL;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
-import java.io.IOException;
 import java.net.URI;
-import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.junit.Test;
 
-import org.xml.sax.EntityResolver;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -56,25 +49,20 @@ public class CMDIProfileContainerTest extends CMDIAPITestCase {
 
     @Test
     public void testCustomEntityResolver() throws Exception {
+	URL remoteUrl = new URL(REMOTE_TEXT_CORPUS_SCHEMA_URL);
 	// Custom resolver
-	class MyEntityResolver implements EntityResolver {
-
-	    public boolean hit = false;
-	    private EntityResolver cmdiResolver = new CMDIEntityResolver();
-
-	    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-		hit = true;
-		return cmdiResolver.resolveEntity(publicId, systemId);
-	    }
-	}
-	MyEntityResolver myER = new MyEntityResolver();
+	TestEntityResolver myER = new TestEntityResolver(remoteUrl, testSchemaTextCorpus);
 
 	CMDIProfileContainer container = new CMDIProfileContainer(myER);
 	// Resolver should not have been hit
-	assertFalse(myER.hit);
+	assertEquals(0, myER.byteStreamRequested);
 	// Request new schema from container, so it has to be created
-	container.getProfile(testSchemaTextCorpus.toURI());
-	// Should have been hit for xml.xsd
-	assertTrue(myER.hit);
+	container.getProfile(remoteUrl.toURI());
+	// Should have been hit for schema
+	assertEquals(1, myER.byteStreamRequested);
+	// Request once more, it should come from chache
+	container.getProfile(remoteUrl.toURI());
+	// Should have no additional hits for schema
+	assertEquals(1, myER.byteStreamRequested);
     }
 }

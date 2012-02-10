@@ -16,13 +16,10 @@
  */
 package nl.mpi.metadata.cmdi.api;
 
-import org.w3c.dom.Document;
-import java.io.InputStream;
 import nl.mpi.metadata.api.SimpleErrorHandler;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.validation.MockCMDIValidator;
-import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -42,7 +39,7 @@ public class CMDIApiTest extends CMDIAPITestCase {
 	CMDIDocument testDocument = getNewTestDocument();
 	documentReader = new MockCMDIDocumentReader(testDocument);
 	api = new CMDIApi(documentReader);
-	api.setEntityResolver(new CMDIEntityResolver());
+	api.setEntityResolver(CMDI_API_TEST_ENTITY_RESOLVER);
     }
 
     /**
@@ -58,7 +55,7 @@ public class CMDIApiTest extends CMDIAPITestCase {
      */
     @Test
     public void testGetMetadataDocument() throws Exception {
-	CMDIDocument document = api.getMetadataDocument(testSchemaSmall);
+	CMDIDocument document = api.getMetadataDocument(testSchemaTextCorpus);
 	// Mock reader will simply return the document passed in the constructor
 	assertEquals(documentReader.getCmdiDocument(), document);
 	// It will also store the input document

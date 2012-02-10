@@ -43,7 +43,7 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 
     @Before
     public void setUp() {
-	profileContainer = new CMDIProfileContainer();
+	profileContainer = new CMDIProfileContainer(CMDI_API_TEST_ENTITY_RESOLVER);
 	reader = new CMDIDocumentReader(profileContainer);
     }
 

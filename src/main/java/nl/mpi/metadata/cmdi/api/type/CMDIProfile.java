@@ -30,9 +30,13 @@ import org.apache.xmlbeans.XmlBeans;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
 
 import static nl.mpi.metadata.cmdi.api.CMDIConstants.CMD_NAMESPACE;
+import org.slf4j.Logger;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * This class represents a CMDI profile, defined by http://www.clarin.eu/cmd/general-component-schema.xsd
@@ -44,6 +48,7 @@ import static nl.mpi.metadata.cmdi.api.CMDIConstants.CMD_NAMESPACE;
  */
 public class CMDIProfile extends ComponentType implements MetadataDocumentType<CMDIProfileElement> {
 
+    private static Logger logger = LoggerFactory.getLogger(CMDIProfile.class);
     public final static QName CMD_TYPE_NAME = new QName(CMD_NAMESPACE, "CMD");
     public final static QName COMPONENTS_TYPE_NAME = new QName(CMD_NAMESPACE, "Components");
     public final static QName HEADER_TYPE_NAME = new QName(CMD_NAMESPACE, "Header");
@@ -65,10 +70,10 @@ public class CMDIProfile extends ComponentType implements MetadataDocumentType<C
 	super(null, null, null);
 	this.schemaLocation = schemaLocation;
 	this.entityResolver = entityResolver;
-	
+
 	// Find the schema element
 	setSchemaElement(loadSchema());
-	
+
 	// Set path for root component
 	setPath(new StringBuilder("/CMD/Components/").append(getSchemaElement().getName().getLocalPart()));
 
@@ -88,8 +93,7 @@ public class CMDIProfile extends ComponentType implements MetadataDocumentType<C
      * @throws CMDITypeException 
      */
     private SchemaProperty loadSchema() throws IOException, CMDITypeException {
-	URL schemaUrl = schemaLocation.toURL();
-	InputStream inputStream = schemaUrl.openStream();
+	InputStream inputStream = getSchemaInputStream();
 	try {
 	    XmlOptions xmlOptions = new XmlOptions();
 	    xmlOptions.setCharacterEncoding("UTF-8");
@@ -107,7 +111,7 @@ public class CMDIProfile extends ComponentType implements MetadataDocumentType<C
 	    return findRootComponentElement(componentsElement);
 
 	} catch (XmlException ex) {
-	    throw new CMDITypeException("XML exception while loading schema " + schemaUrl, ex);
+	    throw new CMDITypeException("XML exception while loading schema " + schemaLocation, ex);
 	} finally {
 	    inputStream.close();
 	}
@@ -140,5 +144,22 @@ public class CMDIProfile extends ComponentType implements MetadataDocumentType<C
 	    throw new CMDITypeException("Expecting 1 root component for profile, found " + componentsChildren.length);
 	}
 	return componentsChildren[0];
+    }
+
+    private InputStream getSchemaInputStream() throws IOException {
+	if (entityResolver != null) {
+	    try {
+		InputSource resolvedEntity = entityResolver.resolveEntity(null, schemaLocation.toString());
+		final InputStream byteStream = resolvedEntity.getByteStream();
+		if (byteStream != null) {
+		    return byteStream;
+		} else if (resolvedEntity.getSystemId() != null) {
+		    return new URL(resolvedEntity.getSystemId()).openStream();
+		}
+	    } catch (SAXException sEx) {
+		logger.warn("SAXException while resolving schema location. Proceeding with unresolved location: " + schemaLocation.toString(), sEx);
+	    }
+	}
+	return schemaLocation.toURL().openStream();
     }
 }
