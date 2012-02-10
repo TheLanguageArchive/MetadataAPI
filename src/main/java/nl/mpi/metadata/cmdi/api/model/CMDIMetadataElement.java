@@ -16,6 +16,10 @@
  */
 package nl.mpi.metadata.cmdi.api.model;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import nl.mpi.metadata.api.model.MetadataElementAttributeContainer;
 import nl.mpi.metadata.api.model.ReferencingMetadataElement;
 import org.w3c.dom.Node;
 
@@ -23,16 +27,45 @@ import org.w3c.dom.Node;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface CMDIMetadataElement extends ReferencingMetadataElement<Attribute> {
+public abstract class CMDIMetadataElement implements ReferencingMetadataElement, MetadataElementAttributeContainer<Attribute> {
 
-    void setPath(String path);
-    
+    private String path;
+    private Collection<Attribute> attributes;
+
+    protected CMDIMetadataElement() {
+	attributes = new HashSet<Attribute>();
+    }
+
+    public void setPath(String path) {
+	this.path = path;
+    }
+
+    public String getPath() {
+	return path;
+    }
+
+    public synchronized boolean addAttribute(Attribute attribute) {
+	return attributes.add(attribute);
+    }
+
+    public synchronized boolean removeAttribute(Attribute attribute) {
+	return attributes.remove(attribute);
+    }
+
+    /**
+     * 
+     * @return An <em>unmodifiable</em> collection of this element's attributes
+     */
+    public synchronized Collection<Attribute> getAttributes() {
+	return Collections.unmodifiableCollection(attributes);
+    }
+
     /**
      * 
      * @return The CMDI document this container belongs to (more type specific than interface implemented)
      * @see nl.mpi.metadata.api.model.MetadataElement#getMetadataDocument() 
      */
-    CMDIDocument getMetadataDocument();
-    
-    Node getDomNode();
+    abstract public CMDIDocument getMetadataDocument();
+
+    abstract public Node getDomNode();
 }

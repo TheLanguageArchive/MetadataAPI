@@ -29,13 +29,12 @@ import org.w3c.dom.Node;
  * 
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class Element<T> implements CMDIMetadataElement, MetadataField<T, CMDIMetadataElement, Attribute> {
+public class Element<T> extends CMDIMetadataElement implements MetadataField<T, CMDIMetadataElement> {
 
     private final CMDIDocument metadataDocument;
     private CMDIContainerMetadataElement parent;
     private Node domNode;
     private ElementType elementType;
-    private String path;
     private T value;
 
     public Element(Node domNode, ElementType elementType, CMDIContainerMetadataElement parent, T value) {
@@ -70,20 +69,8 @@ public class Element<T> implements CMDIMetadataElement, MetadataField<T, CMDIMet
 	return metadataDocument;
     }
 
-    public String getPath() {
-	return path;
-    }
-
-    public void setPath(String path) {
-	this.path = path;
-    }
-
     public Node getDomNode() {
 	return domNode;
-    }
-
-    public Collection<Attribute> getAttributes() {
-	throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public void addMetadataElementListener(MetadataElementListener listener) {

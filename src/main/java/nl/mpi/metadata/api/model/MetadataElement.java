@@ -16,7 +16,6 @@
  */
 package nl.mpi.metadata.api.model;
 
-import java.util.Collection;
 import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.api.type.MetadataElementType;
 
@@ -24,7 +23,7 @@ import nl.mpi.metadata.api.type.MetadataElementType;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface MetadataElement<A extends MetadataElementAttribute> {
+public interface MetadataElement {
 
     /**
      * 
@@ -43,13 +42,6 @@ public interface MetadataElement<A extends MetadataElementAttribute> {
      * @return Document that this element is part of
      */
     MetadataDocument getMetadataDocument();
-
-    
-    /**
-     * 
-     * @return Collection of attributes this element has
-     */
-    Collection<A> getAttributes();
 
     /**
      * Registers a @see MetadataElementListener for this element

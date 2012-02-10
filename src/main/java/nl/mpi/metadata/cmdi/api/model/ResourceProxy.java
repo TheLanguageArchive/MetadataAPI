@@ -17,9 +17,7 @@
 package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
-import java.util.Collection;
 import nl.mpi.metadata.api.model.MetadataDocument;
-import nl.mpi.metadata.api.model.MetadataElementAttribute;
 import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.api.type.MetadataElementType;
@@ -47,14 +45,6 @@ public class ResourceProxy implements Reference {
     }
 
     public MetadataDocument getMetadataDocument() {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getPath() {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Collection<MetadataElementAttribute> getAttributes() {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 

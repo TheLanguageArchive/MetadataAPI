@@ -37,9 +37,8 @@ import org.w3c.dom.Node;
  * @see CMDIDocument
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public abstract class CMDIContainerMetadataElement implements CMDIMetadataElement, MetadataContainer<CMDIMetadataElement> {
+public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement implements MetadataContainer<CMDIMetadataElement> {
 
-    private String path;
     private ComponentType type;
     private List<CMDIMetadataElement> children;
 
@@ -79,10 +78,6 @@ public abstract class CMDIContainerMetadataElement implements CMDIMetadataElemen
 	return Collections.unmodifiableList(children);
     }
 
-    public Collection<Attribute> getAttributes() {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
     public void addMetadataElementListener(MetadataElementListener listener) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -101,14 +96,6 @@ public abstract class CMDIContainerMetadataElement implements CMDIMetadataElemen
 
     public MetadataReference createMetadataReference(URI uri, String mimetype) {
 	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getPath() {
-	return path;
-    }
-
-    public void setPath(String path) {
-	this.path = path;
     }
 
     public String getName() {
