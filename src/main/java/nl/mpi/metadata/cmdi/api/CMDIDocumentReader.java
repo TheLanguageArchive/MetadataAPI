@@ -292,12 +292,6 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
     }
 
     private Node getAttributeNodeByType(final NamedNodeMap attributesMap, final MetadataElementAttributeType attributeType) throws DOMException {
-	//final Node attributeNode = xPathAPI.selectSingleNode(instanceNode, "@" + attributeType.getName());
-//	if (CMDIConstants.XML_NAMESPACE.equals(attributeType.getNamespaceURI())) {
-//	    // XML namespace is not recognized by DOM. Instead get by xml: prefix
-//	    return attributesMap.getNamedItem("xml:" + attributeType.getName());
-//	} else {
 	return attributesMap.getNamedItemNS(attributeType.getNamespaceURI(), attributeType.getName());
-//	}
     }
 }

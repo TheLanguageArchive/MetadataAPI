@@ -20,27 +20,13 @@
       <TextCorpusProfile>
          <Collection>
             <GeneralInfo>
-               <Name xml:lang="en">TextCorpus test</Name>
+               <Name xml:lang="not-a-language">TextCorpus test</Name>
                <Description>
-                  <Description LanguageID="nl">Test voor TextCorpus</Description>
+                  <Description UnsupportedAttribute="true" LanguageID="nl">Test voor TextCorpus</Description>
                </Description>
             </GeneralInfo>
             <OriginLocation>
                <Location>
-                  <Country>
-                     <Code>NL</Code>
-                  </Country>
-                  <Continent>
-                     <Code>EU</Code>
-                  </Continent>
-               </Location>
-               <Location>
-                  <Country>
-                     <Code>BE</Code>
-                  </Country>
-                  <Continent>
-                     <Code>EU</Code>
-                  </Continent>
                </Location>
             </OriginLocation>
             <Access>
@@ -50,7 +36,7 @@
          </Collection>
          <Corpus>
             <Modality>
-               <Modality>Spoken</Modality>
+               <Modality>Not in list</Modality>
             </Modality>
             <Validation>
                <Validation>true</Validation>

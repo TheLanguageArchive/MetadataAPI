@@ -68,7 +68,7 @@ public class CMDIDomBuilder {
 
     public final void readSchema(Document workingDocument, URI xsdFile, boolean addDummyData) throws FileNotFoundException, XmlException, MalformedURLException, IOException {
 	SchemaType schemaType = getFirstSchemaType(xsdFile);
-	constructXml(schemaType.getElementProperties()[0], "documentTypes", workingDocument, xsdFile.toString(), null, addDummyData);
+	constructXml(schemaType.getElementProperties()[0], workingDocument, xsdFile.toString(), null, addDummyData);
     }
 
     /**
@@ -94,10 +94,8 @@ public class CMDIDomBuilder {
 	}
     }
 
-    private Node constructXml(SchemaProperty currentSchemaProperty, String pathString, Document workingDocument, String nameSpaceUri, Node parentElement, boolean addDummyData) {
+    private Node constructXml(SchemaProperty currentSchemaProperty,Document workingDocument, String nameSpaceUri, Node parentElement, boolean addDummyData) {
 	Node returnNode = null;
-	// this must be tested against getting the actor description not the actor of an imdi profile instance
-	String currentPathString = pathString + "." + currentSchemaProperty.getName().getLocalPart();
 	SchemaType currentSchemaType = currentSchemaProperty.getType();
 	Node currentElement = appendNode(workingDocument, nameSpaceUri, parentElement, currentSchemaProperty);
 	returnNode = currentElement;
@@ -122,7 +120,7 @@ public class CMDIDomBuilder {
 		}
 	    }
 	    for (BigInteger addNodeCounter = BigInteger.ZERO; addNodeCounter.compareTo(maxNumberToAdd) < 0; addNodeCounter = addNodeCounter.add(BigInteger.ONE)) {
-		constructXml(schemaProperty, currentPathString, workingDocument, nameSpaceUri, currentElement, addDummyData);
+		constructXml(schemaProperty, workingDocument, nameSpaceUri, currentElement, addDummyData);
 	    }
 	}
 	return returnNode;
@@ -146,7 +144,7 @@ public class CMDIDomBuilder {
     }
 
     private Element appendElementNode(Document workingDocument, String nameSpaceUri, Node parentElement, SchemaProperty schemaProperty) {
-	Element currentElement = workingDocument.createElementNS(CMDIConstants.CMD_NAMESPACE, schemaProperty.getName().getLocalPart());
+	Element currentElement = workingDocument.createElementNS(schemaProperty.getName().getNamespaceURI(), schemaProperty.getName().getLocalPart());
 	SchemaType currentSchemaType = schemaProperty.getType();
 	for (SchemaProperty attributesProperty : currentSchemaType.getAttributeProperties()) {
 	    if (attributesProperty.getMinOccurs() != null && !attributesProperty.getMinOccurs().equals(BigInteger.ZERO)) {
