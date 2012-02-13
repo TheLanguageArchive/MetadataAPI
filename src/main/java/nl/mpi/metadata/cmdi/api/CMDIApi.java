@@ -16,6 +16,8 @@
  */
 package nl.mpi.metadata.cmdi.api;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,6 +26,13 @@ import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import nl.mpi.metadata.api.MetadataAPI;
 import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.MetadataDocumentReader;
@@ -143,7 +152,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
 	    return getDocumentReader().read(document, url.toURI());
 	} catch (SAXException saxEx) {
 	    throw new MetadataDocumentException(null, "SAXException while building document from " + url, saxEx);
-	} catch(URISyntaxException usEx){
+	} catch (URISyntaxException usEx) {
 	    // This should not happen, since at this point the stream has already been openend!
 	    throw new RuntimeException("URISyntaxException while building document from " + url, usEx);
 	} finally {
@@ -154,7 +163,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
     public CMDIDocument createMetadataDocument(CMDIProfile type) throws MetadataDocumentException {
 	// Create new DOM instance
 	final DocumentBuilder documentBuilder = newDOMBuilder();
-	final Document document = documentBuilder.newDocument();
+	Document document = documentBuilder.newDocument();
 
 	try {
 	    componentBuilder.readSchema(document, type.getSchemaLocation(), true);
@@ -166,13 +175,43 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
 	} catch (IOException ex) {
 	    throw new MetadataDocumentException(ex);
 	}
-
 	try {
-	    return documentReader.read(document, null);
+	    // Read from reloaded copy of document. No URI available at this point.
+	    return documentReader.read(reloadDom(documentBuilder, document), null);
 	} catch (IOException ex) {
 	    throw new MetadataDocumentException(
 		    "I/O exception while reading newly created metadata document. "
 		    + "Most likely the profile schema is not readable. See the inner exception for details.", ex);
+	}
+    }
+
+    /**
+     * Serializes (in memory) and de-serializes XML document causing it to be re-processed
+     * @param builder document builder to use
+     * @param document document to reload
+     * @return a reloaded copy of the provided document
+     */
+    private Document reloadDom(DocumentBuilder builder, Document document) {
+	try {
+	    // Create memory output stream
+	    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	    final StreamResult xmlOutput = new StreamResult(outputStream);
+
+	    // Serialize document to byte array stream
+	    final Transformer transformer = TransformerFactory.newInstance().newTransformer();
+	    transformer.transform(new DOMSource(document), xmlOutput);
+
+	    // Parse document from in-memory byte array
+	    final ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+	    return builder.parse(inputStream);
+	} catch (IOException ex) {
+	    throw new RuntimeException("Exception while reloading DOM", ex);
+	} catch (SAXException ex) {
+	    throw new RuntimeException("Exception while reloading DOM", ex);
+	} catch (TransformerException ex) {
+	    throw new RuntimeException("Exception while reloading DOM", ex);
+	} catch (TransformerFactoryConfigurationError ex) {
+	    throw new RuntimeException("Exception while reloading DOM", ex);
 	}
     }
 
