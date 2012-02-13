@@ -51,18 +51,6 @@ public class CMDIApiTest extends CMDIAPITestCase {
     }
 
     /**
-     * Test of getMetadataDocument method, of class CMDIApi.
-     */
-    @Test
-    public void testGetMetadataDocument() throws Exception {
-	CMDIDocument document = api.getMetadataDocument(testSchemaTextCorpus);
-	// Mock reader will simply return the document passed in the constructor
-	assertEquals(documentReader.getCmdiDocument(), document);
-	// It will also store the input document
-	assertNotNull(documentReader.getDocument());
-    }
-
-    /**
      * Test of validateMetadataDocument method, of class CMDIApi.
      */
     @Test
@@ -87,24 +75,6 @@ public class CMDIApiTest extends CMDIAPITestCase {
 	assertEquals(warnings, errorHandler.getWarnings().size());
 	assertEquals(errors, errorHandler.getErrors().size());
 	assertEquals(fatalErrors, errorHandler.getFatalErrors().size());
-    }
-
-    /**
-     * Test of createMetadataDocument method, of class CMDIApi.
-     */
-    @Test
-    public void testCreateMetadataDocument() throws Exception {
-	CMDIProfile profile = getNewTestProfileAndRead(testSchemaSmall.toURI());
-	CMDIDocument document = api.createMetadataDocument(profile);
-	assertNotNull(document);
-    }
-
-    /**
-     * Test of createMetadataElement method, of class CMDIApi.
-     */
-    @Test
-    @Ignore
-    public void testCreateMetadataElement() {
     }
 
     /**
