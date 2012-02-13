@@ -45,24 +45,24 @@ import org.xml.sax.EntityResolver;
  * @author Peter.Withers@mpi.nl
  * @see <a href="http://tla.mpi.nl/tools/tla-tools/arbil">Arbil Metadata editor</a>
  */
-public class CMDIComponentBuilder {
+public class CMDIDomBuilder {
 
     private final EntityResolver entityResolver;
 
     /**
-     * Creates CMDIComponentBuilder with no EntityResolver specified
-     * @see #CMDIComponentBuilder(org.xml.sax.EntityResolver) 
+     * Creates CMDIDomBuilder with no EntityResolver specified
+     * @see #CMDIDomBuilder(org.xml.sax.EntityResolver) 
      */
-    public CMDIComponentBuilder() {
+    public CMDIDomBuilder() {
 	this(null);
     }
 
     /**
-     * Creates CMDIComponentBuilder with a specified EntityResolver
+     * Creates CMDIDomBuilder with a specified EntityResolver
      * @param entityResolver 
      * @see #getEntityResolver() 
      */
-    public CMDIComponentBuilder(EntityResolver entityResolver) {
+    public CMDIDomBuilder(EntityResolver entityResolver) {
 	this.entityResolver = entityResolver;
     }
 

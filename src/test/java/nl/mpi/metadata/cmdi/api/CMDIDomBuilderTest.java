@@ -29,14 +29,14 @@ import static org.junit.Assert.*;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIComponentBuilderTest extends CMDIAPITestCase {
+public class CMDIDomBuilderTest extends CMDIAPITestCase {
 
     /**
-     * Test of readSchema method, of class CMDIComponentBuilder.
+     * Test of readSchema method, of class CMDIDomBuilder.
      */
     @Test
     public void testReadSchema() throws Exception {
-	CMDIComponentBuilder instance = new CMDIComponentBuilder(CMDI_API_TEST_ENTITY_RESOLVER);
+	CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER);
 	Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
 	instance.readSchema(document, new URI(REMOTE_TEXT_CORPUS_SCHEMA_URL), false);
 
@@ -49,12 +49,12 @@ public class CMDIComponentBuilderTest extends CMDIAPITestCase {
     }
 
     /**
-     * Test of getEntityResolver method, of class CMDIComponentBuilder.
+     * Test of getEntityResolver method, of class CMDIDomBuilder.
      */
     @Test
     public void testGetEntityResolver() {
 	EntityResolver entityResolver = new CMDIEntityResolver();
-	CMDIComponentBuilder instance = new CMDIComponentBuilder(entityResolver);
+	CMDIDomBuilder instance = new CMDIDomBuilder(entityResolver);
 	assertSame(entityResolver, instance.getEntityResolver());
     }
 }

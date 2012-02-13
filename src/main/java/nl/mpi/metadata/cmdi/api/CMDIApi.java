@@ -64,7 +64,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
      * Service that manipulates DOM representation of CMDI documents
      * TODO: Extract interface and support arbitrary implementations
      */
-    private CMDIComponentBuilder componentBuilder = new CMDIComponentBuilder() {
+    private CMDIDomBuilder componentBuilder = new CMDIDomBuilder() {
 
 	@Override
 	protected synchronized EntityResolver getEntityResolver() {
