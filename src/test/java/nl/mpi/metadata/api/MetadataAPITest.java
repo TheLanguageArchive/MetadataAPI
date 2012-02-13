@@ -34,14 +34,12 @@ import static org.junit.Assert.*;
  */
 public abstract class MetadataAPITest {
 
-    public MetadataAPITest() {
-    }
     private MetadataAPI api;
 
     @Before
     public void setUp() {
 	try {
-	    api = createAPI();
+	    api = getProvider().createAPI();
 	} catch (Exception ex) {
 	    throw new RuntimeException("Exception while setting up MetadataAPITest", ex);
 	}
@@ -52,31 +50,13 @@ public abstract class MetadataAPITest {
 	api = null;
     }
 
-    protected MetadataAPI getAPI() {
-	return api;
-    }
-
-    protected abstract MetadataAPI createAPI() throws Exception;
-
-    protected abstract MetadataDocumentType createDocumentType() throws Exception;
-
-    protected abstract MetadataDocument createDocument() throws Exception;
-
-    protected abstract MetadataDocument createInvalidDocument() throws Exception;
-
-    protected abstract MetadataContainer createEmptyParentElement(MetadataDocument document) throws Exception;
-
-    protected abstract MetadataElementType createAddableType() throws Exception;
-
-    protected abstract URL getDocumentURL() throws Exception;
-
     /**
      * Test of getMetadataDocument method, of class MetadataAPI.
      */
     @Test
     public void testGetMetadataDocument() throws Exception {
-	URL url = getDocumentURL();
-	MetadataDocument expResult = createDocument();
+	URL url = getProvider().getDocumentURL();
+	MetadataDocument expResult = getProvider().createDocument();
 	MetadataDocument result = api.getMetadataDocument(url);
 	assertEquals(expResult.getType(), result.getType());
 	assertEquals(expResult.getChildren().size(), result.getChildren().size());
@@ -87,8 +67,8 @@ public abstract class MetadataAPITest {
      */
     @Test
     public void testCreateMetadataDocument() throws Exception {
-	final MetadataDocumentType documentType = createDocumentType();
-	MetadataDocument expResult = createDocument();
+	final MetadataDocumentType documentType = getProvider().createDocumentType();
+	MetadataDocument expResult = getProvider().createDocument();
 	MetadataDocument result = api.createMetadataDocument(documentType);
 	assertEquals(expResult.getType(), result.getType());
 	assertEquals(expResult.getChildren().size(), result.getChildren().size());
@@ -99,8 +79,8 @@ public abstract class MetadataAPITest {
      */
     @Test
     public void testValidateMetadataDocument() throws Exception {
-	MetadataDocument validDocument = createDocument();
-	MetadataDocument invalidDocument = createInvalidDocument();
+	MetadataDocument validDocument = getProvider().createDocument();
+	MetadataDocument invalidDocument = getProvider().createInvalidDocument();
 	SimpleErrorHandler errorHandler = new SimpleErrorHandler();
 	api.validateMetadataDocument(validDocument, errorHandler);
 	assertEquals(0, errorHandler.getErrors().size());
@@ -119,8 +99,8 @@ public abstract class MetadataAPITest {
     @Test
     @Ignore
     public void testCreateMetadataElement() throws Exception {
-	MetadataContainer parentElement = createEmptyParentElement(createDocument());
-	MetadataElementType type = createAddableType();
+	MetadataContainer parentElement = getProvider().createEmptyParentElement(getProvider().createDocument());
+	MetadataElementType type = getProvider().createAddableType();
 	MetadataElement result = api.createMetadataElement(parentElement, type);
 	assertNotNull(result);
     }
@@ -131,8 +111,8 @@ public abstract class MetadataAPITest {
     @Test
     @Ignore
     public void testRemoveElement() throws Exception {
-	MetadataContainer parentElement = createEmptyParentElement(createDocument());
-	MetadataElementType type = createAddableType();
+	MetadataContainer parentElement = getProvider().createEmptyParentElement(getProvider().createDocument());
+	MetadataElementType type = getProvider().createAddableType();
 	// Add an element
 	MetadataElement element = api.createMetadataElement(parentElement, type);
 	assertEquals(1, parentElement.getChildren().size());
@@ -145,5 +125,28 @@ public abstract class MetadataAPITest {
 	// cannot remove twice
 	result = api.removeElement(element);
 	assertFalse(result);
+    }
+
+    protected MetadataAPI getAPI() {
+	return api;
+    }
+
+    protected abstract MetadataAPITestProvider getProvider();
+
+    protected interface MetadataAPITestProvider {
+
+	MetadataAPI createAPI() throws Exception;
+
+	MetadataDocumentType createDocumentType() throws Exception;
+
+	MetadataDocument createDocument() throws Exception;
+
+	MetadataDocument createInvalidDocument() throws Exception;
+
+	MetadataContainer createEmptyParentElement(MetadataDocument document) throws Exception;
+
+	MetadataElementType createAddableType() throws Exception;
+
+	URL getDocumentURL() throws Exception;
     }
 }

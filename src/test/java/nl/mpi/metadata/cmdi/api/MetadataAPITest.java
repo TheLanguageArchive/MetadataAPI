@@ -17,6 +17,7 @@
 package nl.mpi.metadata.cmdi.api;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import nl.mpi.metadata.api.MetadataAPI;
 import nl.mpi.metadata.api.model.MetadataContainer;
@@ -30,59 +31,68 @@ import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 
 /**
- *
+ * Implementation of MetadataAPI test for {@link CMDIApi}
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class MetadataAPITest extends nl.mpi.metadata.api.MetadataAPITest {
 
-    private final URI schemaURI;
+    private final MetadataAPITestProvider provider;
 
     public MetadataAPITest() throws Exception {
-	schemaURI = CMDIAPITestCase.testSchemaSmall.toURI();
-    }
-    private CMDIAPITestCase testCase = new CMDIAPITestCase() {
-    };
-
-    @Override
-    protected MetadataAPI createAPI() throws Exception {
-	CMDIApi api = new CMDIApi();
-	return api;
+	provider = new CMDIMetadataAPITestProvider();
     }
 
     @Override
-    protected MetadataDocumentType createDocumentType() throws Exception {
-	return testCase.getNewTestProfileAndRead(CMDIAPITestCase.testSchemaTextCorpus.toURI());
+    protected MetadataAPITestProvider getProvider() {
+	return provider;
     }
 
     @Override
-    protected MetadataDocument createDocument() throws Exception {
-	return testCase.getNewTestDocument(CMDIAPITestCase.testSchemaTextCorpus.toURI(), CMDIAPITestCase.TEXT_CORPUS_INSTANCE_LOCATION, CMDIAPITestCase.TEXT_CORPUS_PROFILE_ROOT_NODE_PATH);
+    protected CMDIApi getAPI() {
+	return (CMDIApi) super.getAPI();
     }
 
-    @Override
-    protected MetadataDocument createInvalidDocument() throws Exception {
-	return testCase.getNewTestDocument(CMDIAPITestCase.testSchemaTextCorpus.toURI(), "/cmdi/TextCorpusProfile-instance-invalid.cmdi", CMDIAPITestCase.TEXT_CORPUS_PROFILE_ROOT_NODE_PATH);
-    }
+    private class CMDIMetadataAPITestProvider extends CMDIAPITestCase implements MetadataAPITestProvider {
 
-    @Override
-    protected MetadataContainer createEmptyParentElement(MetadataDocument document) throws Exception {
-	CMDIDocument cmdiDocument = (CMDIDocument) document;
-	CMDIProfile profile = ((CMDIApi) getAPI()).getProfileContainer().getProfile(schemaURI);
+	private final URI schemaURI;
 
-	CMDIProfileElement testComponentType = profile.getContainableTypes().iterator().next();
-	return (Component) getAPI().createMetadataElement(cmdiDocument, testComponentType);
-    }
+	private CMDIMetadataAPITestProvider() throws URISyntaxException {
+	    schemaURI = testSchemaTextCorpus.toURI();
+	}
 
-    @Override
-    protected MetadataElementType createAddableType() throws Exception {
-	CMDIProfile profile = ((CMDIApi) getAPI()).getProfileContainer().getProfile(schemaURI);
-	ComponentType testComponentType = (ComponentType) profile.getContainableTypes().iterator().next();
-	CMDIProfileElement booleanElement = testComponentType.getContainableTypes().iterator().next();
-	return booleanElement;
-    }
+	public MetadataAPI createAPI() throws Exception {
+	    return new CMDIApi();
+	}
 
-    @Override
-    protected URL getDocumentURL() throws Exception {
-	return getClass().getResource(CMDIAPITestCase.TEXT_CORPUS_INSTANCE_LOCATION);
+	public MetadataDocumentType createDocumentType() throws Exception {
+	    return getNewTestProfileAndRead(schemaURI);
+	}
+
+	public MetadataDocument createDocument() throws Exception {
+	    return getNewTestDocument(schemaURI, TEXT_CORPUS_INSTANCE_LOCATION, TEXT_CORPUS_PROFILE_ROOT_NODE_PATH);
+	}
+
+	public MetadataDocument createInvalidDocument() throws Exception {
+	    return getNewTestDocument(schemaURI, "/cmdi/TextCorpusProfile-instance-invalid.cmdi", TEXT_CORPUS_PROFILE_ROOT_NODE_PATH);
+	}
+
+	public MetadataContainer createEmptyParentElement(MetadataDocument document) throws Exception {
+	    CMDIDocument cmdiDocument = (CMDIDocument) document;
+	    CMDIProfile profile = getAPI().getProfileContainer().getProfile(schemaURI);
+
+	    CMDIProfileElement testComponentType = profile.getContainableTypes().iterator().next();
+	    return (Component) getAPI().createMetadataElement(cmdiDocument, testComponentType);
+	}
+
+	public MetadataElementType createAddableType() throws Exception {
+	    CMDIProfile profile = getAPI().getProfileContainer().getProfile(schemaURI);
+	    ComponentType testComponentType = (ComponentType) profile.getContainableTypes().iterator().next();
+	    CMDIProfileElement booleanElement = testComponentType.getContainableTypes().iterator().next();
+	    return booleanElement;
+	}
+
+	public URL getDocumentURL() throws Exception {
+	    return getClass().getResource(TEXT_CORPUS_INSTANCE_LOCATION);
+	}
     }
 }
