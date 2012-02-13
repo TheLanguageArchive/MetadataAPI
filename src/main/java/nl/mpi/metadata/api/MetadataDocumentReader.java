@@ -17,6 +17,7 @@
 package nl.mpi.metadata.api;
 
 import java.io.IOException;
+import java.net.URI;
 import nl.mpi.metadata.api.model.MetadataDocument;
 import org.w3c.dom.Document;
 
@@ -26,5 +27,5 @@ import org.w3c.dom.Document;
  */
 public interface MetadataDocumentReader<T extends MetadataDocument> {
 
-    T read(Document document) throws MetadataDocumentException, IOException;
+    T read(Document document, URI documentURI) throws MetadataDocumentException, IOException;
 }

@@ -19,6 +19,7 @@ package nl.mpi.metadata.cmdi.api;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -35,6 +36,7 @@ import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
 import nl.mpi.metadata.cmdi.api.validation.DefaultCMDIValidator;
+import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.apache.xmlbeans.XmlException;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
@@ -87,8 +89,8 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
      * @see CMDIDocumentReader
      */
     public CMDIApi() {
+	this(null);
 	this.documentReader = new CMDIDocumentReader(profileContainer);
-	this.cmdiValidator = new DefaultCMDIValidator();
     }
 
     /**
@@ -96,8 +98,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
      * @param documentReader the MetadataDocumentReader to use
      */
     public CMDIApi(MetadataDocumentReader<CMDIDocument> documentReader) {
-	this.documentReader = documentReader;
-	this.cmdiValidator = new DefaultCMDIValidator();
+	this(documentReader, new DefaultCMDIValidator());
     }
 
     /**
@@ -106,8 +107,13 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
      * @param cmdiValidator the MetadataValidator to use
      */
     public CMDIApi(MetadataDocumentReader<CMDIDocument> documentReader, MetadataValidator<CMDIDocument> cmdiValidator) {
+	this(documentReader, cmdiValidator, new CMDIEntityResolver());
+    }
+
+    public CMDIApi(MetadataDocumentReader<CMDIDocument> documentReader, MetadataValidator<CMDIDocument> cmdiValidator, EntityResolver entityResolver) {
 	this.documentReader = documentReader;
 	this.cmdiValidator = cmdiValidator;
+	this.entityResolver = entityResolver;
     }
 
     public MetadataElement createMetadataElement(CMDIContainerMetadataElement parent, MetadataElementType type) {
@@ -119,7 +125,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public MetadataElement removeElement(CMDIMetadataElement element) throws MetadataDocumentException {
+    public boolean removeElement(CMDIMetadataElement element) throws MetadataDocumentException {
 	// Find parent
 	// Remove from DOM
 	// Remove as child in parent
@@ -134,9 +140,12 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
 	InputStream documentStream = url.openStream();
 	try {
 	    Document document = newDOMBuilder().parse(documentStream, url.toExternalForm());
-	    return getDocumentReader().read(document);
+	    return getDocumentReader().read(document, url.toURI());
 	} catch (SAXException saxEx) {
 	    throw new MetadataDocumentException(null, "SAXException while building document from " + url, saxEx);
+	} catch(URISyntaxException usEx){
+	    // This should not happen, since at this point the stream has already been openend!
+	    throw new RuntimeException("URISyntaxException while building document from " + url, usEx);
 	} finally {
 	    documentStream.close();
 	}
@@ -159,7 +168,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
 	}
 
 	try {
-	    return documentReader.read(document);
+	    return documentReader.read(document, null);
 	} catch (IOException ex) {
 	    throw new MetadataDocumentException(
 		    "I/O exception while reading newly created metadata document. "
@@ -256,6 +265,13 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
      */
     public void setEntityResolver(EntityResolver entityResolver) {
 	this.entityResolver = entityResolver;
+    }
+
+    /**
+     * @return the profileContainer used in this API instance
+     */
+    public CMDIProfileContainer getProfileContainer() {
+	return profileContainer;
     }
     //</editor-fold>
 }

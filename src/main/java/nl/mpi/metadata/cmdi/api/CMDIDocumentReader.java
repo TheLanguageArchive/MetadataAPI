@@ -64,15 +64,16 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 
     /**
      * Reads the specified document into a new {@link CMDIDocument} instance
-     * @param document
+     * @param document DOM object to read. Should have been parsed with a <em>namespace aware</em> builder!!
+     * @param documentURI URI for the document. Can be null if no identifier is available (e.g. file has not been saved)
      * @return
      * @throws MetadataDocumentException if an unexpected circumstance is detected while reading the document
      * @throws IOException if an I/O error occurs while reading the profile schema through the {@link CMDIProfileContainer} referenced in the document
      */
-    public CMDIDocument read(final Document document) throws MetadataDocumentException, DOMException, IOException {
+    public CMDIDocument read(final Document document, final URI documentURI) throws MetadataDocumentException, DOMException, IOException {
 	final CachedXPathAPI xPathAPI = new CachedXPathAPI();
-	final CMDIProfile profile = getProfileForDocument(document, xPathAPI);
-	final CMDIDocument cmdiDocument = createCMDIDocument(xPathAPI, document, profile);
+	final CMDIProfile profile = getProfileForDocument(document, documentURI, xPathAPI);
+	final CMDIDocument cmdiDocument = createCMDIDocument(xPathAPI, document, documentURI, profile);
 
 	readHeader(cmdiDocument, document, xPathAPI);
 	//readResources(cmdiDocument, document);
@@ -81,7 +82,7 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	return cmdiDocument;
     }
 
-    private CMDIDocument createCMDIDocument(final CachedXPathAPI xPathAPI, final Document document, final CMDIProfile profile) throws MetadataDocumentException {
+    private CMDIDocument createCMDIDocument(final CachedXPathAPI xPathAPI, final Document document, URI documentURI, final CMDIProfile profile) throws MetadataDocumentException {
 	final String rootComponentNodePath = profile.getPathString();
 	try {
 	    final Node rootComponentNode = xPathAPI.selectSingleNode(document, rootComponentNodePath);
@@ -91,7 +92,7 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	    }
 
 	    logger.debug("Found documentNode at {}", rootComponentNodePath);
-	    return new CMDIDocument(rootComponentNode, profile);
+	    return new CMDIDocument(rootComponentNode, profile, documentURI);
 	} catch (TransformerException tEx) {
 	    throw new MetadataDocumentException(
 		    String.format("TransormationException while looking up root component node at specified path: %1$s", rootComponentNodePath),
@@ -106,11 +107,14 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
      * @throws MetadataDocumentException
      * @throws IOException 
      */
-    private CMDIProfile getProfileForDocument(final Document document, final CachedXPathAPI xPathAPI) throws MetadataDocumentException, IOException {
+    private CMDIProfile getProfileForDocument(final Document document, final URI documentURI, final CachedXPathAPI xPathAPI) throws MetadataDocumentException, IOException {
 	try {
-	    final URI profileURI = getProfileURI(document, xPathAPI);
+	    URI profileURI = getProfileURI(document, xPathAPI);
 	    if (profileURI == null) {
 		throw new MetadataDocumentException("No profile URI found in metadata document");
+	    }
+	    if (documentURI != null) {
+		profileURI = documentURI.resolve(profileURI);
 	    }
 	    try {
 		return profileContainer.getProfile(profileURI);
@@ -133,7 +137,7 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
      */
     private URI getProfileURI(final Document document, final CachedXPathAPI xPathAPI) throws TransformerException, URISyntaxException {
 	// Find the <CMD xsi:schemaLocation="..."> attribute
-	final Node schemaLocationNode = xPathAPI.selectSingleNode(document, "/CMD/@schemaLocation");
+	final Node schemaLocationNode = xPathAPI.selectSingleNode(document, "/:CMD/@xsi:schemaLocation");
 	if (schemaLocationNode != null) {
 	    // SchemaLocation value consists of {namespace,location} pairs. Find CMD namespace and get the location of its schema
 	    final String schemaLocationString = schemaLocationNode.getNodeValue().trim();
@@ -154,7 +158,7 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
     private void readHeader(final CMDIDocument cmdiDocument, final Document document, final CachedXPathAPI xPathAPI) throws MetadataDocumentException {
 	try {
 	    // Find the <Header> Element. Should be there!
-	    final Node headerNode = xPathAPI.selectSingleNode(document, "/CMD/Header");
+	    final Node headerNode = xPathAPI.selectSingleNode(document, "/:CMD/:Header");
 	    if (headerNode == null) {
 		throw new MetadataDocumentException(cmdiDocument, "Header node not found in CMDI document");
 	    }
@@ -289,11 +293,11 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 
     private Node getAttributeNodeByType(final NamedNodeMap attributesMap, final MetadataElementAttributeType attributeType) throws DOMException {
 	//final Node attributeNode = xPathAPI.selectSingleNode(instanceNode, "@" + attributeType.getName());
-	if (CMDIConstants.XML_NAMESPACE.equals(attributeType.getNamespaceURI())) {
-	    // XML namespace is not recognized by DOM. Instead get by xml: prefix
-	    return attributesMap.getNamedItem("xml:" + attributeType.getName());
-	} else {
-	    return attributesMap.getNamedItemNS(attributeType.getNamespaceURI(), attributeType.getName());
-	}
+//	if (CMDIConstants.XML_NAMESPACE.equals(attributeType.getNamespaceURI())) {
+//	    // XML namespace is not recognized by DOM. Instead get by xml: prefix
+//	    return attributesMap.getNamedItem("xml:" + attributeType.getName());
+//	} else {
+	return attributesMap.getNamedItemNS(attributeType.getNamespaceURI(), attributeType.getName());
+//	}
     }
 }

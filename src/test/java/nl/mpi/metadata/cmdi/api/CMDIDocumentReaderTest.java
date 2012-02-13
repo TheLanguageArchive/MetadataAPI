@@ -61,7 +61,7 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 	final Document dom = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
 
 	// Read from DOM
-	final CMDIDocument cmdi = reader.read(dom);
+	final CMDIDocument cmdi = reader.read(dom, null);
 	assertNotNull(cmdi);
 
 	// Profile should be loaded from specified schemaLocation
@@ -92,23 +92,23 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 	 */
 	assertEquals(3, cmdi.getChildren().size());
 
-	final Component collection = (Component) cmdi.getChildElement("Collection");
+	final Component collection = (Component) cmdi.getChildElement("./:Collection");
 	assertNotNull(collection);
 
 	// Get Collection/GeneralInfo/Name element
-	final Element name = (Element) cmdi.getChildElement("Collection/GeneralInfo/Name");
+	final Element name = (Element) cmdi.getChildElement("./:Collection/:GeneralInfo/:Name");
 	assertNotNull(name);
 	// Name should also be retrievable from Collection component
-	assertEquals(name, collection.getChildElement("GeneralInfo/Name"));
+	assertEquals(name, collection.getChildElement("./:GeneralInfo/:Name"));
 	// Value should match document
 	assertEquals("TextCorpus test", name.getValue());
 
 	// Check component with multiple occurences
-	final Component originLocation = (Component) cmdi.getChildElement("Collection/OriginLocation");
+	final Component originLocation = (Component) cmdi.getChildElement("./:Collection/:OriginLocation");
 	assertEquals(2, originLocation.getChildren().size());
-	Element location1code = (Element) originLocation.getChildElement("Location[1]/Country/Code");
+	Element location1code = (Element) originLocation.getChildElement("./:Location[1]/:Country/:Code");
 	assertEquals("NL", location1code.getValue());
-	Element location2code = (Element) originLocation.getChildElement("Location[2]/Country/Code");
+	Element location2code = (Element) originLocation.getChildElement("./:Location[2]/:Country/:Code");
 	assertEquals("BE", location2code.getValue());
 
 	// Check attributes
@@ -120,7 +120,7 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 	    assertEquals("http://www.w3.org/XML/1998/namespace", attribute.getType().getNamespaceURI());
 	}
 
-	final Element description = (Element) cmdi.getChildElement("Collection/GeneralInfo/Description/Description");
+	final Element description = (Element) cmdi.getChildElement("./:Collection/:GeneralInfo/:Description/:Description");
 	attributes = description.getAttributes();
 	assertEquals(1, attributes.size());
 	for (Attribute attribute : attributes) {
@@ -137,10 +137,10 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
     public void testReadProfileUriMissing() throws Exception {
 	Document dom = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
 	// Remove schema location info
-	org.w3c.dom.Element cmdElement = (org.w3c.dom.Element) XPathAPI.selectSingleNode(dom, "/CMD");
+	org.w3c.dom.Element cmdElement = (org.w3c.dom.Element) XPathAPI.selectSingleNode(dom, "/:CMD");
 	cmdElement.removeAttribute("xsi:schemaLocation");
 	// Read from DOM. Should fail because of missing URI
-	reader.read(dom);
+	reader.read(dom, null);
     }
 
     /**
@@ -150,11 +150,11 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
     public void testReadProfileUriSyntax() throws Exception {
 	Document dom = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
 	// Replace schema location info by illegal URI
-	org.w3c.dom.Element cmdElement = (org.w3c.dom.Element) XPathAPI.selectSingleNode(dom, "/CMD");
+	org.w3c.dom.Element cmdElement = (org.w3c.dom.Element) XPathAPI.selectSingleNode(dom, "/:CMD");
 	cmdElement.setAttribute("xsi:schemaLocation", CMDIConstants.CMD_NAMESPACE + " http://\"illegal\"");
 	// Read from DOM. Should fail because of syntax error
 	try {
-	    reader.read(dom);
+	    reader.read(dom, null);
 	    fail("Expected URISyntaxException nested in MetadataException");
 	} catch (MetadataDocumentException mdEx) {
 	    assertEquals(URISyntaxException.class, mdEx.getCause().getClass());

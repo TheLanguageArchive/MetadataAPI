@@ -94,7 +94,7 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
 	return schemaElement;
     }
     
-    public void readSchema() throws CMDITypeException {
+    void readSchema() throws CMDITypeException {
 	if (getSchemaElement() == null) {
 	    throw new CMDITypeException("Cannot read schema, it has not been set or loaded");
 	}

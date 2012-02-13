@@ -25,8 +25,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
+import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileTest;
 import nl.mpi.metadata.cmdi.api.type.CMDITypeException;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
@@ -34,6 +36,7 @@ import org.apache.xpath.XPathAPI;
 import org.junit.Assert;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -47,7 +50,7 @@ public abstract class CMDIAPITestCase {
      * Test schema 1 (TextCorpusProfile http://catalog.clarin.eu/ds/ComponentRegistry?item=clarin.eu:cr1:p_1271859438164)
      */
     public final static URL testSchemaTextCorpus = CMDIProfileTest.class.getResource("/xsd/TextCorpusProfile.xsd");
-    public final static String TEXT_CORPUS_PROFILE_ROOT_NODE_PATH = "/CMD/Components/TextCorpusProfile";
+    public final static String TEXT_CORPUS_PROFILE_ROOT_NODE_PATH = "/:CMD/:Components/:TextCorpusProfile";
     public final static String REMOTE_TEXT_CORPUS_SCHEMA_URL = "http://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/profiles/clarin.eu:cr1:p_1271859438164/xsd";
     /**
      * Test schema 1 instance location
@@ -61,7 +64,7 @@ public abstract class CMDIAPITestCase {
      * Small test schema with no xml.xsd import (should process quickly even without entity resolver)
      */
     public final static URL testSchemaSmall = CMDIProfileTest.class.getResource("/xsd/SmallTestProfile.xsd");
-    public final static String SMALL_PROFILE_ROOT_NODE_PATH = "/CMD/Components/SmallTestProfile";
+    public final static String SMALL_PROFILE_ROOT_NODE_PATH = "/:CMD/:Components/:SmallTestProfile";
     /**
      * Entity resolver that resolves remote schema locations for the CMDI instances in the test package resources
      */
@@ -81,27 +84,38 @@ public abstract class CMDIAPITestCase {
     }
 
     public CMDIProfile getNewTestProfileAndRead(URI uri) throws IOException, CMDITypeException {
-	final CMDIProfile profile = new CMDIProfile(uri);
-	profile.readSchema();
+	final CMDIProfile profile = new CMDIProfile(uri, new CMDIEntityResolver());
 	return profile;
     }
 
     protected Document getDomDocumentForResource(final String documentResourceLocation) throws ParserConfigurationException, IOException, SAXException {
 	final InputStream documentStream = getClass().getResourceAsStream(documentResourceLocation);
 	DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+	domFactory.setNamespaceAware(true);
+	domFactory.setAttribute("http://java.sun.com/xml/jaxp/properties/schemaLanguage", "http://www.w3.org/2001/XMLSchema");
 	DocumentBuilder builder = domFactory.newDocumentBuilder();
 	return builder.parse(documentStream);
     }
 
-    protected CMDIDocument getNewTestDocument() throws IOException, CMDITypeException, ParserConfigurationException, SAXException, TransformerException, URISyntaxException {
+    protected CMDIDocument getNewTestDocument() throws IOException, CMDITypeException, ParserConfigurationException, SAXException, TransformerException, URISyntaxException, MetadataDocumentException {
 	return getNewTestDocument(testSchemaTextCorpus.toURI(), TEXT_CORPUS_INSTANCE_LOCATION, TEXT_CORPUS_PROFILE_ROOT_NODE_PATH);
     }
 
-    protected CMDIDocument getNewTestDocument(final URI schemaURI, final String documentResourceLocation, final String rootNodePath) throws IOException, CMDITypeException, ParserConfigurationException, SAXException, TransformerException, URISyntaxException {
-	CMDIProfile profile = getNewTestProfileAndRead(schemaURI);
+    protected CMDIDocument getNewTestDocument(final URI schemaURI, final String documentResourceLocation, final String rootNodePath) throws IOException, CMDITypeException, ParserConfigurationException, SAXException, TransformerException, URISyntaxException, MetadataDocumentException {
 	Document domDocument = getDomDocumentForResource(documentResourceLocation);
-	Node documentRootNode = XPathAPI.selectSingleNode(domDocument, rootNodePath);
-	return new CMDIDocument(documentRootNode, profile, getClass().getResource(documentResourceLocation).toURI());
+	return getDocumentReader().read(domDocument, getClass().getResource(documentResourceLocation).toURI());
+    }
+
+    protected CMDIDocumentReader getDocumentReader() {
+	return new CMDIDocumentReader(getProfileContainer());
+    }
+
+    protected CMDIProfileContainer getProfileContainer() {
+	return new CMDIProfileContainer(getEntityResolver());
+    }
+
+    protected EntityResolver getEntityResolver() {
+	return new CMDIEntityResolver();
     }
 
     /**

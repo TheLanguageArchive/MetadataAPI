@@ -16,6 +16,7 @@
  */
 package nl.mpi.metadata.cmdi.api;
 
+import java.net.URI;
 import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.MetadataDocumentReader;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
@@ -46,7 +47,7 @@ public class MockCMDIDocumentReader implements MetadataDocumentReader<CMDIDocume
      * @throws MetadataDocumentException won't be thrown in this implementation
      * @see #MockCMDIDocumentReader(nl.mpi.metadata.cmdi.api.model.CMDIDocument) 
      */
-    public CMDIDocument read(Document document) throws MetadataDocumentException {
+    public CMDIDocument read(Document document, URI documentLocation) throws MetadataDocumentException {
 	this.document = document;
 	return cmdiDocument;
     }

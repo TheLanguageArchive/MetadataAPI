@@ -19,7 +19,6 @@ package nl.mpi.metadata.cmdi.api.type;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URL;
 import javax.xml.namespace.QName;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
@@ -35,8 +34,6 @@ import org.xml.sax.EntityResolver;
 
 import static nl.mpi.metadata.cmdi.api.CMDIConstants.CMD_NAMESPACE;
 import org.slf4j.Logger;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * This class represents a CMDI profile, defined by http://www.clarin.eu/cmd/general-component-schema.xsd
@@ -75,7 +72,7 @@ public class CMDIProfile extends ComponentType implements MetadataDocumentType<C
 	setSchemaElement(loadSchema());
 
 	// Set path for root component
-	setPath(new StringBuilder("/CMD/Components/").append(getSchemaElement().getName().getLocalPart()));
+	setPath(new StringBuilder("/:CMD/:Components/:").append(getSchemaElement().getName().getLocalPart()));
 
 	// Read all of the schema
 	readSchema();

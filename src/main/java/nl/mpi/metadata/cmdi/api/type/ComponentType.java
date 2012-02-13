@@ -77,7 +77,7 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
      * @throws CMDITypeException  If schema has not been set or loaded
      */
     @Override
-    public void readSchema() throws CMDITypeException {
+    void readSchema() throws CMDITypeException {
 	super.readSchema();
 	readChildren();
     }
@@ -129,7 +129,7 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
     }
 
     private StringBuilder createChildPath(SchemaProperty child) {
-	return new StringBuilder(path).append("/").append(child.getName().getLocalPart());
+	return new StringBuilder(path).append("/:").append(child.getName().getLocalPart());
     }
 
     protected final void setPath(StringBuilder path) {

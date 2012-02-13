@@ -25,11 +25,11 @@ import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import org.apache.xpath.XPathAPI;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -48,7 +48,7 @@ public class CMDIDocumentTest extends CMDIAPITestCase {
     public void setUp() throws Exception {
 	profile = getNewTestProfileAndRead(testSchemaTextCorpus.toURI());
 	domDocument = getDomDocumentForResource("/cmdi/TextCorpusProfile-instance.cmdi");
-	documentRootNode = XPathAPI.selectSingleNode(domDocument, "/CMD/Components/TextCorpusProfile");
+	documentRootNode = XPathAPI.selectSingleNode(domDocument, "/:CMD/:Components/:TextCorpusProfile");
 	document = new CMDIDocument(documentRootNode, profile, testSchemaTextCorpus.toURI());
     }
 
@@ -91,7 +91,7 @@ public class CMDIDocumentTest extends CMDIAPITestCase {
 	// Get child node from DOM
 	Node collectionNode = getCollectionNode();
 	// Create component
-	Component component = createComponent(collectionNode, "Collection");
+	Component component = createComponent(collectionNode, "./:Collection");
 	// Add as a child
 	document.addChildElement(component);
 	// It should be in the appear as a child (+1)
@@ -106,7 +106,7 @@ public class CMDIDocumentTest extends CMDIAPITestCase {
 	// Get child node from DOM
 	Node collectionNode = getCollectionNode();
 	// Create component
-	Component component = createComponent(collectionNode, "Collection");
+	Component component = createComponent(collectionNode, "./:Collection");
 	// Add it as a child
 	document.addChildElement(component);
 	// There should be one more (+1)
@@ -124,7 +124,7 @@ public class CMDIDocumentTest extends CMDIAPITestCase {
 	// Get child node from DOM
 	Node collectionNode = getCollectionNode();
 	// Create component
-	Component component = createComponent(collectionNode, "Collection");
+	Component component = createComponent(collectionNode, "./:Collection");
 	// Add to map
 	document.addElementToMap(component);
 	// It should be in the element map
@@ -139,7 +139,7 @@ public class CMDIDocumentTest extends CMDIAPITestCase {
 	// Get child node from DOM
 	Node collectionNode = getCollectionNode();
 	// Create component
-	Component component = createComponent(collectionNode, "Collection");
+	Component component = createComponent(collectionNode, "./:Collection");
 	// Add to map
 	document.addElementToMap(component);
 	// It should be in the element map and appear as a child
@@ -210,7 +210,7 @@ public class CMDIDocumentTest extends CMDIAPITestCase {
 
     private Node getCollectionNode() throws TransformerException {
 	// Get child node from DOM
-	Node childNode = XPathAPI.selectSingleNode(documentRootNode, "/Collection");
+	Node childNode = XPathAPI.selectSingleNode(documentRootNode, "/:Collection");
 	return childNode;
     }
 

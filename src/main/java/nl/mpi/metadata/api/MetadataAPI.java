@@ -68,7 +68,7 @@ public interface MetadataAPI<T extends MetadataDocumentType, M extends MetadataE
     /**
      * Removes an element from the document
      * @param element element to remove
-     * @return removed element (null of none removed)
+     * @return whether an element was removed from its parent
      */
-    MetadataElement removeElement(M element) throws MetadataDocumentException;
+    boolean removeElement(M element) throws MetadataDocumentException;
 }
