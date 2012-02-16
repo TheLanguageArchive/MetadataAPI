@@ -79,11 +79,11 @@ public abstract class CMDIAPITestCase {
 	}
     };
 
-    public CMDIProfile getNewTestProfileAndRead() throws IOException, CMDITypeException, URISyntaxException {
+    public static CMDIProfile getNewTestProfileAndRead() throws IOException, CMDITypeException, URISyntaxException {
 	return getNewTestProfileAndRead(testSchemaTextCorpus.toURI());
     }
 
-    public CMDIProfile getNewTestProfileAndRead(URI uri) throws IOException, CMDITypeException {
+    public static CMDIProfile getNewTestProfileAndRead(URI uri) throws IOException, CMDITypeException {
 	final CMDIProfile profile = new CMDIProfile(uri, new CMDIEntityResolver());
 	return profile;
     }
