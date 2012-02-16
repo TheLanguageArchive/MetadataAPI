@@ -22,7 +22,6 @@ import javax.xml.transform.TransformerException;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
-import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import org.apache.xpath.XPathAPI;
 import org.junit.Test;
 import org.junit.Before;
@@ -49,7 +48,7 @@ public class CMDIDocumentTest extends CMDIAPITestCase {
 	profile = getNewTestProfileAndRead(testSchemaTextCorpus.toURI());
 	domDocument = getDomDocumentForResource("/cmdi/TextCorpusProfile-instance.cmdi");
 	documentRootNode = XPathAPI.selectSingleNode(domDocument, "/:CMD/:Components/:TextCorpusProfile");
-	document = new CMDIDocument(documentRootNode, profile, testSchemaTextCorpus.toURI());
+	document = new CMDIDocument(profile, testSchemaTextCorpus.toURI());
     }
 
     /**
@@ -74,14 +73,6 @@ public class CMDIDocumentTest extends CMDIAPITestCase {
     @Test
     public void testGetMetadataDocument() {
 	assertEquals(document, document.getMetadataDocument());
-    }
-
-    /**
-     * Test of getDomNode method, of class CMDIDocument.
-     */
-    @Test
-    public void testGetDomNode() {
-	assertEquals(documentRootNode, document.getDomNode());
     }
 
     @Test
@@ -114,40 +105,6 @@ public class CMDIDocumentTest extends CMDIAPITestCase {
 	document.removeChildElement(component);
 	// There should be one less (-1)
 	assertEquals(childCount, document.getChildren().size());
-    }
-
-    /**
-     * Test of addElementToMap method, of class CMDIDocument.
-     */
-    @Test
-    public void testAddElementToMap() throws TransformerException {
-	// Get child node from DOM
-	Node collectionNode = getCollectionNode();
-	// Create component
-	Component component = createComponent(collectionNode, "./:Collection");
-	// Add to map
-	document.addElementToMap(component);
-	// It should be in the element map
-	assertEquals(component, document.getElementFromMap(collectionNode));
-    }
-
-    /**
-     * Test of removeElementFromMap method, of class CMDIDocument.
-     */
-    @Test
-    public void testRemoveElementFromMap() throws TransformerException {
-	// Get child node from DOM
-	Node collectionNode = getCollectionNode();
-	// Create component
-	Component component = createComponent(collectionNode, "./:Collection");
-	// Add to map
-	document.addElementToMap(component);
-	// It should be in the element map and appear as a child
-	assertEquals(component, document.getElementFromMap(collectionNode));
-	// Remove child element
-	document.removeChildElement(component);
-	// Should not be there anymore
-	assertEquals(null, document.getElementFromMap(collectionNode));
     }
 
     /**
@@ -215,10 +172,6 @@ public class CMDIDocumentTest extends CMDIAPITestCase {
     }
 
     private Component createComponent(Node componentNode, String componentName) throws TransformerException {
-	// Should not be in elements map yet
-	assertNull(document.getElementFromMap(componentNode));
-	// Create a component of CollectionType and add it to the document
-	ComponentType collectionComponentType = (ComponentType) profile.getType(componentName);
-	return new Component(componentNode, collectionComponentType, document);
+	throw new UnsupportedOperationException();
     }
 }

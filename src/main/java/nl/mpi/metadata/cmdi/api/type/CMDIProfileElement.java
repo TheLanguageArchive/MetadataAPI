@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public abstract class CMDIProfileElement implements DataCategoryType, MetadataElementType {
-    
+
     private static Logger logger = LoggerFactory.getLogger(CMDIProfileElement.class);
     protected final ComponentType parent;
     protected SchemaProperty schemaElement;
@@ -44,7 +44,7 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
     protected String description;
     protected DataCategory dataCategory;
     protected Collection<MetadataElementAttributeType> attributes;
-    
+
     protected CMDIProfileElement(SchemaProperty schemaElement, ComponentType parent) {
 	this.schemaElement = schemaElement;
 	this.parent = parent;
@@ -57,19 +57,19 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
      * @return XPath string to find instances
      */
     public abstract String getPathString();
-    
+
     public Collection<MetadataElementAttributeType> getAttributes() {
 	return attributes;
     }
-    
+
     public DataCategory getDataCategory() {
 	return dataCategory;
     }
-    
+
     public String getDescription() {
 	return description;
     }
-    
+
     public int getMaxOccurences(MetadataContainerElementType container) {
 	if (getSchemaElement().getMaxOccurs() != null) {
 	    return getSchemaElement().getMaxOccurs().intValue();
@@ -77,11 +77,11 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
 	    return -1;
 	}
     }
-    
+
     public int getMinOccurences(MetadataContainerElementType container) {
 	return getSchemaElement().getMinOccurs().intValue();
     }
-    
+
     public String getName() {
 	if (qName.getLocalPart() != null) {
 	    return qName.getLocalPart();
@@ -89,11 +89,11 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
 	    return qName.toString();
 	}
     }
-    
+
     public SchemaProperty getSchemaElement() {
 	return schemaElement;
     }
-    
+
     void readSchema() throws CMDITypeException {
 	if (getSchemaElement() == null) {
 	    throw new CMDITypeException("Cannot read schema, it has not been set or loaded");
@@ -102,11 +102,11 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
 	readProperties();
 	readAttributes();
     }
-    
+
     protected void readProperties() {
 	qName = getSchemaElement().getName();
     }
-    
+
     protected void readAttributes() {
 	SchemaProperty[] attributeProperties = getSchemaElement().getType().getAttributeProperties();
 	if (attributeProperties != null && attributeProperties.length > 0) {
@@ -114,13 +114,13 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
 	    for (SchemaProperty attributeProperty : attributeProperties) {
 		final QName attributeName = attributeProperty.getName();
 		logger.debug("Creating attribute type '{}' of type {}", attributeName, attributeProperty.getType());
-		
+
 		MetadataElementAttributeType attribute = new MetadataElementAttributeType();
 		attribute.setName(attributeName.getLocalPart());
 		if (attributeName.getNamespaceURI() != null) {
 		    attribute.setNamespaceURI(attributeName.getNamespaceURI());
 		}
-		
+
 		attribute.setType(attributeProperty.getType().toString());  // consider .getName().getLocalPart()) but getName can
 		// be null, see documentation
 		attribute.setDefaultValue(attributeProperty.getDefaultText());
@@ -131,11 +131,15 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
 	    attributes = Collections.emptySet();
 	}
     }
-    
+
     protected final void setSchemaElement(SchemaProperty element) {
 	this.schemaElement = element;
     }
-    
+
+    public ComponentType getParent() {
+	return parent;
+    }
+
     @Override
     public boolean equals(Object obj) {
 	if (obj == null) {
@@ -153,7 +157,7 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
 	}
 	return true;
     }
-    
+
     @Override
     public int hashCode() {
 	int hash = 7;
@@ -161,7 +165,7 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
 	hash = 67 * hash + (this.qName != null ? this.qName.hashCode() : 0);
 	return hash;
     }
-    
+
     @Override
     public String toString() {
 	return qName.toString();

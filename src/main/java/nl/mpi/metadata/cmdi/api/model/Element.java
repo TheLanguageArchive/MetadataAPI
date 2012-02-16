@@ -22,7 +22,6 @@ import nl.mpi.metadata.api.model.MetadataField;
 import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
-import org.w3c.dom.Node;
 
 /**
  * A CMDI Element. Instance of @see nl.mpi.metadata.cmdi.api.type.ElementType
@@ -33,14 +32,12 @@ public class Element<T> extends CMDIMetadataElement implements MetadataField<T, 
 
     private final CMDIDocument metadataDocument;
     private CMDIContainerMetadataElement parent;
-    private Node domNode;
     private ElementType elementType;
     private T value;
 
-    public Element(Node domNode, ElementType elementType, CMDIContainerMetadataElement parent, T value) {
+    public Element(final ElementType elementType, final CMDIContainerMetadataElement parent, final T value) {
 	this.elementType = elementType;
 	this.value = value;
-	this.domNode = domNode;
 	this.parent = parent;
 	this.metadataDocument = parent.getMetadataDocument();
     }
@@ -67,10 +64,6 @@ public class Element<T> extends CMDIMetadataElement implements MetadataField<T, 
 
     public CMDIDocument getMetadataDocument() {
 	return metadataDocument;
-    }
-
-    public Node getDomNode() {
-	return domNode;
     }
 
     public void addMetadataElementListener(MetadataElementListener listener) {

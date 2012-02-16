@@ -19,7 +19,6 @@ package nl.mpi.metadata.cmdi.api.model;
 import nl.mpi.metadata.api.model.ContainedMetadataElement;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
-import org.w3c.dom.Node;
 
 /**
  * A CMDI Component. Instance of ComponentType
@@ -31,12 +30,10 @@ public class Component extends CMDIContainerMetadataElement implements Contained
 
     private final CMDIDocument metadataDocument;
     private CMDIContainerMetadataElement parent;
-    private Node domNode;
 
-    public Component(Node domNode, ComponentType type, CMDIContainerMetadataElement parent) {
+    public Component(ComponentType type, CMDIContainerMetadataElement parent) {
 	super(type);
 	this.parent = parent;
-	this.domNode = domNode;
 	// If parent is a document, it will return itself
 	this.metadataDocument = parent.getMetadataDocument();
     }
@@ -48,9 +45,5 @@ public class Component extends CMDIContainerMetadataElement implements Contained
     @Override
     public CMDIDocument getMetadataDocument() {
 	return metadataDocument;
-    }
-
-    public Node getDomNode() {
-	return domNode;
     }
 }

@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import nl.mpi.metadata.api.model.MetadataElementAttributeContainer;
 import nl.mpi.metadata.api.model.ReferencingMetadataElement;
-import org.w3c.dom.Node;
+import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 
 /**
  *
@@ -29,19 +29,10 @@ import org.w3c.dom.Node;
  */
 public abstract class CMDIMetadataElement implements ReferencingMetadataElement, MetadataElementAttributeContainer<Attribute> {
 
-    private String path;
     private Collection<Attribute> attributes;
 
     protected CMDIMetadataElement() {
-	attributes = new HashSet<Attribute>();
-    }
-
-    public void setPath(String path) {
-	this.path = path;
-    }
-
-    public String getPath() {
-	return path;
+	this.attributes = new HashSet<Attribute>();
     }
 
     public synchronized boolean addAttribute(Attribute attribute) {
@@ -67,5 +58,10 @@ public abstract class CMDIMetadataElement implements ReferencingMetadataElement,
      */
     abstract public CMDIDocument getMetadataDocument();
 
-    abstract public Node getDomNode();
+    public abstract CMDIProfileElement getType();
+
+    @Override
+    public String toString() {
+	return getName();
+    }
 }

@@ -20,16 +20,18 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import javax.xml.transform.TransformerException;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataReference;
 import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.api.model.ResourceReference;
+import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
-import org.apache.xpath.XPathAPI;
-import org.w3c.dom.Node;
 
 /**
  * Abstract base class for Component and Profile instance classes
@@ -41,33 +43,78 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
 
     private ComponentType type;
     private List<CMDIMetadataElement> children;
+    private final Map<String, List<CMDIMetadataElement>> childrenMap;
 
-    public CMDIContainerMetadataElement(ComponentType type) {
+    public CMDIContainerMetadataElement(final ComponentType type) {
 	this.type = type;
 	this.children = Collections.synchronizedList(new ArrayList<CMDIMetadataElement>());
+	this.childrenMap = new HashMap<String, List<CMDIMetadataElement>>();
     }
 
-    public CMDIMetadataElement getChildElement(String path) throws IllegalArgumentException {
-	try {
-	    Node domNode = XPathAPI.selectSingleNode(getDomNode(), path);
-	    if (domNode == null) {
-		return null;
-	    } else {
-		return getMetadataDocument().getElementFromMap(domNode);
-	    }
-	} catch (TransformerException transformerException) {
-	    throw new IllegalArgumentException("Could not apply provided XPath to document: " + path, transformerException);
+    public int getChildrenCount(CMDIProfileElement childType) {
+	if (childrenMap.containsKey(childType.getName())) {
+	    return childrenMap.get(childType.getName()).size();
+	} else {
+	    return 0;
 	}
     }
 
-    public void addChildElement(CMDIMetadataElement element) {
-	getMetadataDocument().addElementToMap(element);
-	children.add(element);
+    public synchronized void addChildElement(CMDIMetadataElement element) {
+	if (!children.contains(element)) {
+	    if (children.add(element)) {
+		final String typeName = element.getType().getName();
+		List<CMDIMetadataElement> elements = childrenMap.get(typeName);
+		if (elements == null) {
+		    elements = new ArrayList<CMDIMetadataElement>();
+		    childrenMap.put(typeName, elements);
+		}
+		elements.add(element);
+	    }
+	}
     }
 
-    public void removeChildElement(CMDIMetadataElement element) {
-	getMetadataDocument().removeElementFromMap(element);
-	children.remove(element);
+    public synchronized void removeChildElement(CMDIMetadataElement element) {
+	if (children.remove(element)) {
+	    List<CMDIMetadataElement> elements = childrenMap.get(element.getType().getName());
+	    if (elements == null) {
+		throw new AssertionError("No list in children map for removed child element");
+	    }
+	    elements.remove(element);
+	}
+    }
+
+    public CMDIMetadataElement getChildElement(final String path) {
+	// e.g. Actor[1]/Language -> (Actor)([(1)])(/(Language)) -> 
+	final Pattern pathPattern = Pattern.compile("(^[^(/|\\[]+)(\\[(\\d+)\\])?(/(.*))?$");
+	final Matcher pathMatcher = pathPattern.matcher(path);
+	if (pathMatcher.find()) {
+	    final String elementName = pathMatcher.group(1);
+	    final String elementIndexString = pathMatcher.group(3);
+	    final String childPath = pathMatcher.group(5);
+
+	    return getChildElement(elementName, elementIndexString, childPath);
+	}
+	return null;
+    }
+
+    private synchronized CMDIMetadataElement getChildElement(final String elementName, final String elementIndexString, final String childPath) throws NumberFormatException {
+	final List<CMDIMetadataElement> elements = childrenMap.get(elementName);
+	if (elements != null) {
+	    final int elementIndex = (elementIndexString == null || elementIndexString.length() == 0)
+		    ? 0
+		    : Integer.valueOf(elementIndexString) - 1; // In the path, counting starts at 1, so substract to get array index
+	    final CMDIMetadataElement childElement = elements.get(elementIndex);
+	    if (childPath != null && childPath.length() > 0) {
+		// Path specifies child path
+		if (childElement instanceof CMDIContainerMetadataElement) {
+		    return ((CMDIContainerMetadataElement) childElement).getChildElement(childPath);
+		}
+	    } else {
+		// End of path
+		return childElement;
+	    }
+	}
+	return null;
     }
 
     /**
@@ -105,43 +152,4 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
     public ComponentType getType() {
 	return type;
     }
-//    public synchronized String insertElement(String path, CMDIMetadataElement element) throws MetadataDocumentException {
-//	if (path == null) {
-//	    // Add to root
-//	    metadataElements.put(null, element);
-//	} else {
-//	    // Add to child identified by XPath
-//	    CMDIMetadataElement parentElement = metadataElements.get(path);
-//	    if (parentElement instanceof MetadataContainer) {
-//		try {
-//		    // Add to element object
-//		    ((MetadataContainer) parentElement).addChild(element);
-//		    // Add to elements table
-//		    metadataElements.put(path, element);
-//		} catch (MetadataElementException elEx) {
-//		    throw new MetadataDocumentException(this, "Error while adding element to child element of document", elEx);
-//		}
-//	    } else {
-//		throw new MetadataDocumentException(this, "Attempt to insert element failed. Parent XPath not found or node cannot contain children: " + path);
-//	    }
-//	}
-//
-//	final String newElementPath = appendToXpath(path, element.getName());
-//	((CMDIMetadataElement) element).setPath(newElementPath);
-//
-//	for (MetadataDocumentListener listener : listeners) {
-//	    listener.elementInserted(this, element);
-//	}
-//	return newElementPath;
-//    }
-//
-//    public synchronized CMDIMetadataElement removeElement(String path) {
-//	CMDIMetadataElement result = metadataElements.remove(path);
-//	if (result != null) {
-//	    for (MetadataDocumentListener listener : listeners) {
-//		listener.elementRemoved(this, result);
-//	    }
-//	}
-//	return result;
-//    }
 }

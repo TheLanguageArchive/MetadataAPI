@@ -26,7 +26,6 @@ import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
-import org.w3c.dom.Node;
 
 /**
  * A CMDI metadata document. Instance of a CMDIProfile
@@ -39,15 +38,13 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
     private URI fileLocation;
     private final Map<String, HeaderInfo> headerInfo;
     private final Collection<MetadataDocumentListener> listeners;
-    private Node domRootNode;
-    private final Map<Node, CMDIMetadataElement> elementsMap;
 
     /**
      * Construct an unsaved profile instance (no location associated)
      * @param profile 
      */
-    public CMDIDocument(Node domRootNode, CMDIProfile profile) {
-	this(domRootNode, profile, null);
+    public CMDIDocument(CMDIProfile profile) {
+	this(profile, null);
     }
 
     /**
@@ -55,14 +52,11 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
      * @param profile
      * @param fileLocation 
      */
-    public CMDIDocument(Node domRootNode, CMDIProfile profile, URI fileLocation) {
+    public CMDIDocument(CMDIProfile profile, URI fileLocation) {
 	super(profile);
 
 	this.profile = profile;
 	this.fileLocation = fileLocation;
-	this.domRootNode = domRootNode;
-
-	this.elementsMap = Collections.synchronizedMap(new HashMap<Node, CMDIMetadataElement>());
 
 	this.headerInfo = new HashMap<String, HeaderInfo>();
 	this.listeners = new HashSet<MetadataDocumentListener>();
@@ -119,26 +113,5 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
     @Override
     public CMDIDocument getMetadataDocument() {
 	return this;
-    }
-
-    /**
-     * 
-     * @return The document node of the DOM
-     */
-    @Override
-    public Node getDomNode() {
-	return domRootNode;
-    }
-
-    protected void addElementToMap(CMDIMetadataElement element) {
-	elementsMap.put(element.getDomNode(), element);
-    }
-
-    protected void removeElementFromMap(CMDIMetadataElement element) {
-	elementsMap.remove(element.getDomNode());
-    }
-
-    public CMDIMetadataElement getElementFromMap(Node domNode) {
-	return elementsMap.get(domNode);
     }
 }
