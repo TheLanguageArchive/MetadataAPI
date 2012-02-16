@@ -18,6 +18,8 @@ package nl.mpi.metadata.cmdi.api;
 
 import javax.xml.transform.TransformerException;
 import nl.mpi.metadata.api.MetadataDocumentException;
+import nl.mpi.metadata.api.type.MetadataElementAttributeType;
+import nl.mpi.metadata.cmdi.api.model.Attribute;
 import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
@@ -32,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -44,9 +47,9 @@ public class CMDIComponentReader {
     private static Logger logger = LoggerFactory.getLogger(CMDIComponentReader.class);
 
     public void readComponents(final CMDIDocument cmdiDocument, final Document domDocument, final CachedXPathAPI xPathAPI) throws DOMException, MetadataDocumentException {
-	Node rootComponentNode = getRootComponentNode(cmdiDocument, domDocument, xPathAPI);
+	final Node rootComponentNode = getRootComponentNode(cmdiDocument, domDocument, xPathAPI);
 	final CMDIProfile profile = cmdiDocument.getType();
-	readComponents(rootComponentNode, cmdiDocument, profile);
+	readElement(rootComponentNode, cmdiDocument, profile);
     }
 
     private Node getRootComponentNode(final CMDIDocument cmdiDocument, final Document domDocument, final CachedXPathAPI xPathAPI) throws MetadataDocumentException {
@@ -68,9 +71,16 @@ public class CMDIComponentReader {
 	}
     }
 
-    private void readComponents(final Node domNode, final CMDIContainerMetadataElement parentElement, final ComponentType parentType) throws MetadataDocumentException {
-	readChildElements(domNode, parentElement, parentType);
-	readAttributes(domNode, parentElement, parentType);
+    private void readElement(final Node domNode, final CMDIMetadataElement element, final CMDIProfileElement type) throws MetadataDocumentException {
+	if (element instanceof CMDIContainerMetadataElement) {
+	    if (type instanceof ComponentType) {
+		logger.debug("Reading child elements for component");
+		readChildElements(domNode, (CMDIContainerMetadataElement) element, (ComponentType) type);
+	    } else {
+		throw new AssertionError("Found Component node but specified type is not a ComponentType");
+	    }
+	}
+	readAttributes(domNode, element, type);
     }
 
     private void readChildElements(final Node parentNode, final CMDIContainerMetadataElement parentElement, final ComponentType parentType) throws MetadataDocumentException {
@@ -85,11 +95,7 @@ public class CMDIComponentReader {
 		}
 		CMDIMetadataElement childElement = createElementInstance(parentElement, childNode, childType);
 		parentElement.addChildElement(childElement);
-
-		if (childElement instanceof Component) {
-		    logger.debug("Reading child elements for component");
-		    readComponents(childNode, (Component) childElement, (ComponentType) childType);
-		}
+		readElement(childNode, childElement, childType);
 
 	    } else {
 		logger.debug("Skipping non-element node {}", childNode);
@@ -109,7 +115,21 @@ public class CMDIComponentReader {
 	}
     }
 
-    private void readAttributes(Node domNode, CMDIContainerMetadataElement parentElement, ComponentType parentType) {
-	//TODO
+    private void readAttributes(Node instanceNode, CMDIMetadataElement metadataElement, CMDIProfileElement metadataType) {
+	final NamedNodeMap attributesMap = instanceNode.getAttributes();
+	if (attributesMap.getLength() > 0) {
+	    for (MetadataElementAttributeType attributeType : metadataType.getAttributes()) {
+		final Node attributeNode = getAttributeNodeByType(attributesMap, attributeType);
+		if (attributeNode != null) {
+		    Attribute<String> attribute = new Attribute<String>(attributeType);
+		    attribute.setValue(attributeNode.getNodeValue());
+		    metadataElement.addAttribute(attribute);
+		}
+	    }
+	}
+    }
+
+    private Node getAttributeNodeByType(final NamedNodeMap attributesMap, final MetadataElementAttributeType attributeType) throws DOMException {
+	return attributesMap.getNamedItemNS(attributeType.getNamespaceURI(), attributeType.getName());
     }
 }

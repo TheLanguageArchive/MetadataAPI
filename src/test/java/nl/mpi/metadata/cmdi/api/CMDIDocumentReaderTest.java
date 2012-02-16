@@ -16,7 +16,9 @@
  */
 package nl.mpi.metadata.cmdi.api;
 
+import java.io.IOException;
 import java.util.Collection;
+import javax.xml.parsers.ParserConfigurationException;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
 import java.net.URISyntaxException;
 import nl.mpi.metadata.api.MetadataDocumentException;
@@ -28,12 +30,15 @@ import org.apache.xpath.XPathAPI;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import static nl.mpi.metadata.cmdi.api.CMDIConstants.*;
 import static org.junit.Assert.*;
+import org.xml.sax.SAXException;
 
 /**
- *
+ * At the moment tests both {@link CMDIDocumentReader} and {@link CMDIComponentReader}
+ * 
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIDocumentReaderTest extends CMDIAPITestCase {
@@ -57,12 +62,8 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
      * Test of read method, of class CMDIDocumentReader.
      */
     @Test
-    public void testRead() throws Exception {
-	final Document dom = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
-
-	// Read from DOM
-	final CMDIDocument cmdi = reader.read(dom, null);
-	assertNotNull(cmdi);
+    public void testReadHeader() throws Exception {
+	CMDIDocument cmdi = readTestDocument();
 
 	// Profile should be loaded from specified schemaLocation
 	assertEquals("http://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/profiles/clarin.eu:cr1:p_1271859438164/xsd", cmdi.getType().getSchemaLocation().toString());
@@ -73,23 +74,31 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 	assertEquals("clarin.eu:cr1:p_1271859438164", cmdi.getHeaderInformation(CMD_HEADER_MD_PROFILE).getValue());
 	assertEquals("Metadata API test instances", cmdi.getHeaderInformation(CMD_HEADER_MD_COLLECTION_DISPLAY_NAME).getValue());
 
-	/* Component structure:
-	 * 
-	 * <TextCorpusProfile>
-	 *  <Collection>
-	 *	<GeneralInfo>
-	 *	    <Name>TextCorpus test</Name>
-	 *	</GeneralInfo>
-	 *	<OriginLocation>
-	 *	    <Location><Country><Code>NL</Code>..</Location>
-	 *	    <Location><Country><Code>BE</Code>..</Location>
-	 *	</OriginLocation>
-	 *	...
-	 *  </Collection>
-	 *  <Corpus>...</Corpus>
-	 *  <TextCorpus>...</TextCorpus>
-	 * </TextCorpusProfile>
-	 */
+    }
+
+    /**
+     * Test of read method, of class CMDIDocumentReader.
+     * 
+     * Component structure of tested document:
+     * 
+     * <TextCorpusProfile>
+     *  <Collection>
+     *	<GeneralInfo>
+     *	    <Name>TextCorpus test</Name>
+     *	</GeneralInfo>
+     *	<OriginLocation>
+     *	    <Location><Country><Code>NL</Code>..</Location>
+     *	    <Location><Country><Code>BE</Code>..</Location>
+     *	</OriginLocation>
+     *	...
+     *  </Collection>
+     *  <Corpus>...</Corpus>
+     *  <TextCorpus>...</TextCorpus>
+     * </TextCorpusProfile>
+     */
+    @Test
+    public void testReadComponents() throws Exception {
+	CMDIDocument cmdi = readTestDocument();
 	assertEquals(3, cmdi.getChildren().size());
 
 	final Component collection = (Component) cmdi.getChildElement("Collection");
@@ -115,6 +124,16 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 	Element location2code = (Element) originLocation.getChildElement("Location[2]/Country/Code");
 	assertEquals("BE", location2code.getValue());
 
+    }
+
+    /**
+     * Test of read method, of class CMDIDocumentReader.
+     */
+    @Test
+    public void testReadAttributes() throws Exception {
+	CMDIDocument cmdi = readTestDocument();
+	// Get Collection/GeneralInfo/Name element
+	final Element name = (Element) cmdi.getChildElement("Collection/GeneralInfo/Name");
 	// Check attributes
 	Collection<Attribute> attributes = name.getAttributes();
 	assertEquals(1, attributes.size());
@@ -132,6 +151,14 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 	    assertEquals("LanguageID", attribute.getType().getName());
 	    assertEquals("", attribute.getType().getNamespaceURI()); // default namespace
 	}
+    }
+
+    private CMDIDocument readTestDocument() throws SAXException, DOMException, MetadataDocumentException, ParserConfigurationException, IOException {
+	final Document dom = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
+	// Read from DOM
+	final CMDIDocument cmdi = reader.read(dom, null);
+	assertNotNull(cmdi);
+	return cmdi;
     }
 
     /**
