@@ -18,7 +18,6 @@ package nl.mpi.metadata.cmdi.api;
 
 import nl.mpi.metadata.api.SimpleErrorHandler;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
-import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.validation.MockCMDIValidator;
 import org.junit.Before;
 import org.junit.Ignore;

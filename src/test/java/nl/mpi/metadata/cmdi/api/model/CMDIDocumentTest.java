@@ -18,7 +18,6 @@ package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URISyntaxException;
 import java.util.Collection;
-import javax.xml.transform.TransformerException;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
@@ -73,38 +72,6 @@ public class CMDIDocumentTest extends CMDIAPITestCase {
     @Test
     public void testGetMetadataDocument() {
 	assertEquals(document, document.getMetadataDocument());
-    }
-
-    @Test
-    public void testAddChildElement() throws TransformerException {
-	// Document should have no children right after creation
-	assertEquals(0, document.getChildren().size());
-	// Get child node from DOM
-	Node collectionNode = getCollectionNode();
-	// Create component
-	Component component = createComponent(collectionNode, "./:Collection");
-	// Add as a child
-	document.addChildElement(component);
-	// It should be in the appear as a child (+1)
-	assertEquals(1, document.getChildren().size());
-	// And it should be the same component
-	assertEquals(component, document.getChildren().get(0));
-    }
-
-    @Test
-    public void testRemoveChildElement() throws TransformerException {
-	int childCount = document.getChildren().size();
-	// Get child node from DOM
-	Node collectionNode = getCollectionNode();
-	// Create component
-	Component component = createComponent(collectionNode, "./:Collection");
-	// Add it as a child
-	document.addChildElement(component);
-	// There should be one more (+1)
-	assertEquals(childCount + 1, document.getChildren().size());
-	document.removeChildElement(component);
-	// There should be one less (-1)
-	assertEquals(childCount, document.getChildren().size());
     }
 
     /**
@@ -163,15 +130,5 @@ public class CMDIDocumentTest extends CMDIAPITestCase {
 	assertEquals(expResult, result);
 	// TODO review the generated test code and remove the default call to fail.
 	fail("The test case is a prototype.");
-    }
-
-    private Node getCollectionNode() throws TransformerException {
-	// Get child node from DOM
-	Node childNode = XPathAPI.selectSingleNode(documentRootNode, "/:Collection");
-	return childNode;
-    }
-
-    private Component createComponent(Node componentNode, String componentName) throws TransformerException {
-	throw new UnsupportedOperationException();
     }
 }

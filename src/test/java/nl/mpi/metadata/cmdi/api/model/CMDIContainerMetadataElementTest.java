@@ -52,17 +52,17 @@ public class CMDIContainerMetadataElementTest extends CMDIAPITestCase {
 	assertEquals(0, collection.getChildrenCount(originLocationType));
 
 	// Add a new child
-	collection.addChildElement(originLocation);
+	assertTrue(collection.addChildElement(originLocation));
 	assertEquals(1, collection.getChildren().size());
 	assertEquals(1, collection.getChildrenCount(originLocationType));
 
-	// Add the same child
-	collection.addChildElement(originLocation);
+	// Add the same child (should not get added)
+	assertFalse(collection.addChildElement(originLocation));
 	assertEquals(1, collection.getChildren().size());
 	assertEquals(1, collection.getChildrenCount(originLocationType));
 
 	// Add an aditional child
-	collection.addChildElement(new CMDIContainerMetadataElementImpl(originLocationType));
+	assertTrue(collection.addChildElement(new CMDIContainerMetadataElementImpl(originLocationType)));
 	assertEquals(2, collection.getChildren().size());
 	assertEquals(2, collection.getChildrenCount(originLocationType));
     }
@@ -71,12 +71,15 @@ public class CMDIContainerMetadataElementTest extends CMDIAPITestCase {
     public void testRemoveChildElement() throws Exception {
 	assertEquals(0, collection.getChildren().size());
 	// Add two children
-	collection.addChildElement(originLocation);
-	collection.addChildElement(new CMDIContainerMetadataElementImpl(originLocationType));
+	assertTrue(collection.addChildElement(originLocation));
+	assertTrue(collection.addChildElement(new CMDIContainerMetadataElementImpl(originLocationType)));
 	assertEquals(2, collection.getChildren().size());
 	// Remove first child
-	collection.removeChildElement(originLocation);
+	assertTrue(collection.removeChildElement(originLocation));
 	assertEquals(1, collection.getChildren().size());
+	// Remove non-child (should not work)
+	assertFalse(collection.removeChildElement(new CMDIContainerMetadataElementImpl(originLocationType)));
+
     }
 
     /**
@@ -99,6 +102,28 @@ public class CMDIContainerMetadataElementTest extends CMDIAPITestCase {
 	assertEquals(location1, collection.getChildElement("OriginLocation/Location"));
 	assertEquals(location1, collection.getChildElement("OriginLocation[1]/Location[1]"));
 	assertEquals(location2, collection.getChildElement("OriginLocation/Location[2]"));
+	assertNull(collection.getChildElement("NoSuchChildNode"));
+
+	assertEquals(location1, originLocation.getChildElement(locationType, 0));
+	assertEquals(location2, originLocation.getChildElement(locationType, 1));
+	assertNull(originLocation.getChildElement(collectionType, 0));
+    }
+
+    /**
+     * Test of getPathForNewElement method, of class CMDIContainerMetadataElement.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetChildIllegalPath() throws Exception {
+	collection.getChildElement("/");
+    }
+
+    /**
+     * Test of getPathForNewElement method, of class CMDIContainerMetadataElement.
+     */
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testGetChildElementIndexOutOfBound() throws Exception {
+	collection.addChildElement(originLocation);
+	collection.getChildElement(originLocationType, 1);
     }
 
     private class CMDIContainerMetadataElementImpl extends CMDIContainerMetadataElement {

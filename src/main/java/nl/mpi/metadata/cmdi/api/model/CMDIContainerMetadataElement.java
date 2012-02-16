@@ -51,6 +51,11 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
 	this.childrenMap = new HashMap<String, List<CMDIMetadataElement>>();
     }
 
+    /**
+     * Finds the number children of this element that are of the specified type
+     * @param childType metadata type to look for
+     * @return number of childern of the specified type
+     */
     public int getChildrenCount(CMDIProfileElement childType) {
 	if (childrenMap.containsKey(childType.getName())) {
 	    return childrenMap.get(childType.getName()).size();
@@ -59,7 +64,12 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
 	}
     }
 
-    public synchronized void addChildElement(CMDIMetadataElement element) {
+    /**
+     * Adds the provided element as a child
+     * @param element element to add
+     * @return whether the child was added. Will be false if the child is already registered as a child.
+     */
+    public synchronized boolean addChildElement(CMDIMetadataElement element) {
 	if (!children.contains(element)) {
 	    if (children.add(element)) {
 		final String typeName = element.getType().getName();
@@ -68,35 +78,100 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
 		    elements = new ArrayList<CMDIMetadataElement>();
 		    childrenMap.put(typeName, elements);
 		}
-		elements.add(element);
+		if (!elements.add(element)) {
+		    throw new AssertionError("Child was added but could not be registered in map");
+		}
+		return true;
 	    }
 	}
+	return false;
     }
 
-    public synchronized void removeChildElement(CMDIMetadataElement element) {
+    /**
+     * Removes a child from this element
+     * @param element element to remove
+     * @return  whether the child was removed. Will be false if the child is not registered as a child.
+     */
+    public synchronized boolean removeChildElement(CMDIMetadataElement element) {
 	if (children.remove(element)) {
 	    List<CMDIMetadataElement> elements = childrenMap.get(element.getType().getName());
 	    if (elements == null) {
 		throw new AssertionError("No list in children map for removed child element");
 	    }
-	    elements.remove(element);
+	    if (!elements.remove(element)) {
+		throw new AssertionError("Child was removed but could not be deleted from map");
+	    }
+	    return true;
+	} else {
+	    return false;
 	}
     }
 
-    public CMDIMetadataElement getChildElement(final String path) {
+    /**
+     * Gets a child element by type and index
+     * @param type type of the child to get
+     * @param index index of the element to return
+     * @return child, if found; null if no children of the specified type are contained in this element
+     * @throws IndexOutOfBoundsException if children of the specified type do exist, but the specified index is outside the bounds of the collection
+     */
+    public CMDIMetadataElement getChildElement(CMDIProfileElement type, int index) throws IndexOutOfBoundsException {
+	List<CMDIMetadataElement> elements = childrenMap.get(type.getName());
+	if (elements == null) {
+	    return null;
+	} else {
+	    return elements.get(index);
+	}
+    }
+
+    /**
+     * Gets a child element of this node, selected by the specified path.
+     * 
+     * This method supports a subset of XPath. Examples:
+     * <ul>
+     *	<li><em>Actor</em> 
+     *	    will get the first child of the type Actor</li>
+     *	<li><em>Actor[1]</em> 
+     *	    will also get the first child of the type Actor</li>
+     *	<li><em>Actor[2]</em>
+     *	    will get the second child of the type Actor</li>
+     *	<li><em>Actor/Language[2]</em>
+     *	    will get the second child of the type Language of the first child of the node Actor of this node</li>
+     * </ul>
+     * 
+     * Among other things, the following features are <strong>not supported</strong>:
+     * <ul>
+     *	<li>alternative starting nodes (e.g. <em>../Actor[3]</em>)</li>
+     *	<li>retrieving attributes (e.g. <em>Actor[2]/@name</em>)</li>
+     *	<li>conditions (e.g. <em>Actor[@name='Joe']</em>)</li>
+     * </ul>
+     * @param path specification of child element to return
+     * @return the child at the specified path, if found; otherwise null
+     * @throws IllegalArgumentException if the format of the path is illegal
+     */
+    public CMDIMetadataElement getChildElement(final String path) throws IllegalArgumentException {
 	// e.g. Actor[1]/Language -> (Actor)([(1)])(/(Language)) -> 
 	final Pattern pathPattern = Pattern.compile("(^[^(/|\\[]+)(\\[(\\d+)\\])?(/(.*))?$");
 	final Matcher pathMatcher = pathPattern.matcher(path);
 	if (pathMatcher.find()) {
 	    final String elementName = pathMatcher.group(1);
-	    final String elementIndexString = pathMatcher.group(3);
-	    final String childPath = pathMatcher.group(5);
+	    if (elementName != null && elementName.length() > 0) {
+		final String elementIndexString = pathMatcher.group(3);
+		final String childPath = pathMatcher.group(5);
 
-	    return getChildElement(elementName, elementIndexString, childPath);
+		return getChildElement(elementName, elementIndexString, childPath);
+	    }
 	}
-	return null;
+	throw new IllegalArgumentException(String.format("Path does not match accepted pattern: %1$s", path));
     }
 
+    /**
+     * Gets a child element 
+     * @param elementName name of local element to find
+     * @param elementIndexString if null or empty, will default to '1'
+     * @param childPath path that should be propagated to child
+     * @return child element if match is found. Null if not found.
+     * @throws NumberFormatException 
+     */
     private synchronized CMDIMetadataElement getChildElement(final String elementName, final String elementIndexString, final String childPath) throws NumberFormatException {
 	final List<CMDIMetadataElement> elements = childrenMap.get(elementName);
 	if (elements != null) {

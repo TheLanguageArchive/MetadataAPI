@@ -33,7 +33,7 @@ public interface MetadataContainer<M extends MetadataElement> {
 
     List<M> getChildren();
 
-    public void addChildElement(M element);
+    public boolean addChildElement(M element);
 
-    public void removeChildElement(M element);
+    public boolean removeChildElement(M element);
 }
