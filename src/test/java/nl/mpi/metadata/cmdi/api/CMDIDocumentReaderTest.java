@@ -92,23 +92,27 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 	 */
 	assertEquals(3, cmdi.getChildren().size());
 
-	final Component collection = (Component) cmdi.getChildElement("./:Collection");
+	final Component collection = (Component) cmdi.getChildElement("Collection");
 	assertNotNull(collection);
 
 	// Get Collection/GeneralInfo/Name element
-	final Element name = (Element) cmdi.getChildElement("./:Collection/:GeneralInfo/:Name");
+	final Component generalInfo = (Component) cmdi.getChildElement("Collection/GeneralInfo");
+	assertNotNull(generalInfo);
+
+	// Get Collection/GeneralInfo/Name element
+	final Element name = (Element) cmdi.getChildElement("Collection/GeneralInfo/Name");
 	assertNotNull(name);
 	// Name should also be retrievable from Collection component
-	assertEquals(name, collection.getChildElement("./:GeneralInfo/:Name"));
+	assertEquals(name, collection.getChildElement("GeneralInfo/Name"));
 	// Value should match document
 	assertEquals("TextCorpus test", name.getValue());
 
 	// Check component with multiple occurences
-	final Component originLocation = (Component) cmdi.getChildElement("./:Collection/:OriginLocation");
+	final Component originLocation = (Component) cmdi.getChildElement("Collection/OriginLocation");
 	assertEquals(2, originLocation.getChildren().size());
-	Element location1code = (Element) originLocation.getChildElement("./:Location[1]/:Country/:Code");
+	Element location1code = (Element) originLocation.getChildElement("Location[1]/Country/Code");
 	assertEquals("NL", location1code.getValue());
-	Element location2code = (Element) originLocation.getChildElement("./:Location[2]/:Country/:Code");
+	Element location2code = (Element) originLocation.getChildElement("Location[2]/Country/Code");
 	assertEquals("BE", location2code.getValue());
 
 	// Check attributes
@@ -120,7 +124,7 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 	    assertEquals("http://www.w3.org/XML/1998/namespace", attribute.getType().getNamespaceURI());
 	}
 
-	final Element description = (Element) cmdi.getChildElement("./:Collection/:GeneralInfo/:Description/:Description");
+	final Element description = (Element) cmdi.getChildElement("Collection/GeneralInfo/Description/Description");
 	attributes = description.getAttributes();
 	assertEquals(1, attributes.size());
 	for (Attribute attribute : attributes) {

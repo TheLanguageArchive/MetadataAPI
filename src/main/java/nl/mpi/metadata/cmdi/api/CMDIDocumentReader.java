@@ -43,13 +43,19 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 
     private static Logger logger = LoggerFactory.getLogger(CMDIDocumentReader.class);
     private final CMDIProfileContainer profileContainer;
+    private final CMDIComponentReader componentReader;
 
     /**
      * Creates a CMDI document reader that uses the specified profile container
      * @param profileContainer profile container that gets used to retrieve CMDI profiles
      */
     public CMDIDocumentReader(CMDIProfileContainer profileContainer) {
+	this(profileContainer, new CMDIComponentReader());
+    }
+
+    public CMDIDocumentReader(CMDIProfileContainer profileContainer, CMDIComponentReader componentReader) {
 	this.profileContainer = profileContainer;
+	this.componentReader = componentReader;
     }
 
     /**
@@ -66,8 +72,7 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	final CMDIDocument cmdiDocument = createCMDIDocument(xPathAPI, document, documentURI, profile);
 
 	readHeader(cmdiDocument, document, xPathAPI);
-	//readResources(cmdiDocument, document);
-	readComponents(cmdiDocument, document, xPathAPI);
+	componentReader.readComponents(cmdiDocument, document, xPathAPI);
 
 	return cmdiDocument;
     }
@@ -177,30 +182,5 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	// (CMDI header does not support attributes)
 	// Put into metadata document
 	cmdiDocument.putHeaderInformation(headerInfo);
-    }
-
-    private void readComponents(final CMDIDocument cmdiDocument, final Document domDocument, final CachedXPathAPI xPathAPI) throws DOMException, MetadataDocumentException {
-	Node rootComponentNode = getRootComponentNode(cmdiDocument, domDocument, xPathAPI);
-
-	// TODO
-    }
-
-    private Node getRootComponentNode(final CMDIDocument cmdiDocument, final Document domDocument, final CachedXPathAPI xPathAPI) throws MetadataDocumentException {
-	final String rootComponentNodePath = cmdiDocument.getType().getPathString();
-	try {
-	    final Node rootComponentNode = xPathAPI.selectSingleNode(domDocument, rootComponentNodePath);
-
-	    if (rootComponentNode == null) {
-		throw new MetadataDocumentException(String.format("Root component node not found at specified path: %1$s", rootComponentNodePath));
-	    }
-
-	    logger.debug("Found documentNode at {}", rootComponentNodePath);
-
-	    return rootComponentNode;
-	} catch (TransformerException tEx) {
-	    throw new MetadataDocumentException(
-		    String.format("TransormationException while looking up root component node at specified path: %1$s", rootComponentNodePath),
-		    tEx);
-	}
     }
 }
