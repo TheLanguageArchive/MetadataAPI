@@ -79,16 +79,23 @@ public class MetadataAPITest extends nl.mpi.metadata.api.MetadataAPITest {
 	public MetadataContainer createEmptyParentElement(MetadataDocument document) throws Exception {
 	    CMDIDocument cmdiDocument = (CMDIDocument) document;
 	    CMDIProfile profile = getAPI().getProfileContainer().getProfile(schemaURI);
-
-	    CMDIProfileElement testComponentType = profile.getContainableTypes().iterator().next();
-	    return (Component) getAPI().createMetadataElement(cmdiDocument, testComponentType);
+	    ComponentType collectionType = (ComponentType) profile.getContainableTypeByName("Collection");
+	    return new Component(collectionType, cmdiDocument);
 	}
 
 	public MetadataElementType createAddableType() throws Exception {
 	    CMDIProfile profile = getAPI().getProfileContainer().getProfile(schemaURI);
-	    ComponentType testComponentType = (ComponentType) profile.getContainableTypes().iterator().next();
-	    CMDIProfileElement booleanElement = testComponentType.getContainableTypes().iterator().next();
-	    return booleanElement;
+	    ComponentType collectionType = (ComponentType) profile.getContainableTypeByName("Collection");
+	    CMDIProfileElement generalInfoType = collectionType.getContainableTypeByName("GeneralInfo");
+	    return generalInfoType;
+	}
+
+	public MetadataElementType createUnaddableType() throws Exception {
+	    CMDIProfile profile = getAPI().getProfileContainer().getProfile(schemaURI);
+	    ComponentType collectionType = (ComponentType) profile.getContainableTypeByName("Collection");
+	    ComponentType generalInfoType = (ComponentType) collectionType.getContainableTypeByName("GeneralInfo");
+	    CMDIProfileElement nameType = generalInfoType.getContainableTypeByName("Name");
+	    return nameType;
 	}
 
 	public URL getDocumentURL() throws Exception {

@@ -17,6 +17,7 @@
 package nl.mpi.metadata.api;
 
 import java.net.URL;
+import nl.mpi.metadata.api.model.ContainedMetadataElement;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.model.MetadataElement;
@@ -97,12 +98,23 @@ public abstract class MetadataAPITest {
      * Test of createMetadataElement method, of class MetadataAPI.
      */
     @Test
-    @Ignore
     public void testCreateMetadataElement() throws Exception {
 	MetadataContainer parentElement = getProvider().createEmptyParentElement(getProvider().createDocument());
 	MetadataElementType type = getProvider().createAddableType();
 	MetadataElement result = api.createMetadataElement(parentElement, type);
 	assertNotNull(result);
+	assertTrue(parentElement.getChildren().contains(result));
+	assertTrue(result instanceof ContainedMetadataElement);
+	assertEquals(parentElement, ((ContainedMetadataElement) result).getParent());
+
+	try {
+	    type = getProvider().createUnaddableType();
+	    result = api.createMetadataElement(parentElement, type);
+	    // The above line should fail because type is not addable to the parentElement
+	    fail("Expected MetadataDocumentException");
+	} catch (MetadataDocumentException ex) {
+	    // this should happen
+	}
     }
 
     /**
@@ -146,6 +158,8 @@ public abstract class MetadataAPITest {
 	MetadataContainer createEmptyParentElement(MetadataDocument document) throws Exception;
 
 	MetadataElementType createAddableType() throws Exception;
+
+	MetadataElementType createUnaddableType() throws Exception;
 
 	URL getDocumentURL() throws Exception;
     }

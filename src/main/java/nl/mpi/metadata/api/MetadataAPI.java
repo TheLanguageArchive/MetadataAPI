@@ -28,13 +28,13 @@ import org.xml.sax.SAXException;
 
 /**
  *
- * @param <T> Metadata document type class
+ * @param <DT> Metadata document type class
  * @param <M> Metadata element class
  * @param <C> Metadata container class
  * @param <D> Metadata document class
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface MetadataAPI<T extends MetadataDocumentType, M extends MetadataElement, C extends MetadataContainer<M>, D extends MetadataDocument<M>> {
+public interface MetadataAPI<DT extends MetadataDocumentType, MT extends MetadataElementType, M extends MetadataElement, C extends MetadataContainer<M>, D extends MetadataDocument<M>> {
 
     /**
      * Loads the metadata document at the specified location
@@ -48,7 +48,7 @@ public interface MetadataAPI<T extends MetadataDocumentType, M extends MetadataE
      * @param type type of document to create
      * @return newly instantiated document of specified type
      */
-    D createMetadataDocument(T type) throws MetadataDocumentException;
+    D createMetadataDocument(DT type) throws MetadataDocumentException;
 
     /**
      * Creates a metadata element of the specified type
@@ -56,7 +56,7 @@ public interface MetadataAPI<T extends MetadataDocumentType, M extends MetadataE
      * @param type type of element to create
      * @return newly instantiated element of specified type
      */
-    MetadataElement createMetadataElement(C parentElement, MetadataElementType type);
+    MetadataElement createMetadataElement(C parentElement, MT type) throws MetadataDocumentException;
 
     /**
      * Validates a metadata document to its schema

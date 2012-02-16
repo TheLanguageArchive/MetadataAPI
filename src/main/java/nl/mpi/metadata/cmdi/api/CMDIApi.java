@@ -36,13 +36,14 @@ import nl.mpi.metadata.api.MetadataAPI;
 import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.MetadataDocumentReader;
 import nl.mpi.metadata.api.model.MetadataElement;
-import nl.mpi.metadata.api.type.MetadataElementType;
 import nl.mpi.metadata.api.validation.MetadataValidator;
 import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
+import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
+import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import nl.mpi.metadata.cmdi.api.validation.DefaultCMDIValidator;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.apache.xmlbeans.XmlException;
@@ -56,7 +57,7 @@ import org.xml.sax.SAXException;
  * 
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CMDIContainerMetadataElement, CMDIDocument> {
+public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMDIMetadataElement, CMDIContainerMetadataElement, CMDIDocument> {
 
     /**
      * SAX entity resolver for custom resolving of resources while parsing
@@ -70,6 +71,10 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
      * Service that validates an existing CMDI Document instance on disk
      */
     private MetadataValidator<CMDIDocument> cmdiValidator;
+    /**
+     * Factory that instantiates {@link Component Components} and {@link Element Elements}
+     */
+    private CMDIMetadataElementFactory elementFactory;
     /**
      * Service that manipulates DOM representation of CMDI documents
      * TODO: Extract interface and support arbitrary implementations
@@ -98,7 +103,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
      */
     public CMDIApi() {
 	this(null);
-	this.documentReader = new CMDIDocumentReader(profileContainer);
+	this.documentReader = new CMDIDocumentReader(profileContainer, new CMDIComponentReader(elementFactory));
     }
 
     /**
@@ -119,18 +124,37 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIMetadataElement, CM
     }
 
     public CMDIApi(MetadataDocumentReader<CMDIDocument> documentReader, MetadataValidator<CMDIDocument> cmdiValidator, EntityResolver entityResolver) {
+	this(documentReader, cmdiValidator, entityResolver, new CMDIMetadataElementFactory());
+    }
+
+    public CMDIApi(MetadataDocumentReader<CMDIDocument> documentReader, MetadataValidator<CMDIDocument> cmdiValidator, EntityResolver entityResolver, CMDIMetadataElementFactory elementFactory) {
 	this.documentReader = documentReader;
 	this.cmdiValidator = cmdiValidator;
 	this.entityResolver = entityResolver;
+	this.elementFactory = elementFactory;
     }
 
-    public MetadataElement createMetadataElement(CMDIContainerMetadataElement parent, MetadataElementType type) {
-	// Take the type of the parent
-	// Check if child type is allowed
-	// Add to DOM
-	// Instantiate
-	// Add to parent
-	throw new UnsupportedOperationException("Not supported yet.");
+    /**
+     * Creates a new metadata element as a child of a specified parent. This method will both instantatie a new element of the 
+     * specified type, and register it with its parent as a new child.
+     * @param parent container to add element to
+     * @param type type of element to create
+     * @return newly created element; null if it was not created
+     * @throws MetadataDocumentException if specified type cannot, by its type, be contained in specified parent
+     */
+    public MetadataElement createMetadataElement(CMDIContainerMetadataElement parent, CMDIProfileElement type) throws MetadataDocumentException {
+	final ComponentType parentType = parent.getType();
+	if (parentType.canContainType(type)) {
+	    CMDIMetadataElement newChild = elementFactory.createNewMetadataElement(parent, type);
+	    if (parent.addChildElement(newChild)) {
+		return newChild;
+	    } else {
+		return null;
+	    }
+	} else {
+	    throw new MetadataDocumentException(parent.getMetadataDocument(),
+		    String.format("Elements of type %1$s cannot be added to components of type %2$s", type, parentType));
+	}
     }
 
     public boolean removeElement(CMDIMetadataElement element) throws MetadataDocumentException {

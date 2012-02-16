@@ -168,6 +168,6 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
 
     @Override
     public String toString() {
-	return qName.toString();
+	return qName.getLocalPart();
     }
 }

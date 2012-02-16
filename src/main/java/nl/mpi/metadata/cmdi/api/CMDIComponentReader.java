@@ -23,12 +23,10 @@ import nl.mpi.metadata.cmdi.api.model.Attribute;
 import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
-import nl.mpi.metadata.cmdi.api.model.Component;
 import nl.mpi.metadata.cmdi.api.model.Element;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
-import nl.mpi.metadata.cmdi.api.type.ElementType;
 import org.apache.xpath.CachedXPathAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +43,22 @@ import org.w3c.dom.NodeList;
 public class CMDIComponentReader {
 
     private static Logger logger = LoggerFactory.getLogger(CMDIComponentReader.class);
+    private CMDIMetadataElementFactory elementFactory;
+
+    /**
+     * Will create a new ComponentReader with a new {@link CMDIMetadataElementFactory}.
+     */
+    public CMDIComponentReader() {
+	this(new CMDIMetadataElementFactory());
+    }
+
+    /**
+     * Will create a new ComponentReader with the specified CMDIMetadataElementFactory
+     * @param elementFactory element factory to use for instantiating profile elements
+     */
+    public CMDIComponentReader(CMDIMetadataElementFactory elementFactory) {
+	this.elementFactory = elementFactory;
+    }
 
     public void readComponents(final CMDIDocument cmdiDocument, final Document domDocument, final CachedXPathAPI xPathAPI) throws DOMException, MetadataDocumentException {
 	final Node rootComponentNode = getRootComponentNode(cmdiDocument, domDocument, xPathAPI);
@@ -104,15 +118,11 @@ public class CMDIComponentReader {
     }
 
     private CMDIMetadataElement createElementInstance(final CMDIContainerMetadataElement parentElement, final Node instanceNode, final CMDIProfileElement type) throws AssertionError {
-	if (type instanceof ElementType) {
-	    logger.debug("Adding {} as CMDI element child to {}", type.getName(), parentElement.getName());
-	    return new Element((ElementType) type, parentElement, instanceNode.getTextContent());
-	} else if (type instanceof ComponentType) {
-	    return new Component((ComponentType) type, parentElement);
-	} else {
-	    // None of the above types
-	    throw new AssertionError("Cannot handle CMDIMetadataElement type " + type.getClass().getName());
+	CMDIMetadataElement elementInstance = elementFactory.createNewMetadataElement(parentElement, type);
+	if (elementInstance instanceof Element) {
+	    ((Element) elementInstance).setValue(instanceNode.getTextContent());
 	}
+	return elementInstance;
     }
 
     private void readAttributes(Node instanceNode, CMDIMetadataElement metadataElement, CMDIProfileElement metadataType) {
