@@ -43,25 +43,15 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
 
     private ComponentType type;
     private List<CMDIMetadataElement> children;
-    private final Map<String, List<CMDIMetadataElement>> childrenMap;
+    /**
+     * Map of {type name => child elements}
+     */
+    private final Map<String, List<CMDIMetadataElement>> childrenTypeMap;
 
     public CMDIContainerMetadataElement(final ComponentType type) {
 	this.type = type;
 	this.children = Collections.synchronizedList(new ArrayList<CMDIMetadataElement>());
-	this.childrenMap = new HashMap<String, List<CMDIMetadataElement>>();
-    }
-
-    /**
-     * Finds the number children of this element that are of the specified type
-     * @param childType metadata type to look for
-     * @return number of childern of the specified type
-     */
-    public int getChildrenCount(CMDIProfileElement childType) {
-	if (childrenMap.containsKey(childType.getName())) {
-	    return childrenMap.get(childType.getName()).size();
-	} else {
-	    return 0;
-	}
+	this.childrenTypeMap = new HashMap<String, List<CMDIMetadataElement>>();
     }
 
     /**
@@ -73,10 +63,10 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
 	if (!children.contains(element)) {
 	    if (children.add(element)) {
 		final String typeName = element.getType().getName();
-		List<CMDIMetadataElement> elements = childrenMap.get(typeName);
+		List<CMDIMetadataElement> elements = childrenTypeMap.get(typeName);
 		if (elements == null) {
 		    elements = new ArrayList<CMDIMetadataElement>();
-		    childrenMap.put(typeName, elements);
+		    childrenTypeMap.put(typeName, elements);
 		}
 		if (!elements.add(element)) {
 		    throw new AssertionError("Child was added but could not be registered in map");
@@ -94,7 +84,7 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
      */
     public synchronized boolean removeChildElement(CMDIMetadataElement element) {
 	if (children.remove(element)) {
-	    List<CMDIMetadataElement> elements = childrenMap.get(element.getType().getName());
+	    List<CMDIMetadataElement> elements = childrenTypeMap.get(element.getType().getName());
 	    if (elements == null) {
 		throw new AssertionError("No list in children map for removed child element");
 	    }
@@ -114,8 +104,8 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
      * @return child, if found; null if no children of the specified type are contained in this element
      * @throws IndexOutOfBoundsException if children of the specified type do exist, but the specified index is outside the bounds of the collection
      */
-    public CMDIMetadataElement getChildElement(CMDIProfileElement type, int index) throws IndexOutOfBoundsException {
-	List<CMDIMetadataElement> elements = childrenMap.get(type.getName());
+    public synchronized CMDIMetadataElement getChildElement(CMDIProfileElement type, int index) throws IndexOutOfBoundsException {
+	List<CMDIMetadataElement> elements = childrenTypeMap.get(type.getName());
 	if (elements == null) {
 	    return null;
 	} else {
@@ -173,7 +163,7 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
      * @throws NumberFormatException 
      */
     private synchronized CMDIMetadataElement getChildElement(final String elementName, final String elementIndexString, final String childPath) throws NumberFormatException {
-	final List<CMDIMetadataElement> elements = childrenMap.get(elementName);
+	final List<CMDIMetadataElement> elements = childrenTypeMap.get(elementName);
 	if (elements != null) {
 	    final int elementIndex = (elementIndexString == null || elementIndexString.length() == 0)
 		    ? 0
@@ -196,8 +186,21 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
      * 
      * @return An <em>unmodifiable</em> copy of the list of children
      */
-    public List<CMDIMetadataElement> getChildren() {
+    public synchronized List<CMDIMetadataElement> getChildren() {
 	return Collections.unmodifiableList(children);
+    }
+
+    /**
+     * Finds the number children of this element that are of the specified type
+     * @param childType metadata type to look for
+     * @return number of childern of the specified type
+     */
+    public synchronized int getChildrenCount(CMDIProfileElement childType) {
+	if (childrenTypeMap.containsKey(childType.getName())) {
+	    return childrenTypeMap.get(childType.getName()).size();
+	} else {
+	    return 0;
+	}
     }
 
     public void addMetadataElementListener(MetadataElementListener listener) {
