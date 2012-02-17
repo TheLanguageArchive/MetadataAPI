@@ -22,7 +22,7 @@ import nl.mpi.metadata.api.model.MetadataDocument;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class MetadataDocumentException extends Exception {
+public class MetadataDocumentException extends MetadataException {
 
     protected MetadataDocument document;
 
@@ -60,14 +60,5 @@ public class MetadataDocumentException extends Exception {
      */
     public MetadataDocument getDocument() {
 	return document;
-    }
-
-    /**
-     * Set the value of document
-     *
-     * @param document new value of document
-     */
-    public void setDocument(MetadataDocument document) {
-	this.document = document;
     }
 }
