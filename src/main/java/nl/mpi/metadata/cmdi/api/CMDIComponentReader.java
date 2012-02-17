@@ -18,6 +18,7 @@ package nl.mpi.metadata.cmdi.api;
 
 import javax.xml.transform.TransformerException;
 import nl.mpi.metadata.api.MetadataDocumentException;
+import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
 import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
@@ -60,32 +61,32 @@ public class CMDIComponentReader {
 	this.elementFactory = elementFactory;
     }
 
-    public void readComponents(final CMDIDocument cmdiDocument, final Document domDocument, final CachedXPathAPI xPathAPI) throws DOMException, MetadataDocumentException {
+    public void readComponents(final CMDIDocument cmdiDocument, final Document domDocument, final CachedXPathAPI xPathAPI) throws DOMException, MetadataException {
 	final Node rootComponentNode = getRootComponentNode(cmdiDocument, domDocument, xPathAPI);
 	final CMDIProfile profile = cmdiDocument.getType();
 	readElement(rootComponentNode, cmdiDocument, profile);
     }
 
-    private Node getRootComponentNode(final CMDIDocument cmdiDocument, final Document domDocument, final CachedXPathAPI xPathAPI) throws MetadataDocumentException {
+    private Node getRootComponentNode(final CMDIDocument cmdiDocument, final Document domDocument, final CachedXPathAPI xPathAPI) throws MetadataException {
 	final String rootComponentNodePath = cmdiDocument.getType().getPathString();
 	try {
 	    final Node rootComponentNode = xPathAPI.selectSingleNode(domDocument, rootComponentNodePath);
 
 	    if (rootComponentNode == null) {
-		throw new MetadataDocumentException(String.format("Root component node not found at specified path: %1$s", rootComponentNodePath));
+		throw new MetadataException(String.format("Root component node not found at specified path: %1$s", rootComponentNodePath));
 	    }
 
 	    logger.debug("Found documentNode at {}", rootComponentNodePath);
 
 	    return rootComponentNode;
 	} catch (TransformerException tEx) {
-	    throw new MetadataDocumentException(
+	    throw new MetadataException(
 		    String.format("TransormationException while looking up root component node at specified path: %1$s", rootComponentNodePath),
 		    tEx);
 	}
     }
 
-    private void readElement(final Node domNode, final CMDIMetadataElement element, final CMDIProfileElement type) throws MetadataDocumentException {
+    private void readElement(final Node domNode, final CMDIMetadataElement element, final CMDIProfileElement type) throws MetadataException {
 	if (element instanceof CMDIContainerMetadataElement) {
 	    if (type instanceof ComponentType) {
 		logger.debug("Reading child elements for component");
@@ -97,7 +98,7 @@ public class CMDIComponentReader {
 	readAttributes(domNode, element, type);
     }
 
-    private void readChildElements(final Node parentNode, final CMDIContainerMetadataElement parentElement, final ComponentType parentType) throws MetadataDocumentException {
+    private void readChildElements(final Node parentNode, final CMDIContainerMetadataElement parentElement, final ComponentType parentType) throws MetadataException {
 	NodeList childNodes = parentNode.getChildNodes();
 	for (int i = 0; i < childNodes.getLength(); i++) {
 	    final Node childNode = childNodes.item(i);
@@ -105,7 +106,7 @@ public class CMDIComponentReader {
 		logger.debug("Found DOM Element node {}, will create CMDI metadata element", childNode);
 		CMDIProfileElement childType = parentType.getContainableTypeByName(childNode.getLocalName());
 		if (childType == null) {
-		    throw new MetadataDocumentException(String.format("Cannot infer component type for DOM node: %1$s", childNode));
+		    throw new MetadataException(String.format("Cannot infer component type for DOM node: %1$s", childNode));
 		}
 		CMDIMetadataElement childElement = createElementInstance(parentElement, childNode, childType);
 		parentElement.addChildElement(childElement);

@@ -26,16 +26,15 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import nl.mpi.metadata.api.MetadataDocumentException;
+import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileTest;
 import nl.mpi.metadata.cmdi.api.type.CMDITypeException;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
-import org.apache.xpath.XPathAPI;
 import org.junit.Assert;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -97,11 +96,11 @@ public abstract class CMDIAPITestCase {
 	return builder.parse(documentStream);
     }
 
-    protected CMDIDocument getNewTestDocument() throws IOException, CMDITypeException, ParserConfigurationException, SAXException, TransformerException, URISyntaxException, MetadataDocumentException {
+    protected CMDIDocument getNewTestDocument() throws IOException, CMDITypeException, ParserConfigurationException, SAXException, TransformerException, URISyntaxException, MetadataException {
 	return getNewTestDocument(testSchemaTextCorpus.toURI(), TEXT_CORPUS_INSTANCE_LOCATION, TEXT_CORPUS_PROFILE_ROOT_NODE_PATH);
     }
 
-    protected CMDIDocument getNewTestDocument(final URI schemaURI, final String documentResourceLocation, final String rootNodePath) throws IOException, CMDITypeException, ParserConfigurationException, SAXException, TransformerException, URISyntaxException, MetadataDocumentException {
+    protected CMDIDocument getNewTestDocument(final URI schemaURI, final String documentResourceLocation, final String rootNodePath) throws IOException, CMDITypeException, ParserConfigurationException, SAXException, TransformerException, URISyntaxException, MetadataException {
 	Document domDocument = getDomDocumentForResource(documentResourceLocation);
 	return getDocumentReader().read(domDocument, getClass().getResource(documentResourceLocation).toURI());
     }

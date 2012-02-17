@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 import javax.xml.transform.TransformerException;
 import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.MetadataDocumentReader;
+import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
@@ -66,7 +67,7 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
      * @throws MetadataDocumentException if an unexpected circumstance is detected while reading the document
      * @throws IOException if an I/O error occurs while reading the profile schema through the {@link CMDIProfileContainer} referenced in the document
      */
-    public CMDIDocument read(final Document document, final URI documentURI) throws MetadataDocumentException, DOMException, IOException {
+    public CMDIDocument read(final Document document, final URI documentURI) throws MetadataException, DOMException, IOException {
 	final CachedXPathAPI xPathAPI = new CachedXPathAPI();
 	final CMDIProfile profile = getProfileForDocument(document, documentURI, xPathAPI);
 	final CMDIDocument cmdiDocument = createCMDIDocument(xPathAPI, document, documentURI, profile);
@@ -77,19 +78,19 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	return cmdiDocument;
     }
 
-    private CMDIDocument createCMDIDocument(final CachedXPathAPI xPathAPI, final Document document, URI documentURI, final CMDIProfile profile) throws MetadataDocumentException {
+    private CMDIDocument createCMDIDocument(final CachedXPathAPI xPathAPI, final Document document, URI documentURI, final CMDIProfile profile) throws MetadataException {
 	final String rootComponentNodePath = profile.getPathString();
 	try {
 	    final Node rootComponentNode = xPathAPI.selectSingleNode(document, rootComponentNodePath);
 
 	    if (rootComponentNode == null) {
-		throw new MetadataDocumentException(String.format("Root component node not found at specified path: %1$s", rootComponentNodePath));
+		throw new MetadataException(String.format("Root component node not found at specified path: %1$s", rootComponentNodePath));
 	    }
 
 	    logger.debug("Found documentNode at {}", rootComponentNodePath);
 	    return new CMDIDocument(profile, documentURI);
 	} catch (TransformerException tEx) {
-	    throw new MetadataDocumentException(
+	    throw new MetadataException(
 		    String.format("TransormationException while looking up root component node at specified path: %1$s", rootComponentNodePath),
 		    tEx);
 	}
@@ -102,11 +103,11 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
      * @throws MetadataDocumentException
      * @throws IOException 
      */
-    private CMDIProfile getProfileForDocument(final Document document, final URI documentURI, final CachedXPathAPI xPathAPI) throws MetadataDocumentException, IOException {
+    private CMDIProfile getProfileForDocument(final Document document, final URI documentURI, final CachedXPathAPI xPathAPI) throws MetadataException, IOException {
 	try {
 	    URI profileURI = getProfileURI(document, xPathAPI);
 	    if (profileURI == null) {
-		throw new MetadataDocumentException("No profile URI found in metadata document");
+		throw new MetadataException("No profile URI found in metadata document");
 	    }
 	    if (documentURI != null) {
 		profileURI = documentURI.resolve(profileURI);
@@ -114,12 +115,12 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	    try {
 		return profileContainer.getProfile(profileURI);
 	    } catch (CMDITypeException ctEx) {
-		throw new MetadataDocumentException(String.format("CMDITypeException occurred while trying to retrieve profile $1%s. See nested exception for details.", profileURI), ctEx);
+		throw new MetadataException(String.format("CMDITypeException occurred while trying to retrieve profile $1%s. See nested exception for details.", profileURI), ctEx);
 	    }
 	} catch (TransformerException tEx) {
-	    throw new MetadataDocumentException("TransformationException while looking for profile URI in metadata document. See nested exception for details.", tEx);
+	    throw new MetadataException("TransformationException while looking for profile URI in metadata document. See nested exception for details.", tEx);
 	} catch (URISyntaxException uEx) {
-	    throw new MetadataDocumentException("URISyntaxException while looking for profile URI in metadata document. See nested exception for details.", uEx);
+	    throw new MetadataException("URISyntaxException while looking for profile URI in metadata document. See nested exception for details.", uEx);
 	}
     }
 

@@ -16,32 +16,39 @@
  */
 package nl.mpi.metadata.api;
 
-import nl.mpi.metadata.api.model.MetadataElement;
+import nl.mpi.metadata.api.type.MetadataElementType;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class MetadataElementException extends MetadataDocumentException {
+public class MetadataTypeException extends MetadataException {
 
-    protected MetadataElement element;
+    private MetadataElementType type;
 
-    public MetadataElementException(MetadataElement element, String message) {
-	super(element.getMetadataDocument(), message);
-	this.element = element;
+    public MetadataTypeException(MetadataElementType type) {
+	this.type = type;
     }
 
-    public MetadataElementException(MetadataElement element, Throwable cause) {
-	super(element.getMetadataDocument(), cause);
-	this.element = element;
+    public MetadataTypeException(MetadataElementType type, String message, Throwable cause) {
+	super(message, cause);
+	this.type = type;
     }
 
-    public MetadataElementException(MetadataElement element, String message, Throwable cause) {
-	super(element.getMetadataDocument(), message, cause);
-	this.element = element;
+    public MetadataTypeException(MetadataElementType type, Throwable cause) {
+	super(cause);
+	this.type = type;
     }
 
-    public MetadataElement getElement() {
-	return element;
+    public MetadataTypeException(MetadataElementType type, String message) {
+	super(message);
+	this.type = type;
+    }
+
+    /**
+     * @return the type
+     */
+    public MetadataElementType getType() {
+	return type;
     }
 }

@@ -41,18 +41,6 @@ public class MetadataDocumentException extends MetadataException {
 	this.document = document;
     }
 
-    public MetadataDocumentException(String message) {
-	this(null, message);
-    }
-
-    public MetadataDocumentException(String message, Throwable cause) {
-	this(null, message, cause);
-    }
-
-    public MetadataDocumentException(Throwable cause) {
-	this(null, null, cause);
-    }
-
     /**
      * Get the value of document
      *

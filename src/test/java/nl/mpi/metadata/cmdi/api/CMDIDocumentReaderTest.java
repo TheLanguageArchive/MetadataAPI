@@ -22,6 +22,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
 import java.net.URISyntaxException;
 import nl.mpi.metadata.api.MetadataDocumentException;
+import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.cmdi.api.model.Element;
 import nl.mpi.metadata.cmdi.api.model.Component;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
@@ -153,7 +154,7 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 	}
     }
 
-    private CMDIDocument readTestDocument() throws SAXException, DOMException, MetadataDocumentException, ParserConfigurationException, IOException {
+    private CMDIDocument readTestDocument() throws SAXException, DOMException, MetadataException, ParserConfigurationException, IOException {
 	final Document dom = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
 	// Read from DOM
 	final CMDIDocument cmdi = reader.read(dom, null);
@@ -164,7 +165,7 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
     /**
      * Test of read method, of class CMDIDocumentReader.
      */
-    @Test(expected = MetadataDocumentException.class)
+    @Test(expected = MetadataException.class)
     public void testReadProfileUriMissing() throws Exception {
 	Document dom = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
 	// Remove schema location info
@@ -187,7 +188,7 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 	try {
 	    reader.read(dom, null);
 	    fail("Expected URISyntaxException nested in MetadataException");
-	} catch (MetadataDocumentException mdEx) {
+	} catch (MetadataException mdEx) {
 	    assertEquals(URISyntaxException.class, mdEx.getCause().getClass());
 	}
     }

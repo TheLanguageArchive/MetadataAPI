@@ -27,5 +27,5 @@ import org.w3c.dom.Document;
  */
 public interface MetadataDocumentReader<T extends MetadataDocument> {
 
-    T read(Document document, URI documentURI) throws MetadataDocumentException, IOException;
+    T read(Document document, URI documentURI) throws MetadataException, IOException;
 }

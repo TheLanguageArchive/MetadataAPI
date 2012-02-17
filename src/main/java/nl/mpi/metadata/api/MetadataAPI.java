@@ -41,14 +41,14 @@ public interface MetadataAPI<DT extends MetadataDocumentType, MT extends Metadat
      * @param uri location of document to open
      * @return opened document
      */
-    D getMetadataDocument(URL url) throws IOException, MetadataDocumentException, IllegalArgumentException;
+    D getMetadataDocument(URL url) throws IOException, MetadataException;
 
     /**
      * Creates a metadata document of the specified type
      * @param type type of document to create
      * @return newly instantiated document of specified type
      */
-    D createMetadataDocument(DT type) throws MetadataDocumentException;
+    D createMetadataDocument(DT type) throws MetadataException;
 
     /**
      * Creates a metadata element of the specified type
@@ -56,7 +56,7 @@ public interface MetadataAPI<DT extends MetadataDocumentType, MT extends Metadat
      * @param type type of element to create
      * @return newly instantiated element of specified type
      */
-    MetadataElement createMetadataElement(C parentElement, MT type) throws MetadataDocumentException;
+    MetadataElement createMetadataElement(C parentElement, MT type) throws MetadataElementException;
 
     /**
      * Validates a metadata document to its schema
@@ -70,5 +70,5 @@ public interface MetadataAPI<DT extends MetadataDocumentType, MT extends Metadat
      * @param element element to remove
      * @return whether an element was removed from its parent
      */
-    boolean removeElement(M element) throws MetadataDocumentException;
+    boolean removeElement(M element) throws MetadataElementException;
 }
