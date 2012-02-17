@@ -16,11 +16,11 @@
  */
 package nl.mpi.metadata.cmdi.api;
 
+import nl.mpi.metadata.api.MetadataElementException;
 import nl.mpi.metadata.api.SimpleErrorHandler;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.validation.MockCMDIValidator;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -32,10 +32,11 @@ public class CMDIApiTest extends CMDIAPITestCase {
 
     private CMDIApi api;
     private MockCMDIDocumentReader documentReader;
+    private CMDIDocument testDocument;
 
     @Before
     public void setUp() throws Exception {
-	CMDIDocument testDocument = getNewTestDocument();
+	testDocument = getNewTestDocument();
 	documentReader = new MockCMDIDocumentReader(testDocument);
 	api = new CMDIApi(documentReader);
 	api.setEntityResolver(CMDI_API_TEST_ENTITY_RESOLVER);
@@ -76,19 +77,9 @@ public class CMDIApiTest extends CMDIAPITestCase {
 	assertEquals(fatalErrors, errorHandler.getFatalErrors().size());
     }
 
-    /**
-     * Test of insertElement method, of class CMDIApi.
-     */
-    @Test
-    @Ignore
-    public void testInsertElement() throws Exception {
-    }
-
-    /**
-     * Test of removeElement method, of class CMDIApi.
-     */
-    @Test
-    @Ignore
+    @Test(expected = MetadataElementException.class)
     public void testRemoveElement() throws Exception {
+	// Cannot remove document, has no parent
+	api.removeElement(testDocument);
     }
 }

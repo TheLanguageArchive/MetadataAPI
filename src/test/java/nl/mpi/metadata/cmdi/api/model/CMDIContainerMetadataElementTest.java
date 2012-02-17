@@ -79,7 +79,28 @@ public class CMDIContainerMetadataElementTest extends CMDIAPITestCase {
 	assertEquals(1, collection.getChildren().size());
 	// Remove non-child (should not work)
 	assertFalse(collection.removeChildElement(new CMDIContainerMetadataElementImpl(originLocationType)));
+    }
 
+    @Test
+    public void testRemoveChildElementGetByPath() throws Exception {
+	CMDIContainerMetadataElementImpl originLocation2 = new CMDIContainerMetadataElementImpl(originLocationType);
+	collection.addChildElement(originLocation);
+	collection.addChildElement(originLocation2);
+	// Get both by path
+	assertEquals(originLocation, collection.getChildElement("OriginLocation[1]"));
+	assertEquals(originLocation2, collection.getChildElement("OriginLocation[2]"));
+
+	// Remove first child
+	collection.removeChildElement(originLocation);
+	// Second child should now be first
+	assertEquals(originLocation2, collection.getChildElement("OriginLocation[1]"));
+	try {
+	    collection.getChildElement("OriginLocation[2]");
+	    // Child should no longer be there
+	    fail("Expected IndexOutOfBoundsException");
+	} catch (IndexOutOfBoundsException ex) {
+	    // Good
+	}
     }
 
     /**

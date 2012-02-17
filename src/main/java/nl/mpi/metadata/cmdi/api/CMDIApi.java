@@ -38,6 +38,8 @@ import nl.mpi.metadata.api.MetadataDocumentReader;
 import nl.mpi.metadata.api.MetadataElementException;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.MetadataTypeException;
+import nl.mpi.metadata.api.model.ContainedMetadataElement;
+import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.validation.MetadataValidator;
 import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
@@ -162,11 +164,20 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	}
     }
 
+    /**
+     * Removes a specified metadata element from its parent.
+     * @param element metadata element to remove from parent
+     * @return whether the element was removed from its parent
+     * @throws MetadataElementException if the element to be removed does not implement ContainedMetadataElement, and thus has not
+     * retrievable parent to remove it from
+     */
     public boolean removeElement(CMDIMetadataElement element) throws MetadataElementException {
-	// Find parent
-	// Remove from DOM
-	// Remove as child in parent
-	throw new UnsupportedOperationException("Not supported yet.");
+	if (element instanceof ContainedMetadataElement) {
+	    MetadataContainer<CMDIMetadataElement> parent = ((ContainedMetadataElement<CMDIMetadataElement>) element).getParent();
+	    return parent.removeChildElement(element);
+	} else {
+	    throw new MetadataElementException(element, "Attempt to remove element that is not of type ContainedMetadataElement: cannot retrieve parent.");
+	}
     }
 
     public void validateMetadataDocument(CMDIDocument document, ErrorHandler errorHandler) throws SAXException {

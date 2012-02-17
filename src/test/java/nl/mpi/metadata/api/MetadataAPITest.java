@@ -25,7 +25,6 @@ import nl.mpi.metadata.api.type.MetadataDocumentType;
 import nl.mpi.metadata.api.type.MetadataElementType;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -121,7 +120,6 @@ public abstract class MetadataAPITest {
      * Test of removeElement method, of class MetadataAPI.
      */
     @Test
-    @Ignore
     public void testRemoveElement() throws Exception {
 	MetadataContainer parentElement = getProvider().createEmptyParentElement(getProvider().createDocument());
 	MetadataElementType type = getProvider().createAddableType();
