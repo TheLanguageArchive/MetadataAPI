@@ -35,11 +35,16 @@ import javax.xml.transform.stream.StreamResult;
 import nl.mpi.metadata.api.MetadataAPI;
 import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.MetadataDocumentReader;
+import nl.mpi.metadata.api.MetadataElementException;
+import nl.mpi.metadata.api.MetadataException;
+import nl.mpi.metadata.api.MetadataTypeException;
 import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.validation.MetadataValidator;
 import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
+import nl.mpi.metadata.cmdi.api.model.Component;
+import nl.mpi.metadata.cmdi.api.model.Element;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
@@ -142,7 +147,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      * @return newly created element; null if it was not created
      * @throws MetadataDocumentException if specified type cannot, by its type, be contained in specified parent
      */
-    public MetadataElement createMetadataElement(CMDIContainerMetadataElement parent, CMDIProfileElement type) throws MetadataDocumentException {
+    public MetadataElement createMetadataElement(CMDIContainerMetadataElement parent, CMDIProfileElement type) throws MetadataElementException {
 	final ComponentType parentType = parent.getType();
 	if (parentType.canContainType(type)) {
 	    CMDIMetadataElement newChild = elementFactory.createNewMetadataElement(parent, type);
@@ -152,12 +157,12 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 		return null;
 	    }
 	} else {
-	    throw new MetadataDocumentException(parent.getMetadataDocument(),
+	    throw new MetadataElementException(parent,
 		    String.format("Elements of type %1$s cannot be added to components of type %2$s", type, parentType));
 	}
     }
 
-    public boolean removeElement(CMDIMetadataElement element) throws MetadataDocumentException {
+    public boolean removeElement(CMDIMetadataElement element) throws MetadataElementException {
 	// Find parent
 	// Remove from DOM
 	// Remove as child in parent
@@ -168,13 +173,13 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	getCmdiValidator().validateMetadataDocument(document, errorHandler);
     }
 
-    public CMDIDocument getMetadataDocument(URL url) throws IOException, MetadataDocumentException {
+    public CMDIDocument getMetadataDocument(URL url) throws IOException, MetadataException {
 	InputStream documentStream = url.openStream();
 	try {
 	    Document document = newDOMBuilder().parse(documentStream, url.toExternalForm());
 	    return getDocumentReader().read(document, url.toURI());
 	} catch (SAXException saxEx) {
-	    throw new MetadataDocumentException(null, "SAXException while building document from " + url, saxEx);
+	    throw new MetadataException("SAXException while building document from " + url, saxEx);
 	} catch (URISyntaxException usEx) {
 	    // This should not happen, since at this point the stream has already been openend!
 	    throw new RuntimeException("URISyntaxException while building document from " + url, usEx);
@@ -183,7 +188,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	}
     }
 
-    public CMDIDocument createMetadataDocument(CMDIProfile type) throws MetadataDocumentException {
+    public CMDIDocument createMetadataDocument(CMDIProfile type) throws MetadataException, MetadataTypeException {
 	// Create new DOM instance
 	final DocumentBuilder documentBuilder = newDOMBuilder();
 	Document document = documentBuilder.newDocument();
@@ -192,17 +197,17 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	    componentBuilder.readSchema(document, type.getSchemaLocation(), true);
 	    // TODO: Handle errors properly
 	} catch (FileNotFoundException ex) {
-	    throw new MetadataDocumentException(ex);
+	    throw new MetadataTypeException(type, ex);
 	} catch (XmlException ex) {
-	    throw new MetadataDocumentException(ex);
+	    throw new MetadataTypeException(type, ex);
 	} catch (IOException ex) {
-	    throw new MetadataDocumentException(ex);
+	    throw new MetadataTypeException(type, ex);
 	}
 	try {
 	    // Read from reloaded copy of document. No URI available at this point.
 	    return documentReader.read(reloadDom(documentBuilder, document), null);
 	} catch (IOException ex) {
-	    throw new MetadataDocumentException(
+	    throw new MetadataException(
 		    "I/O exception while reading newly created metadata document. "
 		    + "Most likely the profile schema is not readable. See the inner exception for details.", ex);
 	}
