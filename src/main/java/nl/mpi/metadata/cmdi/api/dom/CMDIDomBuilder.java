@@ -71,7 +71,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	this.domBuilderFactory = domBuilderFactory;
     }
 
-    public Document writeToDom(CMDIDocument document) {
+    public Document buildDomForDocument(CMDIDocument document) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 

@@ -36,7 +36,7 @@ public class CMDIDocumentWriter implements MetadataDocumentWriter<CMDIDocument> 
     }
 
     public void write(CMDIDocument metadataDocument, OutputStream outputStream) throws IOException {
-	Document dom = domWriter.writeToDom(metadataDocument);
+	Document dom = domWriter.buildDomForDocument(metadataDocument);
 	//TODO: write DOM to output stream
     }
 }

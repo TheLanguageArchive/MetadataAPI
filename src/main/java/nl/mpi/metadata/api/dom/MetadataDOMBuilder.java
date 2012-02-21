@@ -30,5 +30,5 @@ public interface MetadataDOMBuilder<T extends MetadataDocument> {
      * @param document document to build DOM for
      * @return DOM for provided document
      */
-    Document writeToDom(T document);
+    Document buildDomForDocument(T document);
 }
