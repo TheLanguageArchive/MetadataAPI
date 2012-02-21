@@ -77,6 +77,13 @@ public abstract class CMDIAPITestCase {
 	    return super.resolveEntity(publicId, systemId);
 	}
     };
+    public final static DOMBuilderFactory CMDI_API_TEST_DOM_BUILDER_FACTORY = new CMDIApiDOMBuilderFactory() {
+
+	@Override
+	protected EntityResolver getEntityResolver() {
+	    return CMDI_API_TEST_ENTITY_RESOLVER;
+	}
+    };
 
     public static CMDIProfile getNewTestProfileAndRead() throws IOException, CMDITypeException, URISyntaxException {
 	return getNewTestProfileAndRead(testSchemaTextCorpus.toURI());

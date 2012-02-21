@@ -81,17 +81,6 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      */
     private CMDIMetadataElementFactory elementFactory;
     /**
-     * Service that manipulates DOM representation of CMDI documents
-     * TODO: Extract interface and support arbitrary implementations
-     */
-    private CMDIDomBuilder componentBuilder = new CMDIDomBuilder() {
-
-	@Override
-	protected synchronized EntityResolver getEntityResolver() {
-	    return CMDIApi.this.entityResolver;
-	}
-    };
-    /**
      * Service that caches CMDIProfile's and ensures that only one copy of each profile is opened.
      */
     private CMDIProfileContainer profileContainer = new CMDIProfileContainer() {
@@ -105,6 +94,17 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 
 	@Override
 	protected EntityResolver getEntityResolver() {
+	    return CMDIApi.this.entityResolver;
+	}
+    };
+    /**
+     * Service that manipulates DOM representation of CMDI documents
+     * TODO: Extract interface and support arbitrary implementations
+     */
+    private CMDIDomBuilder componentBuilder = new CMDIDomBuilder(domBuilderFactory) {
+
+	@Override
+	protected synchronized EntityResolver getEntityResolver() {
 	    return CMDIApi.this.entityResolver;
 	}
     };
@@ -206,11 +206,10 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 
     public CMDIDocument createMetadataDocument(CMDIProfile type) throws MetadataException, MetadataTypeException {
 	// Create new DOM instance
-	final DocumentBuilder documentBuilder = domBuilderFactory.newDOMBuilder();
-	Document document = documentBuilder.newDocument();
+	Document document;
 
 	try {
-	    componentBuilder.createDomFromSchema(document, type.getSchemaLocation(), true);
+	    document = componentBuilder.createDomFromSchema(type.getSchemaLocation(), true);
 	    // TODO: Handle errors properly
 	} catch (FileNotFoundException ex) {
 	    throw new MetadataTypeException(type, ex);
@@ -221,7 +220,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	}
 	try {
 	    // Read from reloaded copy of document. No URI available at this point.
-	    return documentReader.read(reloadDom(documentBuilder, document), null);
+	    return documentReader.read(reloadDom(document), null);
 	} catch (IOException ex) {
 	    throw new MetadataException(
 		    "I/O exception while reading newly created metadata document. "
@@ -235,7 +234,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      * @param document document to reload
      * @return a reloaded copy of the provided document
      */
-    private Document reloadDom(DocumentBuilder builder, Document document) {
+    private Document reloadDom(Document document) {
 	try {
 	    // Create memory output stream
 	    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -247,7 +246,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 
 	    // Parse document from in-memory byte array
 	    final ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
-	    return builder.parse(inputStream);
+	    return domBuilderFactory.newDOMBuilder().parse(inputStream);
 	} catch (IOException ex) {
 	    throw new RuntimeException("Exception while reloading DOM", ex);
 	} catch (SAXException ex) {

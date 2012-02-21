@@ -22,6 +22,8 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URI;
+import nl.mpi.metadata.api.MetadataDomBuilder;
+import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.apache.xmlbeans.SchemaProperty;
 import org.apache.xmlbeans.SchemaType;
@@ -48,13 +50,14 @@ import org.xml.sax.EntityResolver;
 public class CMDIDomBuilder {
 
     private final EntityResolver entityResolver;
+    private final DOMBuilderFactory domBuilderFactory;
 
     /**
      * Creates CMDIDomBuilder with no EntityResolver specified
      * @see #CMDIDomBuilder(org.xml.sax.EntityResolver) 
      */
-    public CMDIDomBuilder() {
-	this(null);
+    public CMDIDomBuilder(DOMBuilderFactory domBuilderFactory) {
+	this(null, domBuilderFactory);
     }
 
     /**
@@ -62,13 +65,16 @@ public class CMDIDomBuilder {
      * @param entityResolver 
      * @see #getEntityResolver() 
      */
-    public CMDIDomBuilder(EntityResolver entityResolver) {
+    public CMDIDomBuilder(EntityResolver entityResolver, DOMBuilderFactory domBuilderFactory) {
 	this.entityResolver = entityResolver;
+	this.domBuilderFactory = domBuilderFactory;
     }
 
-    public final void readSchema(Document workingDocument, URI xsdFile, boolean addDummyData) throws FileNotFoundException, XmlException, MalformedURLException, IOException {
+    public final Document createDomFromSchema(URI xsdFile, boolean addDummyData) throws FileNotFoundException, XmlException, MalformedURLException, IOException {
+	Document workingDocument = domBuilderFactory.newDOMBuilder().newDocument();
 	SchemaType schemaType = getFirstSchemaType(xsdFile);
 	constructXml(schemaType.getElementProperties()[0], workingDocument, xsdFile.toString(), null, addDummyData);
+	return workingDocument;
     }
 
     /**
@@ -94,7 +100,7 @@ public class CMDIDomBuilder {
 	}
     }
 
-    private Node constructXml(SchemaProperty currentSchemaProperty,Document workingDocument, String nameSpaceUri, Node parentElement, boolean addDummyData) {
+    private Node constructXml(SchemaProperty currentSchemaProperty, Document workingDocument, String nameSpaceUri, Node parentElement, boolean addDummyData) {
 	Node returnNode = null;
 	SchemaType currentSchemaType = currentSchemaProperty.getType();
 	Node currentElement = appendNode(workingDocument, nameSpaceUri, parentElement, currentSchemaProperty);

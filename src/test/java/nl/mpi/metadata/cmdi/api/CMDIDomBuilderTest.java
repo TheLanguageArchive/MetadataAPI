@@ -17,7 +17,6 @@
 package nl.mpi.metadata.cmdi.api;
 
 import java.net.URI;
-import javax.xml.parsers.DocumentBuilderFactory;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -32,13 +31,12 @@ import static org.junit.Assert.*;
 public class CMDIDomBuilderTest extends CMDIAPITestCase {
 
     /**
-     * Test of readSchema method, of class CMDIDomBuilder.
+     * Test of createDomFromSchema method, of class CMDIDomBuilder.
      */
     @Test
     public void testReadSchema() throws Exception {
-	CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER);
-	Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-	instance.readSchema(document, new URI(REMOTE_TEXT_CORPUS_SCHEMA_URL), false);
+	CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER, CMDI_API_TEST_DOM_BUILDER_FACTORY);
+	Document document = instance.createDomFromSchema(new URI(REMOTE_TEXT_CORPUS_SCHEMA_URL), false);
 
 	// Check DOM
 	Node rootNode = document.getFirstChild();
@@ -54,7 +52,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
     @Test
     public void testGetEntityResolver() {
 	EntityResolver entityResolver = new CMDIEntityResolver();
-	CMDIDomBuilder instance = new CMDIDomBuilder(entityResolver);
+	CMDIDomBuilder instance = new CMDIDomBuilder(entityResolver, CMDI_API_TEST_DOM_BUILDER_FACTORY);
 	assertSame(entityResolver, instance.getEntityResolver());
     }
 }
