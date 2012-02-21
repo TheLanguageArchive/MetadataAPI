@@ -24,8 +24,6 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -100,6 +98,13 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 
 	@Override
 	public synchronized EntityResolver getEntityResolver() {
+	    return CMDIApi.this.entityResolver;
+	}
+    };
+    private DOMBuilderFactory domBuilderFactory = new CMDIApiDOMBuilderFactory() {
+
+	@Override
+	protected EntityResolver getEntityResolver() {
 	    return CMDIApi.this.entityResolver;
 	}
     };
@@ -187,7 +192,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
     public CMDIDocument getMetadataDocument(URL url) throws IOException, MetadataException {
 	InputStream documentStream = url.openStream();
 	try {
-	    Document document = newDOMBuilder().parse(documentStream, url.toExternalForm());
+	    Document document = domBuilderFactory.newDOMBuilder().parse(documentStream, url.toExternalForm());
 	    return getDocumentReader().read(document, url.toURI());
 	} catch (SAXException saxEx) {
 	    throw new MetadataException("SAXException while building document from " + url, saxEx);
@@ -201,11 +206,11 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 
     public CMDIDocument createMetadataDocument(CMDIProfile type) throws MetadataException, MetadataTypeException {
 	// Create new DOM instance
-	final DocumentBuilder documentBuilder = newDOMBuilder();
+	final DocumentBuilder documentBuilder = domBuilderFactory.newDOMBuilder();
 	Document document = documentBuilder.newDocument();
 
 	try {
-	    componentBuilder.readSchema(document, type.getSchemaLocation(), true);
+	    componentBuilder.createDomFromSchema(document, type.getSchemaLocation(), true);
 	    // TODO: Handle errors properly
 	} catch (FileNotFoundException ex) {
 	    throw new MetadataTypeException(type, ex);
@@ -251,48 +256,6 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	    throw new RuntimeException("Exception while reloading DOM", ex);
 	} catch (TransformerFactoryConfigurationError ex) {
 	    throw new RuntimeException("Exception while reloading DOM", ex);
-	}
-    }
-
-    /**
-     * Creates a fresh instance of DocumentBuilder. A new factory is requested from the DocumentBuilderFactory, which then gets
-     * configured by {@code configureDocumentBuilderFactory(DocumentBuilderFactory)} . On this factory {@code newDocumentBuilder()} is called. The resulting
-     * builder gets configured by {@code configureDocumentBuilder(DocumentBuilder)} and is then returned.
-     * @return a newly instantiated and configured DocumentBuilder from the DocumentBuilderFactory
-     * @see DocumentBuilderFactory
-     * @see #configureDocumentBuilderFactory(javax.xml.parsers.DocumentBuilderFactory) 
-     * @see #configureDocumentBuilder(javax.xml.parsers.DocumentBuilder) 
-     */
-    protected DocumentBuilder newDOMBuilder() {
-	try {
-	    final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-	    configureDocumentBuilderFactory(factory);
-	    DocumentBuilder documentBuilder = factory.newDocumentBuilder();
-	    //configureDocumentBuilder(documentBuilder);
-	    return documentBuilder;
-	} catch (ParserConfigurationException pcEx) {
-	    throw new RuntimeException(pcEx);
-	}
-    }
-
-    /**
-     * Configures a newly instantiated document factory. This gets called from {@code newDOMBuilder()} in this implementation
-     * @param factory a new instance of DocumentFactory
-     * @see #newDOMBuilder() 
-     */
-    protected void configureDocumentBuilderFactory(final DocumentBuilderFactory factory) {
-	factory.setNamespaceAware(true);
-	factory.setAttribute("http://java.sun.com/xml/jaxp/properties/schemaLanguage", "http://www.w3.org/2001/XMLSchema");
-    }
-
-    /**
-     * Configures a newly instantiated document builder. This gets called from {@code newDOMBuilder()} in this implementation
-     * @param builder a new instance of DocumentBuilder
-     * @see #newDOMBuilder() 
-     */
-    protected void configureDocumentBuilder(final DocumentBuilder builder) {
-	if (getEntityResolver() != null) {
-	    builder.setEntityResolver(getEntityResolver());
 	}
     }
 
