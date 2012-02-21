@@ -14,9 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api;
+package nl.mpi.metadata.cmdi.api.dom;
 
+import nl.mpi.metadata.cmdi.api.dom.CMDIApiDOMBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
+import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
+import nl.mpi.metadata.cmdi.api.TracingEntityResolver;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.xml.sax.EntityResolver;

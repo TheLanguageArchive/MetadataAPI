@@ -16,6 +16,9 @@
  */
 package nl.mpi.metadata.cmdi.api;
 
+import nl.mpi.metadata.cmdi.api.dom.DOMBuilderFactory;
+import nl.mpi.metadata.cmdi.api.dom.CMDIApiDOMBuilderFactory;
+import nl.mpi.metadata.cmdi.api.dom.CMDIDocumentReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;

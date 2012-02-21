@@ -14,17 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.api;
+package nl.mpi.metadata.cmdi.api.dom;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import nl.mpi.metadata.api.model.MetadataDocument;
+import javax.xml.parsers.DocumentBuilder;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface MetadataDocumentWriter<T extends MetadataDocument> {
+public interface DOMBuilderFactory {
 
-    void write(T metadataDocument, OutputStream outputStream) throws IOException;
+    DocumentBuilder newDOMBuilder();
 }

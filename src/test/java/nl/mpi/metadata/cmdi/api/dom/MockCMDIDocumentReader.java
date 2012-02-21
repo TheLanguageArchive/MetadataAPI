@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api;
+package nl.mpi.metadata.cmdi.api.dom;
 
 import java.net.URI;
 import nl.mpi.metadata.api.MetadataDocumentException;
-import nl.mpi.metadata.api.MetadataDocumentReader;
+import nl.mpi.metadata.api.dom.MetadataDocumentReader;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import org.w3c.dom.Document;
 

@@ -16,6 +16,11 @@
  */
 package nl.mpi.metadata.cmdi.api;
 
+import nl.mpi.metadata.cmdi.api.dom.CMDIDomBuilder;
+import nl.mpi.metadata.cmdi.api.dom.CMDIComponentReader;
+import nl.mpi.metadata.cmdi.api.dom.DOMBuilderFactory;
+import nl.mpi.metadata.cmdi.api.dom.CMDIDocumentReader;
+import nl.mpi.metadata.cmdi.api.dom.CMDIApiDOMBuilderFactory;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -23,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -32,7 +36,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import nl.mpi.metadata.api.MetadataAPI;
 import nl.mpi.metadata.api.MetadataDocumentException;
-import nl.mpi.metadata.api.MetadataDocumentReader;
+import nl.mpi.metadata.api.dom.MetadataDocumentReader;
 import nl.mpi.metadata.api.MetadataElementException;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.MetadataTypeException;

@@ -14,20 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api;
+package nl.mpi.metadata.api.dom;
 
-import nl.mpi.metadata.api.MetadataDomBuilder;
-import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
+import java.io.IOException;
+import java.net.URI;
+import nl.mpi.metadata.api.MetadataException;
+import nl.mpi.metadata.api.model.MetadataDocument;
 import org.w3c.dom.Document;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIDomWriter implements MetadataDomBuilder<CMDIDocument> {
+public interface MetadataDocumentReader<T extends MetadataDocument> {
 
-    @Override
-    public Document writeToDom(CMDIDocument document) {
-	throw new UnsupportedOperationException();
-    }
+    T read(Document document, URI documentURI) throws MetadataException, IOException;
 }

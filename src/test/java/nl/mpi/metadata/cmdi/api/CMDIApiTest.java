@@ -16,6 +16,7 @@
  */
 package nl.mpi.metadata.cmdi.api;
 
+import nl.mpi.metadata.cmdi.api.dom.MockCMDIDocumentReader;
 import nl.mpi.metadata.api.MetadataElementException;
 import nl.mpi.metadata.api.SimpleErrorHandler;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;

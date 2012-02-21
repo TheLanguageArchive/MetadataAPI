@@ -14,14 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api;
+package nl.mpi.metadata.cmdi.api.dom;
 
+import nl.mpi.metadata.cmdi.api.dom.CMDIDocumentReader;
 import java.io.IOException;
 import java.util.Collection;
 import javax.xml.parsers.ParserConfigurationException;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
 import java.net.URISyntaxException;
 import nl.mpi.metadata.api.MetadataException;
+import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
+import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.model.Element;
 import nl.mpi.metadata.cmdi.api.model.Component;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
