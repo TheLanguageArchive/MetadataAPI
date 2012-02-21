@@ -22,7 +22,9 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URI;
+import nl.mpi.metadata.api.dom.MetadataDOMBuilder;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
+import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.apache.xmlbeans.SchemaProperty;
 import org.apache.xmlbeans.SchemaType;
@@ -46,7 +48,7 @@ import org.xml.sax.EntityResolver;
  * @author Peter.Withers@mpi.nl
  * @see <a href="http://tla.mpi.nl/tools/tla-tools/arbil">Arbil Metadata editor</a>
  */
-public class CMDIDomBuilder {
+public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 
     private final EntityResolver entityResolver;
     private final DOMBuilderFactory domBuilderFactory;
@@ -67,6 +69,10 @@ public class CMDIDomBuilder {
     public CMDIDomBuilder(EntityResolver entityResolver, DOMBuilderFactory domBuilderFactory) {
 	this.entityResolver = entityResolver;
 	this.domBuilderFactory = domBuilderFactory;
+    }
+
+    public Document writeToDom(CMDIDocument document) {
+	throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public final Document createDomFromSchema(URI xsdFile, boolean addDummyData) throws FileNotFoundException, XmlException, MalformedURLException, IOException {

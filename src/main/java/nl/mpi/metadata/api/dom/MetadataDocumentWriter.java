@@ -14,20 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api.dom;
+package nl.mpi.metadata.api.dom;
 
-import nl.mpi.metadata.api.dom.MetadataDOMBuilder;
-import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
-import org.w3c.dom.Document;
+import java.io.IOException;
+import java.io.OutputStream;
+import nl.mpi.metadata.api.model.MetadataDocument;
 
 /**
- *
+ * Takes a metadata document and writes it to an output stream
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIDomWriter implements MetadataDOMBuilder<CMDIDocument> {
+public interface MetadataDocumentWriter<T extends MetadataDocument> {
 
-    @Override
-    public Document writeToDom(CMDIDocument document) {
-	throw new UnsupportedOperationException();
-    }
+    /**
+     * 
+     * @param metadataDocument document to write to stream
+     * @param outputStream stream to write to
+     * @throws IOException if I/O error occurred while writing to stream
+     */
+    void write(T metadataDocument, OutputStream outputStream) throws IOException;
 }

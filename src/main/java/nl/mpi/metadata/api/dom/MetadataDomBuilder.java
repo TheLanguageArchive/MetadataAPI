@@ -14,20 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api.dom;
+package nl.mpi.metadata.api.dom;
 
-import nl.mpi.metadata.api.dom.MetadataDOMBuilder;
-import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
+import nl.mpi.metadata.api.model.MetadataDocument;
 import org.w3c.dom.Document;
 
 /**
- *
+ * Takes a metadata document and builds a DOM document for it
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIDomWriter implements MetadataDOMBuilder<CMDIDocument> {
+public interface MetadataDOMBuilder<T extends MetadataDocument> {
 
-    @Override
-    public Document writeToDom(CMDIDocument document) {
-	throw new UnsupportedOperationException();
-    }
+    /**
+     * Builds a DOM document for a provided metadata document
+     * @param document document to build DOM for
+     * @return DOM for provided document
+     */
+    Document writeToDom(T document);
 }

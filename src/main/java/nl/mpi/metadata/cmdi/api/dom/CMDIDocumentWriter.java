@@ -16,6 +16,9 @@
  */
 package nl.mpi.metadata.cmdi.api.dom;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import nl.mpi.metadata.api.dom.MetadataDocumentWriter;
 import nl.mpi.metadata.api.dom.MetadataDOMBuilder;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import org.w3c.dom.Document;
@@ -24,10 +27,16 @@ import org.w3c.dom.Document;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIDomWriter implements MetadataDOMBuilder<CMDIDocument> {
+public class CMDIDocumentWriter implements MetadataDocumentWriter<CMDIDocument> {
 
-    @Override
-    public Document writeToDom(CMDIDocument document) {
-	throw new UnsupportedOperationException();
+    private MetadataDOMBuilder<CMDIDocument> domWriter;
+
+    public CMDIDocumentWriter(MetadataDOMBuilder<CMDIDocument> domWriter) {
+	this.domWriter = domWriter;
+    }
+
+    public void write(CMDIDocument metadataDocument, OutputStream outputStream) throws IOException {
+	Document dom = domWriter.writeToDom(metadataDocument);
+	//TODO: write DOM to output stream
     }
 }
