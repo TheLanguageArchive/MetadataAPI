@@ -17,7 +17,6 @@
 package nl.mpi.metadata.cmdi.api;
 
 import javax.xml.transform.TransformerException;
-import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.cmdi.api.model.Attribute;

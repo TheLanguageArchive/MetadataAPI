@@ -21,7 +21,6 @@ import java.util.Collection;
 import javax.xml.parsers.ParserConfigurationException;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
 import java.net.URISyntaxException;
-import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.cmdi.api.model.Element;
 import nl.mpi.metadata.cmdi.api.model.Component;
