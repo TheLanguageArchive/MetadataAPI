@@ -41,7 +41,7 @@ public abstract class CMDIApiDOMBuilderFactory implements DOMBuilderFactory {
 	    final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	    configureDocumentBuilderFactory(factory);
 	    DocumentBuilder documentBuilder = factory.newDocumentBuilder();
-	    //configureDocumentBuilder(documentBuilder);
+	    configureDocumentBuilder(documentBuilder);
 	    return documentBuilder;
 	} catch (ParserConfigurationException pcEx) {
 	    throw new RuntimeException(pcEx);

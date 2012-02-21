@@ -25,7 +25,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
@@ -71,7 +70,8 @@ public abstract class CMDIAPITestCase {
 
 	@Override
 	public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-	    if ("http://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/profiles/clarin.eu:cr1:p_1271859438164/xsd".equals(systemId)) {
+	    System.out.printf("CMDI_API_TEST_ENTITY_RESOLVER: publicId=%1$s systemId=%2$s\n",publicId,systemId);
+	    if (REMOTE_TEXT_CORPUS_SCHEMA_URL.equals(systemId)) {
 		return new InputSource(testSchemaTextCorpus.openStream());
 	    }
 	    return super.resolveEntity(publicId, systemId);
