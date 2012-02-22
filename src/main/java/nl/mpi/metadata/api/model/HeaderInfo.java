@@ -85,4 +85,9 @@ public final class HeaderInfo<V> {
 	}
 	return attributes.get(key);
     }
+
+    @Override
+    public String toString() {
+	return String.format("[%1$s: %2$s]", getName(), getValue());
+    }
 }

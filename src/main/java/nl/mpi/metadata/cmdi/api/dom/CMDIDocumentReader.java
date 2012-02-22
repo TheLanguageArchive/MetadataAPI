@@ -175,12 +175,9 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 
     private void addHeaderInformationFromDocument(final Node headerChild, final CMDIDocument cmdiDocument) throws DOMException {
 	// Put String values in header info
+	// Take name from element name, value from text content
 	// TODO: Some fields should have different type (e.g. URI or Date)
-	HeaderInfo<String> headerInfo = new HeaderInfo<String>();
-	// Take name from element name
-	headerInfo.setName(headerChild.getNodeName());
-	// Take value from text content
-	headerInfo.setValue(headerChild.getTextContent());
+	HeaderInfo<String> headerInfo = new HeaderInfo<String>(headerChild.getNodeName(), headerChild.getTextContent());
 	// (CMDI header does not support attributes)
 	// Put into metadata document
 	cmdiDocument.putHeaderInformation(headerInfo);
