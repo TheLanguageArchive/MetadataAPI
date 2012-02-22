@@ -67,7 +67,7 @@ public class CMDIComponentReader {
 	readElement(rootComponentNode, cmdiDocument, profile);
     }
 
-    private Node getRootComponentNode(final CMDIDocument cmdiDocument, final Document domDocument, final CachedXPathAPI xPathAPI) throws MetadataException {
+    public static Node getRootComponentNode(final CMDIDocument cmdiDocument, final Document domDocument, final CachedXPathAPI xPathAPI) throws MetadataException {
 	final String rootComponentNodePath = cmdiDocument.getType().getPathString();
 	try {
 	    final Node rootComponentNode = xPathAPI.selectSingleNode(domDocument, rootComponentNodePath);

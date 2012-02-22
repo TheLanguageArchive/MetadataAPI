@@ -31,6 +31,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import nl.mpi.metadata.api.MetadataDocumentException;
+import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.dom.MetadataDOMBuilder;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
@@ -42,10 +43,13 @@ import org.apache.xmlbeans.XmlBeans;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
+import org.apache.xpath.CachedXPathAPI;
 import org.w3c.dom.Attr;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 
@@ -83,12 +87,13 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 
     public Document buildDomForDocument(CMDIDocument metadataDocument) throws MetadataDocumentException {
 	// Get base document
-	Document document = getBaseDocument(metadataDocument);
-	// TODO: Prune
+	Document domDocument = getBaseDocument(metadataDocument);
+	CachedXPathAPI xPathAPI = new CachedXPathAPI();
+	pruneDom(metadataDocument, domDocument, xPathAPI);
 	// TODO: Set headers
 	// TODO: Add components
 	// TODO: Set resource links
-	return document;
+	return domDocument;
     }
 
     /**
@@ -118,6 +123,28 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	    } catch (XmlException xEx) {
 		throw new MetadataDocumentException(metadataDocument, "XmlException while trying to create new document file from schema", xEx);
 	    }
+	}
+    }
+
+    private void pruneDom(CMDIDocument metadataDocument, Document domDocument, CachedXPathAPI xPathAPI) throws MetadataDocumentException {
+	try {
+	    // Remove header info
+	    Node headerNode = xPathAPI.selectSingleNode(domDocument, "/:CMD/:Header");
+	    removeChildren(headerNode);
+	    // Remove components
+	    Node rootComponentNode = CMDIComponentReader.getRootComponentNode(metadataDocument, domDocument, xPathAPI);
+	    removeChildren(rootComponentNode);
+	} catch (TransformerException tEx) {
+	    throw new MetadataDocumentException(metadataDocument, "TransformerException while preparing for saving metadata document", tEx);
+	} catch (MetadataException mdEx) {
+	    throw new MetadataDocumentException(metadataDocument, "MetadataException while preparing for saving metadata document", mdEx);
+	}
+    }
+
+    private void removeChildren(Node parent) throws DOMException {
+	NodeList children = parent.getChildNodes();
+	for (int i = 0; i < children.getLength(); i++) {
+	    parent.removeChild(children.item(i));
 	}
     }
 
