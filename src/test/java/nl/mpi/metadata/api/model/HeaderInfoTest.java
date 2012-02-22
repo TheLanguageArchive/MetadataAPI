@@ -16,6 +16,7 @@
  */
 package nl.mpi.metadata.api.model;
 
+import java.util.Collections;
 import java.util.Map;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -29,6 +30,7 @@ import static org.junit.Assert.*;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class HeaderInfoTest {
+
     public static final String KEY = "KEY";
     public static final String VALUE = "VALUE";
 
@@ -56,10 +58,8 @@ public class HeaderInfoTest {
      */
     @Test
     public void testGetName() {
-	HeaderInfo instance = new HeaderInfo();
 	String expResult = "J. Unit";
-
-	instance.setName(expResult);
+	HeaderInfo instance = new HeaderInfo(expResult, "");
 	String result = instance.getName();
 	assertEquals(expResult, result);
     }
@@ -69,43 +69,26 @@ public class HeaderInfoTest {
      */
     @Test
     public void testGetValue() {
-	HeaderInfo<String> instance = new HeaderInfo<String>();
 	String expResult = "My VALUE";
-
-	instance.setValue(expResult);
+	HeaderInfo<String> instance = new HeaderInfo<String>("", expResult);
 	String result = instance.getValue();
 	assertEquals(expResult, result);
     }
 
     /**
-     * Test of getAttributes method, of class HeaderInfo.
+     * Test of getAttributesMap method, of class HeaderInfo.
      */
     @Test
     public void testGetAttributes() {
-	HeaderInfo instance = new HeaderInfo();
+	HeaderInfo instance = new HeaderInfo("key", "value");
 	Map result = instance.getAttributes();
 	assertNotNull(result);
 	assertEquals(0, result.size());
-	instance.setAttribute(KEY, VALUE);
+	
+	instance = new HeaderInfo("key", "value", Collections.singletonMap(KEY, VALUE));
+	result = instance.getAttributes();
 	assertEquals(1, result.size());
 	assertEquals(VALUE, instance.getAttribute(KEY));
 	assertEquals(null, instance.getAttribute("otherKey"));
-    }
-    
-     /**
-     * Test of getAttributes method, of class HeaderInfo.
-     */
-    @Test
-    public void testRemoveAttribute() {
-	HeaderInfo instance = new HeaderInfo();
-	Map result = instance.getAttributes();
-	assertEquals(0, result.size());
-	instance.setAttribute(KEY, VALUE);
-	instance.setAttribute("otherKEY", VALUE);
-	assertEquals(2, result.size());
-	instance.setAttribute(KEY, null);
-	assertEquals(1, result.size());
-	instance.setAttribute("otherKEY", null);
-	assertEquals(0, result.size());
     }
 }
