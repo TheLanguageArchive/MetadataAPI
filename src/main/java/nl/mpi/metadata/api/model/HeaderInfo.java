@@ -16,6 +16,7 @@
  */
 package nl.mpi.metadata.api.model;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +29,16 @@ public class HeaderInfo<V> {
     private String name;
     private V value;
     private Map<String, String> attributes;
+
+    public HeaderInfo(String name, V value) {
+	this.name = name;
+	this.value = value;
+    }
+
+    public HeaderInfo(String name, V value, Map<String, String> attributes) {
+	this(name, value);
+	this.attributes = new HashMap<String, String>(attributes);
+    }
 
     /**
      * Get the value of name
@@ -65,6 +76,13 @@ public class HeaderInfo<V> {
 	this.value = value;
     }
 
+    /**
+     * Gets an <em>unmodifiable</em> copy of the attributes map for the present header info
+     * @return attributes the attributes that have been set for the present header info
+     */
+    public Map<String, String> getAttributes() {
+	return Collections.unmodifiableMap(getAttributesMap());
+    }
 
     /**
      * Gets the attributes of this header element associated with the provided key
@@ -72,7 +90,7 @@ public class HeaderInfo<V> {
      * @return the value of attributes
      */
     public String getAttribute(String key) {
-	return getAttributes().get(key);
+	return getAttributesMap().get(key);
     }
 
     /**
@@ -83,9 +101,9 @@ public class HeaderInfo<V> {
      */
     public void setAttribute(String key, String value) {
 	if (value == null) {
-	    getAttributes().remove(key);
+	    getAttributesMap().remove(key);
 	} else {
-	    getAttributes().put(key, value);
+	    getAttributesMap().put(key, value);
 	}
     }
 
@@ -94,7 +112,7 @@ public class HeaderInfo<V> {
      *
      * @return the value of attributes
      */
-    protected synchronized Map<String, String> getAttributes() {
+    protected synchronized Map<String, String> getAttributesMap() {
 	if (attributes == null) {
 	    attributes = new HashMap<String, String>();
 	}
