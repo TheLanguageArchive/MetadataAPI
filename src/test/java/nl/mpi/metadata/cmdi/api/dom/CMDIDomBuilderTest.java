@@ -16,30 +16,19 @@
  */
 package nl.mpi.metadata.cmdi.api.dom;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import java.net.URI;
-import javax.xml.parsers.DocumentBuilderFactory;
+import java.util.Collections;
+import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.apache.xpath.CachedXPathAPI;
-import org.apache.xpath.XPathAPI;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 import static org.junit.Assert.*;
-import org.xml.sax.SAXException;
+import static nl.mpi.metadata.cmdi.api.CMDIConstants.*;
 
 /**
  *
@@ -74,11 +63,38 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
     }
 
     @Test
-    public void testBuildDomForDocument() throws Exception {
+    public void testBuildDomForDocumentHeaders() throws Exception {
 	CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER, CMDI_API_TEST_DOM_BUILDER_FACTORY);
-	CMDIDocument document = getNewTestDocument();
-	Document result = instance.buildDomForDocument(document);
-	assertNotNull(result);
+	CMDIDocument metadataDocument = getNewTestDocument();
+
+	// Modify header info
+	metadataDocument.putHeaderInformation(new HeaderInfo(CMD_HEADER_MD_CREATION_DATE,
+		"1999-99-99",
+		Collections.singletonMap("testAttribute", "value")));
+	metadataDocument.removeHeaderInformation(CMD_HEADER_MD_PROFILE);
+
+	// Build DOM
+	Document document = instance.buildDomForDocument(metadataDocument);
+	assertNotNull(document);
+
+	CachedXPathAPI xPathAPI = new CachedXPathAPI();
+	//MdCreator (unchanged header)
+	Node node = xPathAPI.selectSingleNode(document, "/:CMD/:Header/:" + CMD_HEADER_MD_CREATOR);
+	assertNotNull("MdCreator header", node);
+	assertEquals("MdCreator header content unchanged", "Joe Unit", node.getTextContent());
+	//MdCreationDate (modified header)
+	node = xPathAPI.selectSingleNode(document, "/:CMD/:Header/:" + CMD_HEADER_MD_CREATION_DATE);
+	assertNotNull("MdCreationDate header", node);
+	assertEquals("MdCreationDate header content changed", "1999-99-99", node.getTextContent());
+	//MdCreationDate (set attribute)
+	assertEquals("MdCreationDate attribute", 1, node.getAttributes().getLength());
+	Node attributeNode = node.getAttributes().item(0);
+	assertEquals("MdCreationDate attribute name", "testAttribute", attributeNode.getNodeName());
+	assertEquals("MdCreationDate attribute value", "value", attributeNode.getNodeValue());
+
+	//MdProfile (removed header)
+	node = xPathAPI.selectSingleNode(document, "/:CMD/:Header/:" + CMD_HEADER_MD_PROFILE);
+	assertNull("MdProfile header removed", node);
     }
 
     @Test
