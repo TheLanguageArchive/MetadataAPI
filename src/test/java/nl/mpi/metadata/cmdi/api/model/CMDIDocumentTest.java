@@ -16,17 +16,15 @@
  */
 package nl.mpi.metadata.cmdi.api.model;
 
+import nl.mpi.metadata.api.model.HeaderInfo;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
-import org.apache.xpath.XPathAPI;
 import org.junit.Test;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 import static org.junit.Assert.*;
 
 /**
@@ -38,15 +36,11 @@ public class CMDIDocumentTest extends CMDIAPITestCase {
     public CMDIDocumentTest() {
     }
     private CMDIDocument document;
-    private Document domDocument;
     private CMDIProfile profile;
-    private Node documentRootNode;
 
     @Before
     public void setUp() throws Exception {
 	profile = getNewTestProfileAndRead(testSchemaTextCorpus.toURI());
-	domDocument = getDomDocumentForResource("/cmdi/TextCorpusProfile-instance.cmdi");
-	documentRootNode = XPathAPI.selectSingleNode(domDocument, "/:CMD/:Components/:TextCorpusProfile");
 	document = new CMDIDocument(profile, testSchemaTextCorpus.toURI());
     }
 
@@ -78,15 +72,22 @@ public class CMDIDocumentTest extends CMDIAPITestCase {
      * Test of getHeaderInformation method, of class CMDIDocument.
      */
     @Test
-    @Ignore
     public void testGetHeaderInformation() {
-	System.out.println("getHeaderInformation");
-	CMDIDocument instance = null;
-	Collection expResult = null;
-	Collection result = instance.getHeaderInformation();
-	assertEquals(expResult, result);
-	// TODO review the generated test code and remove the default call to fail.
-	fail("The test case is a prototype.");
+	assertEquals(0, document.getHeaderInformation().size());
+	assertNull(document.getHeaderInformation("Key"));
+	assertNull(document.getHeaderInformation("OtherKey"));
+	document.putHeaderInformation(new HeaderInfo("Key", "Value"));
+	document.getHeaderInformation();
+	assertEquals(1, document.getHeaderInformation().size());
+	assertNotNull(document.getHeaderInformation("Key"));
+	assertSame(document.getHeaderInformation("Key"), document.getHeaderInformation().iterator().next());
+	assertEquals("Value", document.getHeaderInformation("Key").getValue());
+	assertNull(document.getHeaderInformation("OtherKey"));
+	document.removeHeaderInformation("OtherKey");
+	assertEquals(1, document.getHeaderInformation().size());
+	document.removeHeaderInformation("Key");
+	assertEquals(0, document.getHeaderInformation().size());
+	assertNull(document.getHeaderInformation("Key"));
     }
 
     /**
