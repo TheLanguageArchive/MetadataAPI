@@ -16,6 +16,7 @@
  */
 package nl.mpi.metadata.api.dom;
 
+import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.model.MetadataDocument;
 import org.w3c.dom.Document;
 
@@ -30,5 +31,5 @@ public interface MetadataDOMBuilder<T extends MetadataDocument> {
      * @param document document to build DOM for
      * @return DOM for provided document
      */
-    Document buildDomForDocument(T document);
+    Document buildDomForDocument(T document) throws MetadataException;
 }

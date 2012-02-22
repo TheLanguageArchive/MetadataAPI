@@ -224,41 +224,11 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	}
 	try {
 	    // Read from reloaded copy of document. No URI available at this point.
-	    return documentReader.read(reloadDom(document), null);
+	    return documentReader.read(document, null);
 	} catch (IOException ex) {
 	    throw new MetadataException(
 		    "I/O exception while reading newly created metadata document. "
 		    + "Most likely the profile schema is not readable. See the inner exception for details.", ex);
-	}
-    }
-
-    /**
-     * Serializes (in memory) and de-serializes XML document causing it to be re-processed
-     * @param builder document builder to use
-     * @param document document to reload
-     * @return a reloaded copy of the provided document
-     */
-    private Document reloadDom(Document document) {
-	try {
-	    // Create memory output stream
-	    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	    final StreamResult xmlOutput = new StreamResult(outputStream);
-
-	    // Serialize document to byte array stream
-	    final Transformer transformer = TransformerFactory.newInstance().newTransformer();
-	    transformer.transform(new DOMSource(document), xmlOutput);
-
-	    // Parse document from in-memory byte array
-	    final ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
-	    return domBuilderFactory.newDOMBuilder().parse(inputStream);
-	} catch (IOException ex) {
-	    throw new RuntimeException("Exception while reloading DOM", ex);
-	} catch (SAXException ex) {
-	    throw new RuntimeException("Exception while reloading DOM", ex);
-	} catch (TransformerException ex) {
-	    throw new RuntimeException("Exception while reloading DOM", ex);
-	} catch (TransformerFactoryConfigurationError ex) {
-	    throw new RuntimeException("Exception while reloading DOM", ex);
 	}
     }
 

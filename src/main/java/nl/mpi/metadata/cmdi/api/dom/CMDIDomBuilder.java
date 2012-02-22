@@ -16,12 +16,21 @@
  */
 package nl.mpi.metadata.cmdi.api.dom;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URI;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.dom.MetadataDOMBuilder;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
@@ -38,6 +47,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
+import org.xml.sax.SAXException;
 
 /**
  * Class for building CMDI profile instances on basis of profile schema's.
@@ -71,23 +81,51 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	this.domBuilderFactory = domBuilderFactory;
     }
 
-    public Document buildDomForDocument(CMDIDocument document) {
-	throw new UnsupportedOperationException("Not supported yet.");
+    public Document buildDomForDocument(CMDIDocument metadataDocument) throws MetadataDocumentException {
+	// Get base document
+	Document document = getBaseDocument(metadataDocument);
+	// TODO: Prune
+	// TODO: Set headers
+	// TODO: Add components
+	// TODO: Set resource links
+	return document;
+    }
+
+    /**
+     * Will create a base DOM document for the specified metadata document. If the document specifies a file location, this is loaded
+     * as a DOM object; if not, a new DOM will be constructed by calling {@link #createDomFromSchema(java.net.URI, boolean)} with
+     * {@code metadataDocument.getType().getSchemaLocation()}.
+     * @param metadataDocument metadata document to crease base DOM for
+     * @return 
+     * @throws MetadataDocumentException 
+     */
+    protected Document getBaseDocument(CMDIDocument metadataDocument) throws MetadataDocumentException {
+	if (metadataDocument.getFileLocation() != null) {
+	    // No previously saved location
+	    try {
+		return domBuilderFactory.newDOMBuilder().parse(metadataDocument.getFileLocation().toString());
+	    } catch (IOException ioEx) {
+		throw new MetadataDocumentException(metadataDocument, "IOException while trying to parse original document file", ioEx);
+	    } catch (SAXException sEx) {
+		throw new MetadataDocumentException(metadataDocument, "SAXException while trying to parse original document file", sEx);
+	    }
+	} else {
+	    // 
+	    try {
+		return createDomFromSchema(metadataDocument.getType().getSchemaLocation(), false);
+	    } catch (IOException ioEx) {
+		throw new MetadataDocumentException(metadataDocument, "IOException while trying to create new document file from schema", ioEx);
+	    } catch (XmlException xEx) {
+		throw new MetadataDocumentException(metadataDocument, "XmlException while trying to create new document file from schema", xEx);
+	    }
+	}
     }
 
     public final Document createDomFromSchema(URI xsdFile, boolean addDummyData) throws FileNotFoundException, XmlException, MalformedURLException, IOException {
 	Document workingDocument = domBuilderFactory.newDOMBuilder().newDocument();
 	SchemaType schemaType = getFirstSchemaType(xsdFile);
 	constructXml(schemaType.getElementProperties()[0], workingDocument, xsdFile.toString(), null, addDummyData);
-	return workingDocument;
-    }
-
-    /**
-     * @return the EntityResolver used by XmlBeans
-     * @see XmlOptions#setEntityResolver(org.xml.sax.EntityResolver) 
-     */
-    protected EntityResolver getEntityResolver() {
-	return entityResolver;
+	return reloadDom(workingDocument);
     }
 
     private SchemaType getFirstSchemaType(URI uri) throws FileNotFoundException, XmlException, MalformedURLException, IOException {
@@ -172,5 +210,43 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	    parentElement.appendChild(currentElement);
 	}
 	return currentElement;
+    }
+
+    /**
+     * Serializes (in memory) and de-serializes XML document causing it to be re-processed
+     * @param builder document builder to use
+     * @param document document to reload
+     * @return a reloaded copy of the provided document
+     */
+    private Document reloadDom(Document document) {
+	try {
+	    // Create memory output stream
+	    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	    final StreamResult xmlOutput = new StreamResult(outputStream);
+
+	    // Serialize document to byte array stream
+	    final Transformer transformer = TransformerFactory.newInstance().newTransformer();
+	    transformer.transform(new DOMSource(document), xmlOutput);
+
+	    // Parse document from in-memory byte array
+	    final ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+	    return domBuilderFactory.newDOMBuilder().parse(inputStream);
+	} catch (IOException ex) {
+	    throw new RuntimeException("Exception while reloading DOM", ex);
+	} catch (SAXException ex) {
+	    throw new RuntimeException("Exception while reloading DOM", ex);
+	} catch (TransformerException ex) {
+	    throw new RuntimeException("Exception while reloading DOM", ex);
+	} catch (TransformerFactoryConfigurationError ex) {
+	    throw new RuntimeException("Exception while reloading DOM", ex);
+	}
+    }
+
+    /**
+     * @return the EntityResolver used by XmlBeans
+     * @see XmlOptions#setEntityResolver(org.xml.sax.EntityResolver) 
+     */
+    protected EntityResolver getEntityResolver() {
+	return entityResolver;
     }
 }
