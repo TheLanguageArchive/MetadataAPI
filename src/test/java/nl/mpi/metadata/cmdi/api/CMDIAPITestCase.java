@@ -36,6 +36,8 @@ import nl.mpi.metadata.cmdi.api.type.CMDIProfileTest;
 import nl.mpi.metadata.cmdi.api.type.CMDITypeException;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -47,6 +49,7 @@ import org.xml.sax.SAXException;
  */
 public abstract class CMDIAPITestCase {
 
+    private static Logger LOG = LoggerFactory.getLogger(CMDIAPITestCase.class);
     /**
      * Test schema 1 (TextCorpusProfile http://catalog.clarin.eu/ds/ComponentRegistry?item=clarin.eu:cr1:p_1271859438164)
      */
@@ -73,7 +76,7 @@ public abstract class CMDIAPITestCase {
 
 	@Override
 	public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-	    System.out.printf("CMDI_API_TEST_ENTITY_RESOLVER: publicId=%1$s systemId=%2$s\n",publicId,systemId);
+	    LOG.debug("CMDI_API_TEST_ENTITY_RESOLVER: publicId={} systemId={}", publicId, systemId);
 	    if (REMOTE_TEXT_CORPUS_SCHEMA_URL.equals(systemId)) {
 		return new InputSource(testSchemaTextCorpus.openStream());
 	    }

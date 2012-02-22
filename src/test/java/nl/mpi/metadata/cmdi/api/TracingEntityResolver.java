@@ -17,6 +17,8 @@
 package nl.mpi.metadata.cmdi.api;
 
 import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -27,6 +29,7 @@ import org.xml.sax.SAXException;
  */
 public class TracingEntityResolver implements EntityResolver {
 
+    Logger LOG = LoggerFactory.getLogger(TracingEntityResolver.class);
     protected boolean triggered;
 
     public boolean isTriggered() {
@@ -34,7 +37,7 @@ public class TracingEntityResolver implements EntityResolver {
     }
 
     public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-	System.out.println("TracingEntityResolver. Current state of triggered is: "+triggered);
+	LOG.debug("TracingEntityResolver. Current state of triggered is: {}", triggered);
 	triggered = true;
 	return CMDIAPITestCase.CMDI_API_TEST_ENTITY_RESOLVER.resolveEntity(publicId, systemId);
     }
