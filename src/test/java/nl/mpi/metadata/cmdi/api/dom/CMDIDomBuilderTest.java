@@ -98,6 +98,35 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
     }
 
     @Test
+    public void testBuildDomForDocumentComponents() throws Exception {
+	CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER, CMDI_API_TEST_DOM_BUILDER_FACTORY);
+	CMDIDocument metadataDocument = getNewTestDocument();
+	// Build DOM
+	Document document = instance.buildDomForDocument(metadataDocument);
+	assertNotNull(document);
+	CachedXPathAPI xPathAPI = new CachedXPathAPI();
+	// Existence of root component node
+	Node rootComponentNode = xPathAPI.selectSingleNode(document, "/:CMD/:Components/:TextCorpusProfile");
+	assertNotNull("Root component node", rootComponentNode);
+	// Existence of child node
+	Node collectionNode = xPathAPI.selectSingleNode(document, "/:CMD/:Components/:TextCorpusProfile/:Collection");
+	assertNotNull("Root child component node", collectionNode);
+	// Content of element node
+	Node nameNode = xPathAPI.selectSingleNode(document, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Name");
+	assertNotNull(nameNode);
+	assertEquals("Content of MimeType element", "TextCorpus test", nameNode.getTextContent());
+	// Attribute on element
+	assertEquals(1, nameNode.getAttributes().getLength());
+	Node xmlLangAttributeNode = nameNode.getAttributes().item(0);
+	assertEquals("en", xmlLangAttributeNode.getNodeValue());
+	assertEquals("lang", xmlLangAttributeNode.getLocalName());
+	assertEquals("http://www.w3.org/XML/1998/namespace", xmlLangAttributeNode.getNamespaceURI());
+	Node languageIdAttributeNode = xPathAPI.selectSingleNode(document, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Description/:Description/@LanguageID");
+	assertEquals("LanguageID", languageIdAttributeNode.getLocalName());
+	assertNull("Default namespace for CMD specified attributes", languageIdAttributeNode.getNamespaceURI());
+    }
+
+    @Test
     public void testGetBaseDocument() throws Exception {
 	CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER, CMDI_API_TEST_DOM_BUILDER_FACTORY);
 	// Load document from disk

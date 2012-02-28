@@ -36,7 +36,12 @@ import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.dom.MetadataDOMBuilder;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
+import nl.mpi.metadata.cmdi.api.model.Attribute;
+import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
+import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
+import nl.mpi.metadata.cmdi.api.model.Element;
+import nl.mpi.metadata.cmdi.api.type.CMDIAttributeType;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.apache.xmlbeans.SchemaProperty;
 import org.apache.xmlbeans.SchemaType;
@@ -47,10 +52,11 @@ import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
 import org.apache.xpath.CachedXPathAPI;
 import org.apache.xpath.XPathAPI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
@@ -66,6 +72,7 @@ import org.xml.sax.SAXException;
  */
 public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 
+    private final static Logger logger = LoggerFactory.getLogger(CMDIDomBuilder.class);
     private final EntityResolver entityResolver;
     private final DOMBuilderFactory domBuilderFactory;
 
@@ -92,7 +99,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	Document domDocument = getBaseDocument(metadataDocument);
 	pruneDom(metadataDocument, domDocument);
 	setHeaders(metadataDocument, domDocument);
-	// TODO: Add components
+	buildComponents(metadataDocument, domDocument);
 	// TODO: Set resource links
 	return domDocument;
     }
@@ -129,12 +136,19 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 
     private void pruneDom(CMDIDocument metadataDocument, Document domDocument) throws MetadataDocumentException {
 	try {
-	    // Remove header info
-	    Node headerNode = XPathAPI.selectSingleNode(domDocument, "/:CMD/:Header");
+	    final CachedXPathAPI xPathAPI = new CachedXPathAPI();
+	    Node headerNode = xPathAPI.selectSingleNode(domDocument, "/:CMD/:Header");
+	    Node componentsNode = xPathAPI.selectSingleNode(domDocument, "/:CMD/:Components");
+	    Node rootComponentNode = CMDIComponentReader.getRootComponentNode(metadataDocument, domDocument, xPathAPI);
+
+	    // Remove header items
 	    removeChildren(headerNode);
 	    // Remove components
-	    Node rootComponentNode = CMDIComponentReader.getRootComponentNode(metadataDocument, domDocument, new CachedXPathAPI());
-	    removeChildren(rootComponentNode);
+	    if (rootComponentNode.getParentNode().equals(componentsNode)) {
+		componentsNode.removeChild(rootComponentNode);
+	    } else {
+		throw new MetadataDocumentException(metadataDocument, "Root component node specified by profile is not a child of Components node");
+	    }
 	} catch (TransformerException tEx) {
 	    throw new MetadataDocumentException(metadataDocument, "TransformerException while preparing for building metadata DOM", tEx);
 	} catch (MetadataException mdEx) {
@@ -145,19 +159,13 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
     private void removeChildren(Node parent) throws DOMException, MetadataException {
 	// replace node by undeep clone of itself
 	parent.getParentNode().replaceChild(parent.cloneNode(false), parent);
-//	NodeList children = parent.getChildNodes();
-//	for (int i = 0; i < children.getLength(); i++) {
-//	    if (null == parent.removeChild(children.item(i))) {
-//		throw new MetadataException("Could not prune header node " + children.item(i));
-//	    }
-//	}
     }
 
     private void setHeaders(CMDIDocument metadataDocument, Document domDocument) throws MetadataDocumentException {
 	try {
 	    Node headerNode = XPathAPI.selectSingleNode(domDocument, "/:CMD/:Header");
 	    for (HeaderInfo<?> header : metadataDocument.getHeaderInformation()) {
-		Element headerItemNode = domDocument.createElementNS(CMDIConstants.CMD_NAMESPACE, header.getName());
+		org.w3c.dom.Element headerItemNode = domDocument.createElementNS(CMDIConstants.CMD_NAMESPACE, header.getName());
 		headerItemNode.setTextContent(header.getValue().toString());
 		for (Entry<String, String> attribute : header.getAttributes().entrySet()) {
 		    headerItemNode.setAttribute(attribute.getKey(), attribute.getValue());
@@ -166,6 +174,42 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	    }
 	} catch (TransformerException tEx) {
 	    throw new MetadataDocumentException(metadataDocument, "TransformerException while setting headers in metadata DOM", tEx);
+	}
+    }
+
+    private void buildComponents(CMDIDocument metadataDocument, Document domDocument) throws MetadataDocumentException {
+	try {
+	    final String schemaLocation = metadataDocument.getType().getSchemaLocation().toString();
+	    final Node componentsNode = XPathAPI.selectSingleNode(domDocument, "/:CMD/:Components");
+	    buildMetadataElement(domDocument, componentsNode, metadataDocument, schemaLocation);
+	} catch (DOMException mdEx) {
+	    throw new MetadataDocumentException(metadataDocument, "DOMException while building components in DOM", mdEx);
+	} catch (TransformerException tEx) {
+	    throw new MetadataDocumentException(metadataDocument, "TransformerException while building components in DOM", tEx);
+	}
+    }
+
+    private void buildMetadataElement(Document domDocument, Node parentNode, CMDIMetadataElement metadataElement, String schemaLocation) throws DOMException {
+	// Add child node to DOM
+	org.w3c.dom.Element elementNode = appendElementNode(domDocument, schemaLocation, parentNode, metadataElement.getType().getSchemaElement());
+	// Set value if element
+	if (metadataElement instanceof Element) {
+	    elementNode.setTextContent(((Element) metadataElement).getValue().toString());
+	}
+	// Add attributes
+	for (Attribute attribute : metadataElement.getAttributes()) {
+	    if (attribute.getType() instanceof CMDIAttributeType) {
+		Node attrNode = appendAttributeNode(domDocument, elementNode, ((CMDIAttributeType) attribute.getType()).getSchemaElement());
+		attrNode.setNodeValue(attribute.getValue().toString());
+	    } else {
+		logger.info("Found attribute of type other than CMDIAttributeType. Skipping attribute {}", attribute);
+	    }
+	}
+	// Iterate over children if container
+	if (metadataElement instanceof CMDIContainerMetadataElement) {
+	    for (CMDIMetadataElement child : ((CMDIContainerMetadataElement) metadataElement).getChildren()) {
+		buildMetadataElement(domDocument, elementNode, child, schemaLocation);
+	    }
 	}
     }
 
@@ -191,7 +235,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	}
     }
 
-    private Node constructXml(SchemaProperty currentSchemaProperty, Document workingDocument, String nameSpaceUri, Node parentElement, boolean addDummyData) {
+    private Node constructXml(SchemaProperty currentSchemaProperty, Document workingDocument, String nameSpaceUri, org.w3c.dom.Element parentElement, boolean addDummyData) {
 	Node returnNode = null;
 	SchemaType currentSchemaType = currentSchemaProperty.getType();
 	Node currentElement = appendNode(workingDocument, nameSpaceUri, parentElement, currentSchemaProperty);
@@ -216,22 +260,24 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 		    maxNumberToAdd = BigInteger.ZERO;
 		}
 	    }
-	    for (BigInteger addNodeCounter = BigInteger.ZERO; addNodeCounter.compareTo(maxNumberToAdd) < 0; addNodeCounter = addNodeCounter.add(BigInteger.ONE)) {
-		constructXml(schemaProperty, workingDocument, nameSpaceUri, currentElement, addDummyData);
+	    if (currentElement instanceof org.w3c.dom.Element) {
+		for (BigInteger addNodeCounter = BigInteger.ZERO; addNodeCounter.compareTo(maxNumberToAdd) < 0; addNodeCounter = addNodeCounter.add(BigInteger.ONE)) {
+		    constructXml(schemaProperty, workingDocument, nameSpaceUri, (org.w3c.dom.Element) currentElement, addDummyData);
+		}
 	    }
 	}
 	return returnNode;
     }
 
-    private Node appendNode(Document workingDocument, String nameSpaceUri, Node parentElement, SchemaProperty schemaProperty) {
+    private Node appendNode(Document workingDocument, String nameSpaceUri, org.w3c.dom.Element parentElement, SchemaProperty schemaProperty) {
 	if (schemaProperty.isAttribute()) {
-	    return appendAttributeNode(workingDocument, (Element) parentElement, schemaProperty);
+	    return appendAttributeNode(workingDocument, parentElement, schemaProperty);
 	} else {
 	    return appendElementNode(workingDocument, nameSpaceUri, parentElement, schemaProperty);
 	}
     }
 
-    private Attr appendAttributeNode(Document workingDocument, Element parentElement, SchemaProperty schemaProperty) {
+    private Attr appendAttributeNode(Document workingDocument, org.w3c.dom.Element parentElement, SchemaProperty schemaProperty) {
 	Attr currentAttribute = workingDocument.createAttributeNS(schemaProperty.getName().getNamespaceURI(), schemaProperty.getName().getLocalPart());
 	if (schemaProperty.getDefaultText() != null) {
 	    currentAttribute.setNodeValue(schemaProperty.getDefaultText());
@@ -240,8 +286,8 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	return currentAttribute;
     }
 
-    private Element appendElementNode(Document workingDocument, String nameSpaceUri, Node parentElement, SchemaProperty schemaProperty) {
-	Element currentElement = workingDocument.createElementNS(schemaProperty.getName().getNamespaceURI(), schemaProperty.getName().getLocalPart());
+    private org.w3c.dom.Element appendElementNode(Document workingDocument, String nameSpaceUri, Node parentElement, SchemaProperty schemaProperty) {
+	org.w3c.dom.Element currentElement = workingDocument.createElementNS(schemaProperty.getName().getNamespaceURI(), schemaProperty.getName().getLocalPart());
 	SchemaType currentSchemaType = schemaProperty.getType();
 	for (SchemaProperty attributesProperty : currentSchemaType.getAttributeProperties()) {
 	    if (attributesProperty.getMinOccurs() != null && !attributesProperty.getMinOccurs().equals(BigInteger.ZERO)) {
