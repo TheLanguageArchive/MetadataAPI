@@ -58,4 +58,9 @@ public class Attribute<T> implements MetadataElementAttribute<T> {
     public void setValue(T value) {
 	this.value = value;
     }
+
+    @Override
+    public String toString() {
+	return String.format("[@%1$s=%2$s]", getType().getName(), getValue());
+    }
 }

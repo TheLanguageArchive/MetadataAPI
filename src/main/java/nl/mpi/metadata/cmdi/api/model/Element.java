@@ -85,4 +85,9 @@ public class Element<T> extends CMDIMetadataElement implements MetadataField<T, 
     public MetadataResourceProxy createMetadataReference(URI uri, String mimetype) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    @Override
+    public String toString() {
+	return String.format("[%1$s=%2$s]", getType().getName(), getValue());
+    }
 }
