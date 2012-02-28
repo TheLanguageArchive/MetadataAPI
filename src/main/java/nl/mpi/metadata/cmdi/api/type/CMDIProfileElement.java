@@ -115,7 +115,8 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
 		final QName attributeName = attributeProperty.getName();
 		logger.debug("Creating attribute type '{}' of type {}", attributeName, attributeProperty.getType());
 
-		MetadataElementAttributeType attribute = new MetadataElementAttributeType();
+		CMDIAttributeType attribute = new CMDIAttributeType();
+		attribute.setSchemaElement(schemaElement);
 		attribute.setName(attributeName.getLocalPart());
 		if (attributeName.getNamespaceURI() != null) {
 		    attribute.setNamespaceURI(attributeName.getNamespaceURI());

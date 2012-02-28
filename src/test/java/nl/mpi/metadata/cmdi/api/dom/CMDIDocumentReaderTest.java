@@ -16,7 +16,6 @@
  */
 package nl.mpi.metadata.cmdi.api.dom;
 
-import nl.mpi.metadata.cmdi.api.dom.CMDIDocumentReader;
 import java.io.IOException;
 import java.util.Collection;
 import javax.xml.parsers.ParserConfigurationException;
