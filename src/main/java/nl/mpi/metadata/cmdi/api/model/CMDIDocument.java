@@ -19,8 +19,8 @@ package nl.mpi.metadata.cmdi.api.model;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.api.model.MetadataDocument;
@@ -58,7 +58,7 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
 	this.profile = profile;
 	this.fileLocation = fileLocation;
 
-	this.headerInfo = new HashMap<String, HeaderInfo>();
+	this.headerInfo = new LinkedHashMap<String, HeaderInfo>(); // LinkedHashMap so that order is retained
 	this.listeners = new HashSet<MetadataDocumentListener>();
     }
 
