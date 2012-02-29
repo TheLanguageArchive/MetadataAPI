@@ -191,7 +191,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 
     private void buildMetadataElement(Document domDocument, Node parentNode, CMDIMetadataElement metadataElement, String schemaLocation) throws DOMException {
 	// Add child node to DOM
-	org.w3c.dom.Element elementNode = appendElementNode(domDocument, schemaLocation, parentNode, metadataElement.getType().getSchemaElement());
+	org.w3c.dom.Element elementNode = appendElementNode(domDocument, schemaLocation, parentNode, metadataElement.getType().getSchemaElement(), false);
 	// Set value if element
 	if (metadataElement instanceof Element) {
 	    elementNode.setTextContent(((Element) metadataElement).getValue().toString());
@@ -238,7 +238,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
     private Node constructXml(SchemaProperty currentSchemaProperty, Document workingDocument, String nameSpaceUri, org.w3c.dom.Element parentElement, boolean addDummyData) {
 	Node returnNode = null;
 	SchemaType currentSchemaType = currentSchemaProperty.getType();
-	Node currentElement = appendNode(workingDocument, nameSpaceUri, parentElement, currentSchemaProperty);
+	Node currentElement = appendNode(workingDocument, nameSpaceUri, parentElement, currentSchemaProperty, true);
 	returnNode = currentElement;
 
 	for (SchemaProperty schemaProperty : currentSchemaType.getElementProperties()) {
@@ -269,16 +269,16 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	return returnNode;
     }
 
-    private Node appendNode(Document workingDocument, String nameSpaceUri, org.w3c.dom.Element parentElement, SchemaProperty schemaProperty) {
+    private Node appendNode(Document workingDocument, String nameSpaceUri, org.w3c.dom.Element parentElement, SchemaProperty schemaProperty, boolean addRequiredAttributes) {
 	if (schemaProperty.isAttribute()) {
 	    return appendAttributeNode(workingDocument, parentElement, schemaProperty);
 	} else {
-	    return appendElementNode(workingDocument, nameSpaceUri, parentElement, schemaProperty);
+	    return appendElementNode(workingDocument, nameSpaceUri, parentElement, schemaProperty, addRequiredAttributes);
 	}
     }
 
     private Attr appendAttributeNode(Document workingDocument, org.w3c.dom.Element parentElement, SchemaProperty schemaProperty) {
-	Attr currentAttribute = workingDocument.createAttributeNS(schemaProperty.getName().getNamespaceURI(), schemaProperty.getName().getLocalPart());
+	Attr currentAttribute = workingDocument.createAttributeNS(schemaProperty.getName().getNamespaceURI(), getPrefixedName(schemaProperty));
 	if (schemaProperty.getDefaultText() != null) {
 	    currentAttribute.setNodeValue(schemaProperty.getDefaultText());
 	}
@@ -286,12 +286,14 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	return currentAttribute;
     }
 
-    private org.w3c.dom.Element appendElementNode(Document workingDocument, String nameSpaceUri, Node parentElement, SchemaProperty schemaProperty) {
-	org.w3c.dom.Element currentElement = workingDocument.createElementNS(schemaProperty.getName().getNamespaceURI(), schemaProperty.getName().getLocalPart());
+    private org.w3c.dom.Element appendElementNode(Document workingDocument, String nameSpaceUri, Node parentElement, SchemaProperty schemaProperty, boolean addRequiredAttributes) {
+	org.w3c.dom.Element currentElement = workingDocument.createElementNS(schemaProperty.getName().getNamespaceURI(), getPrefixedName(schemaProperty));
 	SchemaType currentSchemaType = schemaProperty.getType();
-	for (SchemaProperty attributesProperty : currentSchemaType.getAttributeProperties()) {
-	    if (attributesProperty.getMinOccurs() != null && !attributesProperty.getMinOccurs().equals(BigInteger.ZERO)) {
-		currentElement.setAttribute(attributesProperty.getName().getLocalPart(), attributesProperty.getDefaultText());
+	if (addRequiredAttributes) {
+	    for (SchemaProperty attributesProperty : currentSchemaType.getAttributeProperties()) {
+		if (attributesProperty.getMinOccurs() != null && !attributesProperty.getMinOccurs().equals(BigInteger.ZERO)) {
+		    currentElement.setAttributeNS(attributesProperty.getName().getNamespaceURI(), attributesProperty.getName().getLocalPart(), attributesProperty.getDefaultText());
+		}
 	    }
 	}
 	if (parentElement == null) {
@@ -334,6 +336,14 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	} catch (TransformerFactoryConfigurationError ex) {
 	    throw new RuntimeException("Exception while reloading DOM", ex);
 	}
+    }
+
+    private String getPrefixedName(SchemaProperty schemaProperty) {
+	String name = schemaProperty.getName().getLocalPart();
+	if (CMDIConstants.XML_NAMESPACE.equals(schemaProperty.getName().getNamespaceURI())) {
+	    name = "xml:" + name;
+	}
+	return name;
     }
 
     /**
