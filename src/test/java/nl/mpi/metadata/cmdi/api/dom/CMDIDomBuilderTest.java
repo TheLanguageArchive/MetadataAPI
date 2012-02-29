@@ -16,6 +16,7 @@
  */
 package nl.mpi.metadata.cmdi.api.dom;
 
+import com.sun.org.apache.xpath.internal.XPathAPI;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import java.net.URI;
 import java.util.Collections;
@@ -23,10 +24,14 @@ import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.apache.xpath.CachedXPathAPI;
+import org.custommonkey.xmlunit.Diff;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.junit.BeforeClass;
+import org.xml.sax.InputSource;
 import static org.junit.Assert.*;
 import static nl.mpi.metadata.cmdi.api.CMDIConstants.*;
 
@@ -35,6 +40,13 @@ import static nl.mpi.metadata.cmdi.api.CMDIConstants.*;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIDomBuilderTest extends CMDIAPITestCase {
+
+    @BeforeClass
+    public static void setUpTest() {
+	XMLUnit.setIgnoreWhitespace(true);
+	XMLUnit.setIgnoreComments(true);
+	XMLUnit.setIgnoreAttributeOrder(true);
+    }
 
     /**
      * Test of createDomFromSchema method, of class CMDIDomBuilder.
@@ -50,6 +62,11 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	Node componentsNode = rootNode.getLastChild();
 	assertEquals("Components", componentsNode.getLocalName());
 	assertEquals("TextCorpusProfile", componentsNode.getFirstChild().getLocalName());
+
+	// Mandatory attributes should be added (LanguageID is mandatory, xml:lang is optional)
+	Node descriptionNode = XPathAPI.selectSingleNode(document, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Description/:Description");
+	assertEquals(1, descriptionNode.getAttributes().getLength());
+	assertEquals("LanguageID", descriptionNode.getAttributes().item(0).getLocalName());
     }
 
     /**
@@ -147,6 +164,18 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
     }
 
     @Test
+    public void testBuildDomForDocumentResult() throws Exception {
+	CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER, CMDI_API_TEST_DOM_BUILDER_FACTORY);
+	CMDIDocument metadataDocument = getNewTestDocument();
+	// Build DOM
+	Document builtDocument = instance.buildDomForDocument(metadataDocument);
+	// Compare to reading of original DOM
+	Document originalDocument = XMLUnit.buildControlDocument(new InputSource(getClass().getResourceAsStream(TEXT_CORPUS_INSTANCE_LOCATION)));
+	Diff compareXML = XMLUnit.compareXML(originalDocument, builtDocument);
+	assertTrue(compareXML.toString(), compareXML.identical());
+    }
+
+    @Test
     public void testGetBaseDocumentUnsaved() throws Exception {
 	CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER, CMDI_API_TEST_DOM_BUILDER_FACTORY);
 	// New document, not from disk
@@ -161,7 +190,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	// But no content
 	assertEquals("", node.getTextContent());
 	// Select optional element
-	node = xPathAPI.selectSingleNode(baseDocument, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Description");
+	node = xPathAPI.selectSingleNode(baseDocument, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:OriginLocation");
 	// Should not be there
 	assertNull(node);
     }

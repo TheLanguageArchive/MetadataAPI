@@ -21,13 +21,20 @@ import nl.mpi.metadata.cmdi.api.dom.CMDIApiDOMBuilderFactory;
 import nl.mpi.metadata.cmdi.api.dom.CMDIDocumentReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
@@ -165,4 +172,15 @@ public abstract class CMDIAPITestCase {
 	    }
 	}
     };
+    
+    protected static String domToString(Document originalDocument) throws TransformerFactoryConfigurationError, TransformerException, TransformerConfigurationException {
+	TransformerFactory tFactory = TransformerFactory.newInstance();
+	Transformer transformer = tFactory.newTransformer();
+
+	DOMSource source = new DOMSource(originalDocument);
+	StringWriter writer = new StringWriter();
+	StreamResult result = new StreamResult(writer);
+	transformer.transform(source, result);
+	return writer.toString();
+    }
 }

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- THIS IS A MODIFIED VERSION OF THE TextCorpusProfile STORED IN THE COMPONENT REGSISTRY -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:dcr="http://www.isocat.org/ns/dcr"
            xmlns:ann="http://www.clarin.eu"
@@ -15708,7 +15709,7 @@
                   <xs:attribute name="ref" type="xs:IDREFS"/>
                  </xs:complexType>
                 </xs:element>
-                <xs:element name="Description" minOccurs="0" maxOccurs="1"
+                <xs:element name="Description" minOccurs="1" maxOccurs="1"
                             dcr:datcat="http://www.isocat.org/datcat/DC-2520">
                  <xs:complexType>
                   <xs:sequence>
@@ -15718,7 +15719,7 @@
                     <xs:complexType>
                      <xs:simpleContent>
                       <xs:extension base="xs:string">
-                       <xs:attribute name="LanguageID" type="xs:string"/>
+                       <xs:attribute name="LanguageID" type="xs:string" use="required" />
                        <xs:attribute ref="xml:lang"/>
                       </xs:extension>
                      </xs:simpleContent>
