@@ -42,6 +42,14 @@ import nl.mpi.metadata.cmdi.api.type.ComponentType;
  */
 public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement implements MetadataContainer<CMDIMetadataElement> {
 
+    /**
+     * e.g. Actor[1]/Language -> (Actor)([(1)])(/(Language))
+     * 
+     * group(1) = element name
+     * group(3) = element index
+     * group(5) = child path
+     */
+    private final static Pattern PATH_PATTERN = Pattern.compile("(^[^(/|\\[]+)(\\[(\\d+)\\])?(/(.*))?$");
     private ComponentType type;
     private List<CMDIMetadataElement> children;
     /**
@@ -190,9 +198,7 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
      * @throws IllegalArgumentException if the format of the path is illegal
      */
     public CMDIMetadataElement getChildElement(final String path) throws IllegalArgumentException {
-	// e.g. Actor[1]/Language -> (Actor)([(1)])(/(Language)) -> 
-	final Pattern pathPattern = Pattern.compile("(^[^(/|\\[]+)(\\[(\\d+)\\])?(/(.*))?$");
-	final Matcher pathMatcher = pathPattern.matcher(path);
+	final Matcher pathMatcher = PATH_PATTERN.matcher(path);
 	if (pathMatcher.find()) {
 	    final String elementName = pathMatcher.group(1);
 	    if (elementName != null && elementName.length() > 0) {
