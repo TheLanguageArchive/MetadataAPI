@@ -16,6 +16,7 @@
  */
 package nl.mpi.metadata.cmdi.api.model;
 
+import java.util.List;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import org.junit.After;
@@ -31,6 +32,7 @@ public class CMDIContainerMetadataElementTest extends CMDIAPITestCase {
 
     ComponentType collectionType;
     ComponentType originLocationType;
+    ComponentType generalInfoType;
     CMDIContainerMetadataElement collection;
     CMDIContainerMetadataElement originLocation;
 
@@ -38,6 +40,7 @@ public class CMDIContainerMetadataElementTest extends CMDIAPITestCase {
     public void setUp() throws Exception {
 	collectionType = (ComponentType) getNewTestProfileAndRead().getContainableTypeByName("Collection");
 	originLocationType = (ComponentType) collectionType.getContainableTypeByName("OriginLocation");
+	generalInfoType = (ComponentType) collectionType.getContainableTypeByName("GeneralInfo");
 	collection = new CMDIContainerMetadataElementImpl(collectionType);
 	originLocation = new CMDIContainerMetadataElementImpl(originLocationType);
     }
@@ -62,9 +65,21 @@ public class CMDIContainerMetadataElementTest extends CMDIAPITestCase {
 	assertEquals(1, collection.getChildrenCount(originLocationType));
 
 	// Add an aditional child
-	assertTrue(collection.addChildElement(new CMDIContainerMetadataElementImpl(originLocationType)));
-	assertEquals(2, collection.getChildren().size());
+	final CMDIContainerMetadataElementImpl originLocation2 = new CMDIContainerMetadataElementImpl(originLocationType);
+	assertTrue(collection.addChildElement(originLocation2));
+	List<CMDIMetadataElement> children = collection.getChildren();
+	assertEquals(2, children.size());
 	assertEquals(2, collection.getChildrenCount(originLocationType));
+	// should have been added after first originLocation
+	assertTrue(children.indexOf(originLocation) < children.indexOf(originLocation2));
+
+	// Add GeneralInfo, which should appear before OriginLocation
+	final CMDIContainerMetadataElementImpl generalInfo = new CMDIContainerMetadataElementImpl(generalInfoType);
+	assertTrue(collection.addChildElement(generalInfo));
+	children = collection.getChildren();
+	assertEquals(3, children.size());
+	// should have been added before originLocation (profile determines order)
+	assertTrue(children.indexOf(generalInfo) < children.indexOf(originLocation));
     }
 
     @Test

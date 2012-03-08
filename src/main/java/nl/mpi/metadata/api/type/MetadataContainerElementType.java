@@ -16,7 +16,7 @@
  */
 package nl.mpi.metadata.api.type;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  *
@@ -28,7 +28,7 @@ public interface MetadataContainerElementType<T extends MetadataElementType> ext
      * 
      * @return Collection of all metadata types that can be contained as a <em>direct</em> child by an instance of this metadata type
      */
-    Collection<T> getContainableTypes();
+    List<T> getContainableTypes();
 
     /**
      * Gets a containable type by name

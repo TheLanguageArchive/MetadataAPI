@@ -17,7 +17,6 @@
 package nl.mpi.metadata.cmdi.api.type;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import javax.xml.namespace.QName;
@@ -60,7 +59,7 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
 	return null;
     }
 
-    public Collection<CMDIProfileElement> getContainableTypes() {
+    public List<CMDIProfileElement> getContainableTypes() {
 	return Collections.unmodifiableList(children);
     }
 

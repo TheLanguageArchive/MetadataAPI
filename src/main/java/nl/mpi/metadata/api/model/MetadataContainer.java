@@ -17,6 +17,7 @@
 package nl.mpi.metadata.api.model;
 
 import java.util.List;
+import nl.mpi.metadata.api.MetadataElementException;
 
 /**
  * @param <M> Type of MetadataElement that can be contained in this container element
@@ -33,7 +34,7 @@ public interface MetadataContainer<M extends MetadataElement> {
 
     List<M> getChildren();
 
-    public boolean addChildElement(M element);
+    public boolean addChildElement(M element) throws MetadataElementException;
 
-    public boolean removeChildElement(M element);
+    public boolean removeChildElement(M element) throws MetadataElementException;
 }

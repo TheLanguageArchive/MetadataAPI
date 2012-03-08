@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import nl.mpi.metadata.api.MetadataElementException;
 import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataReference;
@@ -59,22 +60,72 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
      * @param element element to add
      * @return whether the child was added. Will be false if the child is already registered as a child.
      */
-    public synchronized boolean addChildElement(CMDIMetadataElement element) {
+    public synchronized boolean addChildElement(CMDIMetadataElement element) throws MetadataElementException {
 	if (!children.contains(element)) {
-	    if (children.add(element)) {
-		final String typeName = element.getType().getName();
-		List<CMDIMetadataElement> elements = childrenTypeMap.get(typeName);
-		if (elements == null) {
-		    elements = new ArrayList<CMDIMetadataElement>();
-		    childrenTypeMap.put(typeName, elements);
-		}
-		if (!elements.add(element)) {
-		    throw new AssertionError("Child was added but could not be registered in map");
-		}
-		return true;
-	    }
+	    addToChildren(element);
+	    addToChildrenTypeMap(element);
+	    return true;
 	}
 	return false;
+    }
+
+    /**
+     * Inserts element to {@link CMDIContainerMetadataElement#children} in the appropriate position
+     * @param element element to add
+     * @throws MetadataElementException if {@code children.add(element)} returns false
+     */
+    private synchronized void addToChildren(CMDIMetadataElement element) throws MetadataElementException {
+	// Find insert-before type
+	CMDIMetadataElement insertBeforeElement = getInsertBeforeElement(element);
+	// Insert at valid position
+	if (insertBeforeElement == null) {
+	    // insert at end of list
+	    if (!children.add(element)) {
+		throw new MetadataElementException(this, String.format("Failed to add child lement %1$s", element));
+	    }
+	} else {
+	    // add before first child of insert-before type
+	    int index = children.indexOf(insertBeforeElement);
+	    children.add(index, element);
+	}
+    }
+
+    /**
+     * Finds the existing child the new child should be added <em>before</em>
+     * @param element element to add
+     * @return first element that should supersede specified element. Null if no such element, i.e. the element should be added to the end
+     */
+    private CMDIMetadataElement getInsertBeforeElement(final CMDIMetadataElement element) {
+	final CMDIProfileElement elementType = element.getType();
+	final List<CMDIProfileElement> parentTypeChildren = elementType.getParent().getContainableTypes();
+	for (int childTypeIndex = parentTypeChildren.indexOf(elementType) + 1; childTypeIndex < parentTypeChildren.size(); childTypeIndex++) {
+	    final CMDIProfileElement insertBeforeType = parentTypeChildren.get(childTypeIndex);
+	    // See if this element has any children of the current type
+	    final String typeName = insertBeforeType.getName();
+	    final List<CMDIMetadataElement> insertBeforeTypeElements = childrenTypeMap.get(typeName);
+	    if (insertBeforeTypeElements != null && insertBeforeTypeElements.size() > 0) {
+		return insertBeforeTypeElements.get(0);
+	    }
+	}
+	return null;
+    }
+
+    /**
+     * Inserts element to {@link CMDIContainerMetadataElement#childrenTypeMap} at the end of the list on the appropriate key. Creates a list
+     * if no value is present yet. Assumes child was not already in map!
+     * @param element element to add
+     * @throws MetadataElementException if {@code elements.add(element)} returns false, for example if child was already in map
+     */
+    private synchronized void addToChildrenTypeMap(CMDIMetadataElement element) throws MetadataElementException {
+	final String typeName = element.getType().getName();
+	List<CMDIMetadataElement> elements = childrenTypeMap.get(typeName);
+	if (elements == null) {
+	    elements = new ArrayList<CMDIMetadataElement>();
+	    childrenTypeMap.put(typeName, elements);
+	}
+	if (!elements.add(element)) {
+	    throw new MetadataElementException(this, String.format("Failed to add child element to childrenTypeMap %1$s", element));
+	}
     }
 
     /**
@@ -82,14 +133,14 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
      * @param element element to remove
      * @return  whether the child was removed. Will be false if the child is not registered as a child.
      */
-    public synchronized boolean removeChildElement(CMDIMetadataElement element) {
+    public synchronized boolean removeChildElement(CMDIMetadataElement element) throws MetadataElementException {
 	if (children.remove(element)) {
 	    List<CMDIMetadataElement> elements = childrenTypeMap.get(element.getType().getName());
 	    if (elements == null) {
 		throw new AssertionError("No list in children map for removed child element");
 	    }
 	    if (!elements.remove(element)) {
-		throw new AssertionError("Child was removed but could not be deleted from map");
+		throw new MetadataElementException(this, String.format("Child %1$s was removed but could not be deleted from map", element));
 	    }
 	    return true;
 	} else {
