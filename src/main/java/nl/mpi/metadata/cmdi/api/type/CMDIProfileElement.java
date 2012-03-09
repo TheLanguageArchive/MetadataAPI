@@ -58,6 +58,16 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
      */
     public abstract String getPathString();
 
+    public MetadataElementAttributeType getAttributeTypeByName(String namespaceURI, String name) {
+	for (MetadataElementAttributeType child : getAttributes()) {
+	    if ((namespaceURI == null && child.getNamespaceURI() == null || namespaceURI != null && namespaceURI.equals(child.getNamespaceURI()))
+		    && child.getName().equals(name)) {
+		return child;
+	    }
+	}
+	return null;
+    }
+
     public Collection<MetadataElementAttributeType> getAttributes() {
 	return attributes;
     }

@@ -16,12 +16,20 @@
  */
 package nl.mpi.metadata.cmdi.api.dom;
 
+import nl.mpi.metadata.cmdi.api.CMDIConstants;
+import nl.mpi.metadata.cmdi.api.type.ElementType;
+import nl.mpi.metadata.cmdi.api.model.Element;
+import org.w3c.dom.NodeList;
+import nl.mpi.metadata.cmdi.api.type.ComponentType;
+import nl.mpi.metadata.cmdi.api.model.Component;
 import com.sun.org.apache.xpath.internal.XPathAPI;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import java.net.URI;
 import java.util.Collections;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
+import nl.mpi.metadata.cmdi.api.model.Attribute;
+import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.apache.xpath.CachedXPathAPI;
 import org.custommonkey.xmlunit.Diff;
@@ -141,6 +149,55 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	Node languageIdAttributeNode = xPathAPI.selectSingleNode(document, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Description/:Description/@LanguageID");
 	assertEquals("LanguageID", languageIdAttributeNode.getLocalName());
 	assertNull("Default namespace for CMD specified attributes", languageIdAttributeNode.getNamespaceURI());
+    }
+
+    @Test
+    public void testBuildDomForDocumentNewDocument() throws Exception {
+	// Create a new document on basis of a profile
+	CMDIProfile profile = getNewTestProfileAndRead();
+	CMDIDocument document = new CMDIDocument(profile);
+
+	// Add some child elements
+	ComponentType collectionType = (ComponentType) profile.getContainableTypeByName("Collection");
+	ComponentType originLocationType = (ComponentType) collectionType.getContainableTypeByName("OriginLocation");
+	ComponentType generalInfoType = (ComponentType) collectionType.getContainableTypeByName("GeneralInfo");
+	ElementType nameType = (ElementType) generalInfoType.getContainableTypeByName("Name");
+
+	Component collection = new Component(collectionType, document);
+	document.addChildElement(collection);
+
+	Component originLocation = new Component(originLocationType, collection);
+	collection.addChildElement(originLocation);
+
+	Component generalInfo = new Component(generalInfoType, collection);
+	collection.addChildElement(generalInfo);
+
+	Element name = new Element(nameType, generalInfo, "test element");
+	generalInfo.addChildElement(name);
+
+	Attribute langAttr = new Attribute(nameType.getAttributeTypeByName(CMDIConstants.XML_NAMESPACE, "lang"));
+	langAttr.setValue("en");
+	name.addAttribute(langAttr);
+
+	CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER, CMDI_API_TEST_DOM_BUILDER_FACTORY);
+	Document dom = instance.buildDomForDocument(document);
+
+	CachedXPathAPI xPathAPI = new CachedXPathAPI();
+	Node collectionNode = xPathAPI.selectSingleNode(dom, collectionType.getPathString());
+	NodeList collectionNodeChildren = collectionNode.getChildNodes();
+
+	assertEquals(2, collectionNodeChildren.getLength());
+	// Notice that GeneralInfo should appear first, even though it was added second (this the profile order)
+	assertEquals("GeneralInfo", collectionNodeChildren.item(0).getLocalName());
+	assertEquals("OriginLocation", collectionNodeChildren.item(1).getLocalName());
+
+	Node nameNode = xPathAPI.selectSingleNode(dom, nameType.getPathString());
+	assertEquals("test element", nameNode.getTextContent());
+	assertEquals(1, nameNode.getAttributes().getLength());
+	Node langAttrNode = nameNode.getAttributes().getNamedItem("xml:lang");
+	assertNotNull(langAttrNode);
+	assertEquals("xml:lang", langAttrNode.getNodeName());
+	assertEquals("en", langAttrNode.getNodeValue());
     }
 
     @Test
