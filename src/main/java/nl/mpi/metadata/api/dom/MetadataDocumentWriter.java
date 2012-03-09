@@ -16,8 +16,10 @@
  */
 package nl.mpi.metadata.api.dom;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import javax.xml.transform.Result;
+import javax.xml.transform.TransformerException;
+import nl.mpi.metadata.api.MetadataDocumentException;
+import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.model.MetadataDocument;
 
 /**
@@ -28,9 +30,10 @@ public interface MetadataDocumentWriter<T extends MetadataDocument> {
 
     /**
      * 
-     * @param metadataDocument document to write to stream
-     * @param outputStream stream to write to
-     * @throws IOException if I/O error occurred while writing to stream
+     * @param metadataDocument document to write to result
+     * @param XML transformation result to write to
+     * @throws TransformerException if an exception occurs during the transformation process
+     * @throws MetadataException if an exception occurs while processing the metadata document
      */
-    void write(T metadataDocument, OutputStream outputStream) throws IOException;
+    void write(T metadataDocument, Result outputResult) throws  MetadataDocumentException, TransformerException;
 }

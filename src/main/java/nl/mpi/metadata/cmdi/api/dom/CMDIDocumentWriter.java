@@ -17,7 +17,15 @@
 package nl.mpi.metadata.cmdi.api.dom;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.util.Properties;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.dom.MetadataDocumentWriter;
 import nl.mpi.metadata.api.dom.MetadataDOMBuilder;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
@@ -30,13 +38,50 @@ import org.w3c.dom.Document;
 public class CMDIDocumentWriter implements MetadataDocumentWriter<CMDIDocument> {
 
     private MetadataDOMBuilder<CMDIDocument> domWriter;
+    private Properties outputProperties;
 
     public CMDIDocumentWriter(MetadataDOMBuilder<CMDIDocument> domWriter) {
 	this.domWriter = domWriter;
     }
 
-    public void write(CMDIDocument metadataDocument, OutputStream outputStream) throws IOException {
-	//Document dom = domWriter.buildDomForDocument(metadataDocument);
-	//TODO: write DOM to output stream
+    /**
+     * Writes the specified metadata document to the provided outputStream. The transformer used for this is
+     * obtained by calling {@code Transformer
+     * @param metadataDocument
+     * @param outputStream
+     * @throws IOException 
+     */
+    public void write(CMDIDocument metadataDocument, Result outputResult) throws MetadataDocumentException, TransformerException {
+	Document dom = domWriter.buildDomForDocument(metadataDocument);
+	Source source = new DOMSource(dom);
+
+	Transformer transformer = getNewTransformer();
+	transformer.transform(source, outputResult);
+    }
+
+    protected Transformer getNewTransformer() throws TransformerConfigurationException {
+	TransformerFactory transformerFactory = TransformerFactory.newInstance();
+	Transformer transformer = transformerFactory.newTransformer();
+
+	if (getOutputProperties() != null) {
+	    transformer.setOutputProperties(getOutputProperties());
+	}
+	return transformer;
+    }
+
+    /**
+     * @return outputProperties to use when serializing the metadata document to XML. If null, defaults are used.
+     */
+    public final Properties getOutputProperties() {
+	return outputProperties;
+    }
+
+    /**
+     * @param outputProperties outputProperties to use when serializing the metadata document to XML. The will be passed to the transformer
+     * object through {@link Transformer#setOutputProperties(java.util.Properties)}. Set to null to keep defaults (i.e. the call to 
+     * Transformer will not be made).
+     */
+    public final void setOutputProperties(Properties outputProperties) {
+	this.outputProperties = outputProperties;
     }
 }
