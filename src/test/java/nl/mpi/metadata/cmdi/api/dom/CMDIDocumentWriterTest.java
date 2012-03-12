@@ -17,6 +17,7 @@
 package nl.mpi.metadata.cmdi.api.dom;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import org.custommonkey.xmlunit.Diff;
 import org.w3c.dom.Document;
 import java.io.StringWriter;
 import javax.xml.transform.Result;
@@ -90,7 +91,8 @@ public class CMDIDocumentWriterTest extends CMDIAPITestCase {
 
 	// Compare result to mock DOM
 	Document testDocument = XMLUnit.buildTestDocument(resultStringWriter.getBuffer().toString());
-	XMLUnit.compareXML(mockDom, testDocument);
+	Diff compareXML = XMLUnit.compareXML(mockDom, testDocument);
+	assertTrue(compareXML.toString(), compareXML.identical());
     }
 
     /**
