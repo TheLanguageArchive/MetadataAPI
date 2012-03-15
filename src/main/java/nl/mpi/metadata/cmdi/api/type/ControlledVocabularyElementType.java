@@ -16,13 +16,11 @@
  */
 package nl.mpi.metadata.cmdi.api.type;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import nl.mpi.metadata.api.type.ControlledVocabularyItem;
 import nl.mpi.metadata.api.type.ControlledVocabularyMetadataType;
 import org.apache.xmlbeans.SchemaProperty;
-import org.apache.xmlbeans.XmlAnySimpleType;
 
 /**
  *
@@ -36,29 +34,8 @@ public class ControlledVocabularyElementType extends ElementType implements Cont
 	super(schemaElement, parent, path);
     }
 
-    @Override
-    protected void readProperties() {
-	super.readProperties();
-	readItems();
-    }
-
-    /**
-     * Reads the allowed controlled vocabulary items from the element type
-     */
-    private void readItems() {
-	XmlAnySimpleType[] itemTypes = getSchemaElement().getType().getEnumerationValues();
-	if (itemTypes != null && itemTypes.length > 0) {
-	    items = new ArrayList<ControlledVocabularyItem>();
-	    for (XmlAnySimpleType itemType : getSchemaElement().getType().getEnumerationValues()) {
-		CMDIControlledVocabularyItem item = new CMDIControlledVocabularyItem();
-		item.setValue(itemType.getStringValue());
-		// TODO: item.setDescription(itemDescription);
-		// TODO: item.setDataCategory(itemDataCategory);
-		items.add(item);
-	    }
-	} else {
-	    items = Collections.emptyList();
-	}
+    protected void setItems(List<ControlledVocabularyItem> items) {
+	this.items = items;
     }
 
     public List<ControlledVocabularyItem> getItems() {

@@ -16,10 +16,7 @@
  */
 package nl.mpi.metadata.cmdi.api.type;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import javax.xml.namespace.QName;
 import nl.mpi.metadata.api.type.MetadataContainerElementType;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
@@ -27,8 +24,6 @@ import nl.mpi.metadata.api.type.MetadataElementType;
 import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategory;
 import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategoryType;
 import org.apache.xmlbeans.SchemaProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Base class for Component and Element types
@@ -37,13 +32,12 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class CMDIProfileElement implements DataCategoryType, MetadataElementType {
 
-    private static Logger logger = LoggerFactory.getLogger(CMDIProfileElement.class);
     protected final ComponentType parent;
     protected final SchemaProperty schemaElement;
     protected final QName qName;
     protected String description;
     protected DataCategory dataCategory;
-    protected Collection<MetadataElementAttributeType> attributes;
+    private Collection<MetadataElementAttributeType> attributes;
 
     protected CMDIProfileElement(SchemaProperty schemaElement, ComponentType parent) {
 	this.parent = parent;
@@ -105,49 +99,6 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
 	return schemaElement;
     }
 
-    void readSchema() throws CMDITypeException {
-	if (getSchemaElement() == null) {
-	    throw new CMDITypeException(null, "Cannot read schema, it has not been set or loaded");
-	}
-	logger.debug("Reading schema for {}", getSchemaElement().getName());
-	readProperties();
-	readAttributes();
-    }
-
-    /**
-     * Reads schema properties. Gets called by {@link #readSchema() } before reading of the attributes.
-     * This implementation does nothing.
-     */
-    protected void readProperties() {
-	logger.debug("readProperties");
-    }
-
-    protected void readAttributes() {
-	SchemaProperty[] attributeProperties = getSchemaElement().getType().getAttributeProperties();
-	if (attributeProperties != null && attributeProperties.length > 0) {
-	    attributes = new ArrayList<MetadataElementAttributeType>(attributeProperties.length);
-	    for (SchemaProperty attributeProperty : attributeProperties) {
-		final QName attributeName = attributeProperty.getName();
-		logger.debug("Creating attribute type '{}' of type {}", attributeName, attributeProperty.getType());
-
-		CMDIAttributeType attribute = new CMDIAttributeType();
-		attribute.setSchemaElement(attributeProperty);
-		attribute.setName(attributeName.getLocalPart());
-		if (attributeName.getNamespaceURI() != null) {
-		    attribute.setNamespaceURI(attributeName.getNamespaceURI());
-		}
-
-		attribute.setType(attributeProperty.getType().toString());  // consider .getName().getLocalPart()) but getName can
-		// be null, see documentation
-		attribute.setDefaultValue(attributeProperty.getDefaultText());
-		attribute.setMandatory(attributeProperty.getMinOccurs().compareTo(BigInteger.ZERO) > 0);
-		attributes.add(attribute);
-	    }
-	} else {
-	    attributes = Collections.emptySet();
-	}
-    }
-    
     public ComponentType getParent() {
 	return parent;
     }
@@ -181,5 +132,12 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
     @Override
     public String toString() {
 	return qName.getLocalPart();
+    }
+
+    /**
+     * @param attributes the attributes to set
+     */
+    public void setAttributes(Collection<MetadataElementAttributeType> attributes) {
+	this.attributes = attributes;
     }
 }

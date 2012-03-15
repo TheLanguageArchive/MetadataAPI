@@ -16,14 +16,10 @@
  */
 package nl.mpi.metadata.cmdi.api.type;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.xml.namespace.QName;
 import nl.mpi.metadata.api.type.MetadataContainerElementType;
 import org.apache.xmlbeans.SchemaProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class represents a CMDI component definition, defined by http://www.clarin.eu/cmd/general-component-schema.xsd
@@ -34,7 +30,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ComponentType extends CMDIProfileElement implements MetadataContainerElementType<CMDIProfileElement> {
 
-    private final static Logger logger = LoggerFactory.getLogger(ComponentType.class);
     private final StringBuilder path;
     private List<CMDIProfileElement> children;
     private String componentId;
@@ -80,64 +75,16 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
 	return componentId;
     }
 
-    /**
-     * Reads schema for this component type
-     * @throws CMDITypeException  If schema has not been set or loaded
-     */
-    @Override
-    void readSchema() throws CMDITypeException {
-	super.readSchema();
-	readChildren();
+    protected StringBuilder getPath() {
+	return path;
     }
 
-    @Override
-    protected void readProperties() {
-	super.readProperties();
-	SchemaProperty componentIdAttribute = getSchemaElement().getType().getAttributeProperty(new QName("ComponentId"));
-	// attribute may not be present, e.g. for profile root component
-	componentId = (componentIdAttribute == null) ? null : componentIdAttribute.getDefaultText();
+    protected void setChildren(List<CMDIProfileElement> children) {
+	this.children = children;
     }
-
-    /**
-     * Recursively loads children (components, elements) for this component
-     * @throws CMDITypeException 
-     */
-    private void readChildren() throws CMDITypeException {
-	SchemaProperty[] elements = getSchemaElement().getType().getElementProperties();
-
-	if (elements != null && elements.length > 0) {
-	    children = new ArrayList<CMDIProfileElement>(elements.length);
-	    for (SchemaProperty child : elements) {
-
-		CMDIProfileElement childElement;
-
-		// Is the element a Component (if so, it has ComponentId property)
-		boolean isComponent = null != child.getType().getAttributeProperty(new QName("ComponentId"))
-			|| child.getType().getElementProperties().length > 0;
-		if (isComponent) {
-		    // Component id found, so create component
-		    logger.debug("Creating child component type {}", child.getName().toString());
-		    childElement = new ComponentType(child, this, createChildPath(child));
-		} else {
-		    // Not a component, so create element
-		    if (child.getType().hasStringEnumValues()) {
-			logger.debug("Creating child CV element type {}", child.getName().toString());
-			childElement = new ControlledVocabularyElementType(child, this, createChildPath(child));
-		    } else {
-			logger.debug("Creating child element type {}", child.getName().toString());
-			childElement = new ElementType(child, this, createChildPath(child));
-		    }
-		}
-		childElement.readSchema();
-		children.add(childElement);
-	    }
-	} else {
-	    children = Collections.emptyList();
-	}
-    }
-
-    private StringBuilder createChildPath(SchemaProperty child) {
-	return new StringBuilder(path).append("/:").append(child.getName().getLocalPart());
+    
+    protected void setComponentId(String componentId){
+	this.componentId = componentId;
     }
 
     @Override

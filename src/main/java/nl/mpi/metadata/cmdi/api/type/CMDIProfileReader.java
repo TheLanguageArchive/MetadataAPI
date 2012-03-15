@@ -33,7 +33,7 @@ import org.apache.xmlbeans.XmlOptions;
 import org.xml.sax.EntityResolver;
 
 /**
- *
+ * Loads and reads a CMDI profile from a URI
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile> {
@@ -41,7 +41,8 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
     public final static QName CMD_TYPE_NAME = new QName(CMDIConstants.CMD_NAMESPACE, "CMD");
     public final static QName COMPONENTS_TYPE_NAME = new QName(CMDIConstants.CMD_NAMESPACE, "Components");
     public final static QName HEADER_TYPE_NAME = new QName(CMDIConstants.CMD_NAMESPACE, "Header");
-    private EntityResolver entityResolver;
+    private final EntityResolver entityResolver;
+    private final CmdiProfileElementSchemaReader schemaReader = new CmdiProfileElementSchemaReader();
 
     /**
      * Constructs new CMDIProfileReader with a {@link CMDIEntityResolver}
@@ -66,10 +67,8 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
 	StringBuilder rootPath = new StringBuilder("/:CMD/:Components/:").append(schemaElement.getName().getLocalPart());
 	// Instantiate profile
 	CMDIProfile profile = new CMDIProfile(uri, schemaElement, rootPath);
-
-	// Read all of the schema
-	profile.readSchema();
-
+	// Read schema
+	schemaReader.readSchema(profile);
 	return profile;
     }
 
