@@ -31,6 +31,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Takes an existing CMDI profile element and reads properties, attributes and child elements from the schema
+ * 
+ * TODO: Can be refactored in such a way that it creates elements (from SchemaProperties) rather than manipulates them. This requires
+ * fewer setters on the type model objects
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CmdiProfileElementSchemaReader {
