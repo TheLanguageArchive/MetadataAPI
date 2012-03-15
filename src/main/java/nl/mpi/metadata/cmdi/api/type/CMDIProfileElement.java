@@ -39,8 +39,8 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
 
     private static Logger logger = LoggerFactory.getLogger(CMDIProfileElement.class);
     protected final ComponentType parent;
-    protected SchemaProperty schemaElement;
-    protected QName qName;
+    protected final SchemaProperty schemaElement;
+    protected final QName qName;
     protected String description;
     protected DataCategory dataCategory;
     protected Collection<MetadataElementAttributeType> attributes;
@@ -147,11 +147,7 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
 	    attributes = Collections.emptySet();
 	}
     }
-
-    protected final void setSchemaElement(SchemaProperty element) {
-	this.schemaElement = element;
-    }
-
+    
     public ComponentType getParent() {
 	return parent;
     }

@@ -31,7 +31,7 @@ import org.apache.xmlbeans.SchemaProperty;
  */
 public class CMDIProfile extends ComponentType implements MetadataDocumentType<CMDIProfileElement> {
 
-    private URI schemaLocation;
+    private final URI schemaLocation;
 
     /**
      * Constructor. Loads schema but does not actually read data, for this call readSchema()

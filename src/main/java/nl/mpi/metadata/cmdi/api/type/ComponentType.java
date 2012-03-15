@@ -34,8 +34,8 @@ import org.slf4j.LoggerFactory;
  */
 public class ComponentType extends CMDIProfileElement implements MetadataContainerElementType<CMDIProfileElement> {
 
-    private static Logger logger = LoggerFactory.getLogger(ComponentType.class);
-    private StringBuilder path;
+    private final static Logger logger = LoggerFactory.getLogger(ComponentType.class);
+    private final StringBuilder path;
     private List<CMDIProfileElement> children;
     private String componentId;
 
@@ -138,10 +138,6 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
 
     private StringBuilder createChildPath(SchemaProperty child) {
 	return new StringBuilder(path).append("/:").append(child.getName().getLocalPart());
-    }
-
-    protected final void setPath(StringBuilder path) {
-	this.path = path;
     }
 
     @Override
