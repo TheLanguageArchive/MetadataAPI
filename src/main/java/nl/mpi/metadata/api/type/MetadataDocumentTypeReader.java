@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2012 Max Planck Institute for Psycholinguistics
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,32 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api.type;
+package nl.mpi.metadata.api.type;
 
+import java.io.IOException;
+import java.net.URI;
 import nl.mpi.metadata.api.MetadataTypeException;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDITypeException extends MetadataTypeException {
-
-    public CMDITypeException(CMDIProfileElement type) {
-	super(type);
-    }
-
-    public CMDITypeException(CMDIProfileElement type, String message) {
-	super(type, message);
-    }
-
-    public CMDITypeException(CMDIProfileElement type, Throwable cause) {
-	super(type, cause);
-    }
-
-    public CMDITypeException(CMDIProfileElement type, String message, Throwable cause) {
-	super(type, message, cause);
-    }
-
+public interface MetadataDocumentTypeReader <T extends MetadataDocumentType> {
     
+    public T read(URI uri) throws IOException, MetadataTypeException;
     
 }

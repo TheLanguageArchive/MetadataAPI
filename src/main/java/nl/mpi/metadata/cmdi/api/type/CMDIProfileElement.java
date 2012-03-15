@@ -46,8 +46,9 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
     protected Collection<MetadataElementAttributeType> attributes;
 
     protected CMDIProfileElement(SchemaProperty schemaElement, ComponentType parent) {
-	this.schemaElement = schemaElement;
 	this.parent = parent;
+	this.schemaElement = schemaElement;
+	this.qName = schemaElement.getName();
     }
 
     /**
@@ -106,15 +107,19 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
 
     void readSchema() throws CMDITypeException {
 	if (getSchemaElement() == null) {
-	    throw new CMDITypeException("Cannot read schema, it has not been set or loaded");
+	    throw new CMDITypeException(null, "Cannot read schema, it has not been set or loaded");
 	}
 	logger.debug("Reading schema for {}", getSchemaElement().getName());
 	readProperties();
 	readAttributes();
     }
 
+    /**
+     * Reads schema properties. Gets called by {@link #readSchema() } before reading of the attributes.
+     * This implementation does nothing.
+     */
     protected void readProperties() {
-	qName = getSchemaElement().getName();
+	logger.debug("readProperties");
     }
 
     protected void readAttributes() {

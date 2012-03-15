@@ -30,7 +30,7 @@ public class ControlledVocabularyElementTypeTest extends CMDIAPITestCase {
 
     @Test
     public void testCVItems() throws Exception {
-	CMDIProfile profile = new CMDIProfile(testSchemaTextCorpus.toURI());
+	CMDIProfile profile = getNewTestProfileAndRead();
 	ComponentType collectionType = (ComponentType) profile.getType("Collection");
 	ComponentType collectionTypeType = (ComponentType) collectionType.getType("CollectionType");
 	ControlledVocabularyElementType collectionTypeCV = (ControlledVocabularyElementType) collectionTypeType.getType("CollectionType");

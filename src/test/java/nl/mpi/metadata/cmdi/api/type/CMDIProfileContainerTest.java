@@ -16,7 +16,6 @@
  */
 package nl.mpi.metadata.cmdi.api.type;
 
-import java.net.URL;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import java.net.URI;
 import org.junit.Test;
@@ -31,6 +30,9 @@ public class CMDIProfileContainerTest extends CMDIAPITestCase {
 
     @Test
     public void testGetProfile() throws Exception {
+	
+	//TODO: Mock profile container
+	
 	URI testUri = testSchemaTextCorpus.toURI();
 	CMDIProfileContainer container = new CMDIProfileContainer();
 	// Is empty
@@ -45,24 +47,5 @@ public class CMDIProfileContainerTest extends CMDIAPITestCase {
 	// Request again, should be the same object
 	CMDIProfile profile2 = container.getProfile(testUri);
 	assertSame(profile, profile2);
-    }
-
-    @Test
-    public void testCustomEntityResolver() throws Exception {
-	URL remoteUrl = new URL(REMOTE_TEXT_CORPUS_SCHEMA_URL);
-	// Custom resolver
-	TestEntityResolver myER = new TestEntityResolver(remoteUrl, testSchemaTextCorpus);
-
-	CMDIProfileContainer container = new CMDIProfileContainer(myER);
-	// Resolver should not have been hit
-	assertEquals(0, myER.byteStreamRequested);
-	// Request new schema from container, so it has to be created
-	container.getProfile(remoteUrl.toURI());
-	// Should have been hit for schema
-	assertEquals(1, myER.byteStreamRequested);
-	// Request once more, it should come from chache
-	container.getProfile(remoteUrl.toURI());
-	// Should have no additional hits for schema
-	assertEquals(1, myER.byteStreamRequested);
     }
 }

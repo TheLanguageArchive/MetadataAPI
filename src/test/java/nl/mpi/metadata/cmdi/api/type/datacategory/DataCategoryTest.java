@@ -39,6 +39,7 @@ public class DataCategoryTest {
 
     @After
     public void tearDown() {
+	dataCategory = null;
     }
 
     /**

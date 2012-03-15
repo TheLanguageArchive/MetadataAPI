@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2012 Max Planck Institute for Psycholinguistics
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,10 @@
 package nl.mpi.metadata.cmdi.api.type;
 
 import java.net.URI;
-import java.net.URL;
+import javax.xml.namespace.QName;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
+import org.apache.xmlbeans.SchemaProperty;
+import org.apache.xmlbeans.impl.schema.SchemaPropertyImpl;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -29,65 +31,28 @@ import static org.junit.Assert.*;
 public class CMDIProfileTest extends CMDIAPITestCase {
 
     @Test
-    public void testLoadSchema() throws Exception {
-	CMDIProfile profile = new CMDIProfile(testSchemaTextCorpus.toURI(), CMDI_API_TEST_ENTITY_RESOLVER);
-	profile.readSchema();
-
-	assertEquals(profile.getName(), "TextCorpusProfile");
-	// Session has 7 children (descriptions, MDGroup, ...)
-	assertEquals(profile.getContainableTypes().size(), 3);
-	// Has 2 attributes (ref, componentId)
-	assertEquals(profile.getAttributes().size(), 1);
-
-	ComponentType corpusType = (ComponentType) profile.getType("Corpus");
-	assertNotNull(corpusType);
-	ElementType topicType = (ElementType) corpusType.getType("Topic");
-	assertNotNull(topicType);
-
-	// Test containability
-	assertFalse(profile.canContainType(topicType));
-	assertTrue(corpusType.canContainType(topicType));
-
-	//Test cardinality	
-	assertEquals(1, corpusType.getMinOccurences(profile));
-	assertEquals(1, corpusType.getMaxOccurences(profile));
-	assertEquals(0, topicType.getMinOccurences(corpusType));
-	assertEquals(-1, topicType.getMaxOccurences(corpusType));
-    }
-
-    @Test
     public void testEquals() throws Exception {
-	CMDIProfile profile1 = new CMDIProfile(testSchemaTextCorpus.toURI());
-	CMDIProfile profile2 = new CMDIProfile(testSchemaTextCorpus.toURI());
+	SchemaPropertyImpl schemaProperty1 = new SchemaPropertyImpl();
+	schemaProperty1.setName(new QName("Name1"));
+	CMDIProfile profile1 = new CMDIProfile(testSchemaTextCorpus.toURI(), schemaProperty1, null);
+	SchemaPropertyImpl schemaProperty2 = new SchemaPropertyImpl();
+	schemaProperty2.setName(new QName("Name1"));
+	CMDIProfile profile2 = new CMDIProfile(testSchemaTextCorpus.toURI(), schemaProperty2, null);
 	assertTrue("Expected equality of profiles", profile1.equals(profile2));
 	assertTrue("Expected equality of profiles", profile2.equals(profile1));
-	CMDIProfile profile3 = new CMDIProfile(testSchemaWebservice.toURI());
+	SchemaPropertyImpl schemaProperty3 = new SchemaPropertyImpl();
+	schemaProperty3.setName(new QName("Name3"));
+	CMDIProfile profile3 = new CMDIProfile(testSchemaWebservice.toURI(), schemaProperty3, null);
 	assertFalse("Expected non-equality of profiles", profile1.equals(profile3));
 	assertFalse("Expected non-equality of profiles", profile3.equals(profile1));
     }
 
+    /**
+     * Test of getSchemaLocation method, of class CMDIProfile.
+     */
     @Test
-    public void testCustomEntityResolver() throws Exception {
-	final URL remoteURL = new URL(REMOTE_TEXT_CORPUS_SCHEMA_URL);
-
-	TestEntityResolver testResolver = new TestEntityResolver(remoteURL, testSchemaTextCorpus);
-	assertEquals(0, testResolver.byteStreamRequested);
-
-	// Read schema
-	CMDIProfile profile = new CMDIProfile(remoteURL.toURI(), testResolver);
-	profile.readSchema();
-	// This should cause the entity resolver to be triggered once
-	assertEquals(1, testResolver.byteStreamRequested);
-	// Should still match REMOTE schema location
-	assertEquals(new URI(REMOTE_TEXT_CORPUS_SCHEMA_URL), profile.getSchemaLocation());
-    }
-
-    @Test
-    public void testNoEntityResolver() throws Exception {
-	// Small schema has no xml:lang import
-	CMDIProfile profile = new CMDIProfile(testSchemaSmall.toURI(), null);
-	profile.readSchema();
-	// Schema location should match
-	assertEquals(testSchemaSmall.toURI(), profile.getSchemaLocation());
+    public void testGetSchemaLocation() throws Exception {
+	CMDIProfile profile = new CMDIProfile(testSchemaTextCorpus.toURI(), new SchemaPropertyImpl(), null);
+	assertEquals(testSchemaTextCorpus.toURI(), profile.getSchemaLocation());
     }
 }

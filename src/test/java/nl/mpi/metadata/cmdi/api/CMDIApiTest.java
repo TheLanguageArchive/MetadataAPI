@@ -20,6 +20,8 @@ import nl.mpi.metadata.cmdi.api.dom.MockCMDIDocumentReader;
 import nl.mpi.metadata.api.MetadataElementException;
 import nl.mpi.metadata.api.SimpleErrorHandler;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
+import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
+import nl.mpi.metadata.cmdi.api.type.MockCMDIProfileReader;
 import nl.mpi.metadata.cmdi.api.validation.MockCMDIValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,13 +35,17 @@ public class CMDIApiTest extends CMDIAPITestCase {
 
     private CMDIApi api;
     private MockCMDIDocumentReader documentReader;
+    private MockCMDIProfileReader profileReader;
     private CMDIDocument testDocument;
+    private CMDIProfile profile;
 
     @Before
     public void setUp() throws Exception {
 	testDocument = getNewTestDocument();
+	profile = getNewTestProfileAndRead();
 	documentReader = new MockCMDIDocumentReader(testDocument);
-	api = new CMDIApi(documentReader);
+	profileReader = new MockCMDIProfileReader(profile);
+	api = new CMDIApi(documentReader, profileReader);
 	api.setEntityResolver(CMDI_API_TEST_ENTITY_RESOLVER);
     }
 
@@ -49,6 +55,11 @@ public class CMDIApiTest extends CMDIAPITestCase {
     @Test
     public void testGetDocumentReader() {
 	assertEquals(documentReader, api.getDocumentReader());
+    }
+
+    @Test
+    public void testGetProfileReader() {
+	assertEquals(profileReader, api.getProfileReader());
     }
 
     /**
