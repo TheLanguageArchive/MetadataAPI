@@ -65,8 +65,8 @@ public class CMDIProfileReaderTest extends CMDIAPITestCase {
 	// Read schema
 	CMDIProfileReader reader = new CMDIProfileReader(testResolver);
 	CMDIProfile profile = reader.read(remoteURL.toURI());
-	// This should cause the entity resolver to be triggered once
-	assertEquals(1, testResolver.byteStreamRequested);
+	// This should cause the entity resolver to be triggered twice (once for loading SchemaTypeSystem and once for reading schema DOM)
+	assertEquals(2, testResolver.byteStreamRequested);
 	// Should still match REMOTE schema location
 	assertEquals(new URI(REMOTE_TEXT_CORPUS_SCHEMA_URL), profile.getSchemaLocation());
     }

@@ -119,7 +119,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
     public CMDIApi() {
 	this(null, null);
 	this.documentReader = new CMDIDocumentReader(profileContainer, new CMDIComponentReader(elementFactory));
-	this.profileReader = new CMDIProfileReader(entityResolver);
+	this.profileReader = new CMDIProfileReader(entityResolver, domBuilderFactory);
     }
 
     /**

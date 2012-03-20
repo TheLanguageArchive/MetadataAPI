@@ -22,15 +22,24 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import javax.xml.namespace.QName;
+import javax.xml.transform.TransformerException;
 import nl.mpi.metadata.api.type.ControlledVocabularyItem;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
+import org.apache.xmlbeans.SchemaAnnotation;
+import org.apache.xmlbeans.SchemaLocalElement;
+import org.apache.xmlbeans.SchemaParticle;
 import org.apache.xmlbeans.SchemaProperty;
 import org.apache.xmlbeans.XmlAnySimpleType;
+import org.apache.xpath.CachedXPathAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 /**
- * Takes an existing CMDI profile element and reads properties, attributes and child elements from the schema
+ * Takes an existing CMDI profile element and reads properties, attributes and child elements from the schema. Construct a new instance
+ * for each profile schema to read. Not thread-safe.
  * 
  * TODO: Can be refactored in such a way that it creates elements (from SchemaProperties) rather than manipulates them. This requires
  * fewer setters on the type model objects
@@ -39,8 +48,21 @@ import org.slf4j.LoggerFactory;
 public class CmdiProfileElementSchemaReader {
 
     private final static Logger logger = LoggerFactory.getLogger(CmdiProfileElementSchemaReader.class);
+    private final Document schemaDocument;
+    private final CachedXPathAPI xPathAPI;
+
+    /**
+     * Creates a new schema reader for the specified document
+     * @param document DOM representation of the profile schema file to read. It is needed to read annotation data from the schema (i.e. display priorities,
+     * data categories and element documentation).
+     */
+    public CmdiProfileElementSchemaReader(Document document) {
+	this.schemaDocument = document;
+	this.xPathAPI = new CachedXPathAPI();
+    }
 
     public void readSchema(CMDIProfileElement profileElement) throws CMDITypeException {
+
 	if (profileElement.getSchemaElement() == null) {
 	    throw new CMDITypeException(null, "Cannot read schema, it has not been set or loaded");
 	}
@@ -59,6 +81,7 @@ public class CmdiProfileElementSchemaReader {
 	} else if (profileElement instanceof ControlledVocabularyElementType) {
 	    readVocabularyItems((ControlledVocabularyElementType) profileElement);
 	}
+	searchForAnnotations(profileElement);
     }
 
     protected void readAttributes(CMDIProfileElement profileElement) {
@@ -159,5 +182,75 @@ public class CmdiProfileElementSchemaReader {
 	    items = Collections.emptyList();
 	}
 	profileElement.setItems(items);
+    }
+
+    /**
+     * Searches the schema document for annotations for the specified profile element
+     */
+    private void searchForAnnotations(CMDIProfileElement profileElement) {
+	final SchemaParticle schemaParticle = profileElement.getSchemaElement().getType().getContentModel();
+	if (schemaParticle != null) {
+	    switch (schemaParticle.getParticleType()) {
+		case SchemaParticle.ELEMENT:
+		    SchemaLocalElement schemaLocalElement = (SchemaLocalElement) schemaParticle;
+		    saveAnnotationData(profileElement, schemaLocalElement);
+		    break;
+	    }
+	} else {
+	    // In case of complex type, try on element specification (xs:element)
+	    if (schemaDocument != null) {
+		// Path to element specification in schema file
+		final String elementPath = profileElement.getPathString().replaceFirst("/:", "//*[@name='").replaceAll("/:", "']//*[@name='") + "']";
+		try {
+		    // Get element specification
+		    Node elementSpecNode = xPathAPI.selectSingleNode(schemaDocument, elementPath);
+		    if (elementSpecNode != null) {
+			// Get all attributes on the xs:element and look for annotation data
+			NamedNodeMap attributes = elementSpecNode.getAttributes();
+			for (int i = 0; i < attributes.getLength(); i++) {
+			    final Node attrNode = attributes.item(i);
+			    // Convert to {nsUri}localname format
+			    final String nodeName = new QName(attrNode.getNamespaceURI(), attrNode.getLocalName()).toString();
+			    // Check for annotation data and if so save to data structure
+			    saveAnnotationData(profileElement, nodeName, attrNode.getNodeValue());
+			}
+		    }
+		} catch (TransformerException ex) {
+		    // Failure to get element, so nothing can be found
+		}
+	    }
+	}
+    }
+
+    private void saveAnnotationData(CMDIProfileElement profileElement, SchemaLocalElement schemaLocalElement) {
+	SchemaAnnotation schemaAnnotation = schemaLocalElement.getAnnotation();
+	if (schemaAnnotation != null) {
+	    for (SchemaAnnotation.Attribute annotationAttribute : schemaAnnotation.getAttributes()) {
+		final String annotationValue = annotationAttribute.getValue();
+		final String annotationName = annotationAttribute.getName().toString();
+		saveAnnotationData(profileElement, annotationName, annotationValue);
+	    }
+	}
+    }
+
+    private void saveAnnotationData(CMDIProfileElement profileElement, final String annotationName, final String annotationValue) {
+	//Annotation: {ann}documentation : the title of the book
+	//Annotation: {ann}displaypriority : 1
+	// todo: the url here could be removed provided that it does not make it to unspecific
+
+	if (!"".equals(annotationValue)) {
+	    if ("{http://www.clarin.eu}displaypriority".equals(annotationName)) {
+		//arrayListGroup.displayNamePreferenceList.add(new String[]{nodePath, annotationValue});
+		// TODO: Set display priority
+	    }
+	    if ("{http://www.clarin.eu}documentation".equals(annotationName)) {
+		//arrayListGroup.fieldUsageDescriptionList.add(new String[]{nodePath, annotationValue});
+		// TODO: Set documentation string
+	    }
+	    if ("{http://www.isocat.org/ns/dcr}datcat".equals(annotationName)) {
+		//arrayListGroup.dataCategoriesMap.put(nodePath, annotationValue);
+		// TODO: Set datacategory
+	    }
+	}
     }
 }
