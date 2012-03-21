@@ -46,6 +46,8 @@ import org.w3c.dom.Node;
  * 
  * TODO: Can be refactored in such a way that it creates elements (from SchemaProperties) rather than manipulates them. This requires
  * fewer setters on the type model objects
+ * 
+ * TODO: Make reading annotations optional (because it requires DOM to be loaded and does XPath processing, which slow things down)
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CmdiProfileElementSchemaReader {
