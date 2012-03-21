@@ -27,7 +27,7 @@ import org.apache.xmlbeans.SchemaProperty;
 
 /**
  * Base class for Component and Element types
- * 
+ *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public abstract class CMDIProfileElement implements DataCategoryType, MetadataElementType {
@@ -48,7 +48,7 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
     /**
      * Returns an XPath that, when applied to an <em>instance</em> of this profile element, returns a list 
      * of the nodes in that instance that are of this type.
-     * @see org.apache.xpath.XPathAPI#selectNodeList(org.w3c.dom.Node, java.lang.String) 
+     * @see org.apache.xpath.XPathAPI#selectNodeList(org.w3c.dom.Node, java.lang.String)
      * @return XPath string to find instances
      */
     public abstract String getPathString();
@@ -70,17 +70,27 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
     public DataCategory getDataCategory() {
 	return dataCategory;
     }
-    
+
     /**
      * Sets the data category for this profile element
-     * @param dataCategory 
+     *
+     * @param dataCategory
      */
-    public void setDataCategory(DataCategory dataCategory){
+    public void setDataCategory(DataCategory dataCategory) {
 	this.dataCategory = dataCategory;
     }
 
     public String getDescription() {
 	return description;
+    }
+
+    /**
+     * Sets the element description
+     *
+     * @param description description to set for this element
+     */
+    public void setDescription(String description) {
+	this.description = description;
     }
 
     public int getMaxOccurences(MetadataContainerElementType container) {

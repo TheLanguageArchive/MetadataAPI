@@ -34,15 +34,21 @@ public class CMDIProfileReaderTest extends CMDIAPITestCase {
 	CMDIProfileReader reader = new CMDIProfileReader(CMDI_API_TEST_ENTITY_RESOLVER);
 	CMDIProfile profile = reader.read(testSchemaTextCorpus.toURI());
 
+	ComponentType corpusType = (ComponentType) profile.getType("Corpus");
+	ComponentType generalInfoType = (ComponentType) ((ComponentType) profile.getType("Collection")).getContainableTypeByName("GeneralInfo");
+
+	// Test profile
 	assertEquals(profile.getName(), "TextCorpusProfile");
 	// Session has 7 children (descriptions, MDGroup, ...)
 	assertEquals(profile.getContainableTypes().size(), 3);
 	// Has 2 attributes (ref, componentId)
 	assertEquals(profile.getAttributes().size(), 1);
 
-	ComponentType corpusType = (ComponentType) profile.getType("Corpus");
-	assertNotNull(corpusType);
+	// Test components and elements
 	ElementType topicType = (ElementType) corpusType.getType("Topic");
+	ElementType nameType = (ElementType) generalInfoType.getContainableTypeByName("Name");
+	ElementType titleType = (ElementType) generalInfoType.getContainableTypeByName("Title");
+	assertNotNull(corpusType);
 	assertNotNull(topicType);
 
 	// Test containability
@@ -56,10 +62,7 @@ public class CMDIProfileReaderTest extends CMDIAPITestCase {
 	assertEquals(-1, topicType.getMaxOccurences(corpusType));
 
 	//Test display priority
-	ComponentType generalInfoType = (ComponentType) ((ComponentType) profile.getType("Collection")).getContainableTypeByName("GeneralInfo");
-	ElementType nameType = (ElementType) generalInfoType.getContainableTypeByName("Name");
 	assertEquals(0, nameType.getDisplayPriority());
-	ElementType titleType = (ElementType) generalInfoType.getContainableTypeByName("Title");
 	assertEquals(1, titleType.getDisplayPriority());
 
 	//Test data category
@@ -67,6 +70,12 @@ public class CMDIProfileReaderTest extends CMDIAPITestCase {
 	assertEquals(dc2544, nameType.getDataCategory());
 	DataCategory dc2503 = new DataCategory(new URI("http://www.isocat.org/datcat/DC-2503"));
 	assertEquals(dc2503, topicType.getDataCategory());
+
+	//Test documentation
+	assertEquals("Name of the collection", nameType.getDescription());
+	// TODO: Make it work on components
+	//assertEquals("General information about this collection", generalInfoType.getDescription());
+	assertNull(titleType.getDescription());
     }
 
     @Test

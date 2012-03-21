@@ -15651,13 +15651,15 @@
           <xs:element name="Collection" minOccurs="1" maxOccurs="1">
            <xs:complexType>
             <xs:sequence>
-             <xs:element name="GeneralInfo" minOccurs="1" maxOccurs="1">
+             <xs:element name="GeneralInfo" minOccurs="1" maxOccurs="1" ann:documentation="General information about this collection">
               <xs:complexType>
                <xs:sequence>
                 <xs:element name="Name" maxOccurs="unbounded"
                             dcr:datcat="http://www.isocat.org/datcat/DC-2544"
                             minOccurs="1"
-                            ann:displaypriority="0">
+                            ann:displaypriority="0"
+			    ann:documentation="Name of the collection"
+			    >
                  <xs:complexType>
                   <xs:simpleContent>
                    <xs:extension base="xs:string">
