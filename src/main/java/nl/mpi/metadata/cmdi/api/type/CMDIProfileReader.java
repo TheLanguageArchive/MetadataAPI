@@ -61,6 +61,7 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
 
     /**
      * Constructs new CMDIProfileReader with the specified EntityResolver and a {@link CMDIApiDOMBuilderFactory} using that entity resolver
+     * @param entityResolver entity resolver to be used when reading profile schema
      * @see CMDIApiDOMBuilderFactory
      */
     public CMDIProfileReader(final EntityResolver entityResolver) {
@@ -76,6 +77,7 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
     /**
      * Constructs a CMDIProfileReader with the specified EntityResolver and DOMBuilderFactory
      * @param entityResolver Entity resolver to be used while parsing the schema file
+     * @param domBuilderFactory DOM builder factory to be used for creating dom representation of profile schema
      */
     public CMDIProfileReader(EntityResolver entityResolver, DOMBuilderFactory domBuilderFactory) {
 	this.entityResolver = entityResolver;

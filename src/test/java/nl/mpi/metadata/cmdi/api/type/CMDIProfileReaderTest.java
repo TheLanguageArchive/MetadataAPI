@@ -53,6 +53,13 @@ public class CMDIProfileReaderTest extends CMDIAPITestCase {
 	assertEquals(1, corpusType.getMaxOccurences(profile));
 	assertEquals(0, topicType.getMinOccurences(corpusType));
 	assertEquals(-1, topicType.getMaxOccurences(corpusType));
+
+	//Test display priority
+	ComponentType generalInfoType = (ComponentType) ((ComponentType) profile.getType("Collection")).getContainableTypeByName("GeneralInfo");
+	ElementType nameType = (ElementType) generalInfoType.getContainableTypeByName("Name");
+	assertEquals(0, nameType.getDisplayPriority());
+	ElementType titleType = (ElementType) generalInfoType.getContainableTypeByName("Title");
+	assertEquals(1, titleType.getDisplayPriority());
     }
 
     @Test

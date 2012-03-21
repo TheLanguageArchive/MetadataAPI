@@ -242,6 +242,14 @@ public class CmdiProfileElementSchemaReader {
 	    if ("{http://www.clarin.eu}displaypriority".equals(annotationName)) {
 		//arrayListGroup.displayNamePreferenceList.add(new String[]{nodePath, annotationValue});
 		// TODO: Set display priority
+		if (profileElement instanceof ElementType) {
+		    try {
+			int displayPriority = Integer.parseInt(annotationValue);
+			((ElementType) profileElement).setDisplayPriority(displayPriority);
+		    } catch (NumberFormatException nfEx) {
+			logger.warn("NumberFormatException in display priority for element " + profileElement, nfEx);
+		    }
+		}
 	    }
 	    if ("{http://www.clarin.eu}documentation".equals(annotationName)) {
 		//arrayListGroup.fieldUsageDescriptionList.add(new String[]{nodePath, annotationValue});

@@ -28,6 +28,7 @@ import org.apache.xmlbeans.SchemaProperty;
 public class ElementType extends CMDIProfileElement implements MetadataElementType, DataCategoryType {
 
     private final String path;
+    protected int displayPriority; //defaults to 0
 
     public ElementType(SchemaProperty schemaElement, ComponentType parent, CharSequence path) {
 	super(schemaElement, parent);
@@ -38,5 +39,23 @@ public class ElementType extends CMDIProfileElement implements MetadataElementTy
     @Override
     public String getPathString() {
 	return path.toString();
+    }
+
+    /**
+     * Display priority of this element
+     *
+     * @return the display priority of this element
+     */
+    public int getDisplayPriority() {
+	return displayPriority;
+    }
+
+    /**
+     * Set the display priority of this element
+     *
+     * @param displayPriority new display priority of this element
+     */
+    public void setDisplayPriority(int displayPriority) {
+	this.displayPriority = displayPriority;
     }
 }
