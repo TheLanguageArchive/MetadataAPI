@@ -70,6 +70,14 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
     public DataCategory getDataCategory() {
 	return dataCategory;
     }
+    
+    /**
+     * Sets the data category for this profile element
+     * @param dataCategory 
+     */
+    public void setDataCategory(DataCategory dataCategory){
+	this.dataCategory = dataCategory;
+    }
 
     public String getDescription() {
 	return description;

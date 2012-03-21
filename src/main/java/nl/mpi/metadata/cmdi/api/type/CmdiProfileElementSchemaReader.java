@@ -17,6 +17,8 @@
 package nl.mpi.metadata.cmdi.api.type;
 
 import java.math.BigInteger;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,6 +27,7 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import nl.mpi.metadata.api.type.ControlledVocabularyItem;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
+import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategory;
 import org.apache.xmlbeans.SchemaAnnotation;
 import org.apache.xmlbeans.SchemaLocalElement;
 import org.apache.xmlbeans.SchemaParticle;
@@ -46,7 +49,7 @@ import org.w3c.dom.Node;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CmdiProfileElementSchemaReader {
-
+    
     private final static Logger logger = LoggerFactory.getLogger(CmdiProfileElementSchemaReader.class);
     private final Document schemaDocument;
     private final CachedXPathAPI xPathAPI;
@@ -60,21 +63,21 @@ public class CmdiProfileElementSchemaReader {
 	this.schemaDocument = document;
 	this.xPathAPI = new CachedXPathAPI();
     }
-
+    
     public void readSchema(CMDIProfileElement profileElement) throws CMDITypeException {
-
+	
 	if (profileElement.getSchemaElement() == null) {
 	    throw new CMDITypeException(null, "Cannot read schema, it has not been set or loaded");
 	}
 	logger.debug("Reading schema for {}", profileElement.getSchemaElement().getName());
 	readProperties(profileElement);
 	readAttributes(profileElement);
-
+	
 	if (profileElement instanceof ComponentType) {
 	    readChildren((ComponentType) profileElement);
 	}
     }
-
+    
     protected void readProperties(CMDIProfileElement profileElement) {
 	if (profileElement instanceof ComponentType) {
 	    readComponentId(profileElement);
@@ -83,7 +86,7 @@ public class CmdiProfileElementSchemaReader {
 	}
 	searchForAnnotations(profileElement);
     }
-
+    
     protected void readAttributes(CMDIProfileElement profileElement) {
 	SchemaProperty[] attributeProperties = profileElement.getSchemaElement().getType().getAttributeProperties();
 	if (attributeProperties != null && attributeProperties.length > 0) {
@@ -91,14 +94,14 @@ public class CmdiProfileElementSchemaReader {
 	    for (SchemaProperty attributeProperty : attributeProperties) {
 		final QName attributeName = attributeProperty.getName();
 		logger.debug("Creating attribute type '{}' of type {}", attributeName, attributeProperty.getType());
-
+		
 		CMDIAttributeType attribute = new CMDIAttributeType();
 		attribute.setSchemaElement(attributeProperty);
 		attribute.setName(attributeName.getLocalPart());
 		if (attributeName.getNamespaceURI() != null) {
 		    attribute.setNamespaceURI(attributeName.getNamespaceURI());
 		}
-
+		
 		attribute.setType(attributeProperty.getType().toString());  // consider .getName().getLocalPart()) but getName can
 		// be null, see documentation
 		attribute.setDefaultValue(attributeProperty.getDefaultText());
@@ -118,12 +121,12 @@ public class CmdiProfileElementSchemaReader {
      */
     private void readChildren(ComponentType componentType) throws CMDITypeException {
 	SchemaProperty[] elements = componentType.getSchemaElement().getType().getElementProperties();
-
+	
 	List<CMDIProfileElement> children;
 	if (elements != null && elements.length > 0) {
 	    children = new ArrayList<CMDIProfileElement>(elements.length);
 	    for (SchemaProperty child : elements) {
-
+		
 		CMDIProfileElement childElement;
 
 		// Is the element a Component (if so, it has ComponentId property)
@@ -151,11 +154,11 @@ public class CmdiProfileElementSchemaReader {
 	}
 	componentType.setChildren(children);
     }
-
+    
     private StringBuilder createChildPath(ComponentType componentType, SchemaProperty child) {
 	return new StringBuilder(componentType.getPath()).append("/:").append(child.getName().getLocalPart());
     }
-
+    
     private void readComponentId(CMDIProfileElement profileElement) {
 	SchemaProperty componentIdAttribute = profileElement.getSchemaElement().getType().getAttributeProperty(new QName("ComponentId"));
 	// attribute may not be present, e.g. for profile root component
@@ -221,7 +224,7 @@ public class CmdiProfileElementSchemaReader {
 	    }
 	}
     }
-
+    
     private void saveAnnotationData(CMDIProfileElement profileElement, SchemaLocalElement schemaLocalElement) {
 	SchemaAnnotation schemaAnnotation = schemaLocalElement.getAnnotation();
 	if (schemaAnnotation != null) {
@@ -232,7 +235,7 @@ public class CmdiProfileElementSchemaReader {
 	    }
 	}
     }
-
+    
     private void saveAnnotationData(CMDIProfileElement profileElement, final String annotationName, final String annotationValue) {
 	//Annotation: {ann}documentation : the title of the book
 	//Annotation: {ann}displaypriority : 1
@@ -247,7 +250,7 @@ public class CmdiProfileElementSchemaReader {
 			int displayPriority = Integer.parseInt(annotationValue);
 			((ElementType) profileElement).setDisplayPriority(displayPriority);
 		    } catch (NumberFormatException nfEx) {
-			logger.warn("NumberFormatException in display priority for element " + profileElement, nfEx);
+			logger.warn(String.format("NumberFormatException in display priority (value: %1$s) for element %2$s", annotationValue, profileElement), nfEx);
 		    }
 		}
 	    }
@@ -256,8 +259,13 @@ public class CmdiProfileElementSchemaReader {
 		// TODO: Set documentation string
 	    }
 	    if ("{http://www.isocat.org/ns/dcr}datcat".equals(annotationName)) {
-		//arrayListGroup.dataCategoriesMap.put(nodePath, annotationValue);
-		// TODO: Set datacategory
+		try {
+		    URI dcUri = new URI(annotationValue);
+		    DataCategory datCat = new DataCategory(dcUri);
+		    profileElement.setDataCategory(datCat);
+		} catch (URISyntaxException usEx) {
+		    logger.warn(String.format("URISyntaxException in datcat (value: %1$s) for element %2$s", annotationValue, profileElement), usEx);
+		}
 	    }
 	}
     }

@@ -19,6 +19,7 @@ package nl.mpi.metadata.cmdi.api.type;
 import java.net.URI;
 import java.net.URL;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
+import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategory;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -60,6 +61,12 @@ public class CMDIProfileReaderTest extends CMDIAPITestCase {
 	assertEquals(0, nameType.getDisplayPriority());
 	ElementType titleType = (ElementType) generalInfoType.getContainableTypeByName("Title");
 	assertEquals(1, titleType.getDisplayPriority());
+
+	//Test data category
+	DataCategory dc2544 = new DataCategory(new URI("http://www.isocat.org/datcat/DC-2544"));
+	assertEquals(dc2544, nameType.getDataCategory());
+	DataCategory dc2503 = new DataCategory(new URI("http://www.isocat.org/datcat/DC-2503"));
+	assertEquals(dc2503, topicType.getDataCategory());
     }
 
     @Test
