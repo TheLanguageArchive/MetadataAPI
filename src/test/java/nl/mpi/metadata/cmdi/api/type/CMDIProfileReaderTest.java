@@ -48,6 +48,7 @@ public class CMDIProfileReaderTest extends CMDIAPITestCase {
 	ElementType topicType = (ElementType) corpusType.getType("Topic");
 	ElementType nameType = (ElementType) generalInfoType.getContainableTypeByName("Name");
 	ElementType titleType = (ElementType) generalInfoType.getContainableTypeByName("Title");
+	ElementType idType = (ElementType) generalInfoType.getContainableTypeByName("ID");
 	assertNotNull(corpusType);
 	assertNotNull(topicType);
 
@@ -64,6 +65,8 @@ public class CMDIProfileReaderTest extends CMDIAPITestCase {
 	//Test display priority
 	assertEquals(0, nameType.getDisplayPriority());
 	assertEquals(1, titleType.getDisplayPriority());
+	//If unspecified in XML, should default to 0
+	assertEquals(0, idType.getDisplayPriority());
 
 	//Test data category
 	assertNull(corpusType.getDataCategory());
