@@ -21,8 +21,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import javax.xml.transform.TransformerException;
 import nl.mpi.metadata.api.MetadataDocumentException;
-import nl.mpi.metadata.api.dom.MetadataDocumentReader;
 import nl.mpi.metadata.api.MetadataException;
+import nl.mpi.metadata.api.dom.MetadataDocumentReader;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
@@ -38,6 +38,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
+ * Implementation of metadata document reader for CMDI documents.
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
@@ -48,13 +49,21 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
     private final CMDIComponentReader componentReader;
 
     /**
-     * Creates a CMDI document reader that uses the specified profile container
-     * @param profileContainer profile container that gets used to retrieve CMDI profiles
+     * Creates a CMDI document reader that uses the specified profile container and a new {@link CMDIComponentReader}
+     *
+     * @param profileContainer profile container that should be used to retrieve CMDI profiles
+     * @see CMDIComponentReader
      */
     public CMDIDocumentReader(CMDIProfileContainer profileContainer) {
 	this(profileContainer, new CMDIComponentReader());
     }
 
+    /**
+     * * Creates a CMDI document reader that uses the specified profile container and component reader
+     *
+     * @param profileContainer profile container that should be used to retrieve CMDI profiles
+     * @param componentReader component reader that should be used for reading CMDI components
+     */
     public CMDIDocumentReader(CMDIProfileContainer profileContainer, CMDIComponentReader componentReader) {
 	this.profileContainer = profileContainer;
 	this.componentReader = componentReader;
@@ -62,11 +71,13 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 
     /**
      * Reads the specified document into a new {@link CMDIDocument} instance
+     *
      * @param document DOM object to read. Should have been parsed with a <em>namespace aware</em> builder!!
      * @param documentURI URI for the document. Can be null if no identifier is available (e.g. file has not been saved)
      * @return
      * @throws MetadataDocumentException if an unexpected circumstance is detected while reading the document
-     * @throws IOException if an I/O error occurs while reading the profile schema through the {@link CMDIProfileContainer} referenced in the document
+     * @throws IOException if an I/O error occurs while reading the profile schema through the {@link CMDIProfileContainer} referenced in
+     * the document
      */
     public CMDIDocument read(final Document document, final URI documentURI) throws MetadataException, DOMException, IOException {
 	final CachedXPathAPI xPathAPI = new CachedXPathAPI();
@@ -99,10 +110,11 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 
     /**
      * Determines the URI of the profile schema and loads the schema through the {@link CMDIProfileContainer} of this instance.
+     *
      * @param document DOM of document to load profile for
      * @return profile referenced by the document
      * @throws MetadataDocumentException
-     * @throws IOException 
+     * @throws IOException
      */
     private CMDIProfile getProfileForDocument(final Document document, final URI documentURI, final CachedXPathAPI xPathAPI) throws MetadataException, IOException {
 	try {
@@ -127,10 +139,11 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 
     /**
      * Locates the schemaLocation specification and extracts the location of the schema specified for the CMD namespace.
+     *
      * @param document DOM of document to find schema URI for
      * @return URI of schema, null if not present
-     * @throws TransformerException 
-     * @throws URISyntaxException 
+     * @throws TransformerException
+     * @throws URISyntaxException
      */
     private URI getProfileURI(final Document document, final CachedXPathAPI xPathAPI) throws TransformerException, URISyntaxException {
 	// Find the <CMD xsi:schemaLocation="..."> attribute
