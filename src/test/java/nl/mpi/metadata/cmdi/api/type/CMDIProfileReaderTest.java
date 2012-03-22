@@ -66,8 +66,10 @@ public class CMDIProfileReaderTest extends CMDIAPITestCase {
 	assertEquals(1, titleType.getDisplayPriority());
 
 	//Test data category
+	assertNull(corpusType.getDataCategory());
 	DataCategory dc2544 = new DataCategory(new URI("http://www.isocat.org/datcat/DC-2544"));
 	assertEquals(dc2544, nameType.getDataCategory());
+	assertEquals(dc2544, generalInfoType.getDataCategory());
 	DataCategory dc2503 = new DataCategory(new URI("http://www.isocat.org/datcat/DC-2503"));
 	assertEquals(dc2503, topicType.getDataCategory());
 
