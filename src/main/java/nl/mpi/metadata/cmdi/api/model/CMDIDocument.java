@@ -19,16 +19,18 @@ package nl.mpi.metadata.cmdi.api.model;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.api.model.MetadataDocument;
-import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 
 /**
  * A CMDI metadata document. Instance of a CMDIProfile
+ *
  * @see CMDIProfile
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
@@ -37,11 +39,13 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
     private CMDIProfile profile;
     private URI fileLocation;
     private final Map<String, HeaderInfo> headerInfo;
+    private final Map<String, ResourceProxy> resourceProxies;
     private final Collection<MetadataDocumentListener> listeners;
 
     /**
      * Construct an unsaved profile instance (no location associated)
-     * @param profile 
+     *
+     * @param profile
      */
     public CMDIDocument(CMDIProfile profile) {
 	this(profile, null);
@@ -49,8 +53,9 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
 
     /**
      * Create a profile instance that has a location associated
+     *
      * @param profile
-     * @param fileLocation 
+     * @param fileLocation
      */
     public CMDIDocument(CMDIProfile profile, URI fileLocation) {
 	super(profile);
@@ -59,6 +64,7 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
 	this.fileLocation = fileLocation;
 
 	this.headerInfo = new LinkedHashMap<String, HeaderInfo>(); // LinkedHashMap so that order is retained
+	this.resourceProxies = new HashMap<String, ResourceProxy>();
 	this.listeners = new HashSet<MetadataDocumentListener>();
     }
 
@@ -84,11 +90,44 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
     }
 
     /**
-     * 
+     *
      * @return An <em>unmodifiable</em> copy of the collection of header info entries
      */
     public synchronized Collection<HeaderInfo> getHeaderInformation() {
 	return Collections.unmodifiableCollection(headerInfo.values());
+    }
+
+    /**
+     * Gets the resource proxy with the specified id
+     * @param id ID of the resource proxy to retrieve
+     * @return Resource proxy with the specified id or null if not found
+     */
+    public synchronized ResourceProxy getDocumentResourceProxy(String id) {
+	return resourceProxies.get(id);
+    }
+
+    /**
+     * Adds a resource proxy to the resource proxy map for this document
+     * @param resourceProxy resource proxy to add
+     */
+    public synchronized void addDocumentResourceProxy(ResourceProxy resourceProxy) {
+	resourceProxies.put(resourceProxy.getId(), resourceProxy);
+    }
+
+    /**
+     * Removes a resource proxy from the resource proxy map for this document. Does not check if it is linked from any of the metadata elements.
+     * @param id ID of resource proxy to remove
+     */
+    public synchronized void removeDocumentResourceProxy(String id) {
+	resourceProxies.remove(id);
+    }
+
+    /**
+     * 
+     * @return an immutable list of all resource proxies present in the resource proxy map in this document
+     */
+    public synchronized Collection<ResourceProxy> getDocumentResourceProxies() {
+	return Collections.unmodifiableCollection(resourceProxies.values());
     }
 
     public synchronized void addMetadataDocumentListener(MetadataDocumentListener listener) {
@@ -107,7 +146,7 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
     }
 
     /**
-     * 
+     *
      * @return This document
      */
     @Override

@@ -16,6 +16,7 @@
  */
 package nl.mpi.metadata.cmdi.api.model;
 
+import java.net.URI;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import java.net.URISyntaxException;
 import java.util.Collection;
@@ -32,12 +33,12 @@ import static org.junit.Assert.*;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIDocumentTest extends CMDIAPITestCase {
-
+    
     public CMDIDocumentTest() {
     }
     private CMDIDocument document;
     private CMDIProfile profile;
-
+    
     @Before
     public void setUp() throws Exception {
 	profile = getNewTestProfileAndRead(testSchemaTextCorpus.toURI());
@@ -88,6 +89,34 @@ public class CMDIDocumentTest extends CMDIAPITestCase {
 	document.removeHeaderInformation("Key");
 	assertEquals(0, document.getHeaderInformation().size());
 	assertNull(document.getHeaderInformation("Key"));
+    }
+    
+    public void testGetDocumentResourceProxy() throws URISyntaxException {
+	assertNull(document.getDocumentResourceProxy("rpId"));
+	// add a proxy
+	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), "test/mime-type");
+	document.addDocumentResourceProxy(resourceProxy);
+	assertEquals(resourceProxy, document.getDocumentResourceProxy("rpId"));
+	// replace by proxy with same id
+	DataResourceProxy resourceProxy2 = new DataResourceProxy("rpId", new URI("http://resource2"), "test/mime-type");
+	document.addDocumentResourceProxy(resourceProxy);
+	assertEquals(resourceProxy2, document.getDocumentResourceProxy("rpId"));
+    }
+    
+    public void testAddDocumentResourceProxy() throws URISyntaxException {
+	assertEquals(0, document.getDocumentResourceProxies().size());
+	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), "test/mime-type");
+	document.addDocumentResourceProxy(resourceProxy);
+	assertEquals(1, document.getDocumentResourceProxies().size());
+	assertEquals(resourceProxy, document.getDocumentResourceProxies().iterator().next());
+    }
+    
+    public void testRemoveDocumentResourceProxy() throws URISyntaxException {
+	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), "test/mime-type");
+	document.addDocumentResourceProxy(resourceProxy);
+	assertEquals(1, document.getDocumentResourceProxies().size());
+	document.removeDocumentResourceProxy("rpId");
+	assertEquals(0, document.getDocumentResourceProxies().size());
     }
 
     /**
