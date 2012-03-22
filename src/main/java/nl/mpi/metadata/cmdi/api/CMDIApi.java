@@ -37,6 +37,7 @@ import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.type.MetadataDocumentTypeReader;
 import nl.mpi.metadata.api.validation.MetadataValidator;
+import nl.mpi.metadata.cmdi.api.dom.CMDIResourceProxyReader;
 import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
@@ -57,7 +58,7 @@ import org.xml.sax.SAXException;
 
 /**
  * CMDI implementation of the MetadataAPI
- * 
+ *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMDIMetadataElement, CMDIContainerMetadataElement, CMDIDocument> {
@@ -113,29 +114,32 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 
     /**
      * Creates an instance of CMDIApi with a {@link CMDIDocumentReader}, a {@link CMDIProfileReader} and a {@link DefaultCMDIValidator}
+     *
      * @see CMDIDocumentReader
      * @see CMDIProfileReader
      */
     public CMDIApi() {
 	this(null, null);
-	this.documentReader = new CMDIDocumentReader(profileContainer, new CMDIComponentReader(elementFactory));
+	this.documentReader = new CMDIDocumentReader(profileContainer, new CMDIComponentReader(elementFactory), new CMDIResourceProxyReader());
 	this.profileReader = new CMDIProfileReader(entityResolver, domBuilderFactory);
     }
 
     /**
-     * Creates an instance of CMDIApi with the specified MetadataDocumentReader and MetadataDocumentTypeReader and a 
+     * Creates an instance of CMDIApi with the specified MetadataDocumentReader and MetadataDocumentTypeReader and a
      * {@link DefaultCMDIValidator}
+     *
      * @param documentReader the MetadataDocumentReader to use
-     * @param profileReader 
-     * @param 
+     * @param profileReader
+     * @param
      */
     public CMDIApi(MetadataDocumentReader<CMDIDocument> documentReader, MetadataDocumentTypeReader<CMDIProfile> profileReader) {
 	this(documentReader, profileReader, new DefaultCMDIValidator());
     }
 
     /**
-     * Creates an instance of CMDIApi with the specified MetadataDocumentReader, MetadataDocumentTypeReader and MetadataValidator 
+     * Creates an instance of CMDIApi with the specified MetadataDocumentReader, MetadataDocumentTypeReader and MetadataValidator
      * for CMDIDocuments
+     *
      * @param documentReader the MetadataDocumentReader to use
      * @param cmdiValidator the MetadataValidator to use
      */
@@ -156,8 +160,9 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
     }
 
     /**
-     * Creates a new metadata element as a child of a specified parent. This method will both instantatie a new element of the 
+     * Creates a new metadata element as a child of a specified parent. This method will both instantatie a new element of the
      * specified type, and register it with its parent as a new child.
+     *
      * @param parent container to add element to
      * @param type type of element to create
      * @return newly created element; null if it was not created
@@ -180,6 +185,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 
     /**
      * Removes a specified metadata element from its parent.
+     *
      * @param element metadata element to remove from parent
      * @return whether the element was removed from its parent
      * @throws MetadataElementException if the element to be removed does not implement ContainedMetadataElement, and thus has not
@@ -240,6 +246,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
     //<editor-fold defaultstate="collapsed" desc="Getters and setters">
     /**
      * Gets the CMDI Docuent reader used
+     *
      * @return the CMDI Docuent reader used
      */
     public MetadataDocumentReader<CMDIDocument> getDocumentReader() {
@@ -248,6 +255,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 
     /**
      * Sets the CMDI Docuent reader to use
+     *
      * @param documentReader the CMDI Document reader to use
      */
     public void setDocumentReader(MetadataDocumentReader<CMDIDocument> documentReader) {
@@ -270,6 +278,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 
     /**
      * Gets the CMDI Validator being used
+     *
      * @return the CMDI Validator being used
      */
     public MetadataValidator<CMDIDocument> getCmdiValidator() {
@@ -278,6 +287,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 
     /**
      * Sets the CMDI Validator to use
+     *
      * @param cmdiValidator the CMDI Validator to use
      */
     public void setCmdiValidator(MetadataValidator<CMDIDocument> cmdiValidator) {
@@ -286,6 +296,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 
     /**
      * Gets the SAX EntityResolver being used
+     *
      * @return the SAX EntityResolver being used
      */
     protected EntityResolver getEntityResolver() {
@@ -294,6 +305,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 
     /**
      * Sets the SAX EntityResolver to use
+     *
      * @param entityResolver the SAX EntityResolver to use
      */
     public void setEntityResolver(EntityResolver entityResolver) {

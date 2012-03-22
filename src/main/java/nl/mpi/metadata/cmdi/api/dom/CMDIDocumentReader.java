@@ -47,15 +47,16 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
     private static Logger logger = LoggerFactory.getLogger(CMDIDocumentReader.class);
     private final CMDIProfileContainer profileContainer;
     private final CMDIComponentReader componentReader;
+    private final CMDIResourceProxyReader resourceReader;
 
     /**
-     * Creates a CMDI document reader that uses the specified profile container and a new {@link CMDIComponentReader}
+     * Creates a CMDI document reader that uses the specified profile container and a new {@link CMDIComponentReader} and {@link CMDIResourceProxyReader}
      *
      * @param profileContainer profile container that should be used to retrieve CMDI profiles
      * @see CMDIComponentReader
      */
     public CMDIDocumentReader(CMDIProfileContainer profileContainer) {
-	this(profileContainer, new CMDIComponentReader());
+	this(profileContainer, new CMDIComponentReader(), new CMDIResourceProxyReader());
     }
 
     /**
@@ -64,9 +65,10 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
      * @param profileContainer profile container that should be used to retrieve CMDI profiles
      * @param componentReader component reader that should be used for reading CMDI components
      */
-    public CMDIDocumentReader(CMDIProfileContainer profileContainer, CMDIComponentReader componentReader) {
+    public CMDIDocumentReader(CMDIProfileContainer profileContainer, CMDIComponentReader componentReader, CMDIResourceProxyReader resourceReader) {
 	this.profileContainer = profileContainer;
 	this.componentReader = componentReader;
+	this.resourceReader = resourceReader;
     }
 
     /**
@@ -85,6 +87,7 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	final CMDIDocument cmdiDocument = createCMDIDocument(xPathAPI, document, documentURI, profile);
 
 	readHeader(cmdiDocument, document, xPathAPI);
+	resourceReader.readResourceProxies(cmdiDocument, document, xPathAPI);
 	componentReader.readComponents(cmdiDocument, document, xPathAPI);
 
 	return cmdiDocument;

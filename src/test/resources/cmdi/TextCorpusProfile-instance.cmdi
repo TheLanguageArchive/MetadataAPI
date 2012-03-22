@@ -13,7 +13,20 @@
       <MdCollectionDisplayName>Metadata API test instances</MdCollectionDisplayName>
    </Header>
    <Resources>
-      <ResourceProxyList/>
+      <ResourceProxyList>
+         <ResourceProxy id="resource1">
+            <ResourceType mimetype="text/plain">Resource</ResourceType>
+            <ResourceRef>http://resources/1</ResourceRef>
+         </ResourceProxy>
+         <ResourceProxy id="resource2">
+            <ResourceType>Resource</ResourceType>
+            <ResourceRef>http://resources/2</ResourceRef>
+         </ResourceProxy>
+         <ResourceProxy id="metadata1">
+            <ResourceType mimetype="application/xml">Metadata</ResourceType>
+            <ResourceRef>http://metadata/1</ResourceRef>
+         </ResourceProxy>
+      </ResourceProxyList>
       <JournalFileProxyList/>
       <ResourceRelationList/>
    </Resources>

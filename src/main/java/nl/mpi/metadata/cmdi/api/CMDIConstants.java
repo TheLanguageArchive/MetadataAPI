@@ -24,6 +24,14 @@ public final class CMDIConstants {
 
     public final static String CMD_NAMESPACE = "http://www.clarin.eu/cmd/";
     public final static String XML_NAMESPACE = "http://www.w3.org/XML/1998/namespace";
+    /**
+     * Path to resource proxy nodes
+     */
+    public final static String CMD_RESOURCE_PROXIES_PATH = "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy";
+    public final static String CMD_RESOURCE_PROXY_ID_ATTRIBUTE = "id";
+    public final static String CMD_RESOURCE_PROXY_TYPE_METADATA = "Metadata";
+    public final static String CMD_RESOURCE_PROXY_TYPE_RESOURCE = "Resource";
+    public final static String CMD_RESOURCE_PROXY_TYPE_MIMETYPE_ATTRIBUTE = "mimetype";
     public final static String CMD_HEADER_MD_CREATOR = "MdCreator";
     public final static String CMD_HEADER_MD_CREATION_DATE = "MdCreationDate";
     public final static String CMD_HEADER_MD_SELF_LINK = "MdSelfLink";
