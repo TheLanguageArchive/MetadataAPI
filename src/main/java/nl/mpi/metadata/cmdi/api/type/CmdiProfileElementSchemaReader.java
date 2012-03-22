@@ -43,11 +43,12 @@ import org.w3c.dom.Node;
 /**
  * Takes an existing CMDI profile element and reads properties, attributes and child elements from the schema. Construct a new instance
  * for each profile schema to read. Not thread-safe.
- * 
+ *
  * TODO: Can be refactored in such a way that it creates elements (from SchemaProperties) rather than manipulates them. This requires
  * fewer setters on the type model objects
- * 
+ *
  * TODO: Make reading annotations optional (because it requires DOM to be loaded and does XPath processing, which slow things down)
+ *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CmdiProfileElementSchemaReader {
@@ -58,7 +59,9 @@ public class CmdiProfileElementSchemaReader {
 
     /**
      * Creates a new schema reader for the specified document
-     * @param document DOM representation of the profile schema file to read. It is needed to read annotation data from the schema (i.e. display priorities,
+     *
+     * @param document DOM representation of the profile schema file to read. It is needed to read annotation data from the schema (i.e.
+     * display priorities,
      * data categories and element documentation).
      */
     public CmdiProfileElementSchemaReader(Document document) {
@@ -119,7 +122,8 @@ public class CmdiProfileElementSchemaReader {
 
     /**
      * Recursively loads children (components, elements) for a {@link ComponentType}
-     * @throws CMDITypeException 
+     *
+     * @throws CMDITypeException
      */
     private void readChildren(ComponentType componentType) throws CMDITypeException {
 	SchemaProperty[] elements = componentType.getSchemaElement().getType().getElementProperties();
@@ -194,13 +198,9 @@ public class CmdiProfileElementSchemaReader {
      */
     private void searchForAnnotations(CMDIProfileElement profileElement) {
 	final SchemaParticle schemaParticle = profileElement.getSchemaElement().getType().getContentModel();
-	if (schemaParticle != null) {
-	    switch (schemaParticle.getParticleType()) {
-		case SchemaParticle.ELEMENT:
-		    SchemaLocalElement schemaLocalElement = (SchemaLocalElement) schemaParticle;
-		    saveAnnotationData(profileElement, schemaLocalElement);
-		    break;
-	    }
+	if (schemaParticle != null && schemaParticle.getParticleType() == SchemaParticle.ELEMENT) {
+	    SchemaLocalElement schemaLocalElement = (SchemaLocalElement) schemaParticle;
+	    saveAnnotationData(profileElement, schemaLocalElement);
 	} else {
 	    // In case of complex type, try on element specification (xs:element)
 	    if (schemaDocument != null) {
@@ -220,8 +220,8 @@ public class CmdiProfileElementSchemaReader {
 			    saveAnnotationData(profileElement, nodeName, attrNode.getNodeValue());
 			}
 		    }
-		} catch (TransformerException ex) {
-		    // Failure to get element, so nothing can be found
+		} catch (TransformerException tEx) {
+		    logger.error(String.format("TransformerException while reading annotation for profile element $1%s", profileElement), tEx);
 		}
 	    }
 	}

@@ -73,8 +73,7 @@ public class CMDIProfileReaderTest extends CMDIAPITestCase {
 
 	//Test documentation
 	assertEquals("Name of the collection", nameType.getDescription());
-	// TODO: Make it work on components
-	//assertEquals("General information about this collection", generalInfoType.getDescription());
+	assertEquals("General information about this collection", generalInfoType.getDescription());
 	assertNull(titleType.getDescription());
     }
 
