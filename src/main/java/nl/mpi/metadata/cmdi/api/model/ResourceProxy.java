@@ -17,42 +17,59 @@
 package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
-import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.model.Reference;
-import nl.mpi.metadata.api.events.MetadataElementListener;
-import nl.mpi.metadata.api.type.MetadataElementType;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class ResourceProxy implements Reference {
+public abstract class ResourceProxy implements Reference {
+
+    private final String id;
+    private final URI uri;
+    private final String mimeType;
+
+    public ResourceProxy(String id, URI uri, String mimeType) {
+	this.id = id;
+	this.uri = uri;
+	this.mimeType = mimeType;
+    }
+
+    public String getId() {
+	return id;
+    }
 
     public URI getURI() {
-	throw new UnsupportedOperationException("Not supported yet.");
+	return uri;
     }
 
     public String getMimetype() {
-	throw new UnsupportedOperationException("Not supported yet.");
+	return mimeType;
     }
 
-    public String getName() {
-	throw new UnsupportedOperationException("Not supported yet.");
+    @Override
+    public boolean equals(Object obj) {
+	if (obj == null) {
+	    return false;
+	}
+	if (getClass() != obj.getClass()) {
+	    return false;
+	}
+	final ResourceProxy other = (ResourceProxy) obj;
+	if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
+	    return false;
+	}
+	if (this.uri != other.uri && (this.uri == null || !this.uri.equals(other.uri))) {
+	    return false;
+	}
+	return true;
     }
 
-    public MetadataElementType getType() {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public MetadataDocument getMetadataDocument() {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void addMetadataElementListener(MetadataElementListener listener) {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void removeMetadataElementListener(MetadataElementListener listener) {
-	throw new UnsupportedOperationException("Not supported yet.");
+    @Override
+    public int hashCode() {
+	int hash = 7;
+	hash = 53 * hash + (this.id != null ? this.id.hashCode() : 0);
+	hash = 53 * hash + (this.uri != null ? this.uri.hashCode() : 0);
+	return hash;
     }
 }

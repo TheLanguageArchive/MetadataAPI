@@ -16,12 +16,16 @@
  */
 package nl.mpi.metadata.cmdi.api.model;
 
+import java.net.URI;
 import nl.mpi.metadata.api.model.MetadataReference;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class MetadataResourceProxy extends ResourceProxy implements MetadataReference{
-    
+public class MetadataResourceProxy extends ResourceProxy implements MetadataReference {
+
+    public MetadataResourceProxy(String id, URI uri, String mimeType) {
+	super(id, uri, mimeType);
+    }
 }

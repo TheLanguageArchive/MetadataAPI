@@ -22,7 +22,9 @@ import java.net.URI;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface Reference extends MetadataElement {
+public interface Reference {
+
     URI getURI();
+
     String getMimetype();
 }
