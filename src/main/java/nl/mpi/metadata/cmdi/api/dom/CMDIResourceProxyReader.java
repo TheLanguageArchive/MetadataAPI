@@ -83,7 +83,7 @@ public class CMDIResourceProxyReader {
      * @throws TransformerException if any of the XPath lookups fails
      * @throws MetadataException if required element or attribute is missing, or if resource type is not known
      */
-    private ResourceProxy createResourceProxy(final Node proxyNode, final CachedXPathAPI xPathAPI) throws DOMException, TransformerException, MetadataException {
+    protected ResourceProxy createResourceProxy(final Node proxyNode, final CachedXPathAPI xPathAPI) throws DOMException, TransformerException, MetadataException {
 	Node resourceTypeNode = getResourceTypeNode(proxyNode, xPathAPI);
 	String resourceType = resourceTypeNode.getTextContent();
 
