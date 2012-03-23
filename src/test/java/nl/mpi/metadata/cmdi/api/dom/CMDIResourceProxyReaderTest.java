@@ -86,6 +86,14 @@ public class CMDIResourceProxyReaderTest extends CMDIAPITestCase {
 	assertEquals("resource1", resourceProxy.getId());
 	assertEquals("text/plain", resourceProxy.getMimetype());
 	assertEquals(new URI("http://resources/1"), resourceProxy.getURI());
+
+	xml = "<ResourceProxy id=\"resource1\">"
+		+ "<ResourceType>Resource</ResourceType>"
+		+ "<ResourceRef>http://resources/1</ResourceRef>"
+		+ "</ResourceProxy>";
+	resourceProxyNode = getResourceProxyNode(xml);
+	resourceProxy = instance.createResourceProxy(resourceProxyNode, new CachedXPathAPI());
+	assertNull(resourceProxy.getMimetype());
     }
 
     @Test
