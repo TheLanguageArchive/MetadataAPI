@@ -19,6 +19,7 @@ package nl.mpi.metadata.cmdi.api.dom;
 import javax.xml.transform.TransformerException;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
+import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.CMDIMetadataElementFactory;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
 import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
@@ -42,7 +43,7 @@ import org.w3c.dom.NodeList;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIComponentReader {
-
+    
     private static Logger logger = LoggerFactory.getLogger(CMDIComponentReader.class);
     private CMDIMetadataElementFactory elementFactory;
 
@@ -55,29 +56,30 @@ public class CMDIComponentReader {
 
     /**
      * Will create a new ComponentReader with the specified CMDIMetadataElementFactory
+     *
      * @param elementFactory element factory to use for instantiating profile elements
      */
     public CMDIComponentReader(CMDIMetadataElementFactory elementFactory) {
 	this.elementFactory = elementFactory;
     }
-
+    
     public void readComponents(final CMDIDocument cmdiDocument, final Document domDocument, final CachedXPathAPI xPathAPI) throws DOMException, MetadataException {
 	final Node rootComponentNode = getRootComponentNode(cmdiDocument, domDocument, xPathAPI);
 	final CMDIProfile profile = cmdiDocument.getType();
 	readElement(rootComponentNode, cmdiDocument, profile);
     }
-
+    
     public static Node getRootComponentNode(final CMDIDocument cmdiDocument, final Document domDocument, final CachedXPathAPI xPathAPI) throws MetadataException {
 	final String rootComponentNodePath = cmdiDocument.getType().getPathString();
 	try {
 	    final Node rootComponentNode = xPathAPI.selectSingleNode(domDocument, rootComponentNodePath);
-
+	    
 	    if (rootComponentNode == null) {
 		throw new MetadataException(String.format("Root component node not found at specified path: %1$s", rootComponentNodePath));
 	    }
-
+	    
 	    logger.debug("Found documentNode at {}", rootComponentNodePath);
-
+	    
 	    return rootComponentNode;
 	} catch (TransformerException tEx) {
 	    throw new MetadataException(
@@ -85,7 +87,7 @@ public class CMDIComponentReader {
 		    tEx);
 	}
     }
-
+    
     private void readElement(final Node domNode, final CMDIMetadataElement element, final CMDIProfileElement type) throws MetadataException {
 	if (element instanceof CMDIContainerMetadataElement) {
 	    if (type instanceof ComponentType) {
@@ -97,7 +99,7 @@ public class CMDIComponentReader {
 	}
 	readAttributes(domNode, element, type);
     }
-
+    
     private void readChildElements(final Node parentNode, final CMDIContainerMetadataElement parentElement, final ComponentType parentType) throws MetadataException {
 	NodeList childNodes = parentNode.getChildNodes();
 	for (int i = 0; i < childNodes.getLength(); i++) {
@@ -111,13 +113,13 @@ public class CMDIComponentReader {
 		CMDIMetadataElement childElement = createElementInstance(parentElement, childNode, childType);
 		parentElement.addChildElement(childElement);
 		readElement(childNode, childElement, childType);
-
+		
 	    } else {
 		logger.debug("Skipping non-element node {}", childNode);
 	    }
 	}
     }
-
+    
     private CMDIMetadataElement createElementInstance(final CMDIContainerMetadataElement parentElement, final Node instanceNode, final CMDIProfileElement type) throws AssertionError {
 	CMDIMetadataElement elementInstance = elementFactory.createNewMetadataElement(parentElement, type);
 	if (elementInstance instanceof Element) {
@@ -125,21 +127,25 @@ public class CMDIComponentReader {
 	}
 	return elementInstance;
     }
-
+    
     private void readAttributes(Node instanceNode, CMDIMetadataElement metadataElement, CMDIProfileElement metadataType) {
 	final NamedNodeMap attributesMap = instanceNode.getAttributes();
 	if (attributesMap.getLength() > 0) {
 	    for (MetadataElementAttributeType attributeType : metadataType.getAttributes()) {
 		final Node attributeNode = getAttributeNodeByType(attributesMap, attributeType);
 		if (attributeNode != null) {
-		    Attribute<String> attribute = new Attribute<String>(attributeType);
-		    attribute.setValue(attributeNode.getNodeValue());
-		    metadataElement.addAttribute(attribute);
+		    if (CMDIConstants.CMD_RESOURCE_PROXY_REFERENCE_ATTRIBUTE.equals(attributeNode.getLocalName())) {
+			metadataElement.addDocumentResourceProxyReference(attributeNode.getNodeValue());
+		    } else {
+			Attribute<String> attribute = new Attribute<String>(attributeType);
+			attribute.setValue(attributeNode.getNodeValue());
+			metadataElement.addAttribute(attribute);
+		    }
 		}
 	    }
 	}
     }
-
+    
     private Node getAttributeNodeByType(final NamedNodeMap attributesMap, final MetadataElementAttributeType attributeType) throws DOMException {
 	return attributesMap.getNamedItemNS(attributeType.getNamespaceURI(), attributeType.getName());
     }

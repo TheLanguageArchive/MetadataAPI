@@ -17,16 +17,20 @@
 package nl.mpi.metadata.cmdi.api.dom;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import javax.xml.parsers.ParserConfigurationException;
-import nl.mpi.metadata.cmdi.api.model.Attribute;
-import java.net.URISyntaxException;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
-import nl.mpi.metadata.cmdi.api.model.Element;
-import nl.mpi.metadata.cmdi.api.model.Component;
+import nl.mpi.metadata.cmdi.api.model.Attribute;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
+import nl.mpi.metadata.cmdi.api.model.Component;
+import nl.mpi.metadata.cmdi.api.model.DataResourceProxy;
+import nl.mpi.metadata.cmdi.api.model.Element;
+import nl.mpi.metadata.cmdi.api.model.MetadataResourceProxy;
+import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
 import org.apache.xpath.XPathAPI;
 import org.junit.After;
@@ -34,13 +38,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
 import static nl.mpi.metadata.cmdi.api.CMDIConstants.*;
 import static org.junit.Assert.*;
-import org.xml.sax.SAXException;
 
 /**
  * At the moment tests both {@link CMDIDocumentReader} and {@link CMDIComponentReader}
- * 
+ *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIDocumentReaderTest extends CMDIAPITestCase {
@@ -80,22 +85,22 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 
     /**
      * Test of read method, of class CMDIDocumentReader.
-     * 
+     *
      * Component structure of tested document:
-     * 
+     *
      * <TextCorpusProfile>
-     *  <Collection>
-     *	<GeneralInfo>
-     *	    <Name>TextCorpus test</Name>
-     *	</GeneralInfo>
-     *	<OriginLocation>
-     *	    <Location><Country><Code>NL</Code>..</Location>
-     *	    <Location><Country><Code>BE</Code>..</Location>
-     *	</OriginLocation>
-     *	...
-     *  </Collection>
-     *  <Corpus>...</Corpus>
-     *  <TextCorpus>...</TextCorpus>
+     * <Collection>
+     * <GeneralInfo>
+     * <Name>TextCorpus test</Name>
+     * </GeneralInfo>
+     * <OriginLocation>
+     * <Location><Country><Code>NL</Code>..</Location>
+     * <Location><Country><Code>BE</Code>..</Location>
+     * </OriginLocation>
+     * ...
+     * </Collection>
+     * <Corpus>...</Corpus>
+     * <TextCorpus>...</TextCorpus>
      * </TextCorpusProfile>
      */
     @Test
@@ -126,6 +131,23 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 	Element location2code = (Element) originLocation.getChildElement("Location[2]/Country/Code");
 	assertEquals("BE", location2code.getValue());
 
+	// Check resource proxies. Read non-metadata resource proxy
+	Collection<ResourceProxy> references = generalInfo.getReferences();
+	assertNotNull(references);
+	assertEquals(1, references.size());
+	ResourceProxy reference = references.iterator().next();
+	assertEquals("resource1", reference.getId());
+	assertEquals(new URI("http://resources/1"), reference.getURI());
+	assertTrue(reference instanceof DataResourceProxy);
+
+	// Read metadata resource proxy
+	references = originLocation.getReferences();
+	assertNotNull(references);
+	assertEquals(1, references.size());
+	reference = references.iterator().next();
+	assertEquals("metadata1", reference.getId());
+	assertEquals(new URI("http://metadata/1"), reference.getURI());
+	assertTrue(reference instanceof MetadataResourceProxy);
     }
 
     /**

@@ -32,6 +32,7 @@ public final class CMDIConstants {
     public final static String CMD_RESOURCE_PROXY_TYPE_METADATA = "Metadata";
     public final static String CMD_RESOURCE_PROXY_TYPE_RESOURCE = "Resource";
     public final static String CMD_RESOURCE_PROXY_TYPE_MIMETYPE_ATTRIBUTE = "mimetype";
+    public final static String CMD_RESOURCE_PROXY_REFERENCE_ATTRIBUTE = "ref";
     public final static String CMD_HEADER_MD_CREATOR = "MdCreator";
     public final static String CMD_HEADER_MD_CREATION_DATE = "MdCreationDate";
     public final static String CMD_HEADER_MD_SELF_LINK = "MdSelfLink";
