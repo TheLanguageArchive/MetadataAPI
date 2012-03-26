@@ -25,7 +25,7 @@ import java.util.Collection;
  */
 public interface ReferencingMetadataElement extends MetadataElement {
 
-    Collection<Reference> getReferences();
+    Collection<? extends Reference> getReferences();
 
     ResourceReference createResourceReference(URI uri, String mimetype);
 

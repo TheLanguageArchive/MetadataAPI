@@ -143,7 +143,7 @@ public abstract class CMDIAPITestCase {
     }
 
     /**
-     * Entity resolver that 
+     * Entity resolver that
      */
     protected static class TestEntityResolver extends CMDIEntityResolver {
 

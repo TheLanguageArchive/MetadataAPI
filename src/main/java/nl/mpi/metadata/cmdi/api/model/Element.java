@@ -16,10 +16,7 @@
  */
 package nl.mpi.metadata.cmdi.api.model;
 
-import java.net.URI;
-import java.util.Collection;
 import nl.mpi.metadata.api.model.MetadataField;
-import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
 
@@ -71,18 +68,6 @@ public class Element<T> extends CMDIMetadataElement implements MetadataField<T, 
     }
 
     public void removeMetadataElementListener(MetadataElementListener listener) {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Collection<Reference> getReferences() {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public DataResourceProxy createResourceReference(URI uri, String mimetype) {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public MetadataResourceProxy createMetadataReference(URI uri, String mimetype) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 

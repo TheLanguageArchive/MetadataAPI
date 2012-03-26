@@ -16,9 +16,7 @@
  */
 package nl.mpi.metadata.cmdi.api.model;
 
-import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -28,9 +26,6 @@ import java.util.regex.Pattern;
 import nl.mpi.metadata.api.MetadataElementException;
 import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.api.model.MetadataContainer;
-import nl.mpi.metadata.api.model.MetadataReference;
-import nl.mpi.metadata.api.model.Reference;
-import nl.mpi.metadata.api.model.ResourceReference;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 
@@ -265,18 +260,6 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
     }
 
     public void removeMetadataElementListener(MetadataElementListener listener) {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Collection<Reference> getReferences() {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public ResourceReference createResourceReference(URI uri, String mimetype) {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public MetadataReference createMetadataReference(URI uri, String mimetype) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 

@@ -16,25 +16,26 @@
  */
 package nl.mpi.metadata.cmdi.api.model;
 
-import org.junit.Ignore;
-import nl.mpi.metadata.cmdi.api.type.ComponentType;
-import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import java.net.URI;
 import java.util.Collection;
 import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
+import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
+import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
 import org.junit.After;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class ElementTest extends CMDIAPITestCase {
+public class ElementTest extends CMDIMetadataElementTest {
 
     private static ComponentType parentType;
     private static ElementType type;
@@ -61,6 +62,16 @@ public class ElementTest extends CMDIAPITestCase {
 	document = null;
 	parent = null;
 	instance = null;
+    }
+
+    @Override
+    CMDIMetadataElement getInstance() {
+	return instance;
+    }
+
+    @Override
+    CMDIDocument getDocument() {
+	return document;
     }
 
     /**

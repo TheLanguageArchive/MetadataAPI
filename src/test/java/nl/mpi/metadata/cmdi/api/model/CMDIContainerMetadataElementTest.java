@@ -18,31 +18,33 @@ package nl.mpi.metadata.cmdi.api.model;
 
 import java.util.List;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
-import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIContainerMetadataElementTest extends CMDIAPITestCase {
+public class CMDIContainerMetadataElementTest extends CMDIMetadataElementTest {
 
     ComponentType collectionType;
     ComponentType originLocationType;
     ComponentType generalInfoType;
     CMDIContainerMetadataElement collection;
     CMDIContainerMetadataElement originLocation;
+    CMDIDocument document;
 
     @Before
     public void setUp() throws Exception {
 	collectionType = (ComponentType) getNewTestProfileAndRead().getContainableTypeByName("Collection");
 	originLocationType = (ComponentType) collectionType.getContainableTypeByName("OriginLocation");
 	generalInfoType = (ComponentType) collectionType.getContainableTypeByName("GeneralInfo");
-	collection = new CMDIContainerMetadataElementImpl(collectionType);
-	originLocation = new CMDIContainerMetadataElementImpl(originLocationType);
+	document = new CMDIDocument(null);
+	collection = new CMDIContainerMetadataElementImpl(collectionType, document);
+	originLocation = new CMDIContainerMetadataElementImpl(originLocationType, document);
     }
 
     @After
@@ -65,7 +67,7 @@ public class CMDIContainerMetadataElementTest extends CMDIAPITestCase {
 	assertEquals(1, collection.getChildrenCount(originLocationType));
 
 	// Add an aditional child
-	final CMDIContainerMetadataElementImpl originLocation2 = new CMDIContainerMetadataElementImpl(originLocationType);
+	final CMDIContainerMetadataElementImpl originLocation2 = new CMDIContainerMetadataElementImpl(originLocationType, document);
 	assertTrue(collection.addChildElement(originLocation2));
 	List<CMDIMetadataElement> children = collection.getChildren();
 	assertEquals(2, children.size());
@@ -74,7 +76,7 @@ public class CMDIContainerMetadataElementTest extends CMDIAPITestCase {
 	assertTrue(children.indexOf(originLocation) < children.indexOf(originLocation2));
 
 	// Add GeneralInfo, which should appear before OriginLocation
-	final CMDIContainerMetadataElementImpl generalInfo = new CMDIContainerMetadataElementImpl(generalInfoType);
+	final CMDIContainerMetadataElementImpl generalInfo = new CMDIContainerMetadataElementImpl(generalInfoType, document);
 	assertTrue(collection.addChildElement(generalInfo));
 	children = collection.getChildren();
 	assertEquals(3, children.size());
@@ -87,18 +89,18 @@ public class CMDIContainerMetadataElementTest extends CMDIAPITestCase {
 	assertEquals(0, collection.getChildren().size());
 	// Add two children
 	assertTrue(collection.addChildElement(originLocation));
-	assertTrue(collection.addChildElement(new CMDIContainerMetadataElementImpl(originLocationType)));
+	assertTrue(collection.addChildElement(new CMDIContainerMetadataElementImpl(originLocationType, document)));
 	assertEquals(2, collection.getChildren().size());
 	// Remove first child
 	assertTrue(collection.removeChildElement(originLocation));
 	assertEquals(1, collection.getChildren().size());
 	// Remove non-child (should not work)
-	assertFalse(collection.removeChildElement(new CMDIContainerMetadataElementImpl(originLocationType)));
+	assertFalse(collection.removeChildElement(new CMDIContainerMetadataElementImpl(originLocationType, document)));
     }
 
     @Test
     public void testRemoveChildElementGetByPath() throws Exception {
-	CMDIContainerMetadataElementImpl originLocation2 = new CMDIContainerMetadataElementImpl(originLocationType);
+	CMDIContainerMetadataElementImpl originLocation2 = new CMDIContainerMetadataElementImpl(originLocationType, document);
 	collection.addChildElement(originLocation);
 	collection.addChildElement(originLocation2);
 	// Get both by path
@@ -124,8 +126,8 @@ public class CMDIContainerMetadataElementTest extends CMDIAPITestCase {
     @Test
     public void testGetChildElement() throws Exception {
 	ComponentType locationType = (ComponentType) originLocationType.getContainableTypeByName("Location");
-	CMDIContainerMetadataElement location1 = new CMDIContainerMetadataElementImpl(locationType);
-	CMDIContainerMetadataElement location2 = new CMDIContainerMetadataElementImpl(locationType);
+	CMDIContainerMetadataElement location1 = new CMDIContainerMetadataElementImpl(locationType, document);
+	CMDIContainerMetadataElement location2 = new CMDIContainerMetadataElementImpl(locationType, document);
 
 	collection.addChildElement(originLocation);
 
@@ -162,15 +164,28 @@ public class CMDIContainerMetadataElementTest extends CMDIAPITestCase {
 	collection.getChildElement(originLocationType, 1);
     }
 
+    @Override
+    CMDIMetadataElement getInstance() {
+	return collection;
+    }
+
+    @Override
+    CMDIDocument getDocument() {
+	return document;
+    }
+
     private class CMDIContainerMetadataElementImpl extends CMDIContainerMetadataElement {
 
-	public CMDIContainerMetadataElementImpl(ComponentType type) {
+	private final CMDIDocument document;
+	
+	public CMDIContainerMetadataElementImpl(ComponentType type, CMDIDocument document) {
 	    super(type);
+	    this.document = document;
 	}
 
 	@Override
 	public CMDIDocument getMetadataDocument() {
-	    throw new UnsupportedOperationException("Not supported yet.");
+	    return document;
 	}
     }
 }
