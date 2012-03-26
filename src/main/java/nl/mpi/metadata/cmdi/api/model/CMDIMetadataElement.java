@@ -56,17 +56,19 @@ public abstract class CMDIMetadataElement implements ReferencingMetadataElement,
     }
 
     /**
+     * Adds a reference to a resource proxy in {@link #getMetadataDocument() this document} to this element
      *
      * @param id ID of resource proxy to add as reference
      * @return the resource proxy that has been added as a reference. Null if not found in document.
      */
     public ResourceProxy addDocumentResourceProxyReference(String id) {
 	ResourceProxy resourceProxy = getMetadataDocument().getDocumentResourceProxy(id);
-	if (resourceProxy != null && resourceProxies.add(resourceProxy)) {
-	    return resourceProxy;
-	} else {
-	    return null;
+	if (resourceProxy != null) {
+	    if (resourceProxies.add(resourceProxy)) {
+		return resourceProxy;
+	    }
 	}
+	return null;
     }
 
     /**
@@ -76,23 +78,50 @@ public abstract class CMDIMetadataElement implements ReferencingMetadataElement,
      */
     public ResourceProxy removeDocumentResourceProxyReference(String id) {
 	ResourceProxy resourceProxy = getMetadataDocument().getDocumentResourceProxy(id);
-	if (resourceProxies.remove(resourceProxy)) {
-	    return resourceProxy;
-	} else {
-	    return null;
+	if (resourceProxy != null) {
+	    if (resourceProxies.remove(resourceProxy)) {
+		return resourceProxy;
+	    }
 	}
+	return null;
     }
 
+    /**
+     *
+     * @return an <em>unmodifiable</em> copy of the collection of resource proxies referenced by this element
+     */
     public Collection<ResourceProxy> getReferences() {
 	return Collections.unmodifiableCollection(resourceProxies);
     }
 
+    /**
+     * Creates a <em>non-metadata</em> resource proxy for the specified uri with the specified mimetype, and adds a reference to that proxy
+     * in this metadata element. This (at this moment) will not check whether a resource proxy with the same URI already exist, so callers
+     * should make sure to check first, or duplicates may occur.
+     *
+     * @param uri URI of the new resource proxy
+     * @param mimetype mimetype of the new resource proxy (can be null)
+     * @return the newly created resource proxy. Null if not created or added.
+     * @see #createMetadataReference(java.net.URI, java.lang.String)
+     * @see CMDIDocument#addDocumentResourceProxy(nl.mpi.metadata.cmdi.api.model.ResourceProxy)
+     */
     public DataResourceProxy createResourceReference(URI uri, String mimetype) {
 	DataResourceProxy resourceProxy = new DataResourceProxy(getNewId(), uri, mimetype);
 	getMetadataDocument().addDocumentResourceProxy(resourceProxy);
 	return (DataResourceProxy) addDocumentResourceProxyReference(resourceProxy.getId());
     }
 
+    /**
+     * Creates a <em>metadata</em> resource proxy for the specified uri with the specified mimetype, and adds a reference to that proxy
+     * in this metadata element. This (at this moment) will not check whether a resource proxy with the same URI already exist, so callers
+     * should make sure to check first, or duplicates may occur.
+     *
+     * @param uri URI of the new resource proxy
+     * @param mimetype mimetype of the new resource proxy (can be null)
+     * @return the newly created resource proxy. Null if not created or added.
+     * @see #createResourceReference(java.net.URI, java.lang.String)
+     * @see CMDIDocument#addDocumentResourceProxy(nl.mpi.metadata.cmdi.api.model.ResourceProxy)
+     */
     public MetadataResourceProxy createMetadataReference(URI uri, String mimetype) {
 	MetadataResourceProxy resourceProxy = new MetadataResourceProxy(getNewId(), uri, mimetype);
 	getMetadataDocument().addDocumentResourceProxy(resourceProxy);
