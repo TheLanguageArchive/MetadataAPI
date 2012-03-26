@@ -16,32 +16,33 @@
  */
 package nl.mpi.metadata.cmdi.api.dom;
 
-import nl.mpi.metadata.cmdi.api.CMDIConstants;
-import nl.mpi.metadata.cmdi.api.type.ElementType;
-import nl.mpi.metadata.cmdi.api.model.Element;
-import org.w3c.dom.NodeList;
-import nl.mpi.metadata.cmdi.api.type.ComponentType;
-import nl.mpi.metadata.cmdi.api.model.Component;
 import com.sun.org.apache.xpath.internal.XPathAPI;
-import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import java.net.URI;
 import java.util.Collections;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
+import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
+import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
+import nl.mpi.metadata.cmdi.api.model.Component;
+import nl.mpi.metadata.cmdi.api.model.Element;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
+import nl.mpi.metadata.cmdi.api.type.ComponentType;
+import nl.mpi.metadata.cmdi.api.type.ElementType;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.apache.xpath.CachedXPathAPI;
 import org.custommonkey.xmlunit.Diff;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
-import org.custommonkey.xmlunit.XMLUnit;
-import org.junit.BeforeClass;
 import org.xml.sax.InputSource;
-import static org.junit.Assert.*;
+
 import static nl.mpi.metadata.cmdi.api.CMDIConstants.*;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -149,6 +150,11 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	Node languageIdAttributeNode = xPathAPI.selectSingleNode(document, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Description/:Description/@LanguageID");
 	assertEquals("LanguageID", languageIdAttributeNode.getLocalName());
 	assertNull("Default namespace for CMD specified attributes", languageIdAttributeNode.getNamespaceURI());
+	// Resource proxy reference on element
+	Node generalInfoRefAttribute = xPathAPI.selectSingleNode(document, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/@ref");
+	assertNotNull(generalInfoRefAttribute);
+	assertEquals("resource1", generalInfoRefAttribute.getNodeValue());
+
     }
 
     @Test

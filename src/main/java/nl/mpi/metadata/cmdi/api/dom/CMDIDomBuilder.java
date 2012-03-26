@@ -41,6 +41,7 @@ import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.Element;
+import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
 import nl.mpi.metadata.cmdi.api.type.CMDIAttributeType;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.apache.xmlbeans.SchemaProperty;
@@ -63,9 +64,9 @@ import org.xml.sax.SAXException;
 
 /**
  * Class for building CMDI profile instances on basis of profile schema's.
- * 
+ *
  * Some code has been taken from the nl.mpi.arbil.data.ArbilComponentBuilder class of the Arbil metadata editor
- * 
+ *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  * @author Peter.Withers@mpi.nl
  * @see <a href="http://tla.mpi.nl/tools/tla-tools/arbil">Arbil Metadata editor</a>
@@ -78,7 +79,8 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 
     /**
      * Creates CMDIDomBuilder with no EntityResolver specified
-     * @see #CMDIDomBuilder(org.xml.sax.EntityResolver) 
+     *
+     * @see #CMDIDomBuilder(org.xml.sax.EntityResolver)
      */
     public CMDIDomBuilder(DOMBuilderFactory domBuilderFactory) {
 	this(null, domBuilderFactory);
@@ -86,8 +88,9 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 
     /**
      * Creates CMDIDomBuilder with a specified EntityResolver
-     * @param entityResolver 
-     * @see #getEntityResolver() 
+     *
+     * @param entityResolver
+     * @see #getEntityResolver()
      */
     public CMDIDomBuilder(EntityResolver entityResolver, DOMBuilderFactory domBuilderFactory) {
 	this.entityResolver = entityResolver;
@@ -108,9 +111,10 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
      * Will create a base DOM document for the specified metadata document. If the document specifies a file location, this is loaded
      * as a DOM object; if not, a new DOM will be constructed by calling {@link #createDomFromSchema(java.net.URI, boolean)} with
      * {@code metadataDocument.getType().getSchemaLocation()}.
+     *
      * @param metadataDocument metadata document to crease base DOM for
-     * @return 
-     * @throws MetadataDocumentException 
+     * @return
+     * @throws MetadataDocumentException
      */
     protected Document getBaseDocument(CMDIDocument metadataDocument) throws MetadataDocumentException {
 	if (metadataDocument.getFileLocation() != null) {
@@ -197,6 +201,18 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	    elementNode.setTextContent(((Element) metadataElement).getValue().toString());
 	}
 	// Add attributes
+	buildElementAttributes(domDocument, elementNode, metadataElement);
+	// Add proxy refs
+	buildProxyReferences(metadataElement, elementNode);
+	// Iterate over children if container
+	if (metadataElement instanceof CMDIContainerMetadataElement) {
+	    for (CMDIMetadataElement child : ((CMDIContainerMetadataElement) metadataElement).getChildren()) {
+		buildMetadataElement(domDocument, elementNode, child, schemaLocation);
+	    }
+	}
+    }
+
+    private void buildElementAttributes(Document domDocument, org.w3c.dom.Element elementNode, CMDIMetadataElement metadataElement) throws DOMException {
 	for (Attribute attribute : metadataElement.getAttributes()) {
 	    if (attribute.getType() instanceof CMDIAttributeType) {
 		Node attrNode = appendAttributeNode(domDocument, elementNode, ((CMDIAttributeType) attribute.getType()).getSchemaElement());
@@ -205,11 +221,11 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 		logger.info("Found attribute of type other than CMDIAttributeType. Skipping attribute {}", attribute);
 	    }
 	}
-	// Iterate over children if container
-	if (metadataElement instanceof CMDIContainerMetadataElement) {
-	    for (CMDIMetadataElement child : ((CMDIContainerMetadataElement) metadataElement).getChildren()) {
-		buildMetadataElement(domDocument, elementNode, child, schemaLocation);
-	    }
+    }
+
+    private void buildProxyReferences(CMDIMetadataElement metadataElement, org.w3c.dom.Element elementNode) throws DOMException {
+	for (ResourceProxy resourceProxy : metadataElement.getReferences()) {
+	    elementNode.setAttribute(CMDIConstants.CMD_RESOURCE_PROXY_REFERENCE_ATTRIBUTE, resourceProxy.getId());
 	}
     }
 
@@ -310,6 +326,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 
     /**
      * Serializes (in memory) and de-serializes XML document causing it to be re-processed
+     *
      * @param builder document builder to use
      * @param document document to reload
      * @return a reloaded copy of the provided document
@@ -348,7 +365,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 
     /**
      * @return the EntityResolver used by XmlBeans
-     * @see XmlOptions#setEntityResolver(org.xml.sax.EntityResolver) 
+     * @see XmlOptions#setEntityResolver(org.xml.sax.EntityResolver)
      */
     protected EntityResolver getEntityResolver() {
 	return entityResolver;
