@@ -224,7 +224,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	Document document;
 
 	try {
-	    document = componentBuilder.createDomFromSchema(type.getSchemaLocation(), true);
+	    document = componentBuilder.createDomFromSchema(type.getSchemaLocation(), false);
 	    // TODO: Handle errors properly
 	} catch (FileNotFoundException ex) {
 	    throw new MetadataTypeException(type, ex);
