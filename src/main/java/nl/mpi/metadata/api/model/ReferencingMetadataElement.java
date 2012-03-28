@@ -18,6 +18,7 @@ package nl.mpi.metadata.api.model;
 
 import java.net.URI;
 import java.util.Collection;
+import nl.mpi.metadata.api.MetadataException;
 
 /**
  *
@@ -27,7 +28,29 @@ public interface ReferencingMetadataElement extends MetadataElement {
 
     Collection<? extends Reference> getReferences();
 
-    ResourceReference createResourceReference(URI uri, String mimetype);
+    /**
+     * Creates a reference to a resource on this element
+     * @param uri URI of new reference
+     * @param mimetype MIME type of new reference
+     * @return reference as it has been created on this element (null if none created)
+     * @throws MetadataException in case any error occurs while create the reference
+     */
+    ResourceReference createResourceReference(URI uri, String mimetype) throws MetadataException;
 
-    MetadataReference createMetadataReference(URI uri, String mimetype);
+    /**
+     * Creates a reference to another metadata instance on this element
+     * @param uri URI of new reference
+     * @param mimetype MIME type of new reference
+     * @return reference as it has been created on this element. Null if none has been created
+     * @throws MetadataException in case any error occurs while create the reference
+     */
+    MetadataReference createMetadataReference(URI uri, String mimetype) throws MetadataException;
+
+    /**
+     * Removes a given resource reference from this element
+     * @param reference reference to remove
+     * @return the removed reference. Null if none has been removed
+     * @throws MetadataException 
+     */
+    Reference removeReference(Reference reference) throws MetadataException;
 }

@@ -21,7 +21,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.UUID;
+import nl.mpi.metadata.api.MetadataElementException;
+import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.model.MetadataElementAttributeContainer;
+import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.api.model.ReferencingMetadataElement;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 
@@ -126,6 +129,15 @@ public abstract class CMDIMetadataElement implements ReferencingMetadataElement,
 	MetadataResourceProxy resourceProxy = new MetadataResourceProxy(getNewId(), uri, mimetype);
 	getMetadataDocument().addDocumentResourceProxy(resourceProxy);
 	return (MetadataResourceProxy) addDocumentResourceProxyReference(resourceProxy.getId());
+    }
+
+    public Reference removeReference(Reference reference) throws MetadataException {
+	if (reference instanceof ResourceProxy) {
+	    final String id = ((ResourceProxy) reference).getId();
+	    return removeDocumentResourceProxyReference(id);
+	} else {
+	    throw new MetadataElementException(this, String.format("Cannot handle reference of type %1$s", reference.getClass()));
+	}
     }
 
     private String getNewId() {

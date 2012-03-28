@@ -19,6 +19,7 @@ package nl.mpi.metadata.cmdi.api.model;
 import java.net.URI;
 import java.util.Collection;
 import java.util.UUID;
+import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import org.junit.Test;
 
@@ -108,6 +109,37 @@ public abstract class CMDIMetadataElementTest extends CMDIAPITestCase {
 	// Should also be on document
 	ResourceProxy documentResourceProxy = getDocument().getDocumentResourceProxy(createdReference.getId());
 	assertSame(createdReference, documentResourceProxy);
+    }
+
+    @Test
+    public void testRemoveReference() throws Exception {
+	// Create metadata reference on element
+	MetadataResourceProxy createdMetadataReference = getInstance().createMetadataReference(new URI("http://test"), "test/test");
+	assertNotNull(createdMetadataReference);
+	Collection<ResourceProxy> references = getInstance().getReferences();
+	assertEquals(1, references.size());
+
+	// Create resource reference on element
+	DataResourceProxy createdResourceReference = getInstance().createResourceReference(new URI("http://test"), "test/test");
+	assertNotNull(createdResourceReference);
+	references = getInstance().getReferences();
+	assertEquals(2, references.size());
+
+	// Remove metadata reference
+	Reference removedMetadataReference = getInstance().removeReference(createdMetadataReference);
+	assertSame(removedMetadataReference, createdMetadataReference);
+	references = getInstance().getReferences();
+	assertEquals(1, references.size());
+
+	assertNull(getInstance().removeReference(createdMetadataReference));
+
+	// Remove resource reference
+	Reference removedResourceReference = getInstance().removeReference(createdResourceReference);
+	assertSame(removedResourceReference, createdResourceReference);
+	references = getInstance().getReferences();
+	assertEquals(0, references.size());
+
+	assertNull(getInstance().removeReference(createdResourceReference));
     }
 
     abstract CMDIMetadataElement getInstance();
