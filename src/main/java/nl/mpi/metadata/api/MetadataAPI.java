@@ -18,9 +18,9 @@ package nl.mpi.metadata.api;
 
 import java.io.IOException;
 import java.net.URL;
+import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.model.MetadataElement;
-import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
 import nl.mpi.metadata.api.type.MetadataElementType;
 import org.xml.sax.ErrorHandler;
@@ -70,5 +70,5 @@ public interface MetadataAPI<DT extends MetadataDocumentType, MT extends Metadat
      * @param element element to remove
      * @return whether an element was removed from its parent
      */
-    boolean removeElement(M element) throws MetadataElementException;
+    boolean removeMetadataElement(M element) throws MetadataElementException;
 }

@@ -19,7 +19,6 @@ package nl.mpi.metadata.cmdi.api.model;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;

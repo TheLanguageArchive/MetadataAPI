@@ -92,6 +92,6 @@ public class CMDIApiTest extends CMDIAPITestCase {
     @Test(expected = MetadataElementException.class)
     public void testRemoveElement() throws Exception {
 	// Cannot remove document, has no parent
-	api.removeElement(testDocument);
+	api.removeMetadataElement(testDocument);
     }
 }

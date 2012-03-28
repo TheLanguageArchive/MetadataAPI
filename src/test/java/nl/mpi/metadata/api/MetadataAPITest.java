@@ -122,7 +122,7 @@ public abstract class MetadataAPITest {
     }
 
     /**
-     * Test of removeElement method, of class MetadataAPI.
+     * Test of removeMetadataElement method, of class MetadataAPI.
      */
     @Test
     public void testRemoveElement() throws Exception {
@@ -133,12 +133,12 @@ public abstract class MetadataAPITest {
 	assertEquals(1, parentElement.getChildren().size());
 
 	// Try to remove
-	boolean result = api.removeElement(element);
+	boolean result = api.removeMetadataElement(element);
 	assertTrue(result);
 	assertEquals(0, parentElement.getChildren().size());
 
 	// cannot remove twice
-	result = api.removeElement(element);
+	result = api.removeMetadataElement(element);
 	assertFalse(result);
     }
 

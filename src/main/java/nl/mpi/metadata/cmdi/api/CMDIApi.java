@@ -16,11 +16,6 @@
  */
 package nl.mpi.metadata.cmdi.api;
 
-import nl.mpi.metadata.cmdi.api.dom.CMDIDomBuilder;
-import nl.mpi.metadata.cmdi.api.dom.CMDIComponentReader;
-import nl.mpi.metadata.cmdi.api.dom.DOMBuilderFactory;
-import nl.mpi.metadata.cmdi.api.dom.CMDIDocumentReader;
-import nl.mpi.metadata.cmdi.api.dom.CMDIApiDOMBuilderFactory;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,16 +23,21 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import nl.mpi.metadata.api.MetadataAPI;
 import nl.mpi.metadata.api.MetadataDocumentException;
-import nl.mpi.metadata.api.dom.MetadataDocumentReader;
 import nl.mpi.metadata.api.MetadataElementException;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.MetadataTypeException;
+import nl.mpi.metadata.api.dom.MetadataDocumentReader;
 import nl.mpi.metadata.api.model.ContainedMetadataElement;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.type.MetadataDocumentTypeReader;
 import nl.mpi.metadata.api.validation.MetadataValidator;
+import nl.mpi.metadata.cmdi.api.dom.CMDIApiDOMBuilderFactory;
+import nl.mpi.metadata.cmdi.api.dom.CMDIComponentReader;
+import nl.mpi.metadata.cmdi.api.dom.CMDIDocumentReader;
+import nl.mpi.metadata.cmdi.api.dom.CMDIDomBuilder;
 import nl.mpi.metadata.cmdi.api.dom.CMDIResourceProxyReader;
+import nl.mpi.metadata.cmdi.api.dom.DOMBuilderFactory;
 import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
@@ -191,7 +191,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      * @throws MetadataElementException if the element to be removed does not implement ContainedMetadataElement, and thus has not
      * retrievable parent to remove it from
      */
-    public boolean removeElement(CMDIMetadataElement element) throws MetadataElementException {
+    public boolean removeMetadataElement(CMDIMetadataElement element) throws MetadataElementException {
 	if (element instanceof ContainedMetadataElement) {
 	    MetadataContainer<CMDIMetadataElement> parent = ((ContainedMetadataElement<CMDIMetadataElement>) element).getParent();
 	    return parent.removeChildElement(element);
