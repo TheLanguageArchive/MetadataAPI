@@ -63,8 +63,8 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
 	this.profile = profile;
 	this.fileLocation = fileLocation;
 
-	this.headerInfo = new LinkedHashMap<String, HeaderInfo>(); // LinkedHashMap so that order is retained
-	this.resourceProxies = new HashMap<String, ResourceProxy>();
+	this.headerInfo = new LinkedHashMap<String, HeaderInfo>(); // LinkedHashMap so that order is preserved
+	this.resourceProxies = new LinkedHashMap<String, ResourceProxy>(); // LinkedHashMap so that order is preserved
 	this.listeners = new HashSet<MetadataDocumentListener>();
     }
 
@@ -99,6 +99,7 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
 
     /**
      * Gets the resource proxy with the specified id
+     *
      * @param id ID of the resource proxy to retrieve
      * @return Resource proxy with the specified id or null if not found
      */
@@ -108,6 +109,7 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
 
     /**
      * Adds a resource proxy to the resource proxy map for this document
+     *
      * @param resourceProxy resource proxy to add
      */
     public synchronized void addDocumentResourceProxy(ResourceProxy resourceProxy) {
@@ -115,7 +117,9 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
     }
 
     /**
-     * Removes a resource proxy from the resource proxy map for this document. Does not check if it is linked from any of the metadata elements.
+     * Removes a resource proxy from the resource proxy map for this document. Does not check if it is linked from any of the metadata
+     * elements.
+     *
      * @param id ID of resource proxy to remove
      */
     public synchronized void removeDocumentResourceProxy(String id) {
@@ -123,7 +127,7 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
     }
 
     /**
-     * 
+     *
      * @return an immutable list of all resource proxies present in the resource proxy map in this document
      */
     public synchronized Collection<ResourceProxy> getDocumentResourceProxies() {

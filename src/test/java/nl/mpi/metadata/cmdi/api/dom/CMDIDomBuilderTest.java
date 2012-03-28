@@ -19,13 +19,16 @@ package nl.mpi.metadata.cmdi.api.dom;
 import com.sun.org.apache.xpath.internal.XPathAPI;
 import java.net.URI;
 import java.util.Collections;
+import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.Component;
+import nl.mpi.metadata.cmdi.api.model.DataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.Element;
+import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
@@ -121,6 +124,56 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	//MdProfile (removed header)
 	node = xPathAPI.selectSingleNode(document, "/:CMD/:Header/:" + CMD_HEADER_MD_PROFILE);
 	assertNull("MdProfile header removed", node);
+    }
+
+    @Test
+    public void testBuildDomForDocumentProxies() throws Exception {
+	CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER, CMDI_API_TEST_DOM_BUILDER_FACTORY);
+	CMDIDocument metadataDocument = getNewTestDocument();
+
+	// Modify resource proxies
+	metadataDocument.removeDocumentResourceProxy("resource1");
+	metadataDocument.addDocumentResourceProxy(new DataResourceProxy("resource3", new URI("http://resources/3"), "test/test-resource"));
+
+	// Build DOM
+	Document document = instance.buildDomForDocument(metadataDocument);
+	assertNotNull(document);
+
+	CachedXPathAPI xPathAPI = new CachedXPathAPI();
+	Node proxiesNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList");
+	NodeList proxyListchildNodes = proxiesNode.getChildNodes();
+	assertEquals(3, proxyListchildNodes.getLength());
+
+	assertEquals("resource2", proxyListchildNodes.item(0).getAttributes().getNamedItem("id").getNodeValue());
+
+	assertEquals("metadata1", proxyListchildNodes.item(1).getAttributes().getNamedItem("id").getNodeValue());
+	Node resourceTypeNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[2]/:ResourceType");
+	assertNotNull(resourceTypeNode);
+	assertEquals("Metadata", resourceTypeNode.getTextContent());
+	Node mimeTypeAttribute = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[2]/:ResourceType/@mimetype");
+	
+	Node resourceRefNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[2]/:ResourceRef");
+	assertNotNull(resourceRefNode);
+	assertEquals("http://metadata/1", resourceRefNode.getTextContent());
+
+	assertEquals("resource3", proxyListchildNodes.item(2).getAttributes().getNamedItem("id").getNodeValue());
+	resourceTypeNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[3]/:ResourceType");
+	assertNotNull(resourceTypeNode);
+	assertEquals("Resource", resourceTypeNode.getTextContent());
+	resourceRefNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[3]/:ResourceRef");
+	assertNotNull(resourceRefNode);
+	assertEquals("http://resources/3", resourceRefNode.getTextContent());
+
+	// Build with unknown proxy type added
+	ResourceProxy unknownTypeProxy = new ResourceProxy("unknown", new URI("http://unknown/3"), "test/unknown") {
+	};
+	metadataDocument.addDocumentResourceProxy(unknownTypeProxy);
+	try {
+	    instance.buildDomForDocument(metadataDocument);
+	    fail("Dom builder should throw exception because of unknown resource proxy type");
+	} catch (MetadataDocumentException mdEx) {
+	    // This should happen!
+	}
     }
 
     @Test

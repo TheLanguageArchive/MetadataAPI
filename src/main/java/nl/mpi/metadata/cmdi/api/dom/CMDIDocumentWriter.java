@@ -26,8 +26,8 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import nl.mpi.metadata.api.MetadataDocumentException;
-import nl.mpi.metadata.api.dom.MetadataDocumentWriter;
 import nl.mpi.metadata.api.dom.MetadataDOMBuilder;
+import nl.mpi.metadata.api.dom.MetadataDocumentWriter;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import org.w3c.dom.Document;
 
@@ -37,11 +37,11 @@ import org.w3c.dom.Document;
  */
 public class CMDIDocumentWriter implements MetadataDocumentWriter<CMDIDocument> {
 
-    private MetadataDOMBuilder<CMDIDocument> domWriter;
+    private MetadataDOMBuilder<CMDIDocument> domBuilder;
     private Properties outputProperties;
 
     public CMDIDocumentWriter(MetadataDOMBuilder<CMDIDocument> domWriter) {
-	this.domWriter = domWriter;
+	this.domBuilder = domWriter;
     }
 
     /**
@@ -52,7 +52,7 @@ public class CMDIDocumentWriter implements MetadataDocumentWriter<CMDIDocument> 
      * @throws IOException 
      */
     public void write(CMDIDocument metadataDocument, Result outputResult) throws MetadataDocumentException, TransformerException {
-	Document dom = domWriter.buildDomForDocument(metadataDocument);
+	Document dom = domBuilder.buildDomForDocument(metadataDocument);
 	Source source = new DOMSource(dom);
 
 	Transformer transformer = getNewTransformer();
