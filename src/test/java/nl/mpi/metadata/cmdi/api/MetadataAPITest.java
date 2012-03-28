@@ -22,6 +22,7 @@ import java.net.URL;
 import nl.mpi.metadata.api.MetadataAPI;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataDocument;
+import nl.mpi.metadata.api.model.ReferencingMetadataElement;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
 import nl.mpi.metadata.api.type.MetadataElementType;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
@@ -32,6 +33,7 @@ import nl.mpi.metadata.cmdi.api.type.ComponentType;
 
 /**
  * Implementation of MetadataAPI test for {@link CMDIApi}
+ *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class MetadataAPITest extends nl.mpi.metadata.api.MetadataAPITest {
@@ -47,12 +49,7 @@ public class MetadataAPITest extends nl.mpi.metadata.api.MetadataAPITest {
 	return provider;
     }
 
-    @Override
-    protected CMDIApi getAPI() {
-	return (CMDIApi) super.getAPI();
-    }
-
-    private class CMDIMetadataAPITestProvider extends CMDIAPITestCase implements MetadataAPITestProvider {
+    private class CMDIMetadataAPITestProvider extends CMDIAPITestCase implements MetadataAPITestProvider<CMDIApi> {
 
 	private final URI schemaURI;
 
@@ -61,41 +58,48 @@ public class MetadataAPITest extends nl.mpi.metadata.api.MetadataAPITest {
 	}
 
 	public MetadataAPI createAPI() throws Exception {
-	    return new CMDIApi();
+	    CMDIApi cmdiApi = new CMDIApi();
+	    cmdiApi.setEntityResolver(CMDI_API_TEST_ENTITY_RESOLVER);
+	    return cmdiApi;
 	}
 
-	public MetadataDocumentType createDocumentType() throws Exception {
+	public MetadataDocumentType createDocumentType(CMDIApi api) throws Exception {
 	    return getNewTestProfileAndRead(schemaURI);
 	}
 
-	public MetadataDocument createDocument() throws Exception {
+	public MetadataDocument createDocument(CMDIApi api) throws Exception {
 	    return getNewTestDocument(schemaURI, TEXT_CORPUS_INSTANCE_LOCATION, TEXT_CORPUS_PROFILE_ROOT_NODE_PATH);
 	}
 
-	public MetadataDocument createInvalidDocument() throws Exception {
+	public MetadataDocument createInvalidDocument(CMDIApi api) throws Exception {
 	    return getNewTestDocument(schemaURI, "/cmdi/TextCorpusProfile-instance-invalid.cmdi", TEXT_CORPUS_PROFILE_ROOT_NODE_PATH);
 	}
 
-	public MetadataContainer createEmptyParentElement(MetadataDocument document) throws Exception {
+	public MetadataContainer createEmptyParentElement(CMDIApi api, MetadataDocument document) throws Exception {
 	    CMDIDocument cmdiDocument = (CMDIDocument) document;
-	    CMDIProfile profile = getAPI().getProfileContainer().getProfile(schemaURI);
+	    CMDIProfile profile = api.getProfileContainer().getProfile(schemaURI);
 	    ComponentType collectionType = (ComponentType) profile.getContainableTypeByName("Collection");
 	    return new Component(collectionType, cmdiDocument);
 	}
 
-	public MetadataElementType createAddableType() throws Exception {
-	    CMDIProfile profile = getAPI().getProfileContainer().getProfile(schemaURI);
+	public MetadataElementType createAddableType(CMDIApi api) throws Exception {
+	    CMDIProfile profile = api.getProfileContainer().getProfile(schemaURI);
 	    ComponentType collectionType = (ComponentType) profile.getContainableTypeByName("Collection");
 	    CMDIProfileElement generalInfoType = collectionType.getContainableTypeByName("GeneralInfo");
 	    return generalInfoType;
 	}
 
-	public MetadataElementType createUnaddableType() throws Exception {
-	    CMDIProfile profile = getAPI().getProfileContainer().getProfile(schemaURI);
+	public MetadataElementType createUnaddableType(CMDIApi api) throws Exception {
+	    CMDIProfile profile = api.getProfileContainer().getProfile(schemaURI);
 	    ComponentType collectionType = (ComponentType) profile.getContainableTypeByName("Collection");
 	    ComponentType generalInfoType = (ComponentType) collectionType.getContainableTypeByName("GeneralInfo");
 	    CMDIProfileElement nameType = generalInfoType.getContainableTypeByName("Name");
 	    return nameType;
+	}
+
+	public ReferencingMetadataElement getReferencingMetadataElement(CMDIApi api, MetadataDocument document) {
+	    CMDIDocument cmdiDocument = (CMDIDocument) document;
+	    return cmdiDocument.getChildElement("Collection");
 	}
 
 	public URL getDocumentURL() throws Exception {
