@@ -107,20 +107,20 @@ public class CMDIDocumentTest extends CMDIMetadataElementTest {
 
     @Test
     public void testAddDocumentResourceProxy() throws URISyntaxException {
-	assertEquals(0, document.getDocumentResourceProxies().size());
+	assertEquals(0, document.getDocumentReferences().size());
 	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), "test/mime-type");
 	document.addDocumentResourceProxy(resourceProxy);
-	assertEquals(1, document.getDocumentResourceProxies().size());
-	assertEquals(resourceProxy, document.getDocumentResourceProxies().iterator().next());
+	assertEquals(1, document.getDocumentReferences().size());
+	assertEquals(resourceProxy, document.getDocumentReferences().iterator().next());
     }
 
     @Test
     public void testRemoveDocumentResourceProxy() throws URISyntaxException {
 	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), "test/mime-type");
 	document.addDocumentResourceProxy(resourceProxy);
-	assertEquals(1, document.getDocumentResourceProxies().size());
+	assertEquals(1, document.getDocumentReferences().size());
 	document.removeDocumentResourceProxy("rpId");
-	assertEquals(0, document.getDocumentResourceProxies().size());
+	assertEquals(0, document.getDocumentReferences().size());
     }
 
     @Test

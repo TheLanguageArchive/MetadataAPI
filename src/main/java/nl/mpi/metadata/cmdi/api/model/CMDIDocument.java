@@ -170,14 +170,6 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Refere
 
     /**
      *
-     * @return an immutable list of all resource proxies present in the resource proxy map in this document
-     */
-    protected synchronized Collection<ResourceProxy> getDocumentResourceProxies() {
-	return Collections.unmodifiableCollection(resourceProxies.values());
-    }
-
-    /**
-     *
      * @return An immutable list of resource proxy defined in this document. This includes both referenced (from elements) and unreferenced
      * resource proxies.
      */
