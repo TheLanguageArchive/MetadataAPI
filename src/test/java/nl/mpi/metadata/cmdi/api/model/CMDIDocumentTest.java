@@ -17,28 +17,29 @@
 package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
-import nl.mpi.metadata.api.model.HeaderInfo;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
+import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
-import org.junit.Test;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIDocumentTest extends CMDIAPITestCase {
-    
+public class CMDIDocumentTest extends CMDIMetadataElementTest {
+
     public CMDIDocumentTest() {
     }
     private CMDIDocument document;
     private CMDIProfile profile;
-    
+
     @Before
     public void setUp() throws Exception {
 	profile = getNewTestProfileAndRead(testSchemaTextCorpus.toURI());
@@ -90,7 +91,8 @@ public class CMDIDocumentTest extends CMDIAPITestCase {
 	assertEquals(0, document.getHeaderInformation().size());
 	assertNull(document.getHeaderInformation("Key"));
     }
-    
+
+    @Test
     public void testGetDocumentResourceProxy() throws URISyntaxException {
 	assertNull(document.getDocumentResourceProxy("rpId"));
 	// add a proxy
@@ -99,10 +101,11 @@ public class CMDIDocumentTest extends CMDIAPITestCase {
 	assertEquals(resourceProxy, document.getDocumentResourceProxy("rpId"));
 	// replace by proxy with same id
 	DataResourceProxy resourceProxy2 = new DataResourceProxy("rpId", new URI("http://resource2"), "test/mime-type");
-	document.addDocumentResourceProxy(resourceProxy);
+	document.addDocumentResourceProxy(resourceProxy2);
 	assertEquals(resourceProxy2, document.getDocumentResourceProxy("rpId"));
     }
-    
+
+    @Test
     public void testAddDocumentResourceProxy() throws URISyntaxException {
 	assertEquals(0, document.getDocumentResourceProxies().size());
 	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), "test/mime-type");
@@ -110,13 +113,38 @@ public class CMDIDocumentTest extends CMDIAPITestCase {
 	assertEquals(1, document.getDocumentResourceProxies().size());
 	assertEquals(resourceProxy, document.getDocumentResourceProxies().iterator().next());
     }
-    
+
+    @Test
     public void testRemoveDocumentResourceProxy() throws URISyntaxException {
 	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), "test/mime-type");
 	document.addDocumentResourceProxy(resourceProxy);
 	assertEquals(1, document.getDocumentResourceProxies().size());
 	document.removeDocumentResourceProxy("rpId");
 	assertEquals(0, document.getDocumentResourceProxies().size());
+    }
+
+    @Test
+    public void testCreateDocumentResourceProxy() throws URISyntaxException {
+	assertEquals(0, document.getDocumentReferences().size());
+	DataResourceProxy resourceProxy = document.createDocumentResourceReference(new URI("http://resource"), "test/mime-type");
+	assertEquals(1, document.getDocumentReferences().size());
+	assertTrue(document.getDocumentReferences().contains(resourceProxy));
+    }
+
+    @Test
+    public void testCreateDocumentMetadataResourceProxy() throws URISyntaxException {
+	assertEquals(0, document.getDocumentReferences().size());
+	MetadataResourceProxy resourceProxy = document.createDocumentMetadataReference(new URI("http://resource"), "test/mime-type");
+	assertEquals(1, document.getDocumentReferences().size());
+	assertTrue(document.getDocumentReferences().contains(resourceProxy));
+    }
+
+    @Test
+    public void testRemoveDocumentReference() throws URISyntaxException {
+	DataResourceProxy resourceProxy = document.createDocumentResourceReference(new URI("http://resource"), "test/mime-type");
+	assertTrue(document.getDocumentReferences().contains(resourceProxy));
+	document.removeDocumentResourceProxy(resourceProxy.getId());
+	assertFalse(document.getDocumentReferences().contains(resourceProxy));
     }
 
     /**
@@ -160,5 +188,15 @@ public class CMDIDocumentTest extends CMDIAPITestCase {
 	assertEquals(expResult, result);
 	// TODO review the generated test code and remove the default call to fail.
 	fail("The test case is a prototype.");
+    }
+
+    @Override
+    CMDIMetadataElement getInstance() {
+	return document;
+    }
+
+    @Override
+    CMDIDocument getDocument() {
+	return document;
     }
 }

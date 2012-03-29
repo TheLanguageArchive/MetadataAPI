@@ -72,7 +72,7 @@ public abstract class CMDIMetadataElementTest extends CMDIAPITestCase {
 	getDocument().addDocumentResourceProxy(proxy);
 
 	// References in element should be empty
-	Collection<ResourceProxy> references = getInstance().getReferences();
+	Collection<Reference> references = getInstance().getReferences();
 	assertEquals(0, references.size());
 
 	// Add to element
@@ -89,7 +89,7 @@ public abstract class CMDIMetadataElementTest extends CMDIAPITestCase {
 	DataResourceProxy createdReference = getInstance().createResourceReference(new URI("http://test"), "test/test");
 	assertNotNull(createdReference);
 	// Get reference from element
-	Collection<ResourceProxy> references = getInstance().getReferences();
+	Collection<Reference> references = getInstance().getReferences();
 	assertEquals(1, references.size());
 	assertSame(createdReference, references.iterator().next());
 	// Should also be on document
@@ -103,7 +103,7 @@ public abstract class CMDIMetadataElementTest extends CMDIAPITestCase {
 	MetadataResourceProxy createdReference = getInstance().createMetadataReference(new URI("http://test"), "test/test");
 	assertNotNull(createdReference);
 	// Get reference from element
-	Collection<ResourceProxy> references = getInstance().getReferences();
+	Collection<Reference> references = getInstance().getReferences();
 	assertEquals(1, references.size());
 	assertSame(createdReference, references.iterator().next());
 	// Should also be on document
@@ -116,7 +116,7 @@ public abstract class CMDIMetadataElementTest extends CMDIAPITestCase {
 	// Create metadata reference on element
 	MetadataResourceProxy createdMetadataReference = getInstance().createMetadataReference(new URI("http://test"), "test/test");
 	assertNotNull(createdMetadataReference);
-	Collection<ResourceProxy> references = getInstance().getReferences();
+	Collection<Reference> references = getInstance().getReferences();
 	assertEquals(1, references.size());
 
 	// Create resource reference on element

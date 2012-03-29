@@ -22,9 +22,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.api.model.HeaderInfo;
-import nl.mpi.metadata.api.model.MetadataDocument;
+import nl.mpi.metadata.api.model.Reference;
+import nl.mpi.metadata.api.model.ReferencingMetadataDocument;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 
 /**
@@ -33,7 +35,7 @@ import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
  * @see CMDIProfile
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIDocument extends CMDIContainerMetadataElement implements MetadataDocument<CMDIMetadataElement> {
+public class CMDIDocument extends CMDIContainerMetadataElement implements ReferencingMetadataDocument<CMDIMetadataElement, ResourceProxy> {
 
     private CMDIProfile profile;
     private URI fileLocation;
@@ -107,12 +109,42 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
     }
 
     /**
-     * Adds a resource proxy to the resource proxy map for this document
+     * Adds an existing resource proxy to the resource proxy map for this document
      *
      * @param resourceProxy resource proxy to add
      */
     public synchronized void addDocumentResourceProxy(ResourceProxy resourceProxy) {
 	resourceProxies.put(resourceProxy.getId(), resourceProxy);
+    }
+
+    /**
+     * Creates a new non-metadata resource proxy in this document. It will not be linked by any element including the document root node.
+     *
+     * @param uri URI for new resource proxy
+     * @param mimetype MIME type for new resource proxy
+     * @return newly created resource
+     */
+    public DataResourceProxy createDocumentResourceReference(URI uri, String mimetype) {
+	DataResourceProxy resourceProxy = new DataResourceProxy(newUUID(), uri, mimetype);
+	addDocumentResourceProxy(resourceProxy);
+	return resourceProxy;
+    }
+
+    /**
+     * Creates a new metadata resource proxy in this document. It will not be linked by any element including the document root node.
+     *
+     * @param uri URI for new resource proxy
+     * @param mimetype MIME type for new resource proxy
+     * @return newly created resource
+     */
+    public MetadataResourceProxy createDocumentMetadataReference(URI uri, String mimetype) {
+	MetadataResourceProxy resourceProxy = new MetadataResourceProxy(newUUID(), uri, mimetype);
+	addDocumentResourceProxy(resourceProxy);
+	return resourceProxy;
+    }
+
+    private static String newUUID() {
+	return UUID.randomUUID().toString();
     }
 
     /**
@@ -126,11 +158,31 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Metada
     }
 
     /**
+     * Removes the specified resource proxy from the document. Will not attempt to remove all references.
+     *
+     * @param reference resource proxy to remove
+     * @return removed resource proxy. Null if non removed.
+     */
+    public Reference removeDocumentReference(ResourceProxy reference) {
+	removeDocumentResourceProxy(reference.getId());
+	return reference;
+    }
+
+    /**
      *
      * @return an immutable list of all resource proxies present in the resource proxy map in this document
      */
-    public synchronized Collection<ResourceProxy> getDocumentResourceProxies() {
+    protected synchronized Collection<ResourceProxy> getDocumentResourceProxies() {
 	return Collections.unmodifiableCollection(resourceProxies.values());
+    }
+
+    /**
+     *
+     * @return An immutable list of resource proxy defined in this document. This includes both referenced (from elements) and unreferenced
+     * resource proxies.
+     */
+    public Collection<Reference> getDocumentReferences() {
+	return Collections.<Reference>unmodifiableCollection(resourceProxies.values());
     }
 
     public synchronized void addMetadataDocumentListener(MetadataDocumentListener listener) {

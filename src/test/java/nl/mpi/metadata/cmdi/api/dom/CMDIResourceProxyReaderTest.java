@@ -57,7 +57,7 @@ public class CMDIResourceProxyReaderTest extends CMDIAPITestCase {
 	Document domDocument = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
 	instance.readResourceProxies(cmdiDocument, domDocument, new CachedXPathAPI());
 
-	assertEquals(3, cmdiDocument.getDocumentResourceProxies().size());
+	assertEquals(3, cmdiDocument.getDocumentReferences().size());
 
 	ResourceProxy resource1 = cmdiDocument.getDocumentResourceProxy("resource1");
 	assertTrue("Resource should be data resource proxy", resource1 instanceof DataResourceProxy);

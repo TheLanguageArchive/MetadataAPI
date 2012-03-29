@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2012 Max Planck Institute for Psycholinguistics
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,33 +24,40 @@ import nl.mpi.metadata.api.MetadataException;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface ReferencingMetadataElement<R extends Reference> extends MetadataElement {
+public interface ReferencingMetadataDocument<M extends MetadataElement, R extends Reference> extends MetadataDocument<M> {
 
-    Collection<Reference> getReferences();
+    /**
+     *
+     * @return All references that exist in this document (can be null)
+     */
+    Collection<Reference> getDocumentReferences();
 
     /**
      * Creates a reference to a resource on this element
+     *
      * @param uri URI of new reference
      * @param mimetype MIME type of new reference
      * @return reference as it has been created on this element (null if none created)
      * @throws MetadataException in case any error occurs while create the reference
      */
-    ResourceReference createResourceReference(URI uri, String mimetype) throws MetadataException;
+    ResourceReference createDocumentResourceReference(URI uri, String mimetype) throws MetadataException;
 
     /**
      * Creates a reference to another metadata instance on this element
+     *
      * @param uri URI of new reference
      * @param mimetype MIME type of new reference
      * @return reference as it has been created on this element. Null if none has been created
      * @throws MetadataException in case any error occurs while create the reference
      */
-    MetadataReference createMetadataReference(URI uri, String mimetype) throws MetadataException;
+    MetadataReference createDocumentMetadataReference(URI uri, String mimetype) throws MetadataException;
 
     /**
      * Removes a given resource reference from this element
+     *
      * @param reference reference to remove
      * @return the removed reference. Null if none has been removed
-     * @throws MetadataException 
+     * @throws MetadataException
      */
-    R removeReference(R reference) throws MetadataException;
+    Reference removeDocumentReference(R reference) throws MetadataException;
 }

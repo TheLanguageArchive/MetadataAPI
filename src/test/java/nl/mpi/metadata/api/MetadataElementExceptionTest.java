@@ -27,7 +27,8 @@ import nl.mpi.metadata.api.type.MetadataDocumentType;
 import nl.mpi.metadata.api.type.MetadataElementType;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -79,6 +80,10 @@ public class MetadataElementExceptionTest {
 	    }
 
 	    public boolean removeChildElement(MetadataElement element) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	    }
+
+	    public Collection getDocumentReferences() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	    }
 	};

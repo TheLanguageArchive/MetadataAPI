@@ -23,6 +23,8 @@ import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.model.MetadataReference;
+import nl.mpi.metadata.api.model.Reference;
+import nl.mpi.metadata.api.model.ReferencingMetadataDocument;
 import nl.mpi.metadata.api.model.ReferencingMetadataElement;
 import nl.mpi.metadata.api.model.ResourceReference;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
@@ -142,25 +144,6 @@ public abstract class MetadataAPITest {
 	assertFalse(result);
     }
 
-    @Test
-    public void testAddResources() throws Exception {
-	MetadataDocument document = getProvider().createDocument(api);
-	ReferencingMetadataElement element = getProvider().getReferencingMetadataElement(api, document);
-	
-	ResourceReference resourceReference = element.createResourceReference(new URI("http://resource/1"), "test/test-resource");
-	assertNotNull(resourceReference);
-	assertTrue(element.getReferences().contains(resourceReference));
-	assertEquals(new URI("http://resource/1"), resourceReference.getURI());
-	assertEquals("test/test-resource", resourceReference.getMimetype());
-	
-	MetadataReference metadataReference = element.createMetadataReference(new URI("http://metadata/1"), "test/test-metadata");
-	assertNotNull(metadataReference);
-	assertTrue(element.getReferences().contains(metadataReference));
-	assertEquals(new URI("http://metadata/1"), metadataReference.getURI());
-	assertEquals("test/test-metadata", metadataReference.getMimetype());
-	
-    }
-
     protected abstract MetadataAPITestProvider getProvider();
 
     protected interface MetadataAPITestProvider<A extends MetadataAPI> {
@@ -174,7 +157,7 @@ public abstract class MetadataAPITest {
 	MetadataDocument createInvalidDocument(A api) throws Exception;
 
 	MetadataContainer createEmptyParentElement(A api, MetadataDocument document) throws Exception;
-	
+
 	MetadataElementType createAddableType(A api) throws Exception;
 
 	MetadataElementType createUnaddableType(A api) throws Exception;

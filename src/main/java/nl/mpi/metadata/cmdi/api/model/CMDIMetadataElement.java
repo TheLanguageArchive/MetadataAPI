@@ -20,8 +20,6 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.UUID;
-import nl.mpi.metadata.api.MetadataElementException;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.model.MetadataElementAttributeContainer;
 import nl.mpi.metadata.api.model.Reference;
@@ -32,7 +30,7 @@ import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public abstract class CMDIMetadataElement implements ReferencingMetadataElement, MetadataElementAttributeContainer<Attribute> {
+public abstract class CMDIMetadataElement implements ReferencingMetadataElement<ResourceProxy>, MetadataElementAttributeContainer<Attribute> {
 
     private Collection<Attribute> attributes;
     private Collection<ResourceProxy> resourceProxies;
@@ -93,8 +91,8 @@ public abstract class CMDIMetadataElement implements ReferencingMetadataElement,
      *
      * @return an <em>unmodifiable</em> copy of the collection of resource proxies referenced by this element
      */
-    public Collection<ResourceProxy> getReferences() {
-	return Collections.unmodifiableCollection(resourceProxies);
+    public Collection<Reference> getReferences() {
+	return Collections.<Reference>unmodifiableCollection(resourceProxies);
     }
 
     /**
@@ -109,8 +107,7 @@ public abstract class CMDIMetadataElement implements ReferencingMetadataElement,
      * @see CMDIDocument#addDocumentResourceProxy(nl.mpi.metadata.cmdi.api.model.ResourceProxy)
      */
     public DataResourceProxy createResourceReference(URI uri, String mimetype) {
-	DataResourceProxy resourceProxy = new DataResourceProxy(getNewId(), uri, mimetype);
-	getMetadataDocument().addDocumentResourceProxy(resourceProxy);
+	DataResourceProxy resourceProxy = getMetadataDocument().createDocumentResourceReference(uri, mimetype);
 	return (DataResourceProxy) addDocumentResourceProxyReference(resourceProxy.getId());
     }
 
@@ -126,22 +123,12 @@ public abstract class CMDIMetadataElement implements ReferencingMetadataElement,
      * @see CMDIDocument#addDocumentResourceProxy(nl.mpi.metadata.cmdi.api.model.ResourceProxy)
      */
     public MetadataResourceProxy createMetadataReference(URI uri, String mimetype) {
-	MetadataResourceProxy resourceProxy = new MetadataResourceProxy(getNewId(), uri, mimetype);
-	getMetadataDocument().addDocumentResourceProxy(resourceProxy);
+	MetadataResourceProxy resourceProxy = getMetadataDocument().createDocumentMetadataReference(uri, mimetype);
 	return (MetadataResourceProxy) addDocumentResourceProxyReference(resourceProxy.getId());
     }
 
-    public Reference removeReference(Reference reference) throws MetadataException {
-	if (reference instanceof ResourceProxy) {
-	    final String id = ((ResourceProxy) reference).getId();
-	    return removeDocumentResourceProxyReference(id);
-	} else {
-	    throw new MetadataElementException(this, String.format("Cannot handle reference of type %1$s", reference.getClass()));
-	}
-    }
-
-    private String getNewId() {
-	return UUID.randomUUID().toString();
+    public ResourceProxy removeReference(ResourceProxy reference) throws MetadataException {
+	return removeDocumentResourceProxyReference(reference.getId());
     }
 
     /**

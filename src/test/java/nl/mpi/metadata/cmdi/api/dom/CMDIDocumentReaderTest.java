@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 import java.util.Collection;
 import javax.xml.parsers.ParserConfigurationException;
 import nl.mpi.metadata.api.MetadataException;
+import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
@@ -132,10 +133,10 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 	assertEquals("BE", location2code.getValue());
 
 	// Check resource proxies. Read non-metadata resource proxy
-	Collection<ResourceProxy> references = generalInfo.getReferences();
+	Collection<Reference> references = generalInfo.getReferences();
 	assertNotNull(references);
 	assertEquals(1, references.size());
-	ResourceProxy reference = references.iterator().next();
+	ResourceProxy reference = (ResourceProxy) references.iterator().next();
 	assertEquals("resource1", reference.getId());
 	assertEquals(new URI("http://resources/1"), reference.getURI());
 	assertTrue(reference instanceof DataResourceProxy);
@@ -144,7 +145,7 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 	references = originLocation.getReferences();
 	assertNotNull(references);
 	assertEquals(1, references.size());
-	reference = references.iterator().next();
+	reference = (ResourceProxy) references.iterator().next();
 	assertEquals("metadata1", reference.getId());
 	assertEquals(new URI("http://metadata/1"), reference.getURI());
 	assertTrue(reference instanceof MetadataResourceProxy);

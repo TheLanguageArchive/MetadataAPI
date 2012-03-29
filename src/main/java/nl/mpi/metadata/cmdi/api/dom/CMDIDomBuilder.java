@@ -36,6 +36,7 @@ import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.dom.MetadataDOMBuilder;
 import nl.mpi.metadata.api.model.HeaderInfo;
+import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
 import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
@@ -189,12 +190,13 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
     }
 
     private void buildProxies(CMDIDocument metadataDocument, Document domDocument) throws MetadataDocumentException {
-	final Collection<ResourceProxy> documentResourceProxies = metadataDocument.getDocumentResourceProxies();
+	final Collection<Reference> documentResourceProxies = metadataDocument.getDocumentReferences();
 	if (documentResourceProxies.size() > 0) {
 	    try {
 		final Node proxiesNode = XPathAPI.selectSingleNode(domDocument, CMDIConstants.CMD_RESOURCE_PROXY_LIST_PATH);
-		for (ResourceProxy resourceProxy : documentResourceProxies) {
-		    builResourceProxy(metadataDocument, domDocument, proxiesNode, resourceProxy);
+		for (Reference resourceProxy : documentResourceProxies) {
+		    // We can safely cast resourceProxy to ResourceProxy since only ResourceProxies can be added to CMDIDocument
+		    builResourceProxy(metadataDocument, domDocument, proxiesNode, (ResourceProxy) resourceProxy);
 		}
 	    } catch (TransformerException tEx) {
 		throw new MetadataDocumentException(metadataDocument, "TransformerException while building resource proxies in DOM", tEx);
@@ -270,8 +272,9 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
     }
 
     private void buildProxyReferences(CMDIMetadataElement metadataElement, org.w3c.dom.Element elementNode) throws DOMException {
-	for (ResourceProxy resourceProxy : metadataElement.getReferences()) {
-	    elementNode.setAttribute(CMDIConstants.CMD_RESOURCE_PROXY_REFERENCE_ATTRIBUTE, resourceProxy.getId());
+	for (Reference resourceProxy : metadataElement.getReferences()) {
+	    // We can safely cast resourceProxy to ResourceProxy since only ResourceProxies can be added to CMDIDocument
+	    elementNode.setAttribute(CMDIConstants.CMD_RESOURCE_PROXY_REFERENCE_ATTRIBUTE, ((ResourceProxy) resourceProxy).getId());
 	}
     }
 
