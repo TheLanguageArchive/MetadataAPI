@@ -143,7 +143,7 @@ public class CMDIDocumentTest extends CMDIMetadataElementTest {
     public void testRemoveDocumentReference() throws URISyntaxException {
 	DataResourceProxy resourceProxy = document.createDocumentResourceReference(new URI("http://resource"), "test/mime-type");
 	assertTrue(document.getDocumentReferences().contains(resourceProxy));
-	document.removeDocumentResourceProxy(resourceProxy.getId());
+	document.removeDocumentReference(resourceProxy);
 	assertFalse(document.getDocumentReferences().contains(resourceProxy));
     }
 
