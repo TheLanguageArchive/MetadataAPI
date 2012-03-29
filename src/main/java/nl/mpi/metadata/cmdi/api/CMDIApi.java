@@ -19,9 +19,13 @@ package nl.mpi.metadata.cmdi.api;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import javax.xml.transform.Result;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.stream.StreamResult;
 import nl.mpi.metadata.api.MetadataAPI;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.MetadataTypeException;
@@ -66,6 +70,10 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      * Service that deserializes an existing CMDI document on disk into a CMDIDocument object
      */
     private final MetadataDocumentReader<CMDIDocument> documentReader;
+    /**
+     * Service that writes a CMDI document to an XML result
+     */
+    private final MetadataDocumentWriter<CMDIDocument> documentWriter;
     /**
      * Service that reads an existing CMDI profile
      */
@@ -147,6 +155,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	this.cmdiValidator = cmdiValidator;
 	this.documentReader = new CMDIDocumentReader(profileContainer, new CMDIComponentReader(elementFactory), new CMDIResourceProxyReader());
 	this.profileReader = new CMDIProfileReader(entityResolver, domBuilderFactory);
+	this.documentWriter = new CMDIDocumentWriter(componentBuilder);
     }
 
     /**
@@ -180,6 +189,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 
     public CMDIApi(MetadataDocumentReader<CMDIDocument> documentReader, MetadataDocumentWriter<CMDIDocument> documentWriter, MetadataDocumentTypeReader<CMDIProfile> profileReader, MetadataValidator<CMDIDocument> cmdiValidator, EntityResolver entityResolver, CMDIMetadataElementFactory elementFactory) {
 	this.documentReader = documentReader;
+	this.documentWriter = documentWriter;
 	this.profileReader = profileReader;
 	this.cmdiValidator = cmdiValidator;
 	this.entityResolver = entityResolver;
@@ -232,14 +242,28 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	return getProfileContainer().getProfile(uri);
     }
 
-    //<editor-fold defaultstate="collapsed" desc="Getters and setters">
+    public void writeMetadataDocument(CMDIDocument document, OutputStream outputStream) throws IOException, MetadataException, TransformerException {
+	Result result = new StreamResult(outputStream);
+	getDocumentWriter().write(document, result);
+    }
+    //<editor-fold defaultstate="collapsed" desc="Getters and setters for services">
+
     /**
-     * Gets the CMDI Docuent reader used
+     * Gets the CMDI Document reader used
      *
-     * @return the CMDI Docuent reader used
+     * @return the CMDI Document reader used
      */
     public MetadataDocumentReader<CMDIDocument> getDocumentReader() {
 	return documentReader;
+    }
+
+    /**
+     * Gets the CMDI Document writer used
+     *
+     * @return the CMDI Document writer used
+     */
+    public MetadataDocumentWriter<CMDIDocument> getDocumentWriter() {
+	return documentWriter;
     }
 
     /**

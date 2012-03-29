@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
+import javax.xml.transform.TransformerException;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.model.MetadataElement;
@@ -74,4 +75,6 @@ public interface MetadataAPI<DT extends MetadataDocumentType, MT extends Metadat
      * @return whether document was successfully validated
      */
     void validateMetadataDocument(D document, ErrorHandler errorHandler) throws SAXException;
+
+    void writeMetadataDocument(D document, OutputStream outputStream) throws IOException, TransformerException, MetadataException;
 }

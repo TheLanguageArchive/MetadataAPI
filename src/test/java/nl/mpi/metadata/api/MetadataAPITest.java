@@ -16,6 +16,7 @@
  */
 package nl.mpi.metadata.api;
 
+import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URL;
 import nl.mpi.metadata.api.model.MetadataContainer;
@@ -100,6 +101,15 @@ public abstract class MetadataAPITest {
 	MetadataDocumentType documentType = api.getMetadataDocumentType(schemaURI);
 	assertNotNull(documentType);
 	assertEquals(documentType, getProvider().createDocumentType(api));
+    }
+
+    @Test
+    public void testWriteDocument() throws Exception {
+	MetadataDocument validDocument = getProvider().createDocument(api);
+	ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	assertEquals(0, outputStream.toByteArray().length);
+	api.writeMetadataDocument(validDocument, outputStream);
+	assertTrue(outputStream.toByteArray().length > 0);
     }
 
     protected abstract MetadataAPITestProvider getProvider();

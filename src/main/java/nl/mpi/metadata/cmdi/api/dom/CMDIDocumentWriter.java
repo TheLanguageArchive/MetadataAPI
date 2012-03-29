@@ -16,7 +16,6 @@
  */
 package nl.mpi.metadata.cmdi.api.dom;
 
-import java.io.IOException;
 import java.util.Properties;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -49,7 +48,6 @@ public class CMDIDocumentWriter implements MetadataDocumentWriter<CMDIDocument> 
      * obtained by calling {@code Transformer
      * @param metadataDocument
      * @param outputStream
-     * @throws IOException 
      */
     public void write(CMDIDocument metadataDocument, Result outputResult) throws MetadataDocumentException, TransformerException {
 	Document dom = domBuilder.buildDomForDocument(metadataDocument);
