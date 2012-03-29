@@ -58,8 +58,7 @@ public class MetadataAPITest extends nl.mpi.metadata.api.MetadataAPITest {
 	}
 
 	public MetadataAPI createAPI() throws Exception {
-	    CMDIApi cmdiApi = new CMDIApi();
-	    cmdiApi.setEntityResolver(CMDI_API_TEST_ENTITY_RESOLVER);
+	    CMDIApi cmdiApi = new CMDIApi(CMDI_API_TEST_ENTITY_RESOLVER);
 	    return cmdiApi;
 	}
 

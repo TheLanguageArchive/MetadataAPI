@@ -31,7 +31,7 @@ public interface MetadataDocumentWriter<T extends MetadataDocument> {
     /**
      * 
      * @param metadataDocument document to write to result
-     * @param XML transformation result to write to
+     * @param outputResult XML transformation result to write to
      * @throws TransformerException if an exception occurs during the transformation process
      * @throws MetadataException if an exception occurs while processing the metadata document
      */
