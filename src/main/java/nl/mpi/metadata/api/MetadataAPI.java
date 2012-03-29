@@ -17,6 +17,7 @@
 package nl.mpi.metadata.api;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataDocument;
@@ -37,38 +38,39 @@ import org.xml.sax.SAXException;
 public interface MetadataAPI<DT extends MetadataDocumentType, MT extends MetadataElementType, M extends MetadataElement, C extends MetadataContainer<M>, D extends MetadataDocument<M>> {
 
     /**
+     * Loads the metadata document type (profile) at the specified location
+     *
+     * @param uri location of the document type to open
+     * @return loaded document type
+     * @throws IOException in case of an I/O exception while reading the document type from the location
+     * @throws MetadataException in case of a processing error while loading the document type
+     */
+    DT getMetadataDocumentType(URI uri) throws IOException, MetadataException;
+
+    /**
      * Loads the metadata document at the specified location
-     * @param uri location of document to open
-     * @return opened document
+     *
+     * @param url location of document to open
+     * @return loaded document
+     * @throws IOException in case of an I/O exception while reading the document from the location
+     * @throws MetadataException in case of a processing error while loading the document
      */
     D getMetadataDocument(URL url) throws IOException, MetadataException;
 
     /**
      * Creates a metadata document of the specified type
+     *
      * @param type type of document to create
      * @return newly instantiated document of specified type
+     * @throws MetadataException in case of a processing error while creating the document
      */
     D createMetadataDocument(DT type) throws MetadataException;
 
     /**
-     * Creates a metadata element of the specified type
-     * @param parentElement element to create new type in
-     * @param type type of element to create
-     * @return newly instantiated element of specified type
-     */
-    MetadataElement createMetadataElement(C parentElement, MT type) throws MetadataElementException;
-
-    /**
      * Validates a metadata document to its schema
+     *
      * @param document document to validate
      * @return whether document was successfully validated
      */
     void validateMetadataDocument(D document, ErrorHandler errorHandler) throws SAXException;
-
-    /**
-     * Removes an element from the document
-     * @param element element to remove
-     * @return whether an element was removed from its parent
-     */
-    boolean removeMetadataElement(M element) throws MetadataElementException;
 }

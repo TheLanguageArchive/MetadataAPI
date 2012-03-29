@@ -105,5 +105,9 @@ public class MetadataAPITest extends nl.mpi.metadata.api.MetadataAPITest {
 	public URL getDocumentURL() throws Exception {
 	    return getClass().getResource(TEXT_CORPUS_INSTANCE_LOCATION);
 	}
+
+	public URI getDocumentTypeURI() {
+	    return schemaURI;
+	}
     }
 }

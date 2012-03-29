@@ -18,15 +18,9 @@ package nl.mpi.metadata.api;
 
 import java.net.URI;
 import java.net.URL;
-import nl.mpi.metadata.api.model.ContainedMetadataElement;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataDocument;
-import nl.mpi.metadata.api.model.MetadataElement;
-import nl.mpi.metadata.api.model.MetadataReference;
-import nl.mpi.metadata.api.model.Reference;
-import nl.mpi.metadata.api.model.ReferencingMetadataDocument;
 import nl.mpi.metadata.api.model.ReferencingMetadataElement;
-import nl.mpi.metadata.api.model.ResourceReference;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
 import nl.mpi.metadata.api.type.MetadataElementType;
 import org.junit.After;
@@ -100,48 +94,12 @@ public abstract class MetadataAPITest {
 	assertNotSame(0, totalReports);
     }
 
-    /**
-     * Test of createMetadataElement method, of class MetadataAPI.
-     */
     @Test
-    public void testCreateMetadataElement() throws Exception {
-	MetadataContainer parentElement = getProvider().createEmptyParentElement(api, getProvider().createDocument(api));
-	MetadataElementType type = getProvider().createAddableType(api);
-	MetadataElement result = api.createMetadataElement(parentElement, type);
-	assertNotNull(result);
-	assertTrue(parentElement.getChildren().contains(result));
-	assertTrue(result instanceof ContainedMetadataElement);
-	assertEquals(parentElement, ((ContainedMetadataElement) result).getParent());
-
-	try {
-	    type = getProvider().createUnaddableType(api);
-	    api.createMetadataElement(parentElement, type);
-	    // The above line should fail because type is not addable to the parentElement
-	    fail("Expected MetadataDocumentException");
-	} catch (MetadataDocumentException ex) {
-	    // this should happen
-	}
-    }
-
-    /**
-     * Test of removeMetadataElement method, of class MetadataAPI.
-     */
-    @Test
-    public void testRemoveElement() throws Exception {
-	MetadataContainer parentElement = getProvider().createEmptyParentElement(api, getProvider().createDocument(api));
-	MetadataElementType type = getProvider().createAddableType(api);
-	// Add an element
-	MetadataElement element = api.createMetadataElement(parentElement, type);
-	assertEquals(1, parentElement.getChildren().size());
-
-	// Try to remove
-	boolean result = api.removeMetadataElement(element);
-	assertTrue(result);
-	assertEquals(0, parentElement.getChildren().size());
-
-	// cannot remove twice
-	result = api.removeMetadataElement(element);
-	assertFalse(result);
+    public void testGetDocumentType() throws Exception {
+	URI schemaURI = getProvider().getDocumentTypeURI();
+	MetadataDocumentType documentType = api.getMetadataDocumentType(schemaURI);
+	assertNotNull(documentType);
+	assertEquals(documentType, getProvider().createDocumentType(api));
     }
 
     protected abstract MetadataAPITestProvider getProvider();
@@ -165,5 +123,7 @@ public abstract class MetadataAPITest {
 	ReferencingMetadataElement getReferencingMetadataElement(A api, MetadataDocument document);
 
 	URL getDocumentURL() throws Exception;
+
+	URI getDocumentTypeURI() throws Exception;
     }
 }

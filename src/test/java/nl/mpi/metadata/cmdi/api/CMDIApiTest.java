@@ -16,19 +16,19 @@
  */
 package nl.mpi.metadata.cmdi.api;
 
-import nl.mpi.metadata.cmdi.api.dom.MockCMDIDocumentReader;
-import nl.mpi.metadata.api.MetadataElementException;
 import nl.mpi.metadata.api.SimpleErrorHandler;
+import nl.mpi.metadata.cmdi.api.dom.MockCMDIDocumentReader;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.MockCMDIProfileReader;
 import nl.mpi.metadata.cmdi.api.validation.MockCMDIValidator;
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
- *
+ * TODO: Use JMock to mock readers, profile container, 
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIApiTest extends CMDIAPITestCase {
@@ -87,11 +87,5 @@ public class CMDIApiTest extends CMDIAPITestCase {
 	assertEquals(warnings, errorHandler.getWarnings().size());
 	assertEquals(errors, errorHandler.getErrors().size());
 	assertEquals(fatalErrors, errorHandler.getFatalErrors().size());
-    }
-
-    @Test(expected = MetadataElementException.class)
-    public void testRemoveElement() throws Exception {
-	// Cannot remove document, has no parent
-	api.removeMetadataElement(testDocument);
     }
 }

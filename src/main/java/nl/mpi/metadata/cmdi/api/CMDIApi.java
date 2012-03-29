@@ -19,17 +19,13 @@ package nl.mpi.metadata.cmdi.api;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import nl.mpi.metadata.api.MetadataAPI;
-import nl.mpi.metadata.api.MetadataDocumentException;
-import nl.mpi.metadata.api.MetadataElementException;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.MetadataTypeException;
 import nl.mpi.metadata.api.dom.MetadataDocumentReader;
-import nl.mpi.metadata.api.model.ContainedMetadataElement;
-import nl.mpi.metadata.api.model.MetadataContainer;
-import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.type.MetadataDocumentTypeReader;
 import nl.mpi.metadata.api.validation.MetadataValidator;
 import nl.mpi.metadata.cmdi.api.dom.CMDIApiDOMBuilderFactory;
@@ -47,7 +43,6 @@ import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileReader;
-import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import nl.mpi.metadata.cmdi.api.validation.DefaultCMDIValidator;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.apache.xmlbeans.XmlException;
@@ -159,47 +154,6 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	this.elementFactory = elementFactory;
     }
 
-    /**
-     * Creates a new metadata element as a child of a specified parent. This method will both instantatie a new element of the
-     * specified type, and register it with its parent as a new child.
-     *
-     * @param parent container to add element to
-     * @param type type of element to create
-     * @return newly created element; null if it was not created
-     * @throws MetadataDocumentException if specified type cannot, by its type, be contained in specified parent
-     */
-    public MetadataElement createMetadataElement(CMDIContainerMetadataElement parent, CMDIProfileElement type) throws MetadataElementException {
-	final ComponentType parentType = parent.getType();
-	if (parentType.canContainType(type)) {
-	    CMDIMetadataElement newChild = elementFactory.createNewMetadataElement(parent, type);
-	    if (parent.addChildElement(newChild)) {
-		return newChild;
-	    } else {
-		return null;
-	    }
-	} else {
-	    throw new MetadataElementException(parent,
-		    String.format("Elements of type %1$s cannot be added to components of type %2$s", type, parentType));
-	}
-    }
-
-    /**
-     * Removes a specified metadata element from its parent.
-     *
-     * @param element metadata element to remove from parent
-     * @return whether the element was removed from its parent
-     * @throws MetadataElementException if the element to be removed does not implement ContainedMetadataElement, and thus has not
-     * retrievable parent to remove it from
-     */
-    public boolean removeMetadataElement(CMDIMetadataElement element) throws MetadataElementException {
-	if (element instanceof ContainedMetadataElement) {
-	    MetadataContainer<CMDIMetadataElement> parent = ((ContainedMetadataElement<CMDIMetadataElement>) element).getParent();
-	    return parent.removeChildElement(element);
-	} else {
-	    throw new MetadataElementException(element, "Attempt to remove element that is not of type ContainedMetadataElement: cannot retrieve parent.");
-	}
-    }
-
     public void validateMetadataDocument(CMDIDocument document, ErrorHandler errorHandler) throws SAXException {
 	getCmdiValidator().validateMetadataDocument(document, errorHandler);
     }
@@ -243,6 +197,10 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	}
     }
 
+    public CMDIProfile getMetadataDocumentType(URI uri) throws IOException, MetadataException {
+	return getProfileContainer().getProfile(uri);
+    }
+    
     //<editor-fold defaultstate="collapsed" desc="Getters and setters">
     /**
      * Gets the CMDI Docuent reader used
