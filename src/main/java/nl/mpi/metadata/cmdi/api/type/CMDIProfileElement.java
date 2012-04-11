@@ -18,9 +18,9 @@ package nl.mpi.metadata.cmdi.api.type;
 
 import java.util.Collection;
 import javax.xml.namespace.QName;
+import nl.mpi.metadata.api.type.ContainedMetadataElementType;
 import nl.mpi.metadata.api.type.MetadataContainerElementType;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
-import nl.mpi.metadata.api.type.MetadataElementType;
 import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategory;
 import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategoryType;
 import org.apache.xmlbeans.SchemaProperty;
@@ -30,7 +30,7 @@ import org.apache.xmlbeans.SchemaProperty;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public abstract class CMDIProfileElement implements DataCategoryType, MetadataElementType {
+public abstract class CMDIProfileElement implements DataCategoryType, ContainedMetadataElementType<CMDIProfileElement> {
 
     protected final ComponentType parent;
     protected final SchemaProperty schemaElement;
@@ -46,8 +46,9 @@ public abstract class CMDIProfileElement implements DataCategoryType, MetadataEl
     }
 
     /**
-     * Returns an XPath that, when applied to an <em>instance</em> of this profile element, returns a list 
+     * Returns an XPath that, when applied to an <em>instance</em> of this profile element, returns a list
      * of the nodes in that instance that are of this type.
+     *
      * @see org.apache.xpath.XPathAPI#selectNodeList(org.w3c.dom.Node, java.lang.String)
      * @return XPath string to find instances
      */
