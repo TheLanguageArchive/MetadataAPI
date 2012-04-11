@@ -23,4 +23,8 @@ package nl.mpi.metadata.api.type;
 public interface ContainedMetadataElementType<T extends MetadataElementType> extends MetadataElementType {
 
     MetadataContainerElementType<T> getParent();
+
+    int getMinOccurences(MetadataContainerElementType<T> container);
+
+    int getMaxOccurences(MetadataContainerElementType<T> container);
 }

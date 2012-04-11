@@ -95,7 +95,7 @@ public abstract class CMDIProfileElement implements DataCategoryType, ContainedM
     }
 
     public int getMaxOccurences(MetadataContainerElementType container) {
-	if (getSchemaElement().getMaxOccurs() != null) {
+	if (getSchemaElement().getMaxOccurs() != null && container.equals(getParent())) {
 	    return getSchemaElement().getMaxOccurs().intValue();
 	} else {
 	    return -1;
@@ -103,7 +103,11 @@ public abstract class CMDIProfileElement implements DataCategoryType, ContainedM
     }
 
     public int getMinOccurences(MetadataContainerElementType container) {
-	return getSchemaElement().getMinOccurs().intValue();
+	if (getSchemaElement().getMinOccurs() != null) {
+	    return getSchemaElement().getMinOccurs().intValue();
+	} else {
+	    return 0;
+	}
     }
 
     public String getName() {
