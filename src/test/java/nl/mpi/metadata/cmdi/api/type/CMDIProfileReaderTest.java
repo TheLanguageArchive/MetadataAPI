@@ -57,10 +57,10 @@ public class CMDIProfileReaderTest extends CMDIAPITestCase {
 	assertTrue(corpusType.canContainType(topicType));
 
 	//Test cardinality	
-	assertEquals(1, corpusType.getMinOccurences(profile));
-	assertEquals(1, corpusType.getMaxOccurences(profile));
-	assertEquals(0, topicType.getMinOccurences(corpusType));
-	assertEquals(-1, topicType.getMaxOccurences(corpusType));
+	assertEquals(1, corpusType.getMinOccurences());
+	assertEquals(1, corpusType.getMaxOccurences());
+	assertEquals(0, topicType.getMinOccurences());
+	assertEquals(-1, topicType.getMaxOccurences());
 
 	//Test display priority
 	assertEquals(0, nameType.getDisplayPriority());

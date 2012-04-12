@@ -24,7 +24,7 @@ public interface ContainedMetadataElementType<T extends MetadataElementType> ext
 
     MetadataContainerElementType<T> getParent();
 
-    int getMinOccurences(MetadataContainerElementType<T> container);
+    int getMinOccurences();
 
-    int getMaxOccurences(MetadataContainerElementType<T> container);
+    int getMaxOccurences();
 }
