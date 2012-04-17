@@ -19,41 +19,38 @@ package nl.mpi.metadata.api.model;
 import java.net.URI;
 import java.util.Collection;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
-import nl.mpi.metadata.api.type.MetadataDocumentType;
 
 /**
  * @param <M> Type of MetadataElement that can be contained in this document
  * @see MetadataElement
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface MetadataDocument<M extends  MetadataElement> extends MetadataContainer<M> {
+public interface MetadataDocument<M extends MetadataElement> extends MetadataContainer<M>, MetadataElement {
 
     /**
-     * 
-     * @return Type of the document
-     */
-    MetadataDocumentType getType();
-
-    /**
-     * 
+     *
      * @return Location of the file this document represents (can be null)
      */
     URI getFileLocation();
 
     /**
      * @return Header information in this document (can be null)
-     * 
+     *
      */
     Collection<HeaderInfo> getHeaderInformation();
 
     /**
-     * Registers a @see MetadataDocumentListener for this document
+     * Registers a
+     *
+     * @see MetadataDocumentListener for this document
      * @param listener Listener to add
      */
     void addMetadataDocumentListener(MetadataDocumentListener listener);
 
     /**
-     * Unregisters a @see MetadataDocumentListener from this document
+     * Unregisters a
+     *
+     * @see MetadataDocumentListener from this document
      * @param listener Listener to remove
      */
     void removeMetadataDocumentListener(MetadataDocumentListener listener);

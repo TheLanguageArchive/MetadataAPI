@@ -86,6 +86,22 @@ public class MetadataElementExceptionTest {
 	    public Collection getDocumentReferences() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	    }
+
+	    public String getName() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	    }
+
+	    public MetadataDocument getMetadataDocument() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	    }
+
+	    public void addMetadataElementListener(MetadataElementListener listener) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	    }
+
+	    public void removeMetadataElementListener(MetadataElementListener listener) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	    }
 	};
 
 	element = new MetadataElement() {
