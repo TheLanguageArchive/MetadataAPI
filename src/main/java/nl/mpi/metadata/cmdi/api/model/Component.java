@@ -29,7 +29,7 @@ import nl.mpi.metadata.cmdi.api.type.ComponentType;
 public class Component extends CMDIContainerMetadataElement implements ContainedMetadataElement<CMDIMetadataElement> {
 
     private final CMDIDocument metadataDocument;
-    private CMDIContainerMetadataElement parent;
+    private final CMDIContainerMetadataElement parent;
 
     public Component(ComponentType type, CMDIContainerMetadataElement parent) {
 	super(type);

@@ -37,8 +37,8 @@ import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
  */
 public class CMDIDocument extends CMDIContainerMetadataElement implements ReferencingMetadataDocument<CMDIMetadataElement, ResourceProxy> {
 
-    private CMDIProfile profile;
-    private URI fileLocation;
+    private final CMDIProfile profile;
+    private final URI fileLocation;
     private final Map<String, HeaderInfo> headerInfo;
     private final Map<String, ResourceProxy> resourceProxies;
     private final Collection<MetadataDocumentListener> listeners;

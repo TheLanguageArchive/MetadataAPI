@@ -16,20 +16,22 @@
  */
 package nl.mpi.metadata.cmdi.api.model;
 
-import nl.mpi.metadata.api.model.MetadataField;
 import nl.mpi.metadata.api.events.MetadataElementListener;
+import nl.mpi.metadata.api.model.MetadataField;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
 
 /**
- * A CMDI Element. Instance of @see nl.mpi.metadata.cmdi.api.type.ElementType
- * 
+ * A CMDI Element. Instance of
+ *
+ * @see nl.mpi.metadata.cmdi.api.type.ElementType
+ *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class Element<T> extends CMDIMetadataElement implements MetadataField<T, CMDIMetadataElement> {
 
     private final CMDIDocument metadataDocument;
-    private CMDIContainerMetadataElement parent;
-    private ElementType elementType;
+    private final CMDIContainerMetadataElement parent;
+    private final ElementType elementType;
     private T value;
 
     public Element(final ElementType elementType, final CMDIContainerMetadataElement parent, final T value) {

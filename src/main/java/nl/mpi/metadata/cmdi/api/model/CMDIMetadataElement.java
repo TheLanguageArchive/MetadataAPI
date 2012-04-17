@@ -32,8 +32,8 @@ import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
  */
 public abstract class CMDIMetadataElement implements ReferencingMetadataElement<ResourceProxy>, MetadataElementAttributeContainer<Attribute> {
 
-    private Collection<Attribute> attributes;
-    private Collection<ResourceProxy> resourceProxies;
+    private final Collection<Attribute> attributes;
+    private final Collection<ResourceProxy> resourceProxies;
 
     protected CMDIMetadataElement() {
 	this.attributes = new HashSet<Attribute>();

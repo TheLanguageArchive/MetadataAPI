@@ -31,6 +31,7 @@ import nl.mpi.metadata.cmdi.api.type.ComponentType;
 
 /**
  * Abstract base class for Component and Profile instance classes
+ *
  * @see Component
  * @see CMDIDocument
  * @author Twan Goosen <twan.goosen@mpi.nl>
@@ -39,14 +40,14 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
 
     /**
      * e.g. Actor[1]/Language -> (Actor)([(1)])(/(Language))
-     * 
+     *
      * group(1) = element name
      * group(3) = element index
      * group(5) = child path
      */
     private final static Pattern PATH_PATTERN = Pattern.compile("(^[^(/|\\[]+)(\\[(\\d+)\\])?(/(.*))?$");
-    private ComponentType type;
-    private List<CMDIMetadataElement> children;
+    private final ComponentType type;
+    private final List<CMDIMetadataElement> children;
     /**
      * Map of {type name => child elements}
      */
@@ -60,6 +61,7 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
 
     /**
      * Adds the provided element as a child
+     *
      * @param element element to add
      * @return whether the child was added. Will be false if the child is already registered as a child.
      */
@@ -74,6 +76,7 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
 
     /**
      * Inserts element to {@link CMDIContainerMetadataElement#children} in the appropriate position
+     *
      * @param element element to add
      * @throws MetadataElementException if {@code children.add(element)} returns false
      */
@@ -95,6 +98,7 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
 
     /**
      * Finds the existing child the new child should be added <em>before</em>
+     *
      * @param element element to add
      * @return first element that should supersede specified element. Null if no such element, i.e. the element should be added to the end
      */
@@ -116,6 +120,7 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
     /**
      * Inserts element to {@link CMDIContainerMetadataElement#childrenTypeMap} at the end of the list on the appropriate key. Creates a list
      * if no value is present yet. Assumes child was not already in map!
+     *
      * @param element element to add
      * @throws MetadataElementException if {@code elements.add(element)} returns false, for example if child was already in map
      */
@@ -133,8 +138,9 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
 
     /**
      * Removes a child from this element
+     *
      * @param element element to remove
-     * @return  whether the child was removed. Will be false if the child is not registered as a child.
+     * @return whether the child was removed. Will be false if the child is not registered as a child.
      */
     public synchronized boolean removeChildElement(CMDIMetadataElement element) throws MetadataElementException {
 	if (children.remove(element)) {
@@ -153,10 +159,12 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
 
     /**
      * Gets a child element by type and index
+     *
      * @param type type of the child to get
      * @param index index of the element to return
      * @return child, if found; null if no children of the specified type are contained in this element
-     * @throws IndexOutOfBoundsException if children of the specified type do exist, but the specified index is outside the bounds of the collection
+     * @throws IndexOutOfBoundsException if children of the specified type do exist, but the specified index is outside the bounds of the
+     * collection
      */
     public synchronized CMDIMetadataElement getChildElement(CMDIProfileElement type, int index) throws IndexOutOfBoundsException {
 	List<CMDIMetadataElement> elements = childrenTypeMap.get(type.getName());
@@ -169,25 +177,26 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
 
     /**
      * Gets a child element of this node, selected by the specified path.
-     * 
+     *
      * This method supports a subset of XPath. Examples:
      * <ul>
-     *	<li><em>Actor</em> 
-     *	    will get the first child of the type Actor</li>
-     *	<li><em>Actor[1]</em> 
-     *	    will also get the first child of the type Actor</li>
-     *	<li><em>Actor[2]</em>
-     *	    will get the second child of the type Actor</li>
-     *	<li><em>Actor/Language[2]</em>
-     *	    will get the second child of the type Language of the first child of the node Actor of this node</li>
+     * <li><em>Actor</em>
+     * will get the first child of the type Actor</li>
+     * <li><em>Actor[1]</em>
+     * will also get the first child of the type Actor</li>
+     * <li><em>Actor[2]</em>
+     * will get the second child of the type Actor</li>
+     * <li><em>Actor/Language[2]</em>
+     * will get the second child of the type Language of the first child of the node Actor of this node</li>
      * </ul>
-     * 
+     *
      * Among other things, the following features are <strong>not supported</strong>:
      * <ul>
-     *	<li>alternative starting nodes (e.g. <em>../Actor[3]</em>)</li>
-     *	<li>retrieving attributes (e.g. <em>Actor[2]/@name</em>)</li>
-     *	<li>conditions (e.g. <em>Actor[@name='Joe']</em>)</li>
+     * <li>alternative starting nodes (e.g. <em>../Actor[3]</em>)</li>
+     * <li>retrieving attributes (e.g. <em>Actor[2]/@name</em>)</li>
+     * <li>conditions (e.g. <em>Actor[@name='Joe']</em>)</li>
      * </ul>
+     *
      * @param path specification of child element to return
      * @return the child at the specified path, if found; otherwise null
      * @throws IllegalArgumentException if the format of the path is illegal
@@ -207,12 +216,13 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
     }
 
     /**
-     * Gets a child element 
+     * Gets a child element
+     *
      * @param elementName name of local element to find
      * @param elementIndexString if null or empty, will default to '1'
      * @param childPath path that should be propagated to child
      * @return child element if match is found. Null if not found.
-     * @throws NumberFormatException 
+     * @throws NumberFormatException
      */
     private synchronized CMDIMetadataElement getChildElement(final String elementName, final String elementIndexString, final String childPath) throws NumberFormatException {
 	final List<CMDIMetadataElement> elements = childrenTypeMap.get(elementName);
@@ -235,7 +245,7 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
     }
 
     /**
-     * 
+     *
      * @return An <em>unmodifiable</em> copy of the list of children
      */
     public synchronized List<CMDIMetadataElement> getChildren() {
@@ -244,6 +254,7 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
 
     /**
      * Finds the number children of this element that are of the specified type
+     *
      * @param childType metadata type to look for
      * @return number of childern of the specified type
      */
