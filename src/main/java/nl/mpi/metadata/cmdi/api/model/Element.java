@@ -45,6 +45,10 @@ public class Element<T> extends CMDIMetadataElement implements MetadataField<T, 
 	return elementType.getName();
     }
 
+    public String getDisplayValue() {
+	return getValue().toString();
+    }
+
     public T getValue() {
 	return value;
     }

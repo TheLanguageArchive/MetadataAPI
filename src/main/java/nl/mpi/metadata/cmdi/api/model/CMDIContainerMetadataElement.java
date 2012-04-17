@@ -279,6 +279,11 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
 	return type.getName();
     }
 
+    public String getDisplayValue() {
+	// TODO: Implement when display priority becomes available
+	throw new UnsupportedOperationException("Display value not supported for container elements");
+    }
+
     public ComponentType getType() {
 	return type;
     }

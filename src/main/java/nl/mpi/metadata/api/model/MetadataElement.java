@@ -30,6 +30,12 @@ public interface MetadataElement {
      * @return Name of this element in the document
      */
     String getName();
+    
+    /**
+     * 
+     * @return Text that should be displayed as value for this element
+     */
+    String getDisplayValue();
 
     /**
      * 

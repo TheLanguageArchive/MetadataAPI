@@ -102,6 +102,10 @@ public class MetadataElementExceptionTest {
 	    public void removeMetadataElementListener(MetadataElementListener listener) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	    }
+
+	    public String getDisplayValue() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	    }
 	};
 
 	element = new MetadataElement() {
@@ -123,6 +127,10 @@ public class MetadataElementExceptionTest {
 	    }
 
 	    public void removeMetadataElementListener(MetadataElementListener listener) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	    }
+
+	    public String getDisplayValue() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	    }
 	};

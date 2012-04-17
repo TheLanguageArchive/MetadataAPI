@@ -100,6 +100,16 @@ public class ElementTest extends CMDIMetadataElementTest {
     }
 
     /**
+     * Test of getValue method, of class Element.
+     */
+    @Test
+    public void testGetDisplayValue() {
+	assertEquals("value", instance.getDisplayValue());
+	instance.setValue("newValue");
+	assertEquals("newValue", instance.getDisplayValue());
+    }
+
+    /**
      * Test of getParent method, of class Element.
      */
     @Test
