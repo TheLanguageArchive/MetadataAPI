@@ -36,6 +36,7 @@ import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.dom.MetadataDOMBuilder;
 import nl.mpi.metadata.api.model.HeaderInfo;
+import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
@@ -254,8 +255,8 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	buildProxyReferences(metadataElement, elementNode);
 	// Iterate over children if container
 	if (metadataElement instanceof CMDIContainerMetadataElement) {
-	    for (CMDIMetadataElement child : ((CMDIContainerMetadataElement) metadataElement).getChildren()) {
-		buildMetadataElement(domDocument, elementNode, child, schemaLocation);
+	    for (MetadataElement child : ((CMDIContainerMetadataElement) metadataElement).getChildren()) {
+		buildMetadataElement(domDocument, elementNode, (CMDIMetadataElement) child, schemaLocation);
 	    }
 	}
     }
