@@ -17,6 +17,7 @@
 package nl.mpi.metadata.cmdi.api.model;
 
 import java.util.List;
+import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import org.junit.After;
 import org.junit.Before;
@@ -69,7 +70,7 @@ public class CMDIContainerMetadataElementTest extends CMDIMetadataElementTest {
 	// Add an aditional child
 	final CMDIContainerMetadataElementImpl originLocation2 = new CMDIContainerMetadataElementImpl(originLocationType, document);
 	assertTrue(collection.addChildElement(originLocation2));
-	List<CMDIMetadataElement> children = collection.getChildren();
+	List<MetadataElement> children = collection.getChildren();
 	assertEquals(2, children.size());
 	assertEquals(2, collection.getChildrenCount(originLocationType));
 	// should have been added after first originLocation

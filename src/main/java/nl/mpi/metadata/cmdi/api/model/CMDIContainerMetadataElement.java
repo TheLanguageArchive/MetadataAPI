@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import nl.mpi.metadata.api.MetadataElementException;
 import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.api.model.MetadataContainer;
+import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 
@@ -248,8 +249,8 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
      *
      * @return An <em>unmodifiable</em> copy of the list of children
      */
-    public synchronized List<CMDIMetadataElement> getChildren() {
-	return Collections.unmodifiableList(children);
+    public synchronized List<MetadataElement> getChildren() {
+	return Collections.<MetadataElement>unmodifiableList(children);
     }
 
     /**
