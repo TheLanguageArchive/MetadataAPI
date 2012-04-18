@@ -11,6 +11,7 @@
 	<MdProfile>clarin.eu:cr1:p_1271859438164</MdProfile>
       <!-- An (optional but recommended) plain text indication to which collection this file belongs. Used for the Collection facet in the VLO -->
 	<MdCollectionDisplayName>Metadata API test instances</MdCollectionDisplayName>
+	<MdSelfLink>TextCorpusProfile-instance.cmdi</MdSelfLink>
     </Header>
     <Resources>
 	<ResourceProxyList>

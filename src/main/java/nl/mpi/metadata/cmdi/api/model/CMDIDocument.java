@@ -24,9 +24,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
+import nl.mpi.metadata.api.model.HandleCarrier;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.api.model.ReferencingMetadataDocument;
+import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 
 /**
@@ -35,7 +37,8 @@ import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
  * @see CMDIProfile
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIDocument extends CMDIContainerMetadataElement implements ReferencingMetadataDocument<CMDIMetadataElement, ResourceProxy> {
+public class CMDIDocument extends CMDIContainerMetadataElement
+	implements ReferencingMetadataDocument<CMDIMetadataElement, ResourceProxy>, HandleCarrier {
 
     private final CMDIProfile profile;
     private final URI fileLocation;
@@ -199,5 +202,19 @@ public class CMDIDocument extends CMDIContainerMetadataElement implements Refere
     @Override
     public CMDIDocument getMetadataDocument() {
 	return this;
+    }
+
+    public String getHandle() {
+	HeaderInfo handleInfo = getHeaderInformation(CMDIConstants.CMD_HEADER_MD_SELF_LINK);
+	if (handleInfo != null) {
+	    if (handleInfo.getValue() != null) {
+		return handleInfo.getValue().toString();
+	    }
+	}
+	return null;
+    }
+
+    public void setHandle(String handle) {
+	putHeaderInformation(new HeaderInfo(CMDIConstants.CMD_HEADER_MD_SELF_LINK, handle));
     }
 }

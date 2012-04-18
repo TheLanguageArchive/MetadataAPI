@@ -21,7 +21,7 @@ import java.net.URISyntaxException;
 import java.util.Collection;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.api.model.HeaderInfo;
-import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
+import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -145,6 +145,22 @@ public class CMDIDocumentTest extends CMDIMetadataElementTest {
 	assertTrue(document.getDocumentReferences().contains(resourceProxy));
 	document.removeDocumentReference(resourceProxy);
 	assertFalse(document.getDocumentReferences().contains(resourceProxy));
+    }
+
+    @Test
+    public void testGetHandle() {
+	// Handle is read from MdSelfLink header element
+	document.putHeaderInformation(new HeaderInfo(CMDIConstants.CMD_HEADER_MD_SELF_LINK, "test:test-handle"));
+	assertEquals("test:test-handle", document.getHandle());
+	document.putHeaderInformation(new HeaderInfo(CMDIConstants.CMD_HEADER_MD_SELF_LINK, null));
+	assertEquals(null, document.getHandle());
+    }
+
+    @Test
+    public void testSetHandle() {
+	document.setHandle("test:test-handle");
+	// Handle is stored in MdSelfLink header element
+	assertEquals("test:test-handle", document.getHeaderInformation(CMDIConstants.CMD_HEADER_MD_SELF_LINK).getValue());
     }
 
     /**
