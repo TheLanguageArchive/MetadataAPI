@@ -101,8 +101,12 @@ public class CMDIContainerMetadataElementTest extends CMDIMetadataElementTest {
 	assertNotNull("Type not found in schema", titleType);
 
 	final CMDIContainerMetadataElementImpl generalInfo = new CMDIContainerMetadataElementImpl(generalInfoType, document);
-
 	// No children, name equals type name
+	assertEquals("GeneralInfo", generalInfo.getDisplayValue());
+
+	// Add a component child element
+	generalInfo.addChildElement(originLocation);
+	// No element children, name equals type name
 	assertEquals("GeneralInfo", generalInfo.getDisplayValue());
 
 	// Add element with displayPriority == 0
@@ -123,11 +127,17 @@ public class CMDIContainerMetadataElementTest extends CMDIMetadataElementTest {
 	assertEquals("titleValue", generalInfo.getDisplayValue());
 
 	// Change display priorities
-	titleType.setDisplayPriority(2);
-	nameType.setDisplayPriority(1);
-	// Now Name has a lower priority, so should provide display value
+	titleType.setDisplayPriority(2); // used to be 1
+	nameType.setDisplayPriority(1); // used to be 0
+
+	// Now Name has a higher priority, so should provide display value
 	assertEquals("nameValue", generalInfo.getDisplayValue());
 
+	// Higher priority elements without proper value get ignored
+	name.setValue(""); // will skip Name
+	assertEquals("titleValue", generalInfo.getDisplayValue());
+	name.setValue(null); // will skip Name
+	assertEquals("titleValue", generalInfo.getDisplayValue());
     }
 
     @Test
