@@ -18,20 +18,23 @@ package nl.mpi.metadata.api.model;
 
 /**
  * Interface for metadata objects that carry a handler
+ *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public interface HandleCarrier {
-    
+
     /**
-     * 
+     *
      * @return String representation of the handle of this object
      */
     String getHandle();
-    
+
     /**
      * Sets the handle of this object
-     * @param handle 
+     *
+     * @param handle
+     * @throws UnsupportedOperationException if the object does not support setting the handle
+     * @throws IllegalArgumentException if the provided handle is of a format that cannot be converted into a handle for this object
      */
-    void setHandle(String handle);
-    
+    void setHandle(String handle) throws UnsupportedOperationException, IllegalArgumentException;
 }

@@ -19,9 +19,10 @@ package nl.mpi.metadata.cmdi.api.model;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.junit.After;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -63,6 +64,16 @@ public class ResourceProxyTest {
     @Test
     public void testGetMimetype() {
 	assertEquals("test/my-mime-type", resourceProxy.getMimetype());
+    }
+
+    @Test
+    public void getHanlde() {
+	assertEquals("http://testuri", resourceProxy.getHandle());
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void setHandle() {
+	resourceProxy.setHandle("myHandle");
     }
 
     /**

@@ -17,13 +17,14 @@
 package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
+import nl.mpi.metadata.api.model.HandleCarrier;
 import nl.mpi.metadata.api.model.Reference;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public abstract class ResourceProxy implements Reference {
+public abstract class ResourceProxy implements Reference, HandleCarrier {
 
     private final String id;
     private final URI uri;
@@ -71,5 +72,21 @@ public abstract class ResourceProxy implements Reference {
 	hash = 53 * hash + (this.id != null ? this.id.hashCode() : 0);
 	hash = 53 * hash + (this.uri != null ? this.uri.hashCode() : 0);
 	return hash;
+    }
+
+    /**
+     * 
+     * @return String representation of the value returned by {@link #getURI() }
+     */
+    public String getHandle() {
+	return String.valueOf(getURI());
+    }
+
+    /**
+     * ResourceProxies currently <strong>do not support setting of a handle</strong>
+     * @throws UnsupportedOperationException always gets thrown, method not supported
+     */
+    public void setHandle(String handle) throws UnsupportedOperationException{
+	throw new UnsupportedOperationException();
     }
 }
