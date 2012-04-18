@@ -245,8 +245,6 @@ public class CmdiProfileElementSchemaReader {
 
 	if (!"".equals(annotationValue)) {
 	    if ("{http://www.clarin.eu}displaypriority".equals(annotationName)) {
-		//arrayListGroup.displayNamePreferenceList.add(new String[]{nodePath, annotationValue});
-		// TODO: Set display priority
 		if (profileElement instanceof ElementType) {
 		    try {
 			int displayPriority = Integer.parseInt(annotationValue);

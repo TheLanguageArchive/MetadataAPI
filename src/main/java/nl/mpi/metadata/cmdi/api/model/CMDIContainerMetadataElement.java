@@ -29,6 +29,7 @@ import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
+import nl.mpi.metadata.cmdi.api.type.ElementType;
 
 /**
  * Abstract base class for Component and Profile instance classes
@@ -279,9 +280,39 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
 	return type.getName();
     }
 
+    /**
+     * Considers all {@link Element} children and takes display value of element with highest display priority that has a non-empty,
+     * non-null display value. Otherwise uses the name of the element type.
+     *
+     * @return Value to be displayed for this container, inferred from its fields. If no suitable value can be found among the fields,
+     * the value of {@link #getName() } is returned.
+     *
+     * @see #getName()
+     */
     public String getDisplayValue() {
-	// TODO: Implement when display priority becomes available
-	throw new UnsupportedOperationException("Display value not supported for container elements");
+	int minPriority = 0;
+	String displayValue = null;
+	// Look for Element (field) children
+	for (MetadataElement child : getChildren()) {
+	    if (child.getType() instanceof ElementType) {
+		final String childDisplayValue = child.getDisplayValue();
+		// Only consider if it has a valid display value
+		if (null != childDisplayValue && !"".equals(childDisplayValue)) {
+		    // Check child priority, 0 == no priority
+		    final int childPriority = ((ElementType) child.getType()).getDisplayPriority();
+		    if (childPriority > 0 && (minPriority == 0 || minPriority > childPriority)) {
+			// Lowest priority thus far. Use display value!
+			minPriority = childPriority;
+			displayValue = childDisplayValue;
+		    }
+		}
+	    }
+	}
+	if (displayValue != null) {
+	    return displayValue;
+	} else {
+	    return getName();
+	}
     }
 
     public ComponentType getType() {
