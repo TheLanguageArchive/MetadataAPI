@@ -19,17 +19,17 @@ package nl.mpi.metadata.cmdi.api.model;
 import java.net.URI;
 import java.util.Collection;
 import nl.mpi.metadata.api.events.MetadataElementListener;
-import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
 import org.junit.After;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  *
@@ -107,6 +107,8 @@ public class ElementTest extends CMDIMetadataElementTest {
 	assertEquals("value", instance.getDisplayValue());
 	instance.setValue("newValue");
 	assertEquals("newValue", instance.getDisplayValue());
+	instance.setValue(null);
+	assertEquals(null, instance.getDisplayValue());
     }
 
     /**
