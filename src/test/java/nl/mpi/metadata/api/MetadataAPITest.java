@@ -19,6 +19,7 @@ package nl.mpi.metadata.api;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URL;
+import java.util.Arrays;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.model.ReferencingMetadataElement;
@@ -85,9 +86,9 @@ public abstract class MetadataAPITest {
 	MetadataDocument invalidDocument = getProvider().createInvalidDocument(api);
 	SimpleErrorHandler errorHandler = new SimpleErrorHandler();
 	api.validateMetadataDocument(validDocument, errorHandler);
-	assertEquals(0, errorHandler.getErrors().size());
-	assertEquals(0, errorHandler.getFatalErrors().size());
-	assertEquals(0, errorHandler.getWarnings().size());
+	assertEquals(Arrays.toString(errorHandler.getErrors().toArray()), 0, errorHandler.getErrors().size());
+	assertEquals(Arrays.toString(errorHandler.getFatalErrors().toArray()), 0, errorHandler.getFatalErrors().size());
+	assertEquals(Arrays.toString(errorHandler.getWarnings().toArray()), 0, errorHandler.getWarnings().size());
 
 	errorHandler = new SimpleErrorHandler();
 	api.validateMetadataDocument(invalidDocument, errorHandler);
