@@ -28,7 +28,7 @@ public interface MetadataContainerElementType<T extends MetadataElementType> ext
      * 
      * @return Collection of all metadata types that can be contained as a <em>direct</em> child by an instance of this metadata type
      */
-    List<T> getContainableTypes();
+    List<MetadataElementType> getContainableTypes();
 
     /**
      * Gets a containable type by name

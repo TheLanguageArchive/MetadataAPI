@@ -19,13 +19,14 @@ package nl.mpi.metadata.cmdi.api.type;
 import java.util.Collections;
 import java.util.List;
 import nl.mpi.metadata.api.type.MetadataContainerElementType;
+import nl.mpi.metadata.api.type.MetadataElementType;
 import org.apache.xmlbeans.SchemaProperty;
 
 /**
  * This class represents a CMDI component definition, defined by http://www.clarin.eu/cmd/general-component-schema.xsd
- * 
+ *
  * For example components, see http://www.clarin.eu/cmd/example/
- * 
+ *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class ComponentType extends CMDIProfileElement implements MetadataContainerElementType<CMDIProfileElement> {
@@ -36,9 +37,10 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
 
     /**
      * Constructor. Does not read actual data, for this call #readSchema()
+     *
      * @param schemaElement SchemaProperty that represents this component type
      * @param parent Parent component type
-     * @see #readSchema() 
+     * @see #readSchema()
      */
     protected ComponentType(SchemaProperty schemaElement, ComponentType parent, StringBuilder path) {
 	super(schemaElement, parent);
@@ -54,8 +56,8 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
 	return null;
     }
 
-    public List<CMDIProfileElement> getContainableTypes() {
-	return Collections.unmodifiableList(children);
+    public List<MetadataElementType> getContainableTypes() {
+	return Collections.<MetadataElementType>unmodifiableList(children);
     }
 
     public CMDIProfileElement getType(String name) {
@@ -82,8 +84,8 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
     protected void setChildren(List<CMDIProfileElement> children) {
 	this.children = children;
     }
-    
-    protected void setComponentId(String componentId){
+
+    protected void setComponentId(String componentId) {
 	this.componentId = componentId;
     }
 

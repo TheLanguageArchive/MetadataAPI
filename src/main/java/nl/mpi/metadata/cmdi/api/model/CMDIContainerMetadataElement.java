@@ -27,6 +27,7 @@ import nl.mpi.metadata.api.MetadataElementException;
 import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataElement;
+import nl.mpi.metadata.api.type.MetadataElementType;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
@@ -106,9 +107,9 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
      */
     private CMDIMetadataElement getInsertBeforeElement(final CMDIMetadataElement element) {
 	final CMDIProfileElement elementType = element.getType();
-	final List<CMDIProfileElement> parentTypeChildren = elementType.getParent().getContainableTypes();
+	final List<MetadataElementType> parentTypeChildren = elementType.getParent().getContainableTypes();
 	for (int childTypeIndex = parentTypeChildren.indexOf(elementType) + 1; childTypeIndex < parentTypeChildren.size(); childTypeIndex++) {
-	    final CMDIProfileElement insertBeforeType = parentTypeChildren.get(childTypeIndex);
+	    final MetadataElementType insertBeforeType = parentTypeChildren.get(childTypeIndex);
 	    // See if this element has any children of the current type
 	    final String typeName = insertBeforeType.getName();
 	    final List<CMDIMetadataElement> insertBeforeTypeElements = childrenTypeMap.get(typeName);
