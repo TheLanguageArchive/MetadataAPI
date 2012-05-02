@@ -58,6 +58,12 @@ public class ResourceProxyTest {
 	assertEquals(new URI("http://testuri"), resourceProxy.getURI());
     }
 
+    @Test
+    public void testSetURI() throws URISyntaxException {
+	resourceProxy.setURI(new URI("http://newURI"));
+	assertEquals(new URI("http://newURI"), resourceProxy.getURI());
+    }
+
     /**
      * Test of getMimetype method, of class ResourceProxy.
      */
@@ -67,13 +73,26 @@ public class ResourceProxyTest {
     }
 
     @Test
+    public void testSetMimeType() {
+	resourceProxy.setMimeType("test/new-mime-type");
+	assertEquals("test/new-mime-type", resourceProxy.getMimetype());
+    }
+
+    @Test
     public void getHanlde() {
 	assertEquals("http://testuri", resourceProxy.getHandle());
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = IllegalArgumentException.class)
+    public void setHandleIllegalArgument() {
+	// Not a syntactically valid URI
+	resourceProxy.setHandle("h\\t\\t\\p:/");
+    }
+
+    @Test
     public void setHandle() {
-	resourceProxy.setHandle("myHandle");
+	resourceProxy.setHandle("http://newuri");
+	assertEquals("http://newuri", resourceProxy.getHandle());
     }
 
     /**

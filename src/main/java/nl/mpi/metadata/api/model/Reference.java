@@ -26,5 +26,9 @@ public interface Reference {
 
     URI getURI();
 
+    void setURI(URI uri);
+    
     String getMimetype();
+    
+    void setMimeType(String mimeType);
 }

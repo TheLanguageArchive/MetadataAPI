@@ -17,6 +17,7 @@
 package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import nl.mpi.metadata.api.model.HandleCarrier;
 import nl.mpi.metadata.api.model.Reference;
 
@@ -27,8 +28,12 @@ import nl.mpi.metadata.api.model.Reference;
 public abstract class ResourceProxy implements Reference, HandleCarrier {
 
     private final String id;
-    private final URI uri;
-    private final String mimeType;
+    private URI uri;
+    private String mimeType;
+
+    public ResourceProxy(String id, URI uri) {
+	this(id, uri, null);
+    }
 
     public ResourceProxy(String id, URI uri, String mimeType) {
 	this.id = id;
@@ -40,12 +45,20 @@ public abstract class ResourceProxy implements Reference, HandleCarrier {
 	return id;
     }
 
-    public URI getURI() {
+    public synchronized URI getURI() {
 	return uri;
     }
 
-    public String getMimetype() {
+    public synchronized void setURI(URI uri) {
+	this.uri = uri;
+    }
+
+    public synchronized String getMimetype() {
 	return mimeType;
+    }
+
+    public synchronized void setMimeType(String mimeType) {
+	this.mimeType = mimeType;
     }
 
     @Override
@@ -75,7 +88,7 @@ public abstract class ResourceProxy implements Reference, HandleCarrier {
     }
 
     /**
-     * 
+     *
      * @return String representation of the value returned by {@link #getURI() }
      */
     public String getHandle() {
@@ -83,10 +96,15 @@ public abstract class ResourceProxy implements Reference, HandleCarrier {
     }
 
     /**
-     * ResourceProxies currently <strong>do not support setting of a handle</strong>
-     * @throws UnsupportedOperationException always gets thrown, method not supported
+     * ResourceProxies require a string that represents a valid URI as a handle
+     *
+     * @throws IllegalArgumentException if provided handle does not represent
      */
-    public void setHandle(String handle) throws UnsupportedOperationException{
-	throw new UnsupportedOperationException();
+    public void setHandle(String handle) throws IllegalArgumentException {
+	try {
+	    setURI(new URI(handle));
+	} catch (URISyntaxException usEx) {
+	    throw new IllegalArgumentException("ResourceProxy only supports URI handles", usEx);
+	}
     }
 }
