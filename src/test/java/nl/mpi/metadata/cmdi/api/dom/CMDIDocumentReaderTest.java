@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
+import java.util.Iterator;
 import javax.xml.parsers.ParserConfigurationException;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.model.Reference;
@@ -115,6 +116,7 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 	// Get Collection/GeneralInfo/Name element
 	final Component generalInfo = (Component) cmdi.getChildElement("Collection/GeneralInfo");
 	assertNotNull(generalInfo);
+	assertEquals(0, generalInfo.getAttributes().size());
 
 	// Get Collection/GeneralInfo/Name element
 	final Element name = (Element) cmdi.getChildElement("Collection/GeneralInfo/Name");
@@ -132,13 +134,18 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 	Element location2code = (Element) originLocation.getChildElement("Location[2]/Country/Code");
 	assertEquals("BE", location2code.getValue());
 
-	// Check resource proxies. Read non-metadata resource proxy
+	// Check resource proxies. Read non-metadata resource proxies
 	Collection<Reference> references = generalInfo.getReferences();
 	assertNotNull(references);
-	assertEquals(1, references.size());
-	ResourceProxy reference = (ResourceProxy) references.iterator().next();
+	assertEquals(2, references.size());
+	Iterator<Reference> iterator = references.iterator();
+	ResourceProxy reference = (ResourceProxy) iterator.next();
 	assertEquals("resource1", reference.getId());
 	assertEquals(new URI("http://resources/1"), reference.getURI());
+	assertTrue(reference instanceof DataResourceProxy);
+	reference = (ResourceProxy) iterator.next();
+	assertEquals("resource2", reference.getId());
+	assertEquals(new URI("http://resources/2"), reference.getURI());
 	assertTrue(reference instanceof DataResourceProxy);
 
 	// Read metadata resource proxy
@@ -149,6 +156,7 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 	assertEquals("metadata1", reference.getId());
 	assertEquals(new URI("http://metadata/1"), reference.getURI());
 	assertTrue(reference instanceof MetadataResourceProxy);
+
     }
 
     /**

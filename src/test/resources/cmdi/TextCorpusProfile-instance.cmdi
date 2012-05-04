@@ -34,7 +34,7 @@
     <Components>
 	<TextCorpusProfile>
 	    <Collection>
-		<GeneralInfo ref="resource1">
+		<GeneralInfo ref="resource1 resource2">
 		    <Name xml:lang="en">TextCorpus test</Name>
 		    <Description>
 			<Description LanguageID="nl">Test voor TextCorpus</Description>
