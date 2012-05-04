@@ -151,6 +151,12 @@ public class CMDIComponentReader {
     }
 
     private Node getAttributeNodeByType(final NamedNodeMap attributesMap, final MetadataElementAttributeType attributeType) throws DOMException {
-	return attributesMap.getNamedItemNS(attributeType.getNamespaceURI(), attributeType.getName());
+	final String namespaceURI = attributeType.getNamespaceURI();
+	final String name = attributeType.getName();
+	if (namespaceURI == null || namespaceURI.length() == 0) {
+	    return attributesMap.getNamedItem(name);
+	} else {
+	    return attributesMap.getNamedItemNS(namespaceURI, name);
+	}
     }
 }
