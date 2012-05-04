@@ -206,8 +206,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	// Resource proxy reference on element
 	Node generalInfoRefAttribute = xPathAPI.selectSingleNode(document, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/@ref");
 	assertNotNull(generalInfoRefAttribute);
-	assertEquals("resource1", generalInfoRefAttribute.getNodeValue());
-
+	assertEquals("resource1 resource2", generalInfoRefAttribute.getNodeValue());
     }
 
     @Test

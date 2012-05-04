@@ -273,9 +273,14 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
     }
 
     private void buildProxyReferences(CMDIMetadataElement metadataElement, org.w3c.dom.Element elementNode) throws DOMException {
-	for (Reference resourceProxy : metadataElement.getReferences()) {
-	    // We can safely cast resourceProxy to ResourceProxy since only ResourceProxies can be added to CMDIDocument
-	    elementNode.setAttribute(CMDIConstants.CMD_RESOURCE_PROXY_REFERENCE_ATTRIBUTE, ((ResourceProxy) resourceProxy).getId());
+	final Collection<Reference> references = metadataElement.getReferences();
+	if (references.size() > 0) {
+	    StringBuilder refBuilder = new StringBuilder();
+	    for (Reference resourceProxy : references) {
+		// We can safely cast resourceProxy to ResourceProxy since only ResourceProxies can be added to CMDIDocument
+		refBuilder.append(((ResourceProxy) resourceProxy).getId()).append(" ");
+	    }
+	    elementNode.setAttribute(CMDIConstants.CMD_RESOURCE_PROXY_REFERENCE_ATTRIBUTE, refBuilder.toString().trim());
 	}
     }
 
