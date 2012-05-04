@@ -109,7 +109,6 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	setHeaders(metadataDocument, domDocument);
 	buildProxies(metadataDocument, domDocument);
 	buildComponents(metadataDocument, domDocument);
-	// TODO: Set resource links
 	return domDocument;
     }
 
