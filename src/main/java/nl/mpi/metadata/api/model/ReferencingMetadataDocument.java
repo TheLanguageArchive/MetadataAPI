@@ -59,5 +59,5 @@ public interface ReferencingMetadataDocument<M extends MetadataElement, R extend
      * @return the removed reference. Null if none has been removed
      * @throws MetadataException
      */
-    Reference removeDocumentReference(R reference) throws MetadataException;
+    R removeDocumentReference(R reference) throws MetadataException;
 }

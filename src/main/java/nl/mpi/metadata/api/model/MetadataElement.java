@@ -50,13 +50,13 @@ public interface MetadataElement {
     MetadataDocument getMetadataDocument();
 
     /**
-     * Registers a @see MetadataElementListener for this element
+     * Registers a {@link MetadataElementListener} for this element
      * @param listener Listener to add
      */
     void addMetadataElementListener(MetadataElementListener listener);
 
     /**
-     * Unregisters a @see MetadataElementListener from this element
+     * Unregisters a {@link MetadataElementListener} from this element
      * @param listener Listener to remove
      */
     void removeMetadataElementListener(MetadataElementListener listener);

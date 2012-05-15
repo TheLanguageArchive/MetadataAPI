@@ -44,17 +44,13 @@ public interface MetadataDocument<M extends MetadataElement> extends MetadataCon
     Collection<HeaderInfo> getHeaderInformation();
 
     /**
-     * Registers a
-     *
-     * @see MetadataDocumentListener for this document
+     * Registers a {@link MetadataDocumentListener} for this document
      * @param listener Listener to add
      */
     void addMetadataDocumentListener(MetadataDocumentListener listener);
 
     /**
-     * Unregisters a
-     *
-     * @see MetadataDocumentListener from this document
+     * Unregisters a {@link MetadataDocumentListener} from this document
      * @param listener Listener to remove
      */
     void removeMetadataDocumentListener(MetadataDocumentListener listener);

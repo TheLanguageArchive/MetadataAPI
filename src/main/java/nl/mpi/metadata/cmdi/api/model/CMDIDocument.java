@@ -166,7 +166,7 @@ public class CMDIDocument extends CMDIContainerMetadataElement
      * @param reference resource proxy to remove
      * @return removed resource proxy. Null if non removed.
      */
-    public Reference removeDocumentReference(ResourceProxy reference) {
+    public ResourceProxy removeDocumentReference(ResourceProxy reference) {
 	removeDocumentResourceProxy(reference.getId());
 	return reference;
     }
