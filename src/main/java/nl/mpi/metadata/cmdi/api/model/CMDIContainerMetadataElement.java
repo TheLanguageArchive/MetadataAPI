@@ -162,10 +162,14 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
     }
 
     public boolean canAddInstanceOfType(ContainedMetadataElementType type) {
+	// Can only add CMDI elements
 	if (type instanceof CMDIProfileElement) {
+	    // Needs to be direct subtype
 	    if (getType().getContainableTypes().contains(type)) {
+		// Max number of occurences should not be met
 		final int maxOccurences = type.getMaxOccurences();
-		return maxOccurences < 0 || maxOccurences > getChildrenCount((CMDIProfileElement) type);
+		return maxOccurences < 0 // Unbounded
+			|| maxOccurences > getChildrenCount((CMDIProfileElement) type);
 	    }
 	}
 	return false;
