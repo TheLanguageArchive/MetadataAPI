@@ -23,6 +23,7 @@ import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.model.MetadataElement;
+import nl.mpi.metadata.api.type.ContainedMetadataElementType;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
 import nl.mpi.metadata.api.type.MetadataElementType;
 import org.junit.Before;
@@ -104,6 +105,10 @@ public class MetadataElementExceptionTest {
 	    }
 
 	    public String getDisplayValue() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	    }
+
+	    public boolean canAddInstanceOfType(ContainedMetadataElementType type) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	    }
 	};

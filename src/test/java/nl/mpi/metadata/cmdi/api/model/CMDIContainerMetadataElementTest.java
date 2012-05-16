@@ -19,6 +19,7 @@ package nl.mpi.metadata.cmdi.api.model;
 import java.util.List;
 import nl.mpi.metadata.api.MetadataElementException;
 import nl.mpi.metadata.api.model.MetadataElement;
+import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
 import org.junit.After;
@@ -32,14 +33,14 @@ import static org.junit.Assert.*;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIContainerMetadataElementTest extends CMDIMetadataElementTest {
-
+    
     ComponentType collectionType;
     ComponentType originLocationType;
     ComponentType generalInfoType;
     CMDIContainerMetadataElement collection;
     CMDIContainerMetadataElement originLocation;
     CMDIDocument document;
-
+    
     @Before
     public void setUp() throws Exception {
 	collectionType = (ComponentType) getNewTestProfileAndRead().getContainableTypeByName("Collection");
@@ -49,11 +50,11 @@ public class CMDIContainerMetadataElementTest extends CMDIMetadataElementTest {
 	collection = new CMDIContainerMetadataElementImpl(collectionType, document);
 	originLocation = new CMDIContainerMetadataElementImpl(originLocationType, document);
     }
-
+    
     @After
     public void tearDown() {
     }
-
+    
     @Test
     public void testAddChildElement() throws Exception {
 	assertEquals(0, collection.getChildren().size());
@@ -86,20 +87,20 @@ public class CMDIContainerMetadataElementTest extends CMDIMetadataElementTest {
 	// should have been added before originLocation (profile determines order)
 	assertTrue(children.indexOf(generalInfo) < children.indexOf(originLocation));
     }
-
+    
     @Test
     public void testGetName() {
 	final CMDIContainerMetadataElementImpl generalInfo = new CMDIContainerMetadataElementImpl(generalInfoType, document);
 	assertEquals("GeneralInfo", generalInfo.getName());
     }
-
+    
     @Test
     public void testGetDisplayValue() throws MetadataElementException {
 	final ElementType nameType = (ElementType) generalInfoType.getContainableTypeByName("Name");
 	assertNotNull("Type not found in schema", nameType);
 	final ElementType titleType = (ElementType) generalInfoType.getContainableTypeByName("Title");
 	assertNotNull("Type not found in schema", titleType);
-
+	
 	final CMDIContainerMetadataElementImpl generalInfo = new CMDIContainerMetadataElementImpl(generalInfoType, document);
 	// No children, name equals type name
 	assertEquals("GeneralInfo", generalInfo.getDisplayValue());
@@ -139,7 +140,7 @@ public class CMDIContainerMetadataElementTest extends CMDIMetadataElementTest {
 	name.setValue(null); // will skip Name
 	assertEquals("titleValue", generalInfo.getDisplayValue());
     }
-
+    
     @Test
     public void testRemoveChildElement() throws Exception {
 	assertEquals(0, collection.getChildren().size());
@@ -153,7 +154,7 @@ public class CMDIContainerMetadataElementTest extends CMDIMetadataElementTest {
 	// Remove non-child (should not work)
 	assertFalse(collection.removeChildElement(new CMDIContainerMetadataElementImpl(originLocationType, document)));
     }
-
+    
     @Test
     public void testRemoveChildElementGetByPath() throws Exception {
 	CMDIContainerMetadataElementImpl originLocation2 = new CMDIContainerMetadataElementImpl(originLocationType, document);
@@ -175,6 +176,24 @@ public class CMDIContainerMetadataElementTest extends CMDIMetadataElementTest {
 	    // Good
 	}
     }
+    
+    @Test
+    public void testCanAddInstanceOfType() throws Exception {
+	// Error on type level (cannot contain itself)
+	assertFalse(collection.canAddInstanceOfType(collectionType));
+	// Error on type level (cannot contain grandchild)
+	CMDIProfileElement nameType = generalInfoType.getContainableTypeByName("Name");
+	assertFalse(collection.canAddInstanceOfType(nameType));
+	// Should work because of type
+	assertTrue(collection.canAddInstanceOfType(generalInfoType));
+
+	// Add GeneralInfo element to Container
+	CMDIContainerMetadataElementImpl generalInfo = new CMDIContainerMetadataElementImpl(generalInfoType, document);
+	collection.addChildElement(generalInfo);
+
+	// There can be only one so now should return false
+	assertFalse(collection.canAddInstanceOfType(generalInfoType));
+    }
 
     /**
      * Test of getPathForNewElement method, of class CMDIContainerMetadataElement.
@@ -184,20 +203,20 @@ public class CMDIContainerMetadataElementTest extends CMDIMetadataElementTest {
 	ComponentType locationType = (ComponentType) originLocationType.getContainableTypeByName("Location");
 	CMDIContainerMetadataElement location1 = new CMDIContainerMetadataElementImpl(locationType, document);
 	CMDIContainerMetadataElement location2 = new CMDIContainerMetadataElementImpl(locationType, document);
-
+	
 	collection.addChildElement(originLocation);
-
+	
 	assertEquals(originLocation, collection.getChildElement("OriginLocation"));
 	assertEquals(originLocation, collection.getChildElement("OriginLocation[1]"));
-
+	
 	originLocation.addChildElement(location1);
 	originLocation.addChildElement(location2);
-
+	
 	assertEquals(location1, collection.getChildElement("OriginLocation/Location"));
 	assertEquals(location1, collection.getChildElement("OriginLocation[1]/Location[1]"));
 	assertEquals(location2, collection.getChildElement("OriginLocation/Location[2]"));
 	assertNull(collection.getChildElement("NoSuchChildNode"));
-
+	
 	assertEquals(location1, originLocation.getChildElement(locationType, 0));
 	assertEquals(location2, originLocation.getChildElement(locationType, 1));
 	assertNull(originLocation.getChildElement(collectionType, 0));
@@ -219,26 +238,26 @@ public class CMDIContainerMetadataElementTest extends CMDIMetadataElementTest {
 	collection.addChildElement(originLocation);
 	collection.getChildElement(originLocationType, 1);
     }
-
+    
     @Override
     CMDIMetadataElement getInstance() {
 	return collection;
     }
-
+    
     @Override
     CMDIDocument getDocument() {
 	return document;
     }
-
+    
     private class CMDIContainerMetadataElementImpl extends CMDIContainerMetadataElement {
-
+	
 	private final CMDIDocument document;
-
+	
 	public CMDIContainerMetadataElementImpl(ComponentType type, CMDIDocument document) {
 	    super(type);
 	    this.document = document;
 	}
-
+	
 	@Override
 	public CMDIDocument getMetadataDocument() {
 	    return document;

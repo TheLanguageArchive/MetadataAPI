@@ -27,6 +27,7 @@ import nl.mpi.metadata.api.MetadataElementException;
 import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataElement;
+import nl.mpi.metadata.api.type.ContainedMetadataElementType;
 import nl.mpi.metadata.api.type.MetadataElementType;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
@@ -158,6 +159,16 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
 	} else {
 	    return false;
 	}
+    }
+
+    public boolean canAddInstanceOfType(ContainedMetadataElementType type) {
+	if (type instanceof CMDIProfileElement) {
+	    if (getType().getContainableTypes().contains(type)) {
+		final int maxOccurences = type.getMaxOccurences();
+		return maxOccurences < 0 || maxOccurences > getChildrenCount((CMDIProfileElement) type);
+	    }
+	}
+	return false;
     }
 
     /**

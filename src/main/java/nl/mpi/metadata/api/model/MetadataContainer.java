@@ -18,6 +18,7 @@ package nl.mpi.metadata.api.model;
 
 import java.util.List;
 import nl.mpi.metadata.api.MetadataElementException;
+import nl.mpi.metadata.api.type.ContainedMetadataElementType;
 
 /**
  * @param <M> Type of MetadataElement that can be contained in this container element
@@ -37,4 +38,11 @@ public interface MetadataContainer<M extends MetadataElement> {
     public boolean addChildElement(M element) throws MetadataElementException;
 
     public boolean removeChildElement(M element) throws MetadataElementException;
+    
+    /**
+     * 
+     * @param type type to check for
+     * @return Whether this container in its current state can contain an additional instance of the specified type
+     */
+    public boolean canAddInstanceOfType(ContainedMetadataElementType type);
 }
