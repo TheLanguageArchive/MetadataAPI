@@ -91,4 +91,6 @@ public class CMDIApiTest extends CMDIAPITestCase {
 	assertEquals(errors, errorHandler.getErrors().size());
 	assertEquals(fatalErrors, errorHandler.getFatalErrors().size());
     }
+    
+    //TODO Test constructors
 }

@@ -22,6 +22,7 @@ import java.net.URL;
 import java.util.Arrays;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataDocument;
+import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.model.ReferencingMetadataElement;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
 import nl.mpi.metadata.api.type.MetadataElementType;
@@ -111,6 +112,22 @@ public abstract class MetadataAPITest {
 	assertEquals(0, outputStream.toByteArray().length);
 	api.writeMetadataDocument(validDocument, outputStream);
 	assertTrue(outputStream.toByteArray().length > 0);
+    }
+
+    @Test
+    public void testInsertMetadataElement() throws Exception {
+	MetadataDocument validDocument = getProvider().createDocument(api);
+	MetadataContainer parentElement = getProvider().createEmptyParentElement(api, validDocument);
+	MetadataElementType addableType = getProvider().createAddableType(api);
+	MetadataElement insertedElement = api.insertMetadataElement(parentElement, addableType);
+	assertNotNull(insertedElement);
+	MetadataElementType unaddableType = getProvider().createUnaddableType(api);
+	try {
+	    api.insertMetadataElement(parentElement, unaddableType);
+	    fail("insertion of unaddable type should lead to MetadataElementException");
+	} catch (MetadataElementException mdeEx) {
+	    // This should occur
+	}
     }
 
     protected abstract MetadataAPITestProvider getProvider();

@@ -27,6 +27,7 @@ import javax.xml.transform.Result;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import nl.mpi.metadata.api.MetadataAPI;
+import nl.mpi.metadata.api.MetadataElementException;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.MetadataTypeException;
 import nl.mpi.metadata.api.dom.MetadataDocumentReader;
@@ -85,6 +86,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
     /**
      * Service that caches CMDIProfile's and ensures that only one copy of each profile is opened.
      */
+    private final CMDIMetadataElementFactory metadataElementFactory;
     private final CMDIProfileContainer profileContainer = new CMDIProfileContainer() {
 
 	@Override
@@ -153,6 +155,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
     public CMDIApi(EntityResolver entityResolver, MetadataValidator<CMDIDocument> cmdiValidator, CMDIMetadataElementFactory elementFactory) {
 	this.entityResolver = entityResolver;
 	this.cmdiValidator = cmdiValidator;
+	this.metadataElementFactory = elementFactory;
 	this.documentReader = new CMDIDocumentReader(profileContainer, new CMDIComponentReader(elementFactory), new CMDIResourceProxyReader());
 	this.profileReader = new CMDIProfileReader(entityResolver, domBuilderFactory);
 	this.documentWriter = new CMDIDocumentWriter(componentBuilder);
@@ -193,6 +196,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	this.profileReader = profileReader;
 	this.cmdiValidator = cmdiValidator;
 	this.entityResolver = entityResolver;
+	this.metadataElementFactory = elementFactory;
     }
 
     public void validateMetadataDocument(CMDIDocument document, ErrorHandler errorHandler) throws SAXException {
@@ -246,8 +250,28 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	Result result = new StreamResult(outputStream);
 	getDocumentWriter().write(document, result);
     }
-    //<editor-fold defaultstate="collapsed" desc="Getters and setters for services">
 
+    /**
+     * Creates a new element of the specified type and adds it to the specified container
+     *
+     * @param container element container to add the new element to
+     * @param elementType type of the new element to be added
+     * @return newly created element, null if not added
+     * @throws MetadataElementException if specified types are not compatible, or if an error occurs while registering the child with the container
+     */
+    public CMDIMetadataElement insertMetadataElement(CMDIContainerMetadataElement container, CMDIProfileElement elementType) throws MetadataException {
+	if (!container.getType().canContainType(elementType)) {
+	    throw new MetadataElementException(container, String.format("Element type %1$s cannot be contained by provided container type %2$s", elementType, container.getType()));
+	}
+	CMDIMetadataElement newMetadataElement = metadataElementFactory.createNewMetadataElement(container, elementType);
+	if (container.addChildElement(newMetadataElement)) {
+	    return newMetadataElement;
+	} else {
+	    return null;
+	}
+    }
+
+    //<editor-fold defaultstate="collapsed" desc="Getters and setters for services">
     /**
      * Gets the CMDI Document reader used
      *

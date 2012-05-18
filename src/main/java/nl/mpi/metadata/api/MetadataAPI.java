@@ -69,6 +69,17 @@ public interface MetadataAPI<DT extends MetadataDocumentType, MT extends Metadat
     D createMetadataDocument(DT type) throws MetadataException;
 
     /**
+     * Creates a new element of the specified type and adds it to the specified container
+     *
+     * @param container element container to add the new element to
+     * @param elementType type of the new element to be added
+     * @return newly created element
+     * @throws MetadataException
+     * @throws MetadataElementException if the specified child type is not compatible with the type of the container
+     */
+    M insertMetadataElement(C container, MT elementType) throws MetadataException;
+
+    /**
      * Validates a metadata document to its schema
      *
      * @param document document to validate
