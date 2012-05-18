@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
+import javax.xml.transform.stream.StreamResult;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.model.MetadataElement;
@@ -109,8 +110,9 @@ public abstract class MetadataAPITest {
     public void testWriteDocument() throws Exception {
 	MetadataDocument validDocument = getProvider().createDocument(api);
 	ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	StreamResult result = new StreamResult(outputStream);
 	assertEquals(0, outputStream.toByteArray().length);
-	api.writeMetadataDocument(validDocument, outputStream);
+	api.writeMetadataDocument(validDocument, result);
 	assertTrue(outputStream.toByteArray().length > 0);
     }
 

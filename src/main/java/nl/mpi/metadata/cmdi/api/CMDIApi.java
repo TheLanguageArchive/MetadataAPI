@@ -16,10 +16,10 @@
  */
 package nl.mpi.metadata.cmdi.api;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -246,9 +246,8 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	return getProfileContainer().getProfile(uri);
     }
 
-    public void writeMetadataDocument(CMDIDocument document, OutputStream outputStream) throws IOException, MetadataException, TransformerException {
-	Result result = new StreamResult(outputStream);
-	getDocumentWriter().write(document, result);
+    public void writeMetadataDocument(CMDIDocument document, StreamResult target) throws IOException, MetadataException, TransformerException {
+	getDocumentWriter().write(document, target);
     }
 
     /**
@@ -257,7 +256,8 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      * @param container element container to add the new element to
      * @param elementType type of the new element to be added
      * @return newly created element, null if not added
-     * @throws MetadataElementException if specified types are not compatible, or if an error occurs while registering the child with the container
+     * @throws MetadataElementException if specified types are not compatible, or if an error occurs while registering the child with the
+     * container
      */
     public CMDIMetadataElement insertMetadataElement(CMDIContainerMetadataElement container, CMDIProfileElement elementType) throws MetadataException {
 	if (!container.getType().canContainType(elementType)) {

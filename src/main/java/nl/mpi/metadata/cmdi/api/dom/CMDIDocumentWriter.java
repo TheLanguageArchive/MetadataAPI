@@ -45,7 +45,8 @@ public class CMDIDocumentWriter implements MetadataDocumentWriter<CMDIDocument> 
 
     /**
      * Writes the specified metadata document to the provided outputStream. The transformer used for this is
-     * obtained by calling {@code Transformer
+     * obtained by calling {@code TransformerFactory.newInstance()}
+     *
      * @param metadataDocument
      * @param outputStream
      */
@@ -76,7 +77,7 @@ public class CMDIDocumentWriter implements MetadataDocumentWriter<CMDIDocument> 
 
     /**
      * @param outputProperties outputProperties to use when serializing the metadata document to XML. The will be passed to the transformer
-     * object through {@link Transformer#setOutputProperties(java.util.Properties)}. Set to null to keep defaults (i.e. the call to 
+     * object through {@link Transformer#setOutputProperties(java.util.Properties)}. Set to null to keep defaults (i.e. the call to
      * Transformer will not be made).
      */
     public final void setOutputProperties(Properties outputProperties) {
