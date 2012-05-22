@@ -43,13 +43,18 @@ import nl.mpi.metadata.cmdi.api.type.ElementType;
 public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement implements MetadataContainer<CMDIMetadataElement> {
 
     /**
-     * e.g. Actor[1]/Language -> (Actor)([(1)])(/(Language))
+     * e.g. test:Actor[1]/:Language -> ((test):(Actor))([(1)])(/(:Language))
      *
-     * group(1) = element name
-     * group(3) = element index
-     * group(5) = child path
+     * group(3) = namespace
+     * group(4) = element name
+     * group(6) = element index
+     * group(8) = child path
      */
-    private final static Pattern PATH_PATTERN = Pattern.compile("(^[^(/|\\[]+)(\\[(\\d+)\\])?(/(.*))?$");
+    private static final Pattern PATH_PATTERN = Pattern.compile("(^(([^(/|\\[]*):)?([^(/|\\[]+))(\\[(\\d+)\\])?(/(.*))?$");
+    private static final int PATH_PATTERN_CHILD_PATH_GROUP = 8;
+    private static final int PATH_PATTERN_ELEMENT_NAME_GROUP = 4;
+    private static final int PATH_PATTERN_ELEMENT_INDEX_GROUP = 6;
+    
     private final ComponentType type;
     private final List<CMDIMetadataElement> children;
     /**
@@ -222,10 +227,11 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
     public CMDIMetadataElement getChildElement(final String path) throws IllegalArgumentException {
 	final Matcher pathMatcher = PATH_PATTERN.matcher(path);
 	if (pathMatcher.find()) {
-	    final String elementName = pathMatcher.group(1);
+	    // Ignoring namespace (group 3) in this implementation
+	    final String elementName = pathMatcher.group(PATH_PATTERN_ELEMENT_NAME_GROUP).replaceAll("^.*:", "");
 	    if (elementName != null && elementName.length() > 0) {
-		final String elementIndexString = pathMatcher.group(3);
-		final String childPath = pathMatcher.group(5);
+		final String elementIndexString = pathMatcher.group(PATH_PATTERN_ELEMENT_INDEX_GROUP);
+		final String childPath = pathMatcher.group(PATH_PATTERN_CHILD_PATH_GROUP);
 
 		return getChildElement(elementName, elementIndexString, childPath);
 	    }
