@@ -63,6 +63,15 @@ public class CMDIDocumentTest extends CMDIMetadataElementTest {
     }
 
     /**
+     * Test of getFileLocation method, of class CMDIDocument.
+     */
+    @Test
+    public void testSetFileLocation() throws URISyntaxException {
+	document.setFileLocation(new URI("http://mynewuri"));
+	assertEquals(new URI("http://mynewuri"), document.getFileLocation());
+    }
+
+    /**
      * Test of getMetadataDocument method, of class CMDIDocument.
      */
     @Test

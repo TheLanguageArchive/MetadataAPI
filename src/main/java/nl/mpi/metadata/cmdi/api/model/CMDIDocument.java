@@ -41,10 +41,10 @@ public class CMDIDocument extends CMDIContainerMetadataElement
 	implements ReferencingMetadataDocument<CMDIMetadataElement, ResourceProxy>, HandleCarrier {
 
     private final CMDIProfile profile;
-    private final URI fileLocation;
     private final Map<String, HeaderInfo> headerInfo;
     private final Map<String, ResourceProxy> resourceProxies;
     private final Collection<MetadataDocumentListener> listeners;
+    private URI fileLocation;
 
     /**
      * Construct an unsaved profile instance (no location associated)
@@ -79,6 +79,10 @@ public class CMDIDocument extends CMDIContainerMetadataElement
 
     public URI getFileLocation() {
 	return fileLocation;
+    }
+
+    public void setFileLocation(URI location) {
+	this.fileLocation = location;
     }
 
     public synchronized void putHeaderInformation(HeaderInfo headerInfoItem) {

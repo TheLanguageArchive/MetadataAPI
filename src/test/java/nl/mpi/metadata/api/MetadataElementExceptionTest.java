@@ -111,6 +111,10 @@ public class MetadataElementExceptionTest {
 	    public boolean canAddInstanceOfType(ContainedMetadataElementType type) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	    }
+
+	    public void setFileLocation(URI uri) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	    }
 	};
 
 	element = new MetadataElement() {

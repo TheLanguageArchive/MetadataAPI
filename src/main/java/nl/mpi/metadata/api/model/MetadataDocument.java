@@ -36,6 +36,12 @@ public interface MetadataDocument<M extends MetadataElement> extends MetadataCon
      * @return Location of the file this document represents (can be null)
      */
     URI getFileLocation();
+    
+    /**
+     * 
+     * @param location Location of the file this document represents (can be null)
+     */
+    void setFileLocation(URI location);
 
     /**
      * @return Header information in this document (can be null)
