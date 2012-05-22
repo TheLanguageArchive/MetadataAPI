@@ -228,7 +228,7 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
 	final Matcher pathMatcher = PATH_PATTERN.matcher(path);
 	if (pathMatcher.find()) {
 	    // Ignoring namespace (group 3) in this implementation
-	    final String elementName = pathMatcher.group(PATH_PATTERN_ELEMENT_NAME_GROUP).replaceAll("^.*:", "");
+	    final String elementName = pathMatcher.group(PATH_PATTERN_ELEMENT_NAME_GROUP);
 	    if (elementName != null && elementName.length() > 0) {
 		final String elementIndexString = pathMatcher.group(PATH_PATTERN_ELEMENT_INDEX_GROUP);
 		final String childPath = pathMatcher.group(PATH_PATTERN_CHILD_PATH_GROUP);

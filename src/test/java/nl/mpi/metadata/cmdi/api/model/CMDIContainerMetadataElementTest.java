@@ -222,7 +222,7 @@ public class CMDIContainerMetadataElementTest extends CMDIMetadataElementTest {
 	assertEquals(location1, collection.getChildElement("OriginLocation[1]/:Location[1]"));
 	assertEquals(location1, collection.getChildElement(":OriginLocation[1]/Location[1]"));
 	assertEquals(location2, collection.getChildElement(":OriginLocation/:Location[2]"));
-	assertNull(collection.getChildElement("NoSuchChildNode"));
+	assertNull(collection.getChildElement(":NoSuchChildNode"));
 
 	assertEquals(location1, originLocation.getChildElement(locationType, 0));
 	assertEquals(location2, originLocation.getChildElement(locationType, 1));
