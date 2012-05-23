@@ -204,17 +204,21 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
      * <ul>
      * <li><em>Actor</em>
      * will get the first child of the type Actor</li>
+     * <li><em>:Actor</em>
+     * same thing, namespace are ignored</li>
      * <li><em>Actor[1]</em>
      * will also get the first child of the type Actor</li>
      * <li><em>Actor[2]</em>
      * will get the second child of the type Actor</li>
      * <li><em>Actor/Language[2]</em>
      * will get the second child of the type Language of the first child of the node Actor of this node</li>
+     * <li><em>/:CMD/:Components/:Session/:Actor</em>
+     * will get the element at the specified path starting from root</li>
      * </ul>
      *
      * Among other things, the following features are <strong>not supported</strong>:
      * <ul>
-     * <li>alternative starting nodes (e.g. <em>../Actor[3]</em>)</li>
+     * <li>arbitrary starting nodes (e.g. <em>../Actor[3]</em>)</li>
      * <li>retrieving attributes (e.g. <em>Actor[2]/@name</em>)</li>
      * <li>conditions (e.g. <em>Actor[@name='Joe']</em>)</li>
      * </ul>
@@ -224,6 +228,12 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
      * @throws IllegalArgumentException if the format of the path is illegal
      */
     public CMDIMetadataElement getChildElement(final String path) throws IllegalArgumentException {
+	if (path.startsWith(getMetadataDocument().getPathString())) {
+	    // Absolute path, start from root
+	    final String rootChildPath = path.substring(getMetadataDocument().getPathString().length() + 1); // Add one character for trailing slash
+	    return getMetadataDocument().getChildElement(rootChildPath);
+	}
+
 	final Matcher pathMatcher = PATH_PATTERN.matcher(path);
 	if (pathMatcher.find()) {
 	    // Ignoring namespace (group 3) in this implementation
