@@ -20,7 +20,9 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import nl.mpi.metadata.api.MetadataException;
+import nl.mpi.metadata.api.model.ContainedMetadataElement;
 import nl.mpi.metadata.api.model.MetadataElementAttributeContainer;
 import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.api.model.ReferencingMetadataElement;
@@ -143,5 +145,45 @@ public abstract class CMDIMetadataElement implements ReferencingMetadataElement<
     @Override
     public String toString() {
 	return getName();
+    }
+
+    /**
+     * Constructs path string from parent's path string, element name and index among siblings.
+     *
+     * @return XPath to this CMDIMetadataElement from the DOM root
+     */
+    public final String getPathString() {
+	return getPathCharSequence().toString();
+    }
+
+    /**
+     * Determines the path of this metadata element by extending its parent path
+     *
+     * @return the path of this element. CharSequence to prevent excessive conversions to string
+     * @throws AssertionError if called on an extension that does not implement {@link ContainedMetadataElement}
+     */
+    protected CharSequence getPathCharSequence() throws AssertionError {
+	if (this instanceof ContainedMetadataElement) {
+	    // Component and Element implement ContainedMetadataElement, path can be inferred from parent
+	    final CMDIContainerMetadataElement parentContainer = (CMDIContainerMetadataElement) ((ContainedMetadataElement) this).getParent();
+	    // Get index among siblings
+	    final List<CMDIMetadataElement> siblings = parentContainer.getChildren(getType());
+	    final int index = siblings.indexOf(this);
+	    if (index < 0) {
+		throw new RuntimeException("Node not found in parent's children");
+	    }
+
+	    // Construct path
+	    final StringBuilder pathStringBuilder = new StringBuilder(parentContainer.getPathCharSequence());
+	    // Append type (=element name)
+	    pathStringBuilder.append("/:").append(getType().getName());
+	    // Append index
+	    pathStringBuilder.append("[").append(index + 1).append("]");
+
+	    return pathStringBuilder;
+	} else {
+	    // CMDIDocument should override thiss
+	    throw new AssertionError("Element path cannot be determined for class " + getClass() + " because it does not implement ContainedMetadataElement");
+	}
     }
 }

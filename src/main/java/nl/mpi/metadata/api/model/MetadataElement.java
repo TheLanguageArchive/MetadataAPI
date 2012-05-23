@@ -26,38 +26,46 @@ import nl.mpi.metadata.api.type.MetadataElementType;
 public interface MetadataElement {
 
     /**
-     * 
+     *
      * @return Name of this element in the document
      */
     String getName();
-    
+
     /**
-     * 
+     *
      * @return Text that should be displayed as value for this element
      */
     String getDisplayValue();
 
     /**
-     * 
+     *
      * @return Type of this element
      */
     MetadataElementType getType();
 
     /**
-     * 
+     *
      * @return Document that this element is part of
      */
     MetadataDocument getMetadataDocument();
 
     /**
      * Registers a {@link MetadataElementListener} for this element
+     *
      * @param listener Listener to add
      */
     void addMetadataElementListener(MetadataElementListener listener);
 
     /**
      * Unregisters a {@link MetadataElementListener} from this element
+     *
      * @param listener Listener to remove
      */
     void removeMetadataElementListener(MetadataElementListener listener);
+
+    /**
+     *
+     * @return XPath to this metadata element <em>from the root of the document</em>
+     */
+    String getPathString();
 }

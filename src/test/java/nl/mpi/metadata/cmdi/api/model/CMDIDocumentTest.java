@@ -172,6 +172,11 @@ public class CMDIDocumentTest extends CMDIMetadataElementTest {
 	assertEquals("test:test-handle", document.getHeaderInformation(CMDIConstants.CMD_HEADER_MD_SELF_LINK).getValue());
     }
 
+    @Test
+    public void testGetPathString() {
+	assertEquals("/:CMD/:Components/:TextCorpusProfile", document.getPathString());
+    }
+
     /**
      * Test of addMetadataDocumentListener method, of class CMDIDocument.
      */

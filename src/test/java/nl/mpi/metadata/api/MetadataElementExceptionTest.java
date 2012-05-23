@@ -115,6 +115,10 @@ public class MetadataElementExceptionTest {
 	    public void setFileLocation(URI uri) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	    }
+
+	    public String getPathString() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	    }
 	};
 
 	element = new MetadataElement() {
@@ -140,6 +144,10 @@ public class MetadataElementExceptionTest {
 	    }
 
 	    public String getDisplayValue() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	    }
+
+	    public String getPathString() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	    }
 	};

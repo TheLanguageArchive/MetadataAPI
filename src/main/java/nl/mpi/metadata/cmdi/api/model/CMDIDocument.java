@@ -221,4 +221,13 @@ public class CMDIDocument extends CMDIContainerMetadataElement
     public void setHandle(String handle) {
 	putHeaderInformation(new HeaderInfo(CMDIConstants.CMD_HEADER_MD_SELF_LINK, handle));
     }
+
+    /**
+     *
+     * @return Path of the root of the document
+     */
+    @Override
+    protected final String getPathCharSequence() {
+	return getType().getPathString();
+    }
 }

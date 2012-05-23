@@ -16,8 +16,6 @@
  */
 package nl.mpi.metadata.cmdi.api.model;
 
-import java.net.URI;
-import java.util.Collection;
 import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
@@ -53,8 +51,11 @@ public class ElementTest extends CMDIMetadataElementTest {
     @Before
     public void setUp() throws Exception {
 	document = getNewTestDocument();
+	// Add collection to document, this will be Collection[2] because by default the document already has a collection
 	parent = new Component(parentType, document);
+	document.addChildElement(parent);
 	instance = new Element(type, parent, "value");
+	parent.addChildElement(instance);
     }
 
     @After
@@ -135,6 +136,11 @@ public class ElementTest extends CMDIMetadataElementTest {
 	assertEquals(document, instance.getMetadataDocument());
     }
 
+    @Test
+    public void testGetPathString() {
+	assertEquals("/:CMD/:Components/:TextCorpusProfile/:Collection[2]/:Name[1]", instance.getPathString());
+    }
+
     /**
      * Test of addMetadataElementListener method, of class Element.
      */
@@ -159,55 +165,6 @@ public class ElementTest extends CMDIMetadataElementTest {
 	MetadataElementListener listener = null;
 	Element instance = null;
 	instance.removeMetadataElementListener(listener);
-	// TODO review the generated test code and remove the default call to fail.
-	fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getReferences method, of class Element.
-     */
-    @Test
-    @Ignore
-    public void testGetReferences() {
-	System.out.println("getReferences");
-	Element instance = null;
-	Collection expResult = null;
-	Collection result = instance.getReferences();
-	assertEquals(expResult, result);
-	// TODO review the generated test code and remove the default call to fail.
-	fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of createResourceReference method, of class Element.
-     */
-    @Test
-    @Ignore
-    public void testCreateResourceReference() {
-	System.out.println("createResourceReference");
-	URI uri = null;
-	String mimetype = "";
-	Element instance = null;
-	DataResourceProxy expResult = null;
-	DataResourceProxy result = instance.createResourceReference(uri, mimetype);
-	assertEquals(expResult, result);
-	// TODO review the generated test code and remove the default call to fail.
-	fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of createMetadataReference method, of class Element.
-     */
-    @Test
-    @Ignore
-    public void testCreateMetadataReference() {
-	System.out.println("createMetadataReference");
-	URI uri = null;
-	String mimetype = "";
-	Element instance = null;
-	MetadataResourceProxy expResult = null;
-	MetadataResourceProxy result = instance.createMetadataReference(uri, mimetype);
-	assertEquals(expResult, result);
 	// TODO review the generated test code and remove the default call to fail.
 	fail("The test case is a prototype.");
     }

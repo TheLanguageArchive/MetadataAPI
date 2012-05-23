@@ -54,7 +54,6 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
     private static final int PATH_PATTERN_CHILD_PATH_GROUP = 8;
     private static final int PATH_PATTERN_ELEMENT_NAME_GROUP = 4;
     private static final int PATH_PATTERN_ELEMENT_INDEX_GROUP = 6;
-    
     private final ComponentType type;
     private final List<CMDIMetadataElement> children;
     /**
@@ -274,6 +273,14 @@ public abstract class CMDIContainerMetadataElement extends CMDIMetadataElement i
      */
     public synchronized List<MetadataElement> getChildren() {
 	return Collections.<MetadataElement>unmodifiableList(children);
+    }
+
+    public synchronized List<CMDIMetadataElement> getChildren(CMDIProfileElement childType) {
+	if (childrenTypeMap.containsKey(childType.getName())) {
+	    return childrenTypeMap.get(childType.getName());
+	} else {
+	    return Collections.emptyList();
+	}
     }
 
     /**
