@@ -246,7 +246,8 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	org.w3c.dom.Element elementNode = appendElementNode(domDocument, schemaLocation, parentNode, metadataElement.getType().getSchemaElement(), false);
 	// Set value if element
 	if (metadataElement instanceof Element) {
-	    elementNode.setTextContent(((Element) metadataElement).getValue().toString());
+	    final Object elementValue = ((Element) metadataElement).getValue();
+	    elementNode.setTextContent(elementValue == null ? "" : elementValue.toString());
 	}
 	// Add attributes
 	buildElementAttributes(domDocument, elementNode, metadataElement);
