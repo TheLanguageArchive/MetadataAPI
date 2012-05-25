@@ -34,7 +34,7 @@ public interface MetadataElementListener {
     /**
      * A new element has been removed from the specified parent element
      * @param parentElement Parent element
-     * @param insertedElement Removed child element
+     * @param removedElement Removed child element
      */
     void elementRemoved(MetadataElement parentElement, MetadataElement removedElement);
 

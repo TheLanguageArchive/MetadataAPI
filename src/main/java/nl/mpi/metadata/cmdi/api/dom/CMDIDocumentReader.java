@@ -76,7 +76,7 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
      *
      * @param document DOM object to read. Should have been parsed with a <em>namespace aware</em> builder!!
      * @param documentURI URI for the document. Can be null if no identifier is available (e.g. file has not been saved)
-     * @return
+     * @return representation of the read document
      * @throws MetadataDocumentException if an unexpected circumstance is detected while reading the document
      * @throws IOException if an I/O error occurs while reading the profile schema through the {@link CMDIProfileContainer} referenced in
      * the document

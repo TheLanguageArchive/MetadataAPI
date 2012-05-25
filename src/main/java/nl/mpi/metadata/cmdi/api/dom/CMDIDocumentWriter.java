@@ -47,8 +47,8 @@ public class CMDIDocumentWriter implements MetadataDocumentWriter<CMDIDocument> 
      * Writes the specified metadata document to the provided outputStream. The transformer used for this is
      * obtained by calling {@code TransformerFactory.newInstance()}
      *
-     * @param metadataDocument
-     * @param outputStream
+     * @param metadataDocument metadata document to write
+     * @param outputResult output target
      */
     public void write(CMDIDocument metadataDocument, Result outputResult) throws MetadataDocumentException, TransformerException {
 	Document dom = domBuilder.buildDomForDocument(metadataDocument);

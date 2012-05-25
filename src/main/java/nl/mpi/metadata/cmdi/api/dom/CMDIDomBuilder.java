@@ -85,7 +85,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
     /**
      * Creates CMDIDomBuilder with no EntityResolver specified
      *
-     * @see #CMDIDomBuilder(org.xml.sax.EntityResolver)
+     * @see CMDIDomBuilder#CMDIDomBuilder(org.xml.sax.EntityResolver, nl.mpi.metadata.cmdi.api.dom.DOMBuilderFactory)
      */
     public CMDIDomBuilder(DOMBuilderFactory domBuilderFactory) {
 	this(null, domBuilderFactory);
@@ -118,7 +118,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
      * {@code metadataDocument.getType().getSchemaLocation()}.
      *
      * @param metadataDocument metadata document to crease base DOM for
-     * @return
+     * @return base DOM document, either loaded from file or created, in its original state
      * @throws MetadataDocumentException
      */
     protected Document getBaseDocument(CMDIDocument metadataDocument) throws MetadataDocumentException {

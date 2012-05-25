@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 import nl.mpi.metadata.api.MetadataTypeException;
 import nl.mpi.metadata.api.type.MetadataDocumentTypeReader;
-import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 
 /**
  * Class for chaching CMDI profiles
@@ -35,8 +34,7 @@ public class CMDIProfileContainer {
     private MetadataDocumentTypeReader<CMDIProfile> profileReader;
 
     /**
-     * Creates a profile container with no entityresolver or profileReader set. In this implementation, {@link #getEntityResolver() } 
-     * will instantiate a new instance of {@link CMDIEntityResolver} on first request, and {@link #getProfileReader() () } 
+     * Creates a profile container with no entityresolver or profileReader set. In this implementation {@link #getProfileReader() () } 
      * will instantiate a new instance of {@link CMDIProfileReader} on first request.
      */
     public CMDIProfileContainer() {
@@ -44,8 +42,8 @@ public class CMDIProfileContainer {
     }
 
     /**
-     * Creates a profile container with no entityresolver set. In this implementation, {@link #getEntityResolver() } 
-     * will instantiate a new instance of {@link CMDIEntityResolver} on first request.
+     * Creates a profile container with no entityresolver set. In this implementation, {@link #getProfileReader() } 
+     * will instantiate a new instance of {@link CMDIProfileReader} on first request.
      */
     public CMDIProfileContainer(MetadataDocumentTypeReader<CMDIProfile> profileReader) {
 	this.profileReader = profileReader;

@@ -36,11 +36,11 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
     private String componentId;
 
     /**
-     * Constructor. Does not read actual data, for this call #readSchema()
+     * Constructs a new component type object for a schema element with the specified parent and path.
+     * <em>Does not actually read data, for this use {@link CmdiProfileElementSchemaReader}</em>
      *
      * @param schemaElement SchemaProperty that represents this component type
      * @param parent Parent component type
-     * @see #readSchema()
      */
     protected ComponentType(SchemaProperty schemaElement, ComponentType parent, StringBuilder path) {
 	super(schemaElement, parent);

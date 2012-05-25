@@ -18,15 +18,16 @@ package nl.mpi.metadata.cmdi.api.type;
 
 import java.net.URI;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
+import nl.mpi.metadata.api.type.MetadataDocumentTypeReader;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.apache.xmlbeans.SchemaProperty;
 
 /**
  * This class represents a CMDI profile, defined by http://www.clarin.eu/cmd/general-component-schema.xsd
- * 
+ *
  * For an example profile, see http://www.clarin.eu/cmd/example/example-profile-instance.xml
  * For an example profile schema file, see http://www.clarin.eu/cmd/example/example-md-schema.xsd
- * 
+ *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIProfile extends ComponentType implements MetadataDocumentType<CMDIProfileElement> {
@@ -34,10 +35,12 @@ public class CMDIProfile extends ComponentType implements MetadataDocumentType<C
     private final URI schemaLocation;
 
     /**
-     * Constructor. Loads schema but does not actually read data, for this call readSchema()
-     * Will use the default CMDI Entity Resolver
+     * Constructs a new profile object for a schema element with the specified location and root path.
+     * <em>Does not actually read data; for this, use a {@link MetadataDocumentTypeReader}</em>
+     *
      * @param schemaLocation Location of the CMDI profile schema to load
-     * @see #readSchema()
+     * @param schemaElement schema element for the root component
+     * @param rootPath path to the root element in the instance
      * @see CMDIEntityResolver
      */
     public CMDIProfile(URI schemaLocation, SchemaProperty schemaElement, StringBuilder rootPath) {

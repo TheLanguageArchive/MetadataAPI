@@ -83,7 +83,6 @@ public interface MetadataAPI<DT extends MetadataDocumentType, MT extends Metadat
      * Validates a metadata document to its schema
      *
      * @param document document to validate
-     * @return whether document was successfully validated
      */
     void validateMetadataDocument(D document, ErrorHandler errorHandler) throws SAXException;
 
