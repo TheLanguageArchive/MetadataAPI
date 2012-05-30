@@ -23,6 +23,8 @@ import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.api.model.HandleCarrier;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.api.model.MetadataDocument;
+import nl.mpi.metadata.api.model.MetadataElement;
+import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.api.model.ReferencingMetadataDocument;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 
@@ -62,7 +64,7 @@ public interface CMDIDocument extends CMDIContainerMetadataElement, HandleCarrie
     Collection<MetadataDocumentListener> getMetadataDocumentListeners();
 
     CMDIProfile getType();
-    
+
     CMDIProfile getDocumentType();
 
     void putHeaderInformation(HeaderInfo headerInfoItem);
@@ -82,7 +84,6 @@ public interface CMDIDocument extends CMDIContainerMetadataElement, HandleCarrie
     MetadataResourceProxy createDocumentMetadataReference(URI uri, String mimetype) throws MetadataException;
 
     DataResourceProxy createDocumentResourceReference(URI uri, String mimetype) throws MetadataException;
-    
 
     /**
      *
@@ -90,8 +91,8 @@ public interface CMDIDocument extends CMDIContainerMetadataElement, HandleCarrie
      * @return an <em>immutable</em> collection of metadata elements that references the specified proxy. Can be an empty collection, never
      * null.
      */
-    Collection<CMDIMetadataElement> getResourceProxyReferences(ResourceProxy proxy);
-    
+    Collection<MetadataElement> getResourceProxyReferences(Reference proxy);
+
     /**
      * Registers a metadata element as a reference container for the specified proxy
      *

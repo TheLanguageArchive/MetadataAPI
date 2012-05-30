@@ -114,6 +114,8 @@ public abstract class CMDIMetadataElementImplTest extends CMDIAPITestCase {
 	// Should also be on document
 	ResourceProxy documentResourceProxy = getDocument().getDocumentResourceProxy(createdReference.getId());
 	assertSame(createdReference, documentResourceProxy);
+	// Element should be referenced
+	assertTrue(getDocument().getResourceProxyReferences(createdReference).contains(getInstance()));
     }
 
     @Test
@@ -135,16 +137,20 @@ public abstract class CMDIMetadataElementImplTest extends CMDIAPITestCase {
 	assertSame(removedMetadataReference, createdMetadataReference);
 	references = getInstance().getReferences();
 	assertEquals(1, references.size());
-
+	// Try to remove once more - should have no result
 	assertNull(getInstance().removeReference(createdMetadataReference));
+	// Reference should have been removed as well
+	assertEquals(0, getDocument().getResourceProxyReferences(createdMetadataReference).size());
 
 	// Remove resource reference
 	Reference removedResourceReference = getInstance().removeReference(createdResourceReference);
 	assertSame(removedResourceReference, createdResourceReference);
 	references = getInstance().getReferences();
 	assertEquals(0, references.size());
-
+	// Try to remove once more - should have no result
 	assertNull(getInstance().removeReference(createdResourceReference));
+	// Reference should have been removed as well
+	assertEquals(0, getDocument().getResourceProxyReferences(createdResourceReference).size());
     }
 
     abstract CMDIMetadataElement getInstance();

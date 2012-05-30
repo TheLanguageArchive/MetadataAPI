@@ -41,28 +41,22 @@ public interface CMDIMetadataElement extends MetadataElementAttributeContainer<A
     ResourceProxy addDocumentResourceProxyReference(String id);
 
     /**
-     * Creates a <em>metadata</em> resource proxy for the specified uri with the specified mimetype, and adds a reference to that proxy
-     * in this metadata element. This (at this moment) will not check whether a resource proxy with the same URI already exist, so callers
-     * should make sure to check first, or duplicates may occur.
+     * Creates or retrieves a <em>metadata</em> resource proxy for the specified uri with the specified mimetype, then adds a reference to
+     * that proxy in this metadata element.
      *
      * @param uri URI of the new resource proxy
      * @param mimetype mimetype of the new resource proxy (can be null)
      * @return the newly created resource proxy. Null if not created or added.
-     * @see #createResourceReference(java.net.URI, java.lang.String)
-     * @see CMDIDocument#addDocumentResourceProxy(nl.mpi.metadata.cmdi.api.model.ResourceProxy)
      */
     MetadataResourceProxy createMetadataReference(URI uri, String mimetype) throws MetadataException;
 
     /**
-     * Creates a <em>non-metadata</em> resource proxy for the specified uri with the specified mimetype, and adds a reference to that proxy
-     * in this metadata element. This (at this moment) will not check whether a resource proxy with the same URI already exist, so callers
-     * should make sure to check first, or duplicates may occur.
+     * Creates or retrieves a <em>non-metadata</em> resource proxy for the specified uri with the specified mimetype, yhen adds a reference
+     * to that proxy in this metadata element.
      *
      * @param uri URI of the new resource proxy
      * @param mimetype mimetype of the new resource proxy (can be null)
      * @return the newly created resource proxy. Null if not created or added.
-     * @see #createMetadataReference(java.net.URI, java.lang.String)
-     * @see CMDIDocument#addDocumentResourceProxy(nl.mpi.metadata.cmdi.api.model.ResourceProxy)
      */
     DataResourceProxy createResourceReference(URI uri, String mimetype) throws MetadataException;
 

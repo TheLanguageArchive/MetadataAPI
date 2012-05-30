@@ -27,6 +27,7 @@ import java.util.UUID;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.api.model.HeaderInfo;
+import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
@@ -47,7 +48,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
     private final CMDIProfile profile;
     private final Map<String, HeaderInfo> headerInfo;
     private final Map<String, ResourceProxy> resourceProxies;
-    private final Map<ResourceProxy, Collection<CMDIMetadataElement>> resourceProxyReferences;
+    private final Map<Reference, Collection<CMDIMetadataElement>> resourceProxyReferences;
     private final Collection<MetadataDocumentListener> listeners;
     private URI fileLocation;
 
@@ -74,7 +75,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
 
 	this.headerInfo = new LinkedHashMap<String, HeaderInfo>(); // LinkedHashMap so that order is preserved
 	this.resourceProxies = new LinkedHashMap<String, ResourceProxy>(); // LinkedHashMap so that order is preserved
-	this.resourceProxyReferences = new HashMap<ResourceProxy, Collection<CMDIMetadataElement>>();
+	this.resourceProxyReferences = new HashMap<Reference, Collection<CMDIMetadataElement>>();
 	this.listeners = new HashSet<MetadataDocumentListener>();
     }
 
@@ -191,12 +192,12 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
      * @return an <em>immutable</em> collection of metadata elements that references the specified proxy. Can be an empty collection, never
      * null.
      */
-    public synchronized Collection<CMDIMetadataElement> getResourceProxyReferences(ResourceProxy proxy) {
+    public synchronized Collection<MetadataElement> getResourceProxyReferences(Reference proxy) {
 	final Collection<CMDIMetadataElement> references = resourceProxyReferences.get(proxy);
 	if (references == null) {
 	    return Collections.emptySet();
 	} else {
-	    return Collections.unmodifiableCollection(references);
+	    return Collections.<MetadataElement>unmodifiableCollection(references);
 	}
     }
 

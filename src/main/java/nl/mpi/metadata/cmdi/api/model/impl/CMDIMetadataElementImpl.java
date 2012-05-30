@@ -30,6 +30,8 @@ import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.DataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.MetadataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -37,6 +39,7 @@ import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
  */
 public abstract class CMDIMetadataElementImpl implements CMDIMetadataElement {
 
+    private final static Logger logger = LoggerFactory.getLogger(CMDIMetadataElementImpl.class);
     private final Collection<Attribute> attributes;
     private final Collection<ResourceProxy> resourceProxies;
 
@@ -65,16 +68,20 @@ public abstract class CMDIMetadataElementImpl implements CMDIMetadataElement {
     }
 
     /**
-     * Adds a reference to a resource proxy in {@link #getMetadataDocument() this document} to this element
+     * Adds a reference to a resource proxy in {@link #getMetadataDocument() this document} to this element.
+     * This also registers the current element as reference to the proxy on the {@link CMDIDocument}
      *
      * @param id ID of resource proxy to add as reference
      * @return the resource proxy that has been added as a reference. Null if not found in document.
+     * @see CMDIDocument#registerResourceProxyReference(nl.mpi.metadata.cmdi.api.model.ResourceProxy,
+     * nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement)
      */
     @Override
-    public ResourceProxy addDocumentResourceProxyReference(String id) {
+    public synchronized ResourceProxy addDocumentResourceProxyReference(String id) {
 	ResourceProxy resourceProxy = getMetadataDocument().getDocumentResourceProxy(id);
 	if (resourceProxy != null) {
 	    if (resourceProxies.add(resourceProxy)) {
+		getMetadataDocument().registerResourceProxyReference(resourceProxy, this);
 		return resourceProxy;
 	    }
 	}
@@ -82,15 +89,21 @@ public abstract class CMDIMetadataElementImpl implements CMDIMetadataElement {
     }
 
     /**
+     * Removes the document resource proxy references. This also unregisters the current element as reference to the proxy from the {@link CMDIDocument}
      *
      * @param id ID of resource proxy to remove as reference
      * @return the resource proxy that has been added as a reference. Null if not found in document or not removed.
+     * @see CMDIDocument#unregisterResourceProxyReference(nl.mpi.metadata.cmdi.api.model.ResourceProxy,
+     * nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement)
      */
     @Override
-    public ResourceProxy removeDocumentResourceProxyReference(String id) {
+    public synchronized ResourceProxy removeDocumentResourceProxyReference(String id) {
 	ResourceProxy resourceProxy = getMetadataDocument().getDocumentResourceProxy(id);
 	if (resourceProxy != null) {
 	    if (resourceProxies.remove(resourceProxy)) {
+		if (!getMetadataDocument().unregisterResourceProxyReference(resourceProxy, this)) {
+		    logger.warn("Removed resource proxy with id {} was not registered with document!");
+		}
 		return resourceProxy;
 	    }
 	}
@@ -107,15 +120,14 @@ public abstract class CMDIMetadataElementImpl implements CMDIMetadataElement {
     }
 
     /**
-     * Creates a <em>non-metadata</em> resource proxy for the specified uri with the specified mimetype, and adds a reference to that proxy
-     * in this metadata element. This (at this moment) will not check whether a resource proxy with the same URI already exist, so callers
-     * should make sure to check first, or duplicates may occur.
+     * Creates or retrieves a <em>non-metadata</em> resource proxy for the specified uri with the specified mimetype, yhen adds a reference
+     * to that proxy in this metadata element.
      *
      * @param uri URI of the new resource proxy
      * @param mimetype mimetype of the new resource proxy (can be null)
      * @return the newly created resource proxy. Null if not created or added.
-     * @see #createMetadataReference(java.net.URI, java.lang.String)
-     * @see CMDIDocument#addDocumentResourceProxy(nl.mpi.metadata.cmdi.api.model.ResourceProxy)
+     * @see CMDIDocument#createDocumentResourceReference(java.net.URI, java.lang.String)
+     * @see #addDocumentResourceProxyReference(java.lang.String)
      */
     @Override
     public DataResourceProxy createResourceReference(URI uri, String mimetype) throws MetadataException {
@@ -124,15 +136,14 @@ public abstract class CMDIMetadataElementImpl implements CMDIMetadataElement {
     }
 
     /**
-     * Creates a <em>metadata</em> resource proxy for the specified uri with the specified mimetype, and adds a reference to that proxy
-     * in this metadata element. This (at this moment) will not check whether a resource proxy with the same URI already exist, so callers
-     * should make sure to check first, or duplicates may occur.
+     * Creates or retrieves a <em>metadata</em> resource proxy for the specified uri with the specified mimetype, then adds a reference to
+     * that proxy in this metadata element.
      *
      * @param uri URI of the new resource proxy
      * @param mimetype mimetype of the new resource proxy (can be null)
      * @return the newly created resource proxy. Null if not created or added.
-     * @see #createResourceReference(java.net.URI, java.lang.String)
-     * @see CMDIDocument#addDocumentResourceProxy(nl.mpi.metadata.cmdi.api.model.ResourceProxy)
+     * @see CMDIDocument#createDocumentMetadataReference(java.net.URI, java.lang.String)
+     * @see #addDocumentResourceProxyReference(java.lang.String)
      */
     @Override
     public MetadataResourceProxy createMetadataReference(URI uri, String mimetype) throws MetadataException {
@@ -140,6 +151,10 @@ public abstract class CMDIMetadataElementImpl implements CMDIMetadataElement {
 	return (MetadataResourceProxy) addDocumentResourceProxyReference(resourceProxy.getId());
     }
 
+    /**
+     *
+     * @see #removeDocumentResourceProxyReference(java.lang.String)
+     */
     @Override
     public ResourceProxy removeReference(ResourceProxy reference) throws MetadataException {
 	return removeDocumentResourceProxyReference(reference.getId());

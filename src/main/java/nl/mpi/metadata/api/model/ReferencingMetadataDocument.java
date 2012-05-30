@@ -60,4 +60,14 @@ public interface ReferencingMetadataDocument<M extends MetadataElement, R extend
      * @throws MetadataException
      */
     R removeDocumentReference(R reference) throws MetadataException;
+
+    /**
+     * Gets all metadata elements that refer the specified reference
+     *
+     * @param reference resource proxy to get references for
+     * @return an <em>immutable</em> collection of metadata elements that references the specified reference. Can be an empty collection,
+     * never
+     * null.
+     */
+    Collection<MetadataElement> getResourceProxyReferences(Reference reference);
 }
