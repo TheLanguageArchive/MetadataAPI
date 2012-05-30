@@ -108,7 +108,7 @@ public abstract class CMDIMetadataElement implements ReferencingMetadataElement<
      * @see #createMetadataReference(java.net.URI, java.lang.String)
      * @see CMDIDocument#addDocumentResourceProxy(nl.mpi.metadata.cmdi.api.model.ResourceProxy)
      */
-    public DataResourceProxy createResourceReference(URI uri, String mimetype) {
+    public DataResourceProxy createResourceReference(URI uri, String mimetype) throws MetadataException {
 	DataResourceProxy resourceProxy = getMetadataDocument().createDocumentResourceReference(uri, mimetype);
 	return (DataResourceProxy) addDocumentResourceProxyReference(resourceProxy.getId());
     }
@@ -124,7 +124,7 @@ public abstract class CMDIMetadataElement implements ReferencingMetadataElement<
      * @see #createResourceReference(java.net.URI, java.lang.String)
      * @see CMDIDocument#addDocumentResourceProxy(nl.mpi.metadata.cmdi.api.model.ResourceProxy)
      */
-    public MetadataResourceProxy createMetadataReference(URI uri, String mimetype) {
+    public MetadataResourceProxy createMetadataReference(URI uri, String mimetype) throws MetadataException {
 	MetadataResourceProxy resourceProxy = getMetadataDocument().createDocumentMetadataReference(uri, mimetype);
 	return (MetadataResourceProxy) addDocumentResourceProxyReference(resourceProxy.getId());
     }

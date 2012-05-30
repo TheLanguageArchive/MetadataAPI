@@ -19,10 +19,12 @@ package nl.mpi.metadata.cmdi.api.model;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
+import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.api.model.HandleCarrier;
 import nl.mpi.metadata.api.model.HeaderInfo;
@@ -43,6 +45,7 @@ public class CMDIDocument extends CMDIContainerMetadataElement
     private final CMDIProfile profile;
     private final Map<String, HeaderInfo> headerInfo;
     private final Map<String, ResourceProxy> resourceProxies;
+    private final Map<ResourceProxy, Collection<CMDIMetadataElement>> resourceProxyReferences;
     private final Collection<MetadataDocumentListener> listeners;
     private URI fileLocation;
 
@@ -69,6 +72,7 @@ public class CMDIDocument extends CMDIContainerMetadataElement
 
 	this.headerInfo = new LinkedHashMap<String, HeaderInfo>(); // LinkedHashMap so that order is preserved
 	this.resourceProxies = new LinkedHashMap<String, ResourceProxy>(); // LinkedHashMap so that order is preserved
+	this.resourceProxyReferences = new HashMap<ResourceProxy, Collection<CMDIMetadataElement>>();
 	this.listeners = new HashSet<MetadataDocumentListener>();
     }
 
@@ -116,6 +120,22 @@ public class CMDIDocument extends CMDIContainerMetadataElement
     }
 
     /**
+     * Gets the resource proxy with the specified URI
+     *
+     * @param uri URI of resource proxy to retrieve
+     * @return Resource proxy with the specified URI or null if not found. If there are multiple with the same URI, the first one
+     * encountered is returned
+     */
+    public synchronized ResourceProxy getDocumentResourceProxy(URI uri) {
+	for (ResourceProxy proxy : resourceProxies.values()) {
+	    if (proxy.getURI().equals(uri)) {
+		return proxy;
+	    }
+	}
+	return null;
+    }
+
+    /**
      * Adds an existing resource proxy to the resource proxy map for this document
      *
      * @param resourceProxy resource proxy to add
@@ -125,29 +145,97 @@ public class CMDIDocument extends CMDIContainerMetadataElement
     }
 
     /**
-     * Creates a new non-metadata resource proxy in this document. It will not be linked by any element including the document root node.
+     * Creates a new non-metadata resource proxy in this document if it does not exist yet. If a reference with the same URI already exist,
+     * it will be retrieved. In this case, the MIME type will be ignored!
+     * New references will not be linked by any element including the document root node.
      *
-     * @param uri URI for new resource proxy
-     * @param mimetype MIME type for new resource proxy
-     * @return newly created resource
+     * @param uri URI for resource proxy
+     * @param mimetype MIME type for resource proxy
+     * @return newly created resource or existing resource with specified URI
+     * @throws MetadataException if resource with specified URI already exists but is not a {@link DataResourceProxy} (i.e. is a {@link MetadataResourceProxy})
      */
-    public DataResourceProxy createDocumentResourceReference(URI uri, String mimetype) {
-	DataResourceProxy resourceProxy = new DataResourceProxy(newUUID(), uri, mimetype);
-	addDocumentResourceProxy(resourceProxy);
-	return resourceProxy;
+    public synchronized DataResourceProxy createDocumentResourceReference(URI uri, String mimetype) throws MetadataException {
+	final ResourceProxy resourceProxy = getDocumentResourceProxy(uri);
+	if (resourceProxy == null) {
+	    final DataResourceProxy newResourceProxy = new DataResourceProxy(newUUID(), uri, mimetype);
+	    addDocumentResourceProxy(newResourceProxy);
+	    return newResourceProxy;
+	} else {
+	    if (resourceProxy instanceof DataResourceProxy) {
+		return (DataResourceProxy) resourceProxy;
+	    } else {
+		throw new MetadataException(String.format("Resource proxy conflict: %1$s found while trying to add DataResourceProxy", resourceProxy.getClass()));
+	    }
+	}
     }
 
     /**
-     * Creates a new metadata resource proxy in this document. It will not be linked by any element including the document root node.
      *
-     * @param uri URI for new resource proxy
-     * @param mimetype MIME type for new resource proxy
-     * @return newly created resource
+     * @param proxy resource proxy to get references for
+     * @return an <em>immutable</em> collection of metadata elements that references the specified proxy. Can be an empty collection, never
+     * null.
      */
-    public MetadataResourceProxy createDocumentMetadataReference(URI uri, String mimetype) {
-	MetadataResourceProxy resourceProxy = new MetadataResourceProxy(newUUID(), uri, mimetype);
-	addDocumentResourceProxy(resourceProxy);
-	return resourceProxy;
+    protected synchronized Collection<CMDIMetadataElement> getResourceProxyReferences(ResourceProxy proxy) {
+	final Collection<CMDIMetadataElement> references = resourceProxyReferences.get(proxy);
+	if (references == null) {
+	    return Collections.emptySet();
+	} else {
+	    return Collections.unmodifiableCollection(references);
+	}
+    }
+
+    /**
+     * Registers a metadata element as a reference container for the specified proxy
+     *
+     * @param proxy resource proxy that is referenced
+     * @param referencingElement element that references the proxy
+     */
+    protected synchronized void registerResourceProxyReference(ResourceProxy proxy, CMDIMetadataElement referencingElement) {
+	Collection<CMDIMetadataElement> references = resourceProxyReferences.get(proxy);
+	if (references == null) {
+	    references = new HashSet<CMDIMetadataElement>();
+	    resourceProxyReferences.put(proxy, references);
+	}
+	references.add(referencingElement);
+    }
+
+    /**
+     * Unregisters a metadata element as a reference container for the specified proxy
+     *
+     * @param proxy resource proxy that is referenced
+     * @param referencingElement element that references the proxy
+     */
+    protected synchronized boolean unregisterResourceProxyReference(ResourceProxy proxy, CMDIMetadataElement referencingElement) {
+	final Collection<CMDIMetadataElement> references = resourceProxyReferences.get(proxy);
+	if (references != null) {
+	    return references.remove(referencingElement);
+	}
+	return false;
+    }
+
+    /**
+     * Creates a new metadata resource proxy in this document if it does not exist yet. If a reference with the same URI already exist,
+     * it will be retrieved. In this case, the MIME type will be ignored!
+     * New references will not be linked by any element including the document root node.
+     *
+     * @param uri URI for resource proxy
+     * @param mimetype MIME type for resource proxy
+     * @return newly created resource or existing resource with specified URI
+     * @throws MetadataException if resource with specified URI already exists but is not a {@link MetadataResourceProxy} (i.e. is a {@link DataResourceProxy})
+     */
+    public MetadataResourceProxy createDocumentMetadataReference(URI uri, String mimetype) throws MetadataException {
+	final ResourceProxy resourceProxy = getDocumentResourceProxy(uri);
+	if (resourceProxy == null) {
+	    final MetadataResourceProxy newResourceProxy = new MetadataResourceProxy(newUUID(), uri, mimetype);
+	    addDocumentResourceProxy(newResourceProxy);
+	    return newResourceProxy;
+	} else {
+	    if (resourceProxy instanceof MetadataResourceProxy) {
+		return (MetadataResourceProxy) resourceProxy;
+	    } else {
+		throw new MetadataException(String.format("Resource proxy conflict: %1$s found while trying to add MetadataResourceProxy", resourceProxy.getClass()));
+	    }
+	}
     }
 
     private static String newUUID() {
