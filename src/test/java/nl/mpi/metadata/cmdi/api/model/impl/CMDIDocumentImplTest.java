@@ -45,7 +45,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 
     public CMDIDocumentImplTest() {
     }
-    private CMDIDocumentImpl document;
+    private CMDIDocument document;
     private CMDIProfile profile;
     private Mockery mockContext = new JUnit4Mockery();
 

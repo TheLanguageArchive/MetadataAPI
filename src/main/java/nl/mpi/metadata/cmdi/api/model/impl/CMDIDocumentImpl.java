@@ -191,7 +191,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
      * @return an <em>immutable</em> collection of metadata elements that references the specified proxy. Can be an empty collection, never
      * null.
      */
-    protected synchronized Collection<CMDIMetadataElement> getResourceProxyReferences(ResourceProxy proxy) {
+    public synchronized Collection<CMDIMetadataElement> getResourceProxyReferences(ResourceProxy proxy) {
 	final Collection<CMDIMetadataElement> references = resourceProxyReferences.get(proxy);
 	if (references == null) {
 	    return Collections.emptySet();
@@ -206,7 +206,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
      * @param proxy resource proxy that is referenced
      * @param referencingElement element that references the proxy
      */
-    protected synchronized void registerResourceProxyReference(ResourceProxy proxy, CMDIMetadataElement referencingElement) {
+    public synchronized void registerResourceProxyReference(ResourceProxy proxy, CMDIMetadataElement referencingElement) {
 	Collection<CMDIMetadataElement> references = resourceProxyReferences.get(proxy);
 	if (references == null) {
 	    references = new HashSet<CMDIMetadataElement>();
@@ -221,7 +221,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
      * @param proxy resource proxy that is referenced
      * @param referencingElement element that references the proxy
      */
-    protected synchronized boolean unregisterResourceProxyReference(ResourceProxy proxy, CMDIMetadataElement referencingElement) {
+    public synchronized boolean unregisterResourceProxyReference(ResourceProxy proxy, CMDIMetadataElement referencingElement) {
 	final Collection<CMDIMetadataElement> references = resourceProxyReferences.get(proxy);
 	if (references != null) {
 	    return references.remove(referencingElement);

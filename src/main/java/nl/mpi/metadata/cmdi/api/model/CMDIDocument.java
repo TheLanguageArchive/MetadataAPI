@@ -82,4 +82,29 @@ public interface CMDIDocument extends CMDIContainerMetadataElement, HandleCarrie
     MetadataResourceProxy createDocumentMetadataReference(URI uri, String mimetype) throws MetadataException;
 
     DataResourceProxy createDocumentResourceReference(URI uri, String mimetype) throws MetadataException;
+    
+
+    /**
+     *
+     * @param proxy resource proxy to get references for
+     * @return an <em>immutable</em> collection of metadata elements that references the specified proxy. Can be an empty collection, never
+     * null.
+     */
+    Collection<CMDIMetadataElement> getResourceProxyReferences(ResourceProxy proxy);
+    
+    /**
+     * Registers a metadata element as a reference container for the specified proxy
+     *
+     * @param proxy resource proxy that is referenced
+     * @param referencingElement element that references the proxy
+     */
+    void registerResourceProxyReference(ResourceProxy proxy, CMDIMetadataElement referencingElement);
+
+    /**
+     * Unregisters a metadata element as a reference container for the specified proxy
+     *
+     * @param proxy resource proxy that is referenced
+     * @param referencingElement element that references the proxy
+     */
+    boolean unregisterResourceProxyReference(ResourceProxy proxy, CMDIMetadataElement referencingElement);
 }
