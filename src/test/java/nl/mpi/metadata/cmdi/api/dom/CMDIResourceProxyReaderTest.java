@@ -22,7 +22,7 @@ import java.net.URISyntaxException;
 import javax.xml.transform.TransformerException;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
-import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
+import nl.mpi.metadata.cmdi.api.model.impl.CMDIDocumentImpl;
 import nl.mpi.metadata.cmdi.api.model.DataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.MetadataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
@@ -53,7 +53,7 @@ public class CMDIResourceProxyReaderTest extends CMDIAPITestCase {
      */
     @Test
     public void testReadResourceProxies() throws Exception {
-	CMDIDocument cmdiDocument = new CMDIDocument(getNewTestProfileAndRead());
+	CMDIDocumentImpl cmdiDocument = new CMDIDocumentImpl(getNewTestProfileAndRead());
 	Document domDocument = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
 	instance.readResourceProxies(cmdiDocument, domDocument, new CachedXPathAPI());
 

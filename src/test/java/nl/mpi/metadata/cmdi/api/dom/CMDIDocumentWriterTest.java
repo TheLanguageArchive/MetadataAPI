@@ -29,6 +29,7 @@ import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import java.util.Properties;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
+import nl.mpi.metadata.cmdi.api.model.impl.CMDIDocumentImpl;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.jmock.Expectations;
 import org.junit.After;
@@ -66,7 +67,7 @@ public class CMDIDocumentWriterTest extends CMDIAPITestCase {
      */
     @Test
     public void testWrite() throws Exception {
-	final CMDIDocument document = new CMDIDocument(getNewTestProfileAndRead());
+	final CMDIDocument document = new CMDIDocumentImpl(getNewTestProfileAndRead());
 
 	// Create a mock DOM result
 	DocumentBuilderFactory documentBuilder = DocumentBuilderFactory.newInstance();

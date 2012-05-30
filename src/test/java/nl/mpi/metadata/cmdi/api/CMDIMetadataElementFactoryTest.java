@@ -16,14 +16,17 @@
  */
 package nl.mpi.metadata.cmdi.api;
 
-import nl.mpi.metadata.cmdi.api.model.Element;
-import nl.mpi.metadata.cmdi.api.type.ComponentType;
-import nl.mpi.metadata.cmdi.api.model.Component;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
+import nl.mpi.metadata.cmdi.api.model.Component;
+import nl.mpi.metadata.cmdi.api.model.Element;
+import nl.mpi.metadata.cmdi.api.model.impl.ComponentImpl;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
+import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -59,7 +62,7 @@ public class CMDIMetadataElementFactoryTest extends CMDIAPITestCase {
 
 	CMDIDocument document = getNewTestDocument();
 	ComponentType componentType = (ComponentType) ((ComponentType) document.getType().getContainableTypeByName("Collection")).getContainableTypeByName("GeneralInfo");
-	Component component = new Component(componentType, document); // adding GeneralInfo directly to document doesn't really match the model but it doesn't matter here
+	Component component = new ComponentImpl(componentType, document); // adding GeneralInfo directly to document doesn't really match the model but it doesn't matter here
 	CMDIProfileElement type = componentType.getContainableTypeByName("Name");
 
 	CMDIMetadataElementFactory instance = new CMDIMetadataElementFactory();

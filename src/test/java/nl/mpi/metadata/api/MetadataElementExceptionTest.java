@@ -48,7 +48,11 @@ public class MetadataElementExceptionTest {
 
 	document = new MetadataDocument() {
 
-	    public MetadataDocumentType getType() {
+	    public MetadataElementType getType() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	    }
+
+	    public MetadataDocumentType getDocumentType() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	    }
 

@@ -28,8 +28,7 @@ import nl.mpi.metadata.api.type.MetadataDocumentType;
  */
 public interface MetadataDocument<M extends MetadataElement> extends MetadataContainer<M>, MetadataElement {
 
-    @Override
-    MetadataDocumentType getType();
+    MetadataDocumentType getDocumentType();
 
     /**
      *

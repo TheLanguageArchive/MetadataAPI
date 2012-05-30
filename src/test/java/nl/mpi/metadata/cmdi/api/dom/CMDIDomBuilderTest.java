@@ -29,6 +29,9 @@ import nl.mpi.metadata.cmdi.api.model.Component;
 import nl.mpi.metadata.cmdi.api.model.DataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.Element;
 import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
+import nl.mpi.metadata.cmdi.api.model.impl.CMDIDocumentImpl;
+import nl.mpi.metadata.cmdi.api.model.impl.ComponentImpl;
+import nl.mpi.metadata.cmdi.api.model.impl.ElementImpl;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
@@ -151,7 +154,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	assertNotNull(resourceTypeNode);
 	assertEquals("Metadata", resourceTypeNode.getTextContent());
 	Node mimeTypeAttribute = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[2]/:ResourceType/@mimetype");
-	
+
 	Node resourceRefNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[2]/:ResourceRef");
 	assertNotNull(resourceRefNode);
 	assertEquals("http://metadata/1", resourceRefNode.getTextContent());
@@ -213,7 +216,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
     public void testBuildDomForDocumentNewDocument() throws Exception {
 	// Create a new document on basis of a profile
 	CMDIProfile profile = getNewTestProfileAndRead();
-	CMDIDocument document = new CMDIDocument(profile);
+	CMDIDocument document = new CMDIDocumentImpl(profile);
 
 	// Add some child elements
 	ComponentType collectionType = (ComponentType) profile.getContainableTypeByName("Collection");
@@ -221,16 +224,16 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	ComponentType generalInfoType = (ComponentType) collectionType.getContainableTypeByName("GeneralInfo");
 	ElementType nameType = (ElementType) generalInfoType.getContainableTypeByName("Name");
 
-	Component collection = new Component(collectionType, document);
+	Component collection = new ComponentImpl(collectionType, document);
 	document.addChildElement(collection);
 
-	Component originLocation = new Component(originLocationType, collection);
+	Component originLocation = new ComponentImpl(originLocationType, collection);
 	collection.addChildElement(originLocation);
 
-	Component generalInfo = new Component(generalInfoType, collection);
+	Component generalInfo = new ComponentImpl(generalInfoType, collection);
 	collection.addChildElement(generalInfo);
 
-	Element name = new Element(nameType, generalInfo, "test element");
+	Element name = new ElementImpl(nameType, generalInfo, "test element");
 	generalInfo.addChildElement(name);
 
 	Attribute langAttr = new Attribute(nameType.getAttributeTypeByName(CMDIConstants.XML_NAMESPACE, "lang"));
@@ -294,7 +297,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
     public void testGetBaseDocumentUnsaved() throws Exception {
 	CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER, CMDI_API_TEST_DOM_BUILDER_FACTORY);
 	// New document, not from disk
-	CMDIDocument document = new CMDIDocument(getNewTestProfileAndRead());
+	CMDIDocument document = new CMDIDocumentImpl(getNewTestProfileAndRead());
 	Document baseDocument = instance.getBaseDocument(document);
 
 	CachedXPathAPI xPathAPI = new CachedXPathAPI();

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2012 Max Planck Institute for Psycholinguistics
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,69 +16,12 @@
  */
 package nl.mpi.metadata.cmdi.api.model;
 
-import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.api.model.MetadataField;
-import nl.mpi.metadata.cmdi.api.type.ElementType;
 
 /**
- * A CMDI Element. Instance of
- *
- * @see nl.mpi.metadata.cmdi.api.type.ElementType
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class Element<T> extends CMDIMetadataElement implements MetadataField<T, CMDIMetadataElement> {
-
-    private final CMDIDocument metadataDocument;
-    private final CMDIContainerMetadataElement parent;
-    private final ElementType elementType;
-    private T value;
-
-    public Element(final ElementType elementType, final CMDIContainerMetadataElement parent, final T value) {
-	this.elementType = elementType;
-	this.value = value;
-	this.parent = parent;
-	this.metadataDocument = parent.getMetadataDocument();
-    }
-
-    public String getName() {
-	return elementType.getName();
-    }
-
-    public String getDisplayValue() {
-	return getValue() == null ? null : getValue().toString();
-    }
-
-    public T getValue() {
-	return value;
-    }
-
-    public void setValue(T value) {
-	this.value = value;
-    }
-
-    public CMDIContainerMetadataElement getParent() {
-	return parent;
-    }
-
-    public ElementType getType() {
-	return elementType;
-    }
-
-    public CMDIDocument getMetadataDocument() {
-	return metadataDocument;
-    }
-
-    public void addMetadataElementListener(MetadataElementListener listener) {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void removeMetadataElementListener(MetadataElementListener listener) {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public String toString() {
-	return String.format("[%1$s=%2$s]", getType().getName(), getValue());
-    }
+public interface Element<T> extends CMDIMetadataElement, MetadataField<T, CMDIMetadataElement> {
+    
 }

@@ -18,11 +18,7 @@ package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
 import nl.mpi.metadata.api.MetadataException;
-import nl.mpi.metadata.api.model.ContainedMetadataElement;
 import nl.mpi.metadata.api.model.MetadataElementAttributeContainer;
 import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.api.model.ReferencingMetadataElement;
@@ -32,31 +28,9 @@ import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public abstract class CMDIMetadataElement implements ReferencingMetadataElement<ResourceProxy>, MetadataElementAttributeContainer<Attribute> {
+public interface CMDIMetadataElement extends MetadataElementAttributeContainer<Attribute>, ReferencingMetadataElement<ResourceProxy> {
 
-    private final Collection<Attribute> attributes;
-    private final Collection<ResourceProxy> resourceProxies;
-
-    protected CMDIMetadataElement() {
-	this.attributes = new HashSet<Attribute>();
-	this.resourceProxies = new HashSet<ResourceProxy>();
-    }
-
-    public synchronized boolean addAttribute(Attribute attribute) {
-	return attributes.add(attribute);
-    }
-
-    public synchronized boolean removeAttribute(Attribute attribute) {
-	return attributes.remove(attribute);
-    }
-
-    /**
-     *
-     * @return An <em>unmodifiable</em> collection of this element's attributes
-     */
-    public synchronized Collection<Attribute> getAttributes() {
-	return Collections.unmodifiableCollection(attributes);
-    }
+    boolean addAttribute(Attribute attribute);
 
     /**
      * Adds a reference to a resource proxy in {@link #getMetadataDocument() this document} to this element
@@ -64,54 +38,7 @@ public abstract class CMDIMetadataElement implements ReferencingMetadataElement<
      * @param id ID of resource proxy to add as reference
      * @return the resource proxy that has been added as a reference. Null if not found in document.
      */
-    public ResourceProxy addDocumentResourceProxyReference(String id) {
-	ResourceProxy resourceProxy = getMetadataDocument().getDocumentResourceProxy(id);
-	if (resourceProxy != null) {
-	    if (resourceProxies.add(resourceProxy)) {
-		return resourceProxy;
-	    }
-	}
-	return null;
-    }
-
-    /**
-     *
-     * @param id ID of resource proxy to remove as reference
-     * @return the resource proxy that has been added as a reference. Null if not found in document or not removed.
-     */
-    public ResourceProxy removeDocumentResourceProxyReference(String id) {
-	ResourceProxy resourceProxy = getMetadataDocument().getDocumentResourceProxy(id);
-	if (resourceProxy != null) {
-	    if (resourceProxies.remove(resourceProxy)) {
-		return resourceProxy;
-	    }
-	}
-	return null;
-    }
-
-    /**
-     *
-     * @return an <em>unmodifiable</em> copy of the collection of resource proxies referenced by this element
-     */
-    public Collection<Reference> getReferences() {
-	return Collections.<Reference>unmodifiableCollection(resourceProxies);
-    }
-
-    /**
-     * Creates a <em>non-metadata</em> resource proxy for the specified uri with the specified mimetype, and adds a reference to that proxy
-     * in this metadata element. This (at this moment) will not check whether a resource proxy with the same URI already exist, so callers
-     * should make sure to check first, or duplicates may occur.
-     *
-     * @param uri URI of the new resource proxy
-     * @param mimetype mimetype of the new resource proxy (can be null)
-     * @return the newly created resource proxy. Null if not created or added.
-     * @see #createMetadataReference(java.net.URI, java.lang.String)
-     * @see CMDIDocument#addDocumentResourceProxy(nl.mpi.metadata.cmdi.api.model.ResourceProxy)
-     */
-    public DataResourceProxy createResourceReference(URI uri, String mimetype) throws MetadataException {
-	DataResourceProxy resourceProxy = getMetadataDocument().createDocumentResourceReference(uri, mimetype);
-	return (DataResourceProxy) addDocumentResourceProxyReference(resourceProxy.getId());
-    }
+    ResourceProxy addDocumentResourceProxyReference(String id);
 
     /**
      * Creates a <em>metadata</em> resource proxy for the specified uri with the specified mimetype, and adds a reference to that proxy
@@ -124,66 +51,57 @@ public abstract class CMDIMetadataElement implements ReferencingMetadataElement<
      * @see #createResourceReference(java.net.URI, java.lang.String)
      * @see CMDIDocument#addDocumentResourceProxy(nl.mpi.metadata.cmdi.api.model.ResourceProxy)
      */
-    public MetadataResourceProxy createMetadataReference(URI uri, String mimetype) throws MetadataException {
-	MetadataResourceProxy resourceProxy = getMetadataDocument().createDocumentMetadataReference(uri, mimetype);
-	return (MetadataResourceProxy) addDocumentResourceProxyReference(resourceProxy.getId());
-    }
+    MetadataResourceProxy createMetadataReference(URI uri, String mimetype) throws MetadataException;
 
-    public ResourceProxy removeReference(ResourceProxy reference) throws MetadataException {
-	return removeDocumentResourceProxyReference(reference.getId());
-    }
+    /**
+     * Creates a <em>non-metadata</em> resource proxy for the specified uri with the specified mimetype, and adds a reference to that proxy
+     * in this metadata element. This (at this moment) will not check whether a resource proxy with the same URI already exist, so callers
+     * should make sure to check first, or duplicates may occur.
+     *
+     * @param uri URI of the new resource proxy
+     * @param mimetype mimetype of the new resource proxy (can be null)
+     * @return the newly created resource proxy. Null if not created or added.
+     * @see #createMetadataReference(java.net.URI, java.lang.String)
+     * @see CMDIDocument#addDocumentResourceProxy(nl.mpi.metadata.cmdi.api.model.ResourceProxy)
+     */
+    DataResourceProxy createResourceReference(URI uri, String mimetype) throws MetadataException;
+
+    /**
+     *
+     * @return An <em>unmodifiable</em> collection of this element's attributes
+     */
+    Collection<Attribute> getAttributes();
 
     /**
      *
      * @return The CMDI document this container belongs to (more type specific than interface implemented)
      * @see nl.mpi.metadata.api.model.MetadataElement#getMetadataDocument()
      */
-    abstract public CMDIDocument getMetadataDocument();
-
-    public abstract CMDIProfileElement getType();
-
-    @Override
-    public String toString() {
-	return getName();
-    }
+    CMDIDocument getMetadataDocument();
 
     /**
      * Constructs path string from parent's path string, element name and index among siblings.
      *
      * @return XPath to this CMDIMetadataElement from the DOM root
      */
-    public final String getPathString() {
-	return getPathCharSequence().toString();
-    }
+    String getPathString();
 
     /**
-     * Determines the path of this metadata element by extending its parent path
      *
-     * @return the path of this element. CharSequence to prevent excessive conversions to string
-     * @throws AssertionError if called on an extension that does not implement {@link ContainedMetadataElement}
+     * @return an <em>unmodifiable</em> copy of the collection of resource proxies referenced by this element
      */
-    protected CharSequence getPathCharSequence() throws AssertionError {
-	if (this instanceof ContainedMetadataElement) {
-	    // Component and Element implement ContainedMetadataElement, path can be inferred from parent
-	    final CMDIContainerMetadataElement parentContainer = (CMDIContainerMetadataElement) ((ContainedMetadataElement) this).getParent();
-	    // Get index among siblings
-	    final List<CMDIMetadataElement> siblings = parentContainer.getChildren(getType());
-	    final int index = siblings.indexOf(this);
-	    if (index < 0) {
-		throw new RuntimeException("Node not found in parent's children");
-	    }
+    Collection<Reference> getReferences();
 
-	    // Construct path
-	    final StringBuilder pathStringBuilder = new StringBuilder(parentContainer.getPathCharSequence());
-	    // Append type (=element name)
-	    pathStringBuilder.append("/:").append(getType().getName());
-	    // Append index
-	    pathStringBuilder.append("[").append(index + 1).append("]");
+    CMDIProfileElement getType();
 
-	    return pathStringBuilder;
-	} else {
-	    // CMDIDocument should override thiss
-	    throw new AssertionError("Element path cannot be determined for class " + getClass() + " because it does not implement ContainedMetadataElement");
-	}
-    }
+    boolean removeAttribute(Attribute attribute);
+
+    /**
+     *
+     * @param id ID of resource proxy to remove as reference
+     * @return the resource proxy that has been added as a reference. Null if not found in document or not removed.
+     */
+    ResourceProxy removeDocumentResourceProxyReference(String id);
+
+    ResourceProxy removeReference(ResourceProxy reference) throws MetadataException;
 }

@@ -16,14 +16,12 @@
  */
 package nl.mpi.metadata.cmdi.api;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import javax.xml.transform.Result;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import nl.mpi.metadata.api.MetadataAPI;
@@ -68,7 +66,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      */
     private final EntityResolver entityResolver;
     /**
-     * Service that deserializes an existing CMDI document on disk into a CMDIDocument object
+     * Service that deserializes an existing CMDI document on disk into a CMDIDocumentImpl object
      */
     private final MetadataDocumentReader<CMDIDocument> documentReader;
     /**

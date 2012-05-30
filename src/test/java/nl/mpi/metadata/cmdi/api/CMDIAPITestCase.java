@@ -16,9 +16,6 @@
  */
 package nl.mpi.metadata.cmdi.api;
 
-import nl.mpi.metadata.cmdi.api.dom.DOMBuilderFactory;
-import nl.mpi.metadata.cmdi.api.dom.CMDIApiDOMBuilderFactory;
-import nl.mpi.metadata.cmdi.api.dom.CMDIDocumentReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -36,6 +33,9 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import nl.mpi.metadata.api.MetadataException;
+import nl.mpi.metadata.cmdi.api.dom.CMDIApiDOMBuilderFactory;
+import nl.mpi.metadata.cmdi.api.dom.CMDIDocumentReader;
+import nl.mpi.metadata.cmdi.api.dom.DOMBuilderFactory;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;

@@ -26,7 +26,7 @@ import nl.mpi.metadata.api.model.ReferencingMetadataElement;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
 import nl.mpi.metadata.api.type.MetadataElementType;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
-import nl.mpi.metadata.cmdi.api.model.Component;
+import nl.mpi.metadata.cmdi.api.model.impl.ComponentImpl;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
@@ -78,7 +78,7 @@ public class MetadataAPITest extends nl.mpi.metadata.api.MetadataAPITest {
 	    CMDIDocument cmdiDocument = (CMDIDocument) document;
 	    CMDIProfile profile = api.getProfileContainer().getProfile(schemaURI);
 	    ComponentType collectionType = (ComponentType) profile.getContainableTypeByName("Collection");
-	    return new Component(collectionType, cmdiDocument);
+	    return new ComponentImpl(collectionType, cmdiDocument);
 	}
 
 	public MetadataElementType createAddableType(CMDIApi api) throws Exception {

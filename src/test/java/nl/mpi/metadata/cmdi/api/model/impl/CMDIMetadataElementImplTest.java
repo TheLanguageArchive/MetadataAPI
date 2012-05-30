@@ -14,13 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api.model;
+package nl.mpi.metadata.cmdi.api.model.impl;
 
 import java.net.URI;
 import java.util.Collection;
 import java.util.UUID;
 import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
+import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
+import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
+import nl.mpi.metadata.cmdi.api.model.DataResourceProxy;
+import nl.mpi.metadata.cmdi.api.model.MetadataResourceProxy;
+import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -29,7 +34,7 @@ import static org.junit.Assert.*;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public abstract class CMDIMetadataElementTest extends CMDIAPITestCase {
+public abstract class CMDIMetadataElementImplTest extends CMDIAPITestCase {
 
     @Test
     public void testAddDocumentResourceProxyReference() throws Exception {
@@ -114,13 +119,13 @@ public abstract class CMDIMetadataElementTest extends CMDIAPITestCase {
     @Test
     public void testRemoveReference() throws Exception {
 	// Create metadata reference on element
-	MetadataResourceProxy createdMetadataReference = getInstance().createMetadataReference(new URI("http://test"), "test/test");
+	MetadataResourceProxy createdMetadataReference = getInstance().createMetadataReference(new URI("http://test/md"), "test/test");
 	assertNotNull(createdMetadataReference);
 	Collection<Reference> references = getInstance().getReferences();
 	assertEquals(1, references.size());
 
 	// Create resource reference on element
-	DataResourceProxy createdResourceReference = getInstance().createResourceReference(new URI("http://test"), "test/test");
+	DataResourceProxy createdResourceReference = getInstance().createResourceReference(new URI("http://test/res"), "test/test");
 	assertNotNull(createdResourceReference);
 	references = getInstance().getReferences();
 	assertEquals(2, references.size());

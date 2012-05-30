@@ -14,9 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api.model;
+package nl.mpi.metadata.cmdi.api.model.impl;
 
 import nl.mpi.metadata.api.events.MetadataElementListener;
+import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
+import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
+import nl.mpi.metadata.cmdi.api.model.Component;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
@@ -33,13 +36,13 @@ import static org.junit.Assert.fail;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class ElementTest extends CMDIMetadataElementTest {
+public class ElementImplTest extends CMDIMetadataElementImplTest {
 
     private static ComponentType parentType;
     private static ElementType type;
     private CMDIDocument document;
     private Component parent;
-    private Element instance;
+    private ElementImpl instance;
 
     @BeforeClass
     public static void setUpTest() throws Exception {
@@ -52,9 +55,9 @@ public class ElementTest extends CMDIMetadataElementTest {
     public void setUp() throws Exception {
 	document = getNewTestDocument();
 	// Add collection to document, this will be Collection[2] because by default the document already has a collection
-	parent = new Component(parentType, document);
+	parent = new ComponentImpl(parentType, document);
 	document.addChildElement(parent);
-	instance = new Element(type, parent, "value");
+	instance = new ElementImpl(type, parent, "value");
 	parent.addChildElement(instance);
     }
 
@@ -76,7 +79,7 @@ public class ElementTest extends CMDIMetadataElementTest {
     }
 
     /**
-     * Test of getName method, of class Element.
+     * Test of getName method, of class ElementImpl.
      */
     @Test
     public void testGetName() {
@@ -84,7 +87,7 @@ public class ElementTest extends CMDIMetadataElementTest {
     }
 
     /**
-     * Test of getValue method, of class Element.
+     * Test of getValue method, of class ElementImpl.
      */
     @Test
     public void testGetValue() {
@@ -92,7 +95,7 @@ public class ElementTest extends CMDIMetadataElementTest {
     }
 
     /**
-     * Test of setValue method, of class Element.
+     * Test of setValue method, of class ElementImpl.
      */
     @Test
     public void testSetValue() {
@@ -101,7 +104,7 @@ public class ElementTest extends CMDIMetadataElementTest {
     }
 
     /**
-     * Test of getValue method, of class Element.
+     * Test of getValue method, of class ElementImpl.
      */
     @Test
     public void testGetDisplayValue() {
@@ -113,7 +116,7 @@ public class ElementTest extends CMDIMetadataElementTest {
     }
 
     /**
-     * Test of getParent method, of class Element.
+     * Test of getParent method, of class ElementImpl.
      */
     @Test
     public void testGetParent() {
@@ -121,7 +124,7 @@ public class ElementTest extends CMDIMetadataElementTest {
     }
 
     /**
-     * Test of getType method, of class Element.
+     * Test of getType method, of class ElementImpl.
      */
     @Test
     public void testGetType() {
@@ -129,7 +132,7 @@ public class ElementTest extends CMDIMetadataElementTest {
     }
 
     /**
-     * Test of getMetadataDocument method, of class Element.
+     * Test of getMetadataDocument method, of class ElementImpl.
      */
     @Test
     public void testGetMetadataDocument() {
@@ -142,28 +145,28 @@ public class ElementTest extends CMDIMetadataElementTest {
     }
 
     /**
-     * Test of addMetadataElementListener method, of class Element.
+     * Test of addMetadataElementListener method, of class ElementImpl.
      */
     @Test
     @Ignore
     public void testAddMetadataElementListener() {
 	System.out.println("addMetadataElementListener");
 	MetadataElementListener listener = null;
-	Element instance = null;
+	ElementImpl instance = null;
 	instance.addMetadataElementListener(listener);
 	// TODO review the generated test code and remove the default call to fail.
 	fail("The test case is a prototype.");
     }
 
     /**
-     * Test of removeMetadataElementListener method, of class Element.
+     * Test of removeMetadataElementListener method, of class ElementImpl.
      */
     @Test
     @Ignore
     public void testRemoveMetadataElementListener() {
 	System.out.println("removeMetadataElementListener");
 	MetadataElementListener listener = null;
-	Element instance = null;
+	ElementImpl instance = null;
 	instance.removeMetadataElementListener(listener);
 	// TODO review the generated test code and remove the default call to fail.
 	fail("The test case is a prototype.");

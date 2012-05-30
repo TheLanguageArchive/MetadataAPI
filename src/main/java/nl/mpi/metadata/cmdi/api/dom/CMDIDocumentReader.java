@@ -26,6 +26,7 @@ import nl.mpi.metadata.api.dom.MetadataDocumentReader;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
+import nl.mpi.metadata.cmdi.api.model.impl.CMDIDocumentImpl;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
 import nl.mpi.metadata.cmdi.api.type.CMDITypeException;
@@ -103,7 +104,8 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	    }
 
 	    logger.debug("Found documentNode at {}", rootComponentNodePath);
-	    return new CMDIDocument(profile, documentURI);
+	    //TODO: Use factory
+	    return new CMDIDocumentImpl(profile, documentURI);
 	} catch (TransformerException tEx) {
 	    throw new MetadataException(
 		    String.format("TransormationException while looking up root component node at specified path: %1$s", rootComponentNodePath),

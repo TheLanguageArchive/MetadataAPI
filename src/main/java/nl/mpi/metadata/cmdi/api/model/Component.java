@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2012 Max Planck Institute for Psycholinguistics
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,33 +17,11 @@
 package nl.mpi.metadata.cmdi.api.model;
 
 import nl.mpi.metadata.api.model.ContainedMetadataElement;
-import nl.mpi.metadata.api.model.MetadataContainer;
-import nl.mpi.metadata.cmdi.api.type.ComponentType;
 
 /**
- * A CMDI Component. Instance of ComponentType
- * @see ComponentType
- * 
+ *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class Component extends CMDIContainerMetadataElement implements ContainedMetadataElement<CMDIMetadataElement> {
-
-    private final CMDIDocument metadataDocument;
-    private final CMDIContainerMetadataElement parent;
-
-    public Component(ComponentType type, CMDIContainerMetadataElement parent) {
-	super(type);
-	this.parent = parent;
-	// If parent is a document, it will return itself
-	this.metadataDocument = parent.getMetadataDocument();
-    }
-
-    public MetadataContainer<CMDIMetadataElement> getParent() {
-	return parent;
-    }
-
-    @Override
-    public CMDIDocument getMetadataDocument() {
-	return metadataDocument;
-    }
+public interface Component extends CMDIContainerMetadataElement, ContainedMetadataElement<CMDIMetadataElement> {
+    
 }

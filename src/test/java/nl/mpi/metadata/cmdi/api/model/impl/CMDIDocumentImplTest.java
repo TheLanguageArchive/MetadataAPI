@@ -14,15 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api.model;
+package nl.mpi.metadata.cmdi.api.model.impl;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
+import java.util.UUID;
+import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
+import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
+import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
+import nl.mpi.metadata.cmdi.api.model.DataResourceProxy;
+import nl.mpi.metadata.cmdi.api.model.MetadataResourceProxy;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -33,21 +41,22 @@ import static org.junit.Assert.*;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIDocumentTest extends CMDIMetadataElementTest {
+public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 
-    public CMDIDocumentTest() {
+    public CMDIDocumentImplTest() {
     }
-    private CMDIDocument document;
+    private CMDIDocumentImpl document;
     private CMDIProfile profile;
+    private Mockery mockContext = new JUnit4Mockery();
 
     @Before
     public void setUp() throws Exception {
 	profile = getNewTestProfileAndRead(testSchemaTextCorpus.toURI());
-	document = new CMDIDocument(profile, testSchemaTextCorpus.toURI());
+	document = new CMDIDocumentImpl(profile, testSchemaTextCorpus.toURI());
     }
 
     /**
-     * Test of getType method, of class CMDIDocument.
+     * Test of getType method, of class CMDIDocumentImpl.
      */
     @Test
     public void testGetType() {
@@ -55,7 +64,7 @@ public class CMDIDocumentTest extends CMDIMetadataElementTest {
     }
 
     /**
-     * Test of getFileLocation method, of class CMDIDocument.
+     * Test of getFileLocation method, of class CMDIDocumentImpl.
      */
     @Test
     public void testGetFileLocation() throws URISyntaxException {
@@ -63,7 +72,7 @@ public class CMDIDocumentTest extends CMDIMetadataElementTest {
     }
 
     /**
-     * Test of getFileLocation method, of class CMDIDocument.
+     * Test of getFileLocation method, of class CMDIDocumentImpl.
      */
     @Test
     public void testSetFileLocation() throws URISyntaxException {
@@ -72,7 +81,7 @@ public class CMDIDocumentTest extends CMDIMetadataElementTest {
     }
 
     /**
-     * Test of getMetadataDocument method, of class CMDIDocument.
+     * Test of getMetadataDocument method, of class CMDIDocumentImpl.
      */
     @Test
     public void testGetMetadataDocument() {
@@ -80,7 +89,7 @@ public class CMDIDocumentTest extends CMDIMetadataElementTest {
     }
 
     /**
-     * Test of getHeaderInformation method, of class CMDIDocument.
+     * Test of getHeaderInformation method, of class CMDIDocumentImpl.
      */
     @Test
     public void testGetHeaderInformation() {
@@ -102,7 +111,7 @@ public class CMDIDocumentTest extends CMDIMetadataElementTest {
     }
 
     @Test
-    public void testGetDocumentResourceProxy() throws URISyntaxException {
+    public void testGetDocumentResourceProxyById() throws URISyntaxException {
 	assertNull(document.getDocumentResourceProxy("rpId"));
 	// add a proxy
 	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), "test/mime-type");
@@ -112,6 +121,20 @@ public class CMDIDocumentTest extends CMDIMetadataElementTest {
 	DataResourceProxy resourceProxy2 = new DataResourceProxy("rpId", new URI("http://resource2"), "test/mime-type");
 	document.addDocumentResourceProxy(resourceProxy2);
 	assertEquals(resourceProxy2, document.getDocumentResourceProxy("rpId"));
+    }
+
+    @Test
+    public void testGetDocumentResourceProxyByURI() throws URISyntaxException {
+	assertNull(document.getDocumentResourceProxy(new URI("http://resource")));
+	// add a proxy
+	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), "test/mime-type");
+	document.addDocumentResourceProxy(resourceProxy);
+	assertEquals(resourceProxy, document.getDocumentResourceProxy(new URI("http://resource")));
+	// replace by proxy with same id
+	DataResourceProxy resourceProxy2 = new DataResourceProxy("rpId", new URI("http://resource2"), "test/mime-type");
+	document.addDocumentResourceProxy(resourceProxy2);
+	assertNull(document.getDocumentResourceProxy(new URI("http://resource")));
+	assertEquals(resourceProxy2, document.getDocumentResourceProxy(new URI("http://resource2")));
     }
 
     @Test
@@ -133,23 +156,100 @@ public class CMDIDocumentTest extends CMDIMetadataElementTest {
     }
 
     @Test
-    public void testCreateDocumentResourceProxy() throws URISyntaxException {
+    public void testCreateDocumentResourceProxy() throws Exception {
 	assertEquals(0, document.getDocumentReferences().size());
 	DataResourceProxy resourceProxy = document.createDocumentResourceReference(new URI("http://resource"), "test/mime-type");
 	assertEquals(1, document.getDocumentReferences().size());
 	assertTrue(document.getDocumentReferences().contains(resourceProxy));
+	// Create again, should return same object
+	DataResourceProxy resourceProxy2 = document.createDocumentResourceReference(new URI("http://resource"), "test/new-mime-type");
+	assertSame(resourceProxy2, resourceProxy);
+	// Nothing should have been added
+	assertEquals(1, document.getDocumentReferences().size());
+	// Create again, should have ignored mime type	
+	assertEquals("test/mime-type", resourceProxy2.getMimetype());
+
+	try {
+	    // Cause conflict: add md proxy
+	    document.addDocumentResourceProxy(new MetadataResourceProxy("mdrp", new URI("http://resource2"), "test/mime-type"));
+	    // Try to create resource proxy with same URI
+	    document.createDocumentResourceReference(new URI("http://resource2"), "test/mime-type");
+	    // Exception gets thrown, shouldn't get this far
+	    fail("Collision should throw MetadataException");
+	} catch (MetadataException mdEx) {
+	    // Should occur
+	}
     }
 
     @Test
-    public void testCreateDocumentMetadataResourceProxy() throws URISyntaxException {
+    public void testCreateDocumentMetadataResourceProxy() throws Exception {
 	assertEquals(0, document.getDocumentReferences().size());
 	MetadataResourceProxy resourceProxy = document.createDocumentMetadataReference(new URI("http://resource"), "test/mime-type");
 	assertEquals(1, document.getDocumentReferences().size());
 	assertTrue(document.getDocumentReferences().contains(resourceProxy));
+	// Create again, should return same object
+	MetadataResourceProxy resourceProxy2 = document.createDocumentMetadataReference(new URI("http://resource"), "test/new-mime-type");
+	assertSame(resourceProxy2, resourceProxy);
+	// Nothing should have been added
+	assertEquals(1, document.getDocumentReferences().size());
+	// Create again, should have ignored mime type	
+	assertEquals("test/mime-type", resourceProxy2.getMimetype());
+
+
+	try {
+	    // Cause conflict: add resource proxy
+	    document.addDocumentResourceProxy(new DataResourceProxy("mdrp", new URI("http://resource2"), "test/mime-type"));
+	    // Try to create metadata proxy with same URI
+	    document.createDocumentMetadataReference(new URI("http://resource2"), "test/mime-type");
+	    // Exception gets thrown, shouldn't get this far
+	    fail("Collision should throw MetadataException");
+	} catch (MetadataException mdEx) {
+	    // Should occur
+	}
     }
 
     @Test
-    public void testRemoveDocumentReference() throws URISyntaxException {
+    public void testRegisterResourceProxyReference() throws Exception {
+	DataResourceProxy proxy = new DataResourceProxy(UUID.randomUUID().toString(), new URI("http://resource"), "test/mime-type");
+	// No references yet
+	assertEquals(0, document.getResourceProxyReferences(proxy).size());
+
+	// Add a reference to the proxy
+	CMDIMetadataElement element = mockContext.mock(CMDIMetadataElement.class);
+	document.registerResourceProxyReference(proxy, element);
+	assertEquals(1, document.getResourceProxyReferences(proxy).size());
+	assertSame(element, document.getResourceProxyReferences(proxy).iterator().next());
+
+	// Add reference again, should not make a difference
+	document.registerResourceProxyReference(proxy, element);
+	assertEquals(1, document.getResourceProxyReferences(proxy).size());
+    }
+
+    @Test
+    public void testUnregisterResourceProxyReference() throws Exception {
+	DataResourceProxy proxy = new DataResourceProxy(UUID.randomUUID().toString(), new URI("http://resource"), "test/mime-type");
+
+	// Add a reference to the proxy
+	CMDIMetadataElement element = mockContext.mock(CMDIMetadataElement.class);
+	document.registerResourceProxyReference(proxy, element);
+	assertEquals(1, document.getResourceProxyReferences(proxy).size());
+
+	// Remove it
+	boolean result = document.unregisterResourceProxyReference(proxy, element);
+	assertTrue(result);
+	assertEquals(0, document.getResourceProxyReferences(proxy).size());
+
+	// Remove again
+	result = document.unregisterResourceProxyReference(proxy, element);
+	assertFalse(result);
+
+	// Remove element that has never been added
+	result = document.unregisterResourceProxyReference(proxy, mockContext.mock(CMDIMetadataElement.class, "anotherElement"));
+	assertFalse(result);
+    }
+
+    @Test
+    public void testRemoveDocumentReference() throws Exception {
 	DataResourceProxy resourceProxy = document.createDocumentResourceReference(new URI("http://resource"), "test/mime-type");
 	assertTrue(document.getDocumentReferences().contains(resourceProxy));
 	document.removeDocumentReference(resourceProxy);
@@ -178,41 +278,41 @@ public class CMDIDocumentTest extends CMDIMetadataElementTest {
     }
 
     /**
-     * Test of addMetadataDocumentListener method, of class CMDIDocument.
+     * Test of addMetadataDocumentListener method, of class CMDIDocumentImpl.
      */
     @Test
     @Ignore
     public void testAddMetadataDocumentListener() {
 	System.out.println("addMetadataDocumentListener");
 	MetadataDocumentListener listener = null;
-	CMDIDocument instance = null;
+	CMDIDocumentImpl instance = null;
 	instance.addMetadataDocumentListener(listener);
 	// TODO review the generated test code and remove the default call to fail.
 	fail("The test case is a prototype.");
     }
 
     /**
-     * Test of removeMetadataDocumentListener method, of class CMDIDocument.
+     * Test of removeMetadataDocumentListener method, of class CMDIDocumentImpl.
      */
     @Test
     @Ignore
     public void testRemoveMetadataDocumentListener() {
 	System.out.println("removeMetadataDocumentListener");
 	MetadataDocumentListener listener = null;
-	CMDIDocument instance = null;
+	CMDIDocumentImpl instance = null;
 	instance.removeMetadataDocumentListener(listener);
 	// TODO review the generated test code and remove the default call to fail.
 	fail("The test case is a prototype.");
     }
 
     /**
-     * Test of getMetadataDocumentListeners method, of class CMDIDocument.
+     * Test of getMetadataDocumentListeners method, of class CMDIDocumentImpl.
      */
     @Test
     @Ignore
     public void testGetMetadataDocumentListeners() {
 	System.out.println("getMetadataDocumentListeners");
-	CMDIDocument instance = null;
+	CMDIDocumentImpl instance = null;
 	Collection expResult = null;
 	Collection result = instance.getMetadataDocumentListeners();
 	assertEquals(expResult, result);

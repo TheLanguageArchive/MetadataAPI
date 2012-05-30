@@ -16,6 +16,7 @@
  */
 package nl.mpi.metadata.cmdi.api.model;
 
+import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.junit.After;
