@@ -141,7 +141,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
      * encountered is returned
      */
     @Override
-    public synchronized ResourceProxy getDocumentResourceProxy(URI uri) {
+    public synchronized ResourceProxy getDocumentReferenceByURI(URI uri) {
 	for (ResourceProxy proxy : resourceProxies.values()) {
 	    if (proxy.getURI().equals(uri)) {
 		return proxy;
@@ -172,7 +172,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
      */
     @Override
     public synchronized DataResourceProxy createDocumentResourceReference(URI uri, String mimetype) throws MetadataException {
-	final ResourceProxy resourceProxy = getDocumentResourceProxy(uri);
+	final ResourceProxy resourceProxy = getDocumentReferenceByURI(uri);
 	if (resourceProxy == null) {
 	    final DataResourceProxy newResourceProxy = new DataResourceProxy(newUUID(), uri, mimetype);
 	    addDocumentResourceProxy(newResourceProxy);
@@ -242,7 +242,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
      */
     @Override
     public MetadataResourceProxy createDocumentMetadataReference(URI uri, String mimetype) throws MetadataException {
-	final ResourceProxy resourceProxy = getDocumentResourceProxy(uri);
+	final ResourceProxy resourceProxy = getDocumentReferenceByURI(uri);
 	if (resourceProxy == null) {
 	    final MetadataResourceProxy newResourceProxy = new MetadataResourceProxy(newUUID(), uri, mimetype);
 	    addDocumentResourceProxy(newResourceProxy);

@@ -124,17 +124,17 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
     }
 
     @Test
-    public void testGetDocumentResourceProxyByURI() throws URISyntaxException {
-	assertNull(document.getDocumentResourceProxy(new URI("http://resource")));
+    public void testGetDocumentReferenceByURI() throws URISyntaxException {
+	assertNull(document.getDocumentReferenceByURI(new URI("http://resource")));
 	// add a proxy
 	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), "test/mime-type");
 	document.addDocumentResourceProxy(resourceProxy);
-	assertEquals(resourceProxy, document.getDocumentResourceProxy(new URI("http://resource")));
+	assertEquals(resourceProxy, document.getDocumentReferenceByURI(new URI("http://resource")));
 	// replace by proxy with same id
 	DataResourceProxy resourceProxy2 = new DataResourceProxy("rpId", new URI("http://resource2"), "test/mime-type");
 	document.addDocumentResourceProxy(resourceProxy2);
-	assertNull(document.getDocumentResourceProxy(new URI("http://resource")));
-	assertEquals(resourceProxy2, document.getDocumentResourceProxy(new URI("http://resource2")));
+	assertNull(document.getDocumentReferenceByURI(new URI("http://resource")));
+	assertEquals(resourceProxy2, document.getDocumentReferenceByURI(new URI("http://resource2")));
     }
 
     @Test

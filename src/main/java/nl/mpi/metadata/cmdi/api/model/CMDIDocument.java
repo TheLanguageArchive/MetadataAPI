@@ -56,7 +56,7 @@ public interface CMDIDocument extends CMDIContainerMetadataElement, HandleCarrie
      * @return Resource proxy with the specified URI or null if not found. If there are multiple with the same URI, the first one
      * encountered is returned
      */
-    ResourceProxy getDocumentResourceProxy(URI uri);
+    ResourceProxy getDocumentReferenceByURI(URI uri);
 
     /**
      * @return an <em>unmodifiable</em> copy of the MetadataDocumentListeners collection

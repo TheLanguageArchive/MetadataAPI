@@ -70,4 +70,6 @@ public interface ReferencingMetadataDocument<M extends MetadataElement, R extend
      * null.
      */
     Collection<MetadataElement> getResourceProxyReferences(Reference reference);
+
+    R getDocumentReferenceByURI(URI uri);
 }
