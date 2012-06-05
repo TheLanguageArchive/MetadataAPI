@@ -34,7 +34,9 @@ import nl.mpi.metadata.cmdi.api.model.Element;
 import nl.mpi.metadata.cmdi.api.model.MetadataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
+import org.apache.xpath.CachedXPathAPI;
 import org.apache.xpath.XPathAPI;
+import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -223,5 +225,58 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 	} catch (MetadataException mdEx) {
 	    assertEquals(URISyntaxException.class, mdEx.getCause().getClass());
 	}
+    }
+
+    @Test
+    public void testGetProfileURI() throws Exception {
+	// Test with standard CMD namespace
+	Document document = XMLUnit.buildTestDocument(
+		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+		+ "<CMD xmlns=\"http://www.clarin.eu/cmd/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+		+ "CMDVersion=\"1.1\"\n"
+		+ "xsi:schemaLocation=\"http://www.clarin.eu/cmd/ http://schemalocation\">\n"
+		+ "</CMD>\n");
+	URI profileURI = reader.getProfileURI(document, new CachedXPathAPI());
+	assertEquals(new URI("http://schemalocation"), profileURI);
+
+	// Test with custom CMD namespace
+	document = XMLUnit.buildTestDocument(
+		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+		+ "<CMD xmlns=\"http://www.mpi.nl/custom/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+		+ "CMDVersion=\"1.1\"\n"
+		+ "xsi:schemaLocation=\"http://www.mpi.nl/custom/ http://schemalocation\">\n"
+		+ "</CMD>\n");
+	profileURI = reader.getProfileURI(document, new CachedXPathAPI());
+	assertEquals(new URI("http://schemalocation"), profileURI);
+
+	// Test with multiple CMD namespaces
+	document = XMLUnit.buildTestDocument(
+		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+		+ "<CMD xmlns=\"http://www.clarin.eu/cmd/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+		+ "CMDVersion=\"1.1\"\n"
+		+ "xsi:schemaLocation=\"http://www.mpi.nl/custom/ http://wrongschemalocation \n"
+		+ "http://www.clarin.eu/cmd/ http://schemalocation\">\n"
+		+ "</CMD>\n");
+	profileURI = reader.getProfileURI(document, new CachedXPathAPI());
+	assertEquals(new URI("http://schemalocation"), profileURI);
+
+	// Test with non-matching namespaces
+	document = XMLUnit.buildTestDocument(
+		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+		+ "<CMD xmlns=\"http://www.clarin.eu/cmd/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+		+ "CMDVersion=\"1.1\"\n"
+		+ "xsi:schemaLocation=\"http://www.mpi.nl/custom/ http://schemalocation\">\n"
+		+ "</CMD>\n");
+	profileURI = reader.getProfileURI(document, new CachedXPathAPI());
+	assertEquals(new URI("http://schemalocation"), profileURI);
+	
+	// Test with no specification at all
+	document = XMLUnit.buildTestDocument(
+		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+		+ "<CMD xmlns=\"http://www.clarin.eu/cmd/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+		+ "CMDVersion=\"1.1\">\n"
+		+ "</CMD>\n");
+	profileURI = reader.getProfileURI(document, new CachedXPathAPI());
+	assertNull(profileURI);
     }
 }

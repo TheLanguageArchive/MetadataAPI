@@ -145,29 +145,62 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
     /**
      * Locates the schemaLocation specification and extracts the location of the schema specified for the CMD namespace.
      *
+     * A degree of robustness against typos and XML mistakes is achieved by returning the schema location provided if
+     * there is only one, <em>irrespective of the namespace mentioned</em>.
+     *
      * @param document DOM of document to find schema URI for
      * @return URI of schema, null if not present
      * @throws TransformerException
      * @throws URISyntaxException
      */
-    private URI getProfileURI(final Document document, final CachedXPathAPI xPathAPI) throws TransformerException, URISyntaxException {
+    protected URI getProfileURI(final Document document, final CachedXPathAPI xPathAPI) throws TransformerException, URISyntaxException {
 	// Find the <CMD xsi:schemaLocation="..."> attribute
 	final Node schemaLocationNode = xPathAPI.selectSingleNode(document, "/:CMD/@xsi:schemaLocation");
 	if (schemaLocationNode != null) {
 	    // SchemaLocation value consists of {namespace,location} pairs. Find CMD namespace and get the location of its schema
 	    final String schemaLocationString = schemaLocationNode.getNodeValue().trim();
 	    // Tokenize
-	    final String[] schemaLocationTokens = schemaLocationString.split("\\s");
-	    for (int i = 0; i < schemaLocationTokens.length; i += 2) {
-		// Check if namespace matches CMD namespace
-		if (schemaLocationTokens[i].equals(CMDIConstants.CMD_NAMESPACE)) {
-		    // If so, take next token as URI
-		    return new URI(schemaLocationTokens[i + 1]);
+	    final String[] schemaLocationTokens = schemaLocationString.split("\\s+");
+	    // Get document namespace to check against
+
+	    // If there's just one {namespace,location} pair, return its location (i.e. don't check namespace)
+	    if (schemaLocationTokens.length == 2) {
+		// Output a warning message if namespace does not match document namespace
+		if (logger.isWarnEnabled()) {
+		    final URI documentNSUri = getDocumentNamespace(document);
+		    if (!new URI(schemaLocationTokens[0]).equals(documentNSUri)) {
+			logger.warn("Found one schema location for document, but namespace does not match document namespace. "
+				+ "Document namespace is {}, location specified for {}", documentNSUri, schemaLocationTokens[0]);
+		    }
+		}
+		return new URI(schemaLocationTokens[1]);
+	    } else {
+		final URI documentNSUri = getDocumentNamespace(document);
+		// Multiple (or no (valid)) pairs, iterate and check for document namespace match
+		for (int i = 0; i < schemaLocationTokens.length; i += 2) {
+		    // Check if namespace matches CMD namespace
+		    if (documentNSUri.equals(new URI(schemaLocationTokens[i]))) {
+			// If so, take next token as URI
+			return new URI(schemaLocationTokens[i + 1]);
+		    }
 		}
 	    }
 	}
 	// No schemaLocation specified (so null)
 	return null;
+    }
+
+    private URI getDocumentNamespace(final Document document) throws URISyntaxException {
+	// Try to get document namespace from root element
+	final Node documentElement = document.getDocumentElement();
+	if (documentElement != null) {
+	    final String documentNS = documentElement.getNamespaceURI();
+	    if (documentNS != null) {
+		return new URI(documentNS);
+	    }
+	}
+	logger.warn("Cannot find namespace in document, assuming standard namespace {}", CMDIConstants.CMD_NAMESPACE);
+	return new URI(CMDIConstants.CMD_NAMESPACE);
     }
 
     private void readHeader(final CMDIDocument cmdiDocument, final Document document, final CachedXPathAPI xPathAPI) throws MetadataDocumentException {
