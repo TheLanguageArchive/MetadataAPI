@@ -341,7 +341,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
      * @return Path of the root of the document
      */
     @Override
-    protected final String getPathCharSequence() {
-	return getType().getPathString();
+    protected final CharSequence getPathCharSequence() {
+	return getType().getPath();
     }
 }

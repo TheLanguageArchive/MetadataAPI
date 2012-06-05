@@ -77,7 +77,7 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
 	return componentId;
     }
 
-    protected StringBuilder getPath() {
+    public StringBuilder getPath() {
 	return path;
     }
 

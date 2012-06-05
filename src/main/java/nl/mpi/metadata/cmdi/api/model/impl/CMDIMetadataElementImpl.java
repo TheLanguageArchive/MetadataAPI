@@ -42,6 +42,7 @@ public abstract class CMDIMetadataElementImpl implements CMDIMetadataElement {
     private final static Logger logger = LoggerFactory.getLogger(CMDIMetadataElementImpl.class);
     private final Collection<Attribute> attributes;
     private final Collection<ResourceProxy> resourceProxies;
+    private CharSequence pathCharSequence = null;
 
     protected CMDIMetadataElementImpl() {
 	this.attributes = new HashSet<Attribute>();
@@ -181,28 +182,31 @@ public abstract class CMDIMetadataElementImpl implements CMDIMetadataElement {
      * @return the path of this element. CharSequence to prevent excessive conversions to string
      * @throws AssertionError if called on an extension that does not implement {@link ContainedMetadataElement}
      */
-    protected CharSequence getPathCharSequence() throws AssertionError {
-	if (this instanceof ContainedMetadataElement) {
-	    // Component and Element implement ContainedMetadataElement, path can be inferred from parent
-	    final CMDIContainerMetadataElementImpl parentContainer = (CMDIContainerMetadataElementImpl) ((ContainedMetadataElement) this).getParent();
-	    // Get index among siblings
-	    final List<CMDIMetadataElement> siblings = parentContainer.getChildren(getType());
-	    final int index = siblings.indexOf(this);
-	    if (index < 0) {
-		throw new RuntimeException("Node not found in parent's children");
+    protected synchronized CharSequence getPathCharSequence() throws AssertionError {
+	if (pathCharSequence == null) {
+	    if (this instanceof ContainedMetadataElement) {
+		// Component and Element implement ContainedMetadataElement, path can be inferred from parent
+		final CMDIContainerMetadataElementImpl parentContainer = (CMDIContainerMetadataElementImpl) ((ContainedMetadataElement) this).getParent();
+		// Get index among siblings
+		final List<CMDIMetadataElement> siblings = parentContainer.getChildren(getType());
+		final int index = siblings.indexOf(this);
+		if (index < 0) {
+		    throw new RuntimeException("Node not found in parent's children");
+		}
+
+		// Construct path
+		final StringBuilder pathStringBuilder = new StringBuilder(parentContainer.getPathCharSequence());
+		// Append type (=element name)
+		pathStringBuilder.append("/:").append(getType().getName());
+		// Append index
+		pathStringBuilder.append("[").append(index + 1).append("]");
+
+		pathCharSequence = pathStringBuilder;
+	    } else {
+		// CMDIDocument should override thiss
+		throw new AssertionError("Element path cannot be determined for class " + getClass() + " because it does not implement ContainedMetadataElement");
 	    }
-
-	    // Construct path
-	    final StringBuilder pathStringBuilder = new StringBuilder(parentContainer.getPathCharSequence());
-	    // Append type (=element name)
-	    pathStringBuilder.append("/:").append(getType().getName());
-	    // Append index
-	    pathStringBuilder.append("[").append(index + 1).append("]");
-
-	    return pathStringBuilder;
-	} else {
-	    // CMDIDocument should override thiss
-	    throw new AssertionError("Element path cannot be determined for class " + getClass() + " because it does not implement ContainedMetadataElement");
 	}
+	return pathCharSequence;
     }
 }
