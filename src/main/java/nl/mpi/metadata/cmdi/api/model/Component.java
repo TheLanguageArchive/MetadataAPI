@@ -17,11 +17,14 @@
 package nl.mpi.metadata.cmdi.api.model;
 
 import nl.mpi.metadata.api.model.ContainedMetadataElement;
+import nl.mpi.metadata.cmdi.api.type.ComponentType;
 
 /**
+ * CMDI Component, a component of a {@link CMDIDocument CMDI profile instance}
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
+ * @see CMDIDocument
+ * @see ComponentType
  */
 public interface Component extends CMDIContainerMetadataElement, ContainedMetadataElement<CMDIMetadataElement> {
-    
 }

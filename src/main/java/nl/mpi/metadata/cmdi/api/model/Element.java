@@ -16,12 +16,15 @@
  */
 package nl.mpi.metadata.cmdi.api.model;
 
-import nl.mpi.metadata.api.model.LanguageSpecifier;
 import nl.mpi.metadata.api.model.MetadataField;
+import nl.mpi.metadata.cmdi.api.type.ElementType;
 
 /**
+ * CMDI element, a field within a CMDI component
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
+ * @see Component
+ * @see ElementType
  */
-public interface Element<T> extends CMDIMetadataElement, MetadataField<T, CMDIMetadataElement>, LanguageSpecifier {
+public interface Element<T> extends CMDIMetadataElement, MetadataField<T, CMDIMetadataElement> {
 }

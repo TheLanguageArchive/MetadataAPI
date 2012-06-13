@@ -29,8 +29,9 @@ import nl.mpi.metadata.api.model.ReferencingMetadataDocument;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 
 /**
- *
+ * An instance of a CMDI profile
  * @author Twan Goosen <twan.goosen@mpi.nl>
+ * @see CMDIProfile
  */
 public interface CMDIDocument extends CMDIContainerMetadataElement, HandleCarrier, MetadataDocument<CMDIMetadataElement>, ReferencingMetadataDocument<CMDIMetadataElement, ResourceProxy> {
 
