@@ -14,14 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api.model;
-
-import nl.mpi.metadata.api.model.LanguageSpecifier;
-import nl.mpi.metadata.api.model.MetadataField;
+package nl.mpi.metadata.api.model;
 
 /**
+ * Interface for model classes that specify a language. Implementing classes are typically implementations of {@link MetadataField}.
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface Element<T> extends CMDIMetadataElement, MetadataField<T, CMDIMetadataElement>, LanguageSpecifier {
+public interface LanguageSpecifier {
+
+    /**
+     * Sets the language specified for this object
+     *
+     * @param language language to set
+     */
+    void setLanguage(String language);
+
+    /**
+     *
+     * @return language for this object
+     */
+    String getLanguage();
 }

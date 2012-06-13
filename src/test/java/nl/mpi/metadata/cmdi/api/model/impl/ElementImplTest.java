@@ -30,6 +30,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 /**
@@ -129,6 +130,19 @@ public class ElementImplTest extends CMDIMetadataElementImplTest {
     @Test
     public void testGetType() {
 	assertEquals(type, instance.getType());
+    }
+
+    @Test
+    public void testGetLanguage() {
+	assertNull(instance.getLanguage());
+	instance = new ElementImpl(type, parent, "value", "en-EN");
+	assertEquals("en-EN", instance.getLanguage());
+    }
+    
+    @Test
+    public void testSetLanguage() {
+	instance.setLanguage("nl-NL");
+	assertEquals("nl-NL", instance.getLanguage());
     }
 
     /**

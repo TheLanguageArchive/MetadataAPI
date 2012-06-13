@@ -33,11 +33,32 @@ public class ElementImpl<T> extends CMDIMetadataElementImpl implements Element<T
     private final CMDIContainerMetadataElement parent;
     private final ElementType elementType;
     private T value;
+    private String language;
 
+    /**
+     * Constructs an element with no langauge specified
+     *
+     * @param elementType type of the element
+     * @param parent container that will be this element's parent
+     * @param value initial value of the element
+     */
     public ElementImpl(final ElementType elementType, final CMDIContainerMetadataElement parent, final T value) {
+	this(elementType, parent, value, null);
+    }
+
+    /**
+     * Constructs an element with a language specified
+     *
+     * @param elementType type of the element
+     * @param parent container that will be this element's parent
+     * @param value initial value of the element
+     * @param language language to be specified for this element (can be null to leave unspecified)
+     */
+    public ElementImpl(final ElementType elementType, final CMDIContainerMetadataElement parent, final T value, String language) {
 	this.elementType = elementType;
 	this.value = value;
 	this.parent = parent;
+	this.language = language;
 	this.metadataDocument = parent.getMetadataDocument();
     }
 
@@ -89,5 +110,13 @@ public class ElementImpl<T> extends CMDIMetadataElementImpl implements Element<T
     @Override
     public String toString() {
 	return String.format("[%1$s=%2$s]", getType().getName(), getValue());
+    }
+
+    public void setLanguage(String language) {
+	this.language = language;
+    }
+
+    public String getLanguage() {
+	return language;
     }
 }
