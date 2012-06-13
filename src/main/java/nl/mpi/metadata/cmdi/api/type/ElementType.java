@@ -22,13 +22,14 @@ import org.apache.xmlbeans.SchemaProperty;
 
 /**
  * This class represents an element definition inside a CMDI component, defined by http://www.clarin.eu/cmd/general-component-schema.xsd
- * 
+ *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class ElementType extends CMDIProfileElement implements MetadataElementType, DataCategoryType {
 
     private final String path;
-    protected int displayPriority; //defaults to 0
+    private int displayPriority; //defaults to 0
+    private boolean multilingual; //defaults to false
 
     public ElementType(SchemaProperty schemaElement, ComponentType parent, CharSequence path) {
 	super(schemaElement, parent);
@@ -51,11 +52,29 @@ public class ElementType extends CMDIProfileElement implements MetadataElementTy
     }
 
     /**
-     * Set the display priority of this element
+     * Sets the display priority of this element
      *
      * @param displayPriority new display priority of this element
      */
     public void setDisplayPriority(int displayPriority) {
 	this.displayPriority = displayPriority;
+    }
+
+    /**
+     * Gets the multilingual property of this type
+     *
+     * @return whether this element type is multilingual
+     */
+    public boolean isMultilingual() {
+	return multilingual;
+    }
+
+    /**
+     * Sets the multilingual property of this type
+     *
+     * @param multilingual whether this element type is multilingual
+     */
+    public void setMultilingual(boolean multilingual) {
+	this.multilingual = multilingual;
     }
 }

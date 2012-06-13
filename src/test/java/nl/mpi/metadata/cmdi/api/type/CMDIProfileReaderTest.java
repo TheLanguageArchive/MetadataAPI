@@ -80,6 +80,9 @@ public class CMDIProfileReaderTest extends CMDIAPITestCase {
 	assertEquals("Name of the collection", nameType.getDescription());
 	assertEquals("General information about this collection", generalInfoType.getDescription());
 	assertNull(titleType.getDescription());
+
+	assertTrue(nameType.isMultilingual());
+	assertFalse(idType.isMultilingual());
     }
 
     @Test

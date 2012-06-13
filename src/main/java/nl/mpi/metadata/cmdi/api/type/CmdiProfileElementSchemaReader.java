@@ -27,6 +27,7 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import nl.mpi.metadata.api.type.ControlledVocabularyItem;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
+import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategory;
 import org.apache.xmlbeans.SchemaAnnotation;
 import org.apache.xmlbeans.SchemaLocalElement;
@@ -100,18 +101,24 @@ public class CmdiProfileElementSchemaReader {
 		final QName attributeName = attributeProperty.getName();
 		logger.debug("Creating attribute type '{}' of type {}", attributeName, attributeProperty.getType());
 
-		CMDIAttributeType attribute = new CMDIAttributeType();
-		attribute.setSchemaElement(attributeProperty);
-		attribute.setName(attributeName.getLocalPart());
-		if (attributeName.getNamespaceURI() != null) {
-		    attribute.setNamespaceURI(attributeName.getNamespaceURI());
-		}
+		if (profileElement instanceof ElementType
+			&& CMDIConstants.CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAME.equals(attributeName.getLocalPart())
+			&& CMDIConstants.CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAMESPACE_URI.equals(attributeName.getNamespaceURI())) {
+		    ((ElementType) profileElement).setMultilingual(true);
+		} else {
+		    CMDIAttributeType attribute = new CMDIAttributeType();
+		    attribute.setSchemaElement(attributeProperty);
+		    attribute.setName(attributeName.getLocalPart());
+		    if (attributeName.getNamespaceURI() != null) {
+			attribute.setNamespaceURI(attributeName.getNamespaceURI());
+		    }
 
-		attribute.setType(attributeProperty.getType().toString());  // consider .getName().getLocalPart()) but getName can
-		// be null, see documentation
-		attribute.setDefaultValue(attributeProperty.getDefaultText());
-		attribute.setMandatory(attributeProperty.getMinOccurs().compareTo(BigInteger.ZERO) > 0);
-		attributes.add(attribute);
+		    attribute.setType(attributeProperty.getType().toString());  // consider .getName().getLocalPart()) but getName can
+		    // be null, see documentation
+		    attribute.setDefaultValue(attributeProperty.getDefaultText());
+		    attribute.setMandatory(attributeProperty.getMinOccurs().compareTo(BigInteger.ZERO) > 0);
+		    attributes.add(attribute);
+		}
 	    }
 	    profileElement.setAttributes(attributes);
 	} else {
