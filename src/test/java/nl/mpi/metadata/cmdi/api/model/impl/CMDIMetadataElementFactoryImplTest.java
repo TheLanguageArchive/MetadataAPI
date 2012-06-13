@@ -21,8 +21,11 @@ import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.Component;
 import nl.mpi.metadata.cmdi.api.model.Element;
+import nl.mpi.metadata.cmdi.api.model.MultilingualElement;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
+import nl.mpi.metadata.cmdi.api.type.ElementType;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -34,14 +37,19 @@ import static org.junit.Assert.assertTrue;
  */
 public class CMDIMetadataElementFactoryImplTest extends CMDIAPITestCase {
 
+    private CMDIDocument document;
+
+    @Before
+    public void setUp() throws Exception {
+	document = getNewTestDocument(CMDI_METADATA_ELEMENT_FACTORY);
+    }
+
     /**
      * Test of createNewMetadataElement method, of class CMDIMetadataElementFactoryImpl.
      */
     @Test
     public void testCreateNewComponent() throws Exception {
 	System.out.println("createNewMetadataElement");
-
-	CMDIDocument document = getNewTestDocument(CMDI_METADATA_ELEMENT_FACTORY);
 
 	CMDIProfileElement type = document.getType().getContainableTypeByName("Collection");
 	CMDIMetadataElementFactoryImpl instance = new CMDIMetadataElementFactoryImpl();
@@ -59,16 +67,23 @@ public class CMDIMetadataElementFactoryImplTest extends CMDIAPITestCase {
     public void testCreateNewElement() throws Exception {
 	System.out.println("createNewMetadataElement");
 
-
-	CMDIDocument document = getNewTestDocument(CMDI_METADATA_ELEMENT_FACTORY);
 	ComponentType componentType = (ComponentType) ((ComponentType) document.getType().getContainableTypeByName("Collection")).getContainableTypeByName("GeneralInfo");
 	Component component = new ComponentImpl(componentType, document); // adding GeneralInfo directly to document doesn't really match the model but it doesn't matter here
 	CMDIProfileElement type = componentType.getContainableTypeByName("Name");
 
 	CMDIMetadataElementFactoryImpl instance = new CMDIMetadataElementFactoryImpl();
-	CMDIMetadataElement result = instance.createNewMetadataElement(component, type);
 
+	// Test for base Element
+	CMDIMetadataElement result = instance.createNewMetadataElement(component, type);
 	assertTrue(result instanceof Element);
+	assertEquals(type, result.getType());
+	assertEquals(component, ((Element) result).getParent());
+
+	// Test for Multilingual Element
+	((ElementType) type).setMultilingual(true);
+
+	result = instance.createNewMetadataElement(component, type);
+	assertTrue(result instanceof MultilingualElement);
 	assertEquals(type, result.getType());
 	assertEquals(component, ((Element) result).getParent());
     }

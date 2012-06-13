@@ -19,6 +19,8 @@ package nl.mpi.metadata.cmdi.api.model.impl;
 import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElementFactory;
+import nl.mpi.metadata.cmdi.api.model.Component;
+import nl.mpi.metadata.cmdi.api.model.Element;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
@@ -41,7 +43,12 @@ public class CMDIMetadataElementFactoryImpl implements CMDIMetadataElementFactor
     public CMDIMetadataElement createNewMetadataElement(CMDIContainerMetadataElement parentElement, CMDIProfileElement type) {
 	//TODO: Add creation of CMDIDocument
 	if (type instanceof ElementType) {
-	    return new ElementImpl((ElementType) type, parentElement);
+	    // Class to instantiate depends on whether element type is multilingual (xml:lang attribute is present)
+	    if (((ElementType) type).isMultilingual()) {
+		return new MultilingualElementImpl((ElementType) type, parentElement);
+	    } else {
+		return new ElementImpl((ElementType) type, parentElement);
+	    }
 	} else if (type instanceof ComponentType) {
 	    return new ComponentImpl((ComponentType) type, parentElement);
 	} else {
