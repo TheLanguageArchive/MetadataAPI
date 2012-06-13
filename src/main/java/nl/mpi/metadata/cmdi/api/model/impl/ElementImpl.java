@@ -36,7 +36,17 @@ public class ElementImpl<T> extends CMDIMetadataElementImpl implements Element<T
     private String language;
 
     /**
-     * Constructs an element with no langauge specified
+     * Constructs an element with no value or language specified
+     *
+     * @param elementType type of the element
+     * @param parent container that will be this element's parent
+     */
+    public ElementImpl(final ElementType elementType, final CMDIContainerMetadataElement parent) {
+	this(elementType, parent, null, null);
+    }
+
+    /**
+     * Constructs an element with no language specified
      *
      * @param elementType type of the element
      * @param parent container that will be this element's parent

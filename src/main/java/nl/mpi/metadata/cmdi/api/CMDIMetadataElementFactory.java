@@ -31,17 +31,17 @@ import nl.mpi.metadata.cmdi.api.type.ElementType;
 public class CMDIMetadataElementFactory {
 
     /**
-     * Instantiates a new profile element ({@link ElementImpl} or {@link ComponentImpl}) of the specified type. 
+     * Instantiates a new profile element ({@link ElementImpl} or {@link ComponentImpl}) of the specified type.
      * This method will <em>not</em> add it as a child to the parent.
-     * 
+     *
      * @param parentElement container that the newly created element/component will consider its parent
      * @param type element or component type from the profile to instantiate
-     * @return new element or component instance depeneding on the type
+     * @return new element or component instance depending on the type
      */
     public CMDIMetadataElement createNewMetadataElement(CMDIContainerMetadataElement parentElement, CMDIProfileElement type) {
 	//TODO: Add creation of CMDIDocument
 	if (type instanceof ElementType) {
-	    return new ElementImpl((ElementType) type, parentElement, null);
+	    return new ElementImpl((ElementType) type, parentElement);
 	} else if (type instanceof ComponentType) {
 	    return new ComponentImpl((ComponentType) type, parentElement);
 	} else {
