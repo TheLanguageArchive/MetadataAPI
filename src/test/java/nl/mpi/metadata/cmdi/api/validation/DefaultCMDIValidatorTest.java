@@ -41,7 +41,7 @@ public class DefaultCMDIValidatorTest extends CMDIAPITestCase {
      */
     @Test
     public void testValidateValidMetadataDocument() throws Exception {
-	CMDIDocument document = getNewTestDocument(testSchemaSmall.toURI(), "/cmdi/SmallTestProfile-instance-valid.cmdi", SMALL_PROFILE_ROOT_NODE_PATH);
+	CMDIDocument document = getNewTestDocument(CMDI_METADATA_ELEMENT_FACTORY, testSchemaSmall.toURI(), "/cmdi/SmallTestProfile-instance-valid.cmdi", SMALL_PROFILE_ROOT_NODE_PATH);
 	SimpleErrorHandler errorHandler = new SimpleErrorHandler();
 	validator.validateMetadataDocument(document, errorHandler);
 	assertEquals(0, errorHandler.getWarnings().size());
@@ -54,7 +54,7 @@ public class DefaultCMDIValidatorTest extends CMDIAPITestCase {
      */
     @Test
     public void testValidateInvalidMetadataDocument() throws Exception {
-	CMDIDocument document = getNewTestDocument(testSchemaSmall.toURI(), "/cmdi/SmallTestProfile-instance-invalid.cmdi", SMALL_PROFILE_ROOT_NODE_PATH);
+	CMDIDocument document = getNewTestDocument(CMDI_METADATA_ELEMENT_FACTORY, testSchemaSmall.toURI(), "/cmdi/SmallTestProfile-instance-invalid.cmdi", SMALL_PROFILE_ROOT_NODE_PATH);
 	SimpleErrorHandler errorHandler = new SimpleErrorHandler();
 	validator.validateMetadataDocument(document, errorHandler);
 	assertEquals(0, errorHandler.getWarnings().size());

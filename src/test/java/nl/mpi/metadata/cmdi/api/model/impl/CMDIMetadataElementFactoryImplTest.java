@@ -14,13 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api;
+package nl.mpi.metadata.cmdi.api.model.impl;
 
+import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.Component;
 import nl.mpi.metadata.cmdi.api.model.Element;
-import nl.mpi.metadata.cmdi.api.model.impl.ComponentImpl;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import org.junit.Test;
@@ -32,19 +32,19 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIMetadataElementFactoryTest extends CMDIAPITestCase {
+public class CMDIMetadataElementFactoryImplTest extends CMDIAPITestCase {
 
     /**
-     * Test of createNewMetadataElement method, of class CMDIMetadataElementFactory.
+     * Test of createNewMetadataElement method, of class CMDIMetadataElementFactoryImpl.
      */
     @Test
     public void testCreateNewComponent() throws Exception {
 	System.out.println("createNewMetadataElement");
 
-	CMDIDocument document = getNewTestDocument();
+	CMDIDocument document = getNewTestDocument(CMDI_METADATA_ELEMENT_FACTORY);
 
 	CMDIProfileElement type = document.getType().getContainableTypeByName("Collection");
-	CMDIMetadataElementFactory instance = new CMDIMetadataElementFactory();
+	CMDIMetadataElementFactoryImpl instance = new CMDIMetadataElementFactoryImpl();
 	CMDIMetadataElement result = instance.createNewMetadataElement(document, type);
 
 	assertTrue(result instanceof Component);
@@ -53,19 +53,19 @@ public class CMDIMetadataElementFactoryTest extends CMDIAPITestCase {
     }
 
     /**
-     * Test of createNewMetadataElement method, of class CMDIMetadataElementFactory.
+     * Test of createNewMetadataElement method, of class CMDIMetadataElementFactoryImpl.
      */
     @Test
     public void testCreateNewElement() throws Exception {
 	System.out.println("createNewMetadataElement");
 
 
-	CMDIDocument document = getNewTestDocument();
+	CMDIDocument document = getNewTestDocument(CMDI_METADATA_ELEMENT_FACTORY);
 	ComponentType componentType = (ComponentType) ((ComponentType) document.getType().getContainableTypeByName("Collection")).getContainableTypeByName("GeneralInfo");
 	Component component = new ComponentImpl(componentType, document); // adding GeneralInfo directly to document doesn't really match the model but it doesn't matter here
 	CMDIProfileElement type = componentType.getContainableTypeByName("Name");
 
-	CMDIMetadataElementFactory instance = new CMDIMetadataElementFactory();
+	CMDIMetadataElementFactoryImpl instance = new CMDIMetadataElementFactoryImpl();
 	CMDIMetadataElement result = instance.createNewMetadataElement(component, type);
 
 	assertTrue(result instanceof Element);

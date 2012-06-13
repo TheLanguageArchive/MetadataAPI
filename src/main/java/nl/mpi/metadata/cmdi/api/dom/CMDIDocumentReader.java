@@ -26,6 +26,7 @@ import nl.mpi.metadata.api.dom.MetadataDocumentReader;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
+import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElementFactory;
 import nl.mpi.metadata.cmdi.api.model.impl.CMDIDocumentImpl;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
@@ -54,10 +55,11 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
      * Creates a CMDI document reader that uses the specified profile container and a new {@link CMDIComponentReader} and {@link CMDIResourceProxyReader}
      *
      * @param profileContainer profile container that should be used to retrieve CMDI profiles
+     * @param elementFactory metadata element factory to use for creating new components and elements
      * @see CMDIComponentReader
      */
-    public CMDIDocumentReader(CMDIProfileContainer profileContainer) {
-	this(profileContainer, new CMDIComponentReader(), new CMDIResourceProxyReader());
+    public CMDIDocumentReader(CMDIProfileContainer profileContainer, CMDIMetadataElementFactory elementFactory) {
+	this(profileContainer, new CMDIComponentReader(elementFactory), new CMDIResourceProxyReader());
     }
 
     /**

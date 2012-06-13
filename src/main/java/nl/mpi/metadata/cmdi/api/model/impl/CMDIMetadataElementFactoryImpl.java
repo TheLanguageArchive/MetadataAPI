@@ -14,12 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api;
+package nl.mpi.metadata.cmdi.api.model.impl;
 
 import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
-import nl.mpi.metadata.cmdi.api.model.impl.ComponentImpl;
-import nl.mpi.metadata.cmdi.api.model.impl.ElementImpl;
+import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElementFactory;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
@@ -28,16 +27,17 @@ import nl.mpi.metadata.cmdi.api.type.ElementType;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIMetadataElementFactory {
+public class CMDIMetadataElementFactoryImpl implements CMDIMetadataElementFactory {
 
     /**
-     * Instantiates a new profile element ({@link ElementImpl} or {@link ComponentImpl}) of the specified type.
+     * Instantiates a new profile element ({@link Element} or {@link Component}) of the specified type.
      * This method will <em>not</em> add it as a child to the parent.
      *
      * @param parentElement container that the newly created element/component will consider its parent
      * @param type element or component type from the profile to instantiate
      * @return new element or component instance depending on the type
      */
+    @Override
     public CMDIMetadataElement createNewMetadataElement(CMDIContainerMetadataElement parentElement, CMDIProfileElement type) {
 	//TODO: Add creation of CMDIDocument
 	if (type instanceof ElementType) {

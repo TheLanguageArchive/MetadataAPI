@@ -27,10 +27,11 @@ import nl.mpi.metadata.cmdi.api.validation.MockCMDIValidator;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
- * TODO: Use JMock to mock readers, profile container, 
+ * TODO: Use JMock to mock readers, profile container, maybe element factory,
+ *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIApiTest extends CMDIAPITestCase {
@@ -44,7 +45,7 @@ public class CMDIApiTest extends CMDIAPITestCase {
 
     @Before
     public void setUp() throws Exception {
-	testDocument = getNewTestDocument();
+	testDocument = getNewTestDocument(CMDI_METADATA_ELEMENT_FACTORY);
 	profile = getNewTestProfileAndRead();
 	documentReader = new MockCMDIDocumentReader(testDocument);
 	profileReader = new MockCMDIProfileReader(profile);
@@ -85,12 +86,11 @@ public class CMDIApiTest extends CMDIAPITestCase {
 	MockCMDIValidator mockCMDIValidator = new MockCMDIValidator(warnings, errors, fatalErrors);
 	api = new CMDIApi(documentReader, documentWriter, profileReader, mockCMDIValidator);
 	// Validate using this mock handler (against simple handler)
-	api.validateMetadataDocument(getNewTestDocument(), errorHandler);
+	api.validateMetadataDocument(testDocument = getNewTestDocument(CMDI_METADATA_ELEMENT_FACTORY), errorHandler);
 	// Check if numbers match
 	assertEquals(warnings, errorHandler.getWarnings().size());
 	assertEquals(errors, errorHandler.getErrors().size());
 	assertEquals(fatalErrors, errorHandler.getFatalErrors().size());
     }
-    
     //TODO Test constructors
 }

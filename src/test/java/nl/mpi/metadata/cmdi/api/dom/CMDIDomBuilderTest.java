@@ -97,7 +97,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
     @Test
     public void testBuildDomForDocumentHeaders() throws Exception {
 	CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER, CMDI_API_TEST_DOM_BUILDER_FACTORY);
-	CMDIDocument metadataDocument = getNewTestDocument();
+	CMDIDocument metadataDocument = getNewTestDocument(CMDI_METADATA_ELEMENT_FACTORY);
 
 	// Modify header info
 	metadataDocument.putHeaderInformation(new HeaderInfo(CMD_HEADER_MD_CREATION_DATE,
@@ -132,7 +132,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
     @Test
     public void testBuildDomForDocumentProxies() throws Exception {
 	CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER, CMDI_API_TEST_DOM_BUILDER_FACTORY);
-	CMDIDocument metadataDocument = getNewTestDocument();
+	CMDIDocument metadataDocument = getNewTestDocument(CMDI_METADATA_ELEMENT_FACTORY);
 
 	// Modify resource proxies
 	metadataDocument.removeDocumentResourceProxy("resource1");
@@ -182,7 +182,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
     @Test
     public void testBuildDomForDocumentComponents() throws Exception {
 	CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER, CMDI_API_TEST_DOM_BUILDER_FACTORY);
-	CMDIDocument metadataDocument = getNewTestDocument();
+	CMDIDocument metadataDocument = getNewTestDocument(CMDI_METADATA_ELEMENT_FACTORY);
 	// Build DOM
 	Document document = instance.buildDomForDocument(metadataDocument);
 	assertNotNull(document);
@@ -265,7 +265,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
     public void testGetBaseDocument() throws Exception {
 	CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER, CMDI_API_TEST_DOM_BUILDER_FACTORY);
 	// Load document from disk
-	CMDIDocument document = getNewTestDocument();
+	CMDIDocument document = getNewTestDocument(CMDI_METADATA_ELEMENT_FACTORY);
 	Document baseDocument = instance.getBaseDocument(document);
 
 	CachedXPathAPI xPathAPI = new CachedXPathAPI();
@@ -284,7 +284,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
     @Test
     public void testBuildDomForDocumentResult() throws Exception {
 	CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER, CMDI_API_TEST_DOM_BUILDER_FACTORY);
-	CMDIDocument metadataDocument = getNewTestDocument();
+	CMDIDocument metadataDocument = getNewTestDocument(CMDI_METADATA_ELEMENT_FACTORY);
 	// Build DOM
 	Document builtDocument = instance.buildDomForDocument(metadataDocument);
 	// Compare to reading of original DOM

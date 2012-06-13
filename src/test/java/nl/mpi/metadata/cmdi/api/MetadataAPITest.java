@@ -67,11 +67,11 @@ public class MetadataAPITest extends nl.mpi.metadata.api.MetadataAPITest {
 	}
 
 	public MetadataDocument createDocument(CMDIApi api) throws Exception {
-	    return getNewTestDocument(schemaURI, TEXT_CORPUS_INSTANCE_LOCATION, TEXT_CORPUS_PROFILE_ROOT_NODE_PATH);
+	    return getNewTestDocument(CMDI_METADATA_ELEMENT_FACTORY, schemaURI, TEXT_CORPUS_INSTANCE_LOCATION, TEXT_CORPUS_PROFILE_ROOT_NODE_PATH);
 	}
 
 	public MetadataDocument createInvalidDocument(CMDIApi api) throws Exception {
-	    return getNewTestDocument(schemaURI, "/cmdi/TextCorpusProfile-instance-invalid.cmdi", TEXT_CORPUS_PROFILE_ROOT_NODE_PATH);
+	    return getNewTestDocument(CMDI_METADATA_ELEMENT_FACTORY, schemaURI, "/cmdi/TextCorpusProfile-instance-invalid.cmdi", TEXT_CORPUS_PROFILE_ROOT_NODE_PATH);
 	}
 
 	public MetadataContainer createEmptyParentElement(CMDIApi api, MetadataDocument document) throws Exception {

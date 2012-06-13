@@ -52,7 +52,7 @@ public class ElementImplTest extends CMDIMetadataElementImplTest {
 
     @Before
     public void setUp() throws Exception {
-	document = getNewTestDocument();
+	document = getNewTestDocument(CMDI_METADATA_ELEMENT_FACTORY);
 	// Add collection to document, this will be Collection[2] because by default the document already has a collection
 	parent = new ComponentImpl(parentType, document);
 	document.addChildElement(parent);
@@ -136,7 +136,7 @@ public class ElementImplTest extends CMDIMetadataElementImplTest {
 	instance = new ElementImpl(type, parent, "value", "en-EN");
 	assertEquals("en-EN", instance.getLanguage());
     }
-    
+
     @Test
     public void testSetLanguage() {
 	instance.setLanguage("nl-NL");

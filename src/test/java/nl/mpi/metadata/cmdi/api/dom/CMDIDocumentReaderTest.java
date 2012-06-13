@@ -60,7 +60,7 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
     @Before
     public void setUp() {
 	profileContainer = new CMDIProfileContainer(getProfileReader());
-	reader = new CMDIDocumentReader(profileContainer);
+	reader = new CMDIDocumentReader(profileContainer, CMDI_METADATA_ELEMENT_FACTORY);
     }
 
     @After
@@ -269,7 +269,7 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 		+ "</CMD>\n");
 	profileURI = reader.getProfileURI(document, new CachedXPathAPI());
 	assertEquals(new URI("http://schemalocation"), profileURI);
-	
+
 	// Test with no specification at all
 	document = XMLUnit.buildTestDocument(
 		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"

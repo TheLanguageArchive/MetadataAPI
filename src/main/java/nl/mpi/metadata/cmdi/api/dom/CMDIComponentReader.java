@@ -20,11 +20,11 @@ import javax.xml.transform.TransformerException;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
-import nl.mpi.metadata.cmdi.api.CMDIMetadataElementFactory;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
 import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
+import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElementFactory;
 import nl.mpi.metadata.cmdi.api.model.Element;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
@@ -48,14 +48,7 @@ public class CMDIComponentReader {
     private CMDIMetadataElementFactory elementFactory;
 
     /**
-     * Will create a new ComponentReader with a new {@link CMDIMetadataElementFactory}.
-     */
-    public CMDIComponentReader() {
-	this(new CMDIMetadataElementFactory());
-    }
-
-    /**
-     * Will create a new ComponentReader with the specified CMDIMetadataElementFactory
+     * Will create a new ComponentReader with the specified CMDIMetadataElementFactoryImpl
      *
      * @param elementFactory element factory to use for instantiating profile elements
      */

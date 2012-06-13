@@ -37,6 +37,8 @@ import nl.mpi.metadata.cmdi.api.dom.CMDIApiDOMBuilderFactory;
 import nl.mpi.metadata.cmdi.api.dom.CMDIDocumentReader;
 import nl.mpi.metadata.cmdi.api.dom.DOMBuilderFactory;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
+import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElementFactory;
+import nl.mpi.metadata.cmdi.api.model.impl.CMDIMetadataElementFactoryImpl;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileReader;
@@ -77,6 +79,7 @@ public abstract class CMDIAPITestCase {
      */
     public final static URL testSchemaSmall = CMDIProfileReaderTest.class.getResource("/xsd/SmallTestProfile.xsd");
     public final static String SMALL_PROFILE_ROOT_NODE_PATH = "/:CMD/:Components/:SmallTestProfile";
+    public final static CMDIMetadataElementFactory CMDI_METADATA_ELEMENT_FACTORY = new CMDIMetadataElementFactoryImpl();
     /**
      * Entity resolver that resolves remote schema locations for the CMDI instances in the test package resources
      */
@@ -117,17 +120,17 @@ public abstract class CMDIAPITestCase {
 	return builder.parse(documentStream);
     }
 
-    protected CMDIDocument getNewTestDocument() throws IOException, CMDITypeException, ParserConfigurationException, SAXException, TransformerException, URISyntaxException, MetadataException {
-	return getNewTestDocument(testSchemaTextCorpus.toURI(), TEXT_CORPUS_INSTANCE_LOCATION, TEXT_CORPUS_PROFILE_ROOT_NODE_PATH);
+    protected CMDIDocument getNewTestDocument(CMDIMetadataElementFactory elementFactory) throws IOException, CMDITypeException, ParserConfigurationException, SAXException, TransformerException, URISyntaxException, MetadataException {
+	return getNewTestDocument(elementFactory, testSchemaTextCorpus.toURI(), TEXT_CORPUS_INSTANCE_LOCATION, TEXT_CORPUS_PROFILE_ROOT_NODE_PATH);
     }
 
-    protected CMDIDocument getNewTestDocument(final URI schemaURI, final String documentResourceLocation, final String rootNodePath) throws IOException, CMDITypeException, ParserConfigurationException, SAXException, TransformerException, URISyntaxException, MetadataException {
+    protected CMDIDocument getNewTestDocument(CMDIMetadataElementFactory elementFactory, final URI schemaURI, final String documentResourceLocation, final String rootNodePath) throws IOException, CMDITypeException, ParserConfigurationException, SAXException, TransformerException, URISyntaxException, MetadataException {
 	Document domDocument = getDomDocumentForResource(documentResourceLocation);
-	return getDocumentReader().read(domDocument, getClass().getResource(documentResourceLocation).toURI());
+	return getDocumentReader(elementFactory).read(domDocument, getClass().getResource(documentResourceLocation).toURI());
     }
 
-    protected CMDIDocumentReader getDocumentReader() {
-	return new CMDIDocumentReader(getProfileContainer());
+    protected CMDIDocumentReader getDocumentReader(CMDIMetadataElementFactory elementFactory) {
+	return new CMDIDocumentReader(getProfileContainer(), elementFactory);
     }
 
     protected CMDIProfileContainer getProfileContainer() {
