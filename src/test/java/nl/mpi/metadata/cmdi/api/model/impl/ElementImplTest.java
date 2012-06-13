@@ -29,7 +29,8 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  *
@@ -37,10 +38,11 @@ import static org.junit.Assert.*;
  */
 public class ElementImplTest extends CMDIMetadataElementImplTest {
 
-    private static ComponentType parentType;
-    private static ElementType type;
-    private CMDIDocument document;
-    private Component parent;
+    protected static final String DEFAULT_VALUE = "value";
+    protected static ComponentType parentType;
+    protected static ElementType type;
+    protected CMDIDocument document;
+    protected Component parent;
     private ElementImpl instance;
 
     @BeforeClass
@@ -50,13 +52,17 @@ public class ElementImplTest extends CMDIMetadataElementImplTest {
 	type = (ElementType) ((ComponentType) parentType.getContainableTypeByName("GeneralInfo")).getContainableTypeByName("Name");
     }
 
+    protected ElementImpl createInstance(ElementType type, Component parent, String value) {
+	return new ElementImpl(type, parent, value);
+    }
+
     @Before
     public void setUp() throws Exception {
 	document = getNewTestDocument(CMDI_METADATA_ELEMENT_FACTORY);
 	// Add collection to document, this will be Collection[2] because by default the document already has a collection
 	parent = new ComponentImpl(parentType, document);
 	document.addChildElement(parent);
-	instance = new ElementImpl(type, parent, "value");
+	instance = createInstance(type, parent, DEFAULT_VALUE);
 	parent.addChildElement(instance);
     }
 
@@ -90,7 +96,7 @@ public class ElementImplTest extends CMDIMetadataElementImplTest {
      */
     @Test
     public void testGetValue() {
-	assertEquals("value", instance.getValue());
+	assertEquals(DEFAULT_VALUE, instance.getValue());
     }
 
     /**
@@ -107,7 +113,7 @@ public class ElementImplTest extends CMDIMetadataElementImplTest {
      */
     @Test
     public void testGetDisplayValue() {
-	assertEquals("value", instance.getDisplayValue());
+	assertEquals(DEFAULT_VALUE, instance.getDisplayValue());
 	instance.setValue("newValue");
 	assertEquals("newValue", instance.getDisplayValue());
 	instance.setValue(null);
@@ -128,19 +134,6 @@ public class ElementImplTest extends CMDIMetadataElementImplTest {
     @Test
     public void testGetType() {
 	assertEquals(type, instance.getType());
-    }
-
-    @Test
-    public void testGetLanguage() {
-	assertNull(instance.getLanguage());
-	instance = new ElementImpl(type, parent, "value", "en-EN");
-	assertEquals("en-EN", instance.getLanguage());
-    }
-
-    @Test
-    public void testSetLanguage() {
-	instance.setLanguage("nl-NL");
-	assertEquals("nl-NL", instance.getLanguage());
     }
 
     /**
