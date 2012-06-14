@@ -124,32 +124,26 @@ public class CMDIComponentReader {
 
     private void readAttributes(Node instanceNode, CMDIMetadataElement metadataElement, CMDIProfileElement metadataType) {
 	final NamedNodeMap attributesMap = instanceNode.getAttributes();
-	if (attributesMap.getLength() > 0) {	    
+	if (attributesMap.getLength() > 0) {
 	    for (MetadataElementAttributeType attributeType : metadataType.getAttributes()) {
 		final Node attributeNode = getAttributeNodeByType(attributesMap, attributeType);
 		if (attributeNode != null) {
 		    final String localName = attributeNode.getLocalName();
 		    if (CMDIConstants.CMD_RESOURCE_PROXY_REFERENCE_ATTRIBUTE.equals(localName)) {
-			final String refValue = attributeNode.getNodeValue();
-			final String[] refs = refValue.split("\\s+");
-			for (String ref : refs) {
-			    metadataElement.addDocumentResourceProxyReference(ref);
-			}
+			readProxyReferenceAttribute(attributeNode, metadataElement);
 		    } else if (metadataElement instanceof MultilingualElement
+			    && CMDIConstants.CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAMESPACE_URI.equals(attributeNode.getNamespaceURI())
 			    && CMDIConstants.CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAME.equals(localName)) {
-			final String langValue = attributeNode.getNodeValue();
-			((MultilingualElement) metadataElement).setLanguage(langValue);
+			readLanguageAttribute(attributeNode, (MultilingualElement) metadataElement);
 		    } else {
-			Attribute<String> attribute = new Attribute<String>(attributeType);
-			attribute.setValue(attributeNode.getNodeValue());
-			metadataElement.addAttribute(attribute);
+			readElementAttribute(attributeType, attributeNode, metadataElement);
 		    }
 		}
 	    }
 	}
     }
 
-    private Node getAttributeNodeByType(final NamedNodeMap attributesMap, final MetadataElementAttributeType attributeType) throws DOMException {
+    private Node getAttributeNodeByType(NamedNodeMap attributesMap, MetadataElementAttributeType attributeType) throws DOMException {
 	final String namespaceURI = attributeType.getNamespaceURI();
 	final String name = attributeType.getName();
 	if (namespaceURI == null || namespaceURI.length() == 0) {
@@ -157,5 +151,24 @@ public class CMDIComponentReader {
 	} else {
 	    return attributesMap.getNamedItemNS(namespaceURI, name);
 	}
+    }
+
+    private void readLanguageAttribute(Node attributeNode, MultilingualElement metadataElement) throws DOMException {
+	final String elementLanguage = attributeNode.getNodeValue();
+	metadataElement.setLanguage(elementLanguage);
+    }
+
+    private void readProxyReferenceAttribute(Node attributeNode, CMDIMetadataElement metadataElement) throws DOMException {
+	// Split reference list (which is the node value) on whitespace
+	final String[] refs = attributeNode.getNodeValue().split("\\s+");
+	for (String ref : refs) {
+	    metadataElement.addDocumentResourceProxyReference(ref);
+	}
+    }
+
+    private void readElementAttribute(MetadataElementAttributeType attributeType, Node attributeNode, CMDIMetadataElement metadataElement) throws DOMException {
+	final Attribute<String> attribute = new Attribute<String>(attributeType);
+	attribute.setValue(attributeNode.getNodeValue());
+	metadataElement.addAttribute(attribute);
     }
 }
