@@ -32,6 +32,7 @@ import nl.mpi.metadata.cmdi.api.model.Component;
 import nl.mpi.metadata.cmdi.api.model.DataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.Element;
 import nl.mpi.metadata.cmdi.api.model.MetadataResourceProxy;
+import nl.mpi.metadata.cmdi.api.model.MultilingualElement;
 import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
 import org.apache.xpath.CachedXPathAPI;
@@ -165,27 +166,26 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
      * Test of read method, of class CMDIDocumentReader.
      */
     @Test
-    public void testReadAttributes() throws Exception {
+    public void testReadAttributesAndLanguages() throws Exception {
 	CMDIDocument cmdi = readTestDocument();
-	// Get Collection/GeneralInfo/Name element
-	final Element name = (Element) cmdi.getChildElement("Collection/GeneralInfo/Name");
-	// Check attributes
-	Collection<Attribute> attributes = name.getAttributes();
-	assertEquals(1, attributes.size());
-	for (Attribute attribute : attributes) {
-	    assertEquals("en", attribute.getValue());
-	    assertEquals("lang", attribute.getType().getName());
-	    assertEquals("http://www.w3.org/XML/1998/namespace", attribute.getType().getNamespaceURI());
-	}
 
+	// Get Collection/GeneralInfo/Description/Description
 	final Element description = (Element) cmdi.getChildElement("Collection/GeneralInfo/Description/Description");
-	attributes = description.getAttributes();
+	// Check attributes
+	Collection<Attribute> attributes = description.getAttributes();
 	assertEquals(1, attributes.size());
-	for (Attribute attribute : attributes) {
-	    assertEquals("nl", attribute.getValue());
-	    assertEquals("LanguageID", attribute.getType().getName());
-	    assertEquals("", attribute.getType().getNamespaceURI()); // default namespace
-	}
+	// Check attribute values
+	final Attribute attribute = attributes.iterator().next();
+	assertEquals("nl", attribute.getValue());
+	assertEquals("LanguageID", attribute.getType().getName());
+	assertEquals("", attribute.getType().getNamespaceURI()); // default namespace
+
+	// Get Collection/GeneralInfo/Name element
+	final MultilingualElement name = (MultilingualElement) cmdi.getChildElement("Collection/GeneralInfo/Name");
+	// Check attributes
+	attributes = name.getAttributes();
+	assertEquals(0, attributes.size());
+	assertEquals("en", name.getLanguage());
     }
 
     private CMDIDocument readTestDocument() throws SAXException, DOMException, MetadataException, ParserConfigurationException, IOException {

@@ -98,33 +98,46 @@ public class CmdiProfileElementSchemaReader {
 	if (attributeProperties != null && attributeProperties.length > 0) {
 	    Collection<MetadataElementAttributeType> attributes = new ArrayList<MetadataElementAttributeType>(attributeProperties.length);
 	    for (SchemaProperty attributeProperty : attributeProperties) {
-		final QName attributeName = attributeProperty.getName();
-		logger.debug("Creating attribute type '{}' of type {}", attributeName, attributeProperty.getType());
-
-		if (profileElement instanceof ElementType
-			&& CMDIConstants.CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAME.equals(attributeName.getLocalPart())
-			&& CMDIConstants.CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAMESPACE_URI.equals(attributeName.getNamespaceURI())) {
-		    ((ElementType) profileElement).setMultilingual(true);
-		} else {
-		    CMDIAttributeType attribute = new CMDIAttributeType();
-		    attribute.setSchemaElement(attributeProperty);
-		    attribute.setName(attributeName.getLocalPart());
-		    if (attributeName.getNamespaceURI() != null) {
-			attribute.setNamespaceURI(attributeName.getNamespaceURI());
-		    }
-
-		    attribute.setType(attributeProperty.getType().toString());  // consider .getName().getLocalPart()) but getName can
-		    // be null, see documentation
-		    attribute.setDefaultValue(attributeProperty.getDefaultText());
-		    attribute.setMandatory(attributeProperty.getMinOccurs().compareTo(BigInteger.ZERO) > 0);
-		    attributes.add(attribute);
-		}
+		readAttribute(attributeProperty, profileElement, attributes);
 	    }
 	    profileElement.setAttributes(attributes);
 	} else {
 	    Collection<MetadataElementAttributeType> attributes = Collections.emptySet();
 	    profileElement.setAttributes(attributes);
 	}
+    }
+
+    private void readAttribute(SchemaProperty attributeProperty, CMDIProfileElement profileElement, Collection<MetadataElementAttributeType> attributes) {
+	final QName attributeName = attributeProperty.getName();
+	final String attributeLocalPart = attributeName.getLocalPart();
+	final String attributeNamespaceURI = attributeName.getNamespaceURI();
+
+	logger.debug("Creating attribute type '{}' of type {}", attributeName, attributeProperty.getType());
+
+	//Elements should be checked for xml:lang attribute, if so should be set to multilingual
+	if (profileElement instanceof ElementType) {
+	    readMultilingual((ElementType) profileElement, attributeLocalPart, attributeNamespaceURI);
+	}
+
+	CMDIAttributeType attribute = new CMDIAttributeType();
+	attribute.setSchemaElement(attributeProperty);
+	attribute.setName(attributeLocalPart);
+	if (attributeNamespaceURI != null) {
+	    attribute.setNamespaceURI(attributeNamespaceURI);
+	}
+
+	attribute.setType(attributeProperty.getType().toString());  // consider .getName().getLocalPart()) but getName can
+	// be null, see documentation
+	attribute.setDefaultValue(attributeProperty.getDefaultText());
+	attribute.setMandatory(attributeProperty.getMinOccurs().compareTo(BigInteger.ZERO) > 0);
+	attributes.add(attribute);
+    }
+
+    private void readMultilingual(ElementType elementType, final String attributeLocalPart, final String attributeNamespaceURI) {
+	final boolean multilingual = CMDIConstants.CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAME.equals(attributeLocalPart)
+		&& CMDIConstants.CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAMESPACE_URI.equals(attributeNamespaceURI);
+	elementType.setMultilingual(multilingual);
+	logger.debug("Set multilingual property of {} to {}", elementType, multilingual);
     }
 
     /**
