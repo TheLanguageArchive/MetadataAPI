@@ -19,7 +19,6 @@ package nl.mpi.metadata.cmdi.api.type;
 import java.util.Collection;
 import javax.xml.namespace.QName;
 import nl.mpi.metadata.api.type.ContainedMetadataElementType;
-import nl.mpi.metadata.api.type.MetadataContainerElementType;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategory;
 import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategoryType;
@@ -54,9 +53,15 @@ public abstract class CMDIProfileElement implements DataCategoryType, ContainedM
      */
     public abstract String getPathString();
 
+    /**
+     *
+     * @param namespaceURI namespace URI of attribute to find. Specify null to ignore namespace
+     * @param name name of attribute to find
+     * @return attribute with specified name (and optionally namespace), or null if no match found
+     */
     public MetadataElementAttributeType getAttributeTypeByName(String namespaceURI, String name) {
 	for (MetadataElementAttributeType child : getAttributes()) {
-	    if ((namespaceURI == null && child.getNamespaceURI() == null || namespaceURI != null && namespaceURI.equals(child.getNamespaceURI()))
+	    if ((namespaceURI == null || namespaceURI.equals(child.getNamespaceURI()))
 		    && child.getName().equals(name)) {
 		return child;
 	    }
