@@ -26,6 +26,7 @@ import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElementFactory;
 import nl.mpi.metadata.cmdi.api.model.Element;
+import nl.mpi.metadata.cmdi.api.model.MultilingualElement;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
@@ -123,16 +124,21 @@ public class CMDIComponentReader {
 
     private void readAttributes(Node instanceNode, CMDIMetadataElement metadataElement, CMDIProfileElement metadataType) {
 	final NamedNodeMap attributesMap = instanceNode.getAttributes();
-	if (attributesMap.getLength() > 0) {
+	if (attributesMap.getLength() > 0) {	    
 	    for (MetadataElementAttributeType attributeType : metadataType.getAttributes()) {
 		final Node attributeNode = getAttributeNodeByType(attributesMap, attributeType);
 		if (attributeNode != null) {
-		    if (CMDIConstants.CMD_RESOURCE_PROXY_REFERENCE_ATTRIBUTE.equals(attributeNode.getLocalName())) {
-			String refValue = attributeNode.getNodeValue();
-			String[] refs = refValue.split("\\s+");
+		    final String localName = attributeNode.getLocalName();
+		    if (CMDIConstants.CMD_RESOURCE_PROXY_REFERENCE_ATTRIBUTE.equals(localName)) {
+			final String refValue = attributeNode.getNodeValue();
+			final String[] refs = refValue.split("\\s+");
 			for (String ref : refs) {
 			    metadataElement.addDocumentResourceProxyReference(ref);
 			}
+		    } else if (metadataElement instanceof MultilingualElement
+			    && CMDIConstants.CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAME.equals(localName)) {
+			final String langValue = attributeNode.getNodeValue();
+			((MultilingualElement) metadataElement).setLanguage(langValue);
 		    } else {
 			Attribute<String> attribute = new Attribute<String>(attributeType);
 			attribute.setValue(attributeNode.getNodeValue());

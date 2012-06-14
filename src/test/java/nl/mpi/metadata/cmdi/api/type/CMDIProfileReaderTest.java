@@ -21,6 +21,7 @@ import java.net.URL;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategory;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
@@ -81,6 +82,11 @@ public class CMDIProfileReaderTest extends CMDIAPITestCase {
 	assertEquals("General information about this collection", generalInfoType.getDescription());
 	assertNull(titleType.getDescription());
 
+	//Test attributes
+	assertEquals(1, nameType.getAttributes().size()); //xml:lang attribute
+	assertEquals(0, idType.getAttributes().size());
+
+	//Test multilingual
 	assertTrue(nameType.isMultilingual());
 	assertFalse(idType.isMultilingual());
     }
