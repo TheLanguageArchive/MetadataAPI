@@ -32,6 +32,7 @@ import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.impl.CMDIDocumentImpl;
 import nl.mpi.metadata.cmdi.api.model.impl.ComponentImpl;
 import nl.mpi.metadata.cmdi.api.model.impl.ElementImpl;
+import nl.mpi.metadata.cmdi.api.model.impl.MultilingualElementImpl;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
@@ -222,7 +223,9 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	ComponentType collectionType = (ComponentType) profile.getContainableTypeByName("Collection");
 	ComponentType originLocationType = (ComponentType) collectionType.getContainableTypeByName("OriginLocation");
 	ComponentType generalInfoType = (ComponentType) collectionType.getContainableTypeByName("GeneralInfo");
+	ComponentType descriptionComponentType = (ComponentType) generalInfoType.getContainableTypeByName("Description");
 	ElementType nameType = (ElementType) generalInfoType.getContainableTypeByName("Name");
+	ElementType descriptionType = (ElementType) descriptionComponentType.getContainableTypeByName("Description");
 
 	Component collection = new ComponentImpl(collectionType, document);
 	document.addChildElement(collection);
@@ -233,18 +236,27 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	Component generalInfo = new ComponentImpl(generalInfoType, collection);
 	collection.addChildElement(generalInfo);
 
-	Element name = new ElementImpl(nameType, generalInfo, "test element");
+	// Add multilingual name element with language set
+	MultilingualElementImpl name = new MultilingualElementImpl(nameType, generalInfo, "test element");
 	generalInfo.addChildElement(name);
+	name.setLanguage("nl");
 
-	Attribute langAttr = new Attribute(nameType.getAttributeTypeByName(CMDIConstants.XML_NAMESPACE, "lang"));
+	Component descriptionComponent = new ComponentImpl(descriptionComponentType, generalInfo);
+	generalInfo.addChildElement(descriptionComponent);
+
+	// Add element with attribute LanguageID set
+	Element description = new ElementImpl(descriptionType, descriptionComponent, "description element");
+	descriptionComponent.addChildElement(description);
+
+	Attribute langAttr = new Attribute(descriptionType.getAttributeTypeByName(null, "LanguageID"));
 	langAttr.setValue("en");
-	name.addAttribute(langAttr);
+	description.addAttribute(langAttr);
 
 	CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER, CMDI_API_TEST_DOM_BUILDER_FACTORY);
 	Document dom = instance.buildDomForDocument(document);
 
 	CachedXPathAPI xPathAPI = new CachedXPathAPI();
-	Node collectionNode = xPathAPI.selectSingleNode(dom, collectionType.getPathString());
+	Node collectionNode = xPathAPI.selectSingleNode(dom, collection.getPathString());
 	NodeList collectionNodeChildren = collectionNode.getChildNodes();
 
 	assertEquals(2, collectionNodeChildren.getLength());
@@ -252,12 +264,20 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	assertEquals("GeneralInfo", collectionNodeChildren.item(0).getLocalName());
 	assertEquals("OriginLocation", collectionNodeChildren.item(1).getLocalName());
 
-	Node nameNode = xPathAPI.selectSingleNode(dom, nameType.getPathString());
+	Node nameNode = xPathAPI.selectSingleNode(dom, name.getPathString());
 	assertEquals("test element", nameNode.getTextContent());
 	assertEquals(1, nameNode.getAttributes().getLength());
 	Node langAttrNode = nameNode.getAttributes().getNamedItem("xml:lang");
 	assertNotNull(langAttrNode);
 	assertEquals("xml:lang", langAttrNode.getNodeName());
+	assertEquals("nl", langAttrNode.getNodeValue());
+
+	Node descriptionNode = xPathAPI.selectSingleNode(dom, description.getPathString());
+	assertEquals("description element", descriptionNode.getTextContent());
+	assertEquals(1, descriptionNode.getAttributes().getLength());
+	langAttrNode = descriptionNode.getAttributes().getNamedItem("LanguageID");
+	assertNotNull(langAttrNode);
+	assertEquals("LanguageID", langAttrNode.getNodeName());
 	assertEquals("en", langAttrNode.getNodeValue());
     }
 

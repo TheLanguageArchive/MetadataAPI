@@ -38,6 +38,7 @@ import nl.mpi.metadata.api.dom.MetadataDOMBuilder;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.model.Reference;
+import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
 import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
@@ -46,6 +47,7 @@ import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.DataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.Element;
 import nl.mpi.metadata.cmdi.api.model.MetadataResourceProxy;
+import nl.mpi.metadata.cmdi.api.model.MultilingualElement;
 import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
 import nl.mpi.metadata.cmdi.api.type.CMDIAttributeType;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
@@ -268,6 +270,19 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 		attrNode.setNodeValue(attribute.getValue().toString());
 	    } else {
 		logger.info("Found attribute of type other than CMDIAttributeType. Skipping attribute {}", attribute);
+	    }
+	}
+	if (metadataElement instanceof MultilingualElement) {
+	    buildLanguageAttribute(domDocument, elementNode, (MultilingualElement) metadataElement);
+	}
+    }
+
+    private void buildLanguageAttribute(Document domDocument, org.w3c.dom.Element elementNode, MultilingualElement metadataElement) throws DOMException {
+	if (metadataElement.getLanguage() != null) {
+	    final MetadataElementAttributeType languageAttributeType = metadataElement.getType().getAttributeTypeByName(CMDIConstants.CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAMESPACE_URI, CMDIConstants.CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAME);
+	    if (languageAttributeType instanceof CMDIAttributeType) {
+		Node attrNode = appendAttributeNode(domDocument, elementNode, ((CMDIAttributeType) languageAttributeType).getSchemaElement());
+		attrNode.setNodeValue(metadataElement.getLanguage());
 	    }
 	}
     }
