@@ -28,7 +28,15 @@ public class Attribute<T> implements MetadataElementAttribute<T> {
     private final MetadataElementAttributeType type;
     private T value;
 
-    public Attribute(MetadataElementAttributeType type) {
+    /**
+     *
+     * @param type attribute type of the new attribute
+     * @throws NullPointerException if type is null, this is not allowed
+     */
+    public Attribute(MetadataElementAttributeType type) throws NullPointerException {
+	if (type == null) {
+	    throw new NullPointerException("Type cannot be null for a new Attribute");
+	}
 	this.type = type;
     }
 
