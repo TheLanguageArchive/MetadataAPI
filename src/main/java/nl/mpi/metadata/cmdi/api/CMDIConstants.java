@@ -44,6 +44,8 @@ public final class CMDIConstants {
     public final static String CMD_RESOURCE_PROXY_TYPE_RESOURCE = "Resource";
     public final static String CMD_RESOURCE_PROXY_TYPE_MIMETYPE_ATTRIBUTE = "mimetype";
     public final static String CMD_RESOURCE_PROXY_REFERENCE_ATTRIBUTE = "ref";
+    public final static String CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAMESPACE_URI = XML_NAMESPACE;
+    public final static String CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAME = "lang";
     /**
      * XPath to CMDI headers
      */
