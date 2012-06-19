@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2012 Max Planck Institute for Psycholinguistics
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,96 +20,66 @@ package nl.mpi.metadata.api.type;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class MetadataElementAttributeType {
-
-    private String name;
-    private String namespaceURI;
-    private String type;
-    private boolean mandatory;
-    private String defaultValue;
-
-    /**
-     * 
-     * @return the name of the attribute
-     */
-    public String getName() {
-	return name;
-    }
-
-    /**
-     * @param name new name for attribute
-     */
-    public void setName(String name) {
-	this.name = name;
-    }
-
-    /**
-     * 
-     * @return string representation of the type of the attribute
-     */
-    public String getType() {
-	return type;
-    }
-
-    /**
-     * @param type new value of attribute type
-     */
-    public void setType(String type) {
-	this.type = type;
-    }
-
-    /**
-     * @return attribute is mandatory
-     */
-    public boolean isMandatory() {
-	return mandatory;
-    }
-
-    /**
-     * @param mandatory attribute is mandatory
-     */
-    public void setMandatory(boolean mandatory) {
-	this.mandatory = mandatory;
-    }
+public interface MetadataElementAttributeType {
 
     /**
      * Get the default value of this attribute
      *
      * @return the value of defaultValue
      */
-    public String getDefaultValue() {
-	return defaultValue;
-    }
+    String getDefaultValue();
 
     /**
-     * Set the default value of this attribute
      *
-     * @param defaultValue new value of defaultValue
+     * @return the name of the attribute
      */
-    public void setDefaultValue(String defaultValue) {
-	this.defaultValue = defaultValue;
-    }
+    String getName();
 
     /**
      * Get the value of namespace
      *
      * @return the value of namespace
      */
-    public String getNamespaceURI() {
-	return namespaceURI;
-    }
+    String getNamespaceURI();
+
+    /**
+     *
+     * @return string representation of the type of the attribute
+     */
+    String getType();
+
+    /**
+     * @return attribute is mandatory
+     */
+    boolean isMandatory();
+
+    /**
+     * Set the default value of this attribute
+     *
+     * @param defaultValue new value of defaultValue
+     */
+    void setDefaultValue(String defaultValue);
+
+    /**
+     * @param mandatory attribute is mandatory
+     */
+    void setMandatory(boolean mandatory);
+
+    /**
+     * @param name new name for attribute
+     */
+    void setName(String name);
 
     /**
      * Set the value of namespace
      *
      * @param namespace new value of namespace
      */
-    public void setNamespaceURI(String namespace) {
-	this.namespaceURI = namespace;
-    }
+    void setNamespaceURI(String namespace);
 
-    @Override
-    public String toString() {
-	return getType().toString();
-    }
+    /**
+     * @param type new value of attribute type
+     */
+    void setType(String type);
+    
 }

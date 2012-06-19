@@ -44,25 +44,15 @@ public class CMDIProfileElementTest {
     private static MetadataElementAttributeType attrType2;
     private static MetadataElementAttributeType attrType3;
     private Mockery mockContext = new JUnit4Mockery();
-    private SchemaProperty schemaElement;
 
     public CMDIProfileElementTest() {
     }
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-	attrType1 = new MetadataElementAttributeType();
-	attrType1.setNamespaceURI("http://namespace");
-	attrType1.setName("name");
-	attrType1.setType("type");
-	attrType2 = new MetadataElementAttributeType();
-	attrType2.setNamespaceURI("http://namespace2");
-	attrType2.setName("name2");
-	attrType2.setType("type2");
-	attrType3 = new MetadataElementAttributeType();
-	attrType3.setNamespaceURI(null);
-	attrType3.setName("name3");
-	attrType3.setType("type3");
+	attrType1 = new TestMetadataElementAttributeType("http://namespace", "name", "type");
+	attrType2 = new TestMetadataElementAttributeType("http://namespace2", "name2", "type2");
+	attrType3 = new TestMetadataElementAttributeType(null, "name3", "type3");
     }
 
     /**
@@ -268,5 +258,58 @@ public class CMDIProfileElementTest {
 	    }
 	});
 	return mock;
+    }
+
+    private static class TestMetadataElementAttributeType implements MetadataElementAttributeType {
+
+	final String namespace;
+	final String name;
+	final String type;
+
+	public TestMetadataElementAttributeType(String namespace, String name, String type) {
+	    this.namespace = namespace;
+	    this.name = name;
+	    this.type = type;
+	}
+
+	public String getNamespaceURI() {
+	    return namespace;
+	}
+
+	public String getName() {
+	    return name;
+	}
+
+	public String getType() {
+	    return type;
+	}
+
+	public String getDefaultValue() {
+	    throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public boolean isMandatory() {
+	    throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public void setDefaultValue(String defaultValue) {
+	    throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public void setMandatory(boolean mandatory) {
+	    throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public void setName(String name) {
+	    throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public void setNamespaceURI(String namespace) {
+	    throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public void setType(String type) {
+	    throw new UnsupportedOperationException("Not supported yet.");
+	}
     }
 }
