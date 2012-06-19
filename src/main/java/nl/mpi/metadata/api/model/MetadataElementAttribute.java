@@ -29,4 +29,6 @@ public interface MetadataElementAttribute<T> {
     T getValue();
 
     void setValue(T value);
+
+    String getPathString();
 }

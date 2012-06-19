@@ -248,7 +248,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	Element description = new ElementImpl(descriptionType, descriptionComponent, "description element");
 	descriptionComponent.addChildElement(description);
 
-	Attribute langAttr = new Attribute(descriptionType.getAttributeTypeByName(null, "LanguageID"));
+	Attribute langAttr = new Attribute(descriptionType.getAttributeTypeByName(null, "LanguageID"), "@attribute");
 	langAttr.setValue("en");
 	description.addAttribute(langAttr);
 

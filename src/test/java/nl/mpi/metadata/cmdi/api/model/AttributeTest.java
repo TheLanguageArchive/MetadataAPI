@@ -18,14 +18,10 @@ package nl.mpi.metadata.cmdi.api.model;
 
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.cmdi.api.type.CMDIAttributeType;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 /**
  *
@@ -34,6 +30,7 @@ import static org.junit.Assert.fail;
 public class AttributeTest {
 
     private MetadataElementAttributeType attributeType;
+    private final String PATH = "@attribute";
 
     @Before
     public void setUp() {
@@ -42,7 +39,7 @@ public class AttributeTest {
 
     @Test(expected = NullPointerException.class)
     public void testIllegalConstruction() {
-	new Attribute(null);
+	new Attribute(null, "@path");
     }
 
     /**
@@ -50,9 +47,8 @@ public class AttributeTest {
      */
     @Test
     public void testGetType() {
-	Attribute instance = new Attribute(attributeType);
-	MetadataElementAttributeType result = instance.getType();
-	assertEquals(attributeType, result);
+	Attribute instance = new Attribute(attributeType, PATH);
+	assertEquals(attributeType, instance.getType());
     }
 
     /**
@@ -60,9 +56,14 @@ public class AttributeTest {
      */
     @Test
     public void testGetValue() {
-	Attribute instance = new Attribute(attributeType);
+	Attribute instance = new Attribute(attributeType, PATH);
 	instance.setValue("testValue");
-	Object result = instance.getValue();
-	assertEquals("testValue", result);
+	assertEquals("testValue", instance.getValue());
+    }
+
+    @Test
+    public void testGetPathString() {
+	Attribute instance = new Attribute(attributeType, PATH);
+	assertEquals(PATH, instance.getPathString());
     }
 }

@@ -129,13 +129,17 @@ public class CMDIComponentReader {
 		final Node attributeNode = getAttributeNodeByType(attributesMap, attributeType);
 		if (attributeNode != null) {
 		    final String localName = attributeNode.getLocalName();
+		    // What kind of attribute is it?
 		    if (CMDIConstants.CMD_RESOURCE_PROXY_REFERENCE_ATTRIBUTE.equals(localName)) {
+			// Attribute is resource proxy reference
 			readProxyReferenceAttribute(attributeNode, metadataElement);
 		    } else if (metadataElement instanceof MultilingualElement
 			    && CMDIConstants.CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAMESPACE_URI.equals(attributeNode.getNamespaceURI())
 			    && CMDIConstants.CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAME.equals(localName)) {
+			// Attribute is language specification for multilingual
 			readLanguageAttribute(attributeNode, (MultilingualElement) metadataElement);
 		    } else {
+			// Other attribute, add as element attribute
 			readElementAttribute(attributeType, attributeNode, metadataElement);
 		    }
 		}
@@ -167,8 +171,23 @@ public class CMDIComponentReader {
     }
 
     private void readElementAttribute(MetadataElementAttributeType attributeType, Node attributeNode, CMDIMetadataElement metadataElement) throws DOMException {
-	final Attribute<String> attribute = new Attribute<String>(attributeType);
+	final String attributePath = createAttributePathString(attributeNode, metadataElement);
+	final Attribute<String> attribute = new Attribute<String>(attributeType, attributePath);
 	attribute.setValue(attributeNode.getNodeValue());
 	metadataElement.addAttribute(attribute);
+    }
+
+    private String createAttributePathString(Node attributeNode, CMDIMetadataElement metadataElement) {
+	final String nsURI = attributeNode.getNamespaceURI();
+	final String localPart = attributeNode.getLocalName();
+	final StringBuilder path = new StringBuilder(metadataElement.getPathString());
+	path.append("/@");
+	if (nsURI != null && nsURI.length() > 0) {
+	    path.append("{");
+	    path.append(nsURI);
+	    path.append("}");
+	}
+	path.append(localPart).toString();
+	return path.toString();
     }
 }

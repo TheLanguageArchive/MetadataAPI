@@ -25,6 +25,7 @@ import nl.mpi.metadata.api.type.MetadataElementAttributeType;
  */
 public class Attribute<T> implements MetadataElementAttribute<T> {
 
+    private final String path;
     private final MetadataElementAttributeType type;
     private T value;
 
@@ -33,11 +34,16 @@ public class Attribute<T> implements MetadataElementAttribute<T> {
      * @param type attribute type of the new attribute
      * @throws NullPointerException if type is null, this is not allowed
      */
-    public Attribute(MetadataElementAttributeType type) throws NullPointerException {
+    public Attribute(MetadataElementAttributeType type, String path) throws NullPointerException {
 	if (type == null) {
 	    throw new NullPointerException("Type cannot be null for a new Attribute");
 	}
 	this.type = type;
+	this.path = path;
+    }
+
+    public String getPathString() {
+	return path;
     }
 
     /**
