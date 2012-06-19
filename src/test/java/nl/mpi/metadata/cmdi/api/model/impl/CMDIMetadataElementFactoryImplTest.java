@@ -113,7 +113,7 @@ public class CMDIMetadataElementFactoryImplTest extends CMDIAPITestCase {
     public void testCreateNewAttribute() throws Exception {
 	Component component = context.mock(Component.class);
 
-	CMDIAttributeType attributeType = new CMDIAttributeType();
+	CMDIAttributeType attributeType = new CMDIAttributeType("@path");
 	attributeType.setName("attributeName");
 	Attribute<String> result = instance.createAttribute(component, attributeType);
 

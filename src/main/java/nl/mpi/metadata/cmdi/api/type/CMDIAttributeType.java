@@ -31,9 +31,25 @@ public class CMDIAttributeType implements MetadataElementAttributeType {
     private boolean mandatory;
     private String defaultValue;
     private SchemaProperty schemaElement;
+    private final String path;
+
+    public CMDIAttributeType(String path) {
+	this.path = path;
+    }
 
     /**
-     * 
+     * Creates attribute with path constructed from parameters
+     *
+     * @param parentPath path of parent
+     * @param namespaceURI namespace URI of attribute
+     * @param localPart local part of attribute name
+     */
+    protected CMDIAttributeType(CharSequence parentPath, final String namespaceURI, final String localPart) {
+	this(createAttributePathString(parentPath, namespaceURI, localPart));
+    }
+
+    /**
+     *
      * @return the name of the attribute
      */
     public String getName() {
@@ -48,7 +64,7 @@ public class CMDIAttributeType implements MetadataElementAttributeType {
     }
 
     /**
-     * 
+     *
      * @return string representation of the type of the attribute
      */
     public String getType() {
@@ -116,13 +132,27 @@ public class CMDIAttributeType implements MetadataElementAttributeType {
     public String toString() {
 	return getType().toString();
     }
-    
-    
+
     public SchemaProperty getSchemaElement() {
 	return schemaElement;
     }
 
     protected final void setSchemaElement(SchemaProperty element) {
 	this.schemaElement = element;
+    }
+
+    public String getPathString() {
+	return path;
+    }
+
+    public static String createAttributePathString(CharSequence parentPath, final String namespaceURI, final String localPart) {
+	final StringBuilder path = new StringBuilder(parentPath).append("/@");
+	if (namespaceURI != null && namespaceURI.length() > 0) {
+	    path.append("{");
+	    path.append(namespaceURI);
+	    path.append("}");
+	}
+	path.append(localPart).toString();
+	return path.toString();
     }
 }

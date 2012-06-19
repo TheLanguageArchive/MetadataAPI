@@ -119,7 +119,7 @@ public class CmdiProfileElementSchemaReader {
 	    readMultilingual((ElementType) profileElement, attributeLocalPart, attributeNamespaceURI);
 	}
 
-	CMDIAttributeType attribute = new CMDIAttributeType();
+	CMDIAttributeType attribute = new CMDIAttributeType(profileElement.getPathString(), attributeNamespaceURI, attributeLocalPart);
 	attribute.setSchemaElement(attributeProperty);
 	attribute.setName(attributeLocalPart);
 	if (attributeNamespaceURI != null) {

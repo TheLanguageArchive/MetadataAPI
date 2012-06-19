@@ -29,7 +29,6 @@ import org.apache.xmlbeans.SchemaProperty;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -40,19 +39,12 @@ import static org.junit.Assert.*;
  */
 public class CMDIProfileElementTest {
 
-    private static MetadataElementAttributeType attrType1;
-    private static MetadataElementAttributeType attrType2;
-    private static MetadataElementAttributeType attrType3;
+    private MetadataElementAttributeType attrType1;
+    private MetadataElementAttributeType attrType2;
+    private MetadataElementAttributeType attrType3;
     private Mockery mockContext = new JUnit4Mockery();
 
     public CMDIProfileElementTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-	attrType1 = new TestMetadataElementAttributeType("http://namespace", "name", "type");
-	attrType2 = new TestMetadataElementAttributeType("http://namespace2", "name2", "type2");
-	attrType3 = new TestMetadataElementAttributeType(null, "name3", "type3");
     }
 
     /**
@@ -72,7 +64,7 @@ public class CMDIProfileElementTest {
     @Test
     public void testGetAttributeTypeByName() {
 	CMDIProfileElement instance = new CMDIProfileElementTestImpl();
-	instance.setAttributes(Arrays.asList(attrType1, attrType2, attrType3));
+	setAttributes(instance);
 
 	// Get by name and NS
 	assertSame(attrType1, instance.getAttributeTypeByName("http://namespace", "name"));
@@ -91,12 +83,11 @@ public class CMDIProfileElementTest {
     @Test
     public void testGetAttributes() {
 	CMDIProfileElement instance = new CMDIProfileElementTestImpl();
-	final List<MetadataElementAttributeType> attrList = Arrays.asList(attrType1, attrType2, attrType3);
-	instance.setAttributes(attrList);
+	List<MetadataElementAttributeType> attributesList = setAttributes(instance);
 
 	Collection result = instance.getAttributes();
 	assertEquals(3, result.size());
-	assertTrue(Arrays.deepEquals(attrList.toArray(), result.toArray()));
+	assertTrue(Arrays.deepEquals(attributesList.toArray(), result.toArray()));
     }
 
     /**
@@ -260,56 +251,30 @@ public class CMDIProfileElementTest {
 	return mock;
     }
 
-    private static class TestMetadataElementAttributeType implements MetadataElementAttributeType {
+    private List<MetadataElementAttributeType> setAttributes(CMDIProfileElement instance) {
+	attrType1 = getMockMetadataElementAttributeType("http://namespace", "name", "type");
+	attrType2 = getMockMetadataElementAttributeType("http://namespace2", "name2", "type2");
+	attrType3 = getMockMetadataElementAttributeType(null, "name3", "type3");
+	final List<MetadataElementAttributeType> attributesList = Arrays.asList(attrType1, attrType2, attrType3);
+	instance.setAttributes(attributesList);
+	return attributesList;
+    }
 
-	final String namespace;
-	final String name;
-	final String type;
+    private MetadataElementAttributeType getMockMetadataElementAttributeType(final String namespace, final String name, final String type) {
+	final MetadataElementAttributeType mock = mockContext.mock(MetadataElementAttributeType.class, name);
+	mockContext.checking(new Expectations() {
 
-	public TestMetadataElementAttributeType(String namespace, String name, String type) {
-	    this.namespace = namespace;
-	    this.name = name;
-	    this.type = type;
-	}
+	    {
+		allowing(mock).getName();
+		will(returnValue(name));
 
-	public String getNamespaceURI() {
-	    return namespace;
-	}
+		allowing(mock).getNamespaceURI();
+		will(returnValue(namespace));
 
-	public String getName() {
-	    return name;
-	}
-
-	public String getType() {
-	    return type;
-	}
-
-	public String getDefaultValue() {
-	    throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	public boolean isMandatory() {
-	    throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	public void setDefaultValue(String defaultValue) {
-	    throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	public void setMandatory(boolean mandatory) {
-	    throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	public void setName(String name) {
-	    throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	public void setNamespaceURI(String namespace) {
-	    throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	public void setType(String type) {
-	    throw new UnsupportedOperationException("Not supported yet.");
-	}
+		allowing(mock).getType();
+		will(returnValue(type));
+	    }
+	});
+	return mock;
     }
 }

@@ -18,6 +18,7 @@ package nl.mpi.metadata.cmdi.api.type;
 
 import java.net.URI;
 import java.net.URL;
+import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategory;
 import org.junit.Test;
@@ -85,6 +86,9 @@ public class CMDIProfileReaderTest extends CMDIAPITestCase {
 	//Test attributes
 	assertEquals(1, nameType.getAttributes().size()); //xml:lang attribute
 	assertEquals(0, idType.getAttributes().size());
+	// Test attribute path
+	final MetadataElementAttributeType attribute = nameType.getAttributes().iterator().next();
+	assertEquals("/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Name/@{http://www.w3.org/XML/1998/namespace}lang", attribute.getPathString());
 
 	//Test multilingual
 	assertTrue(nameType.isMultilingual());

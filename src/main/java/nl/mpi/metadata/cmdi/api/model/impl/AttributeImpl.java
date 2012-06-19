@@ -19,6 +19,7 @@ package nl.mpi.metadata.cmdi.api.model.impl;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
+import nl.mpi.metadata.cmdi.api.type.CMDIAttributeType;
 
 /**
  *
@@ -77,29 +78,16 @@ public class AttributeImpl<T> implements Attribute<T> {
     @Override
     public synchronized String getPathString() {
 	if (pathString == null) {
-	    pathString = createAttributePathString();
+	    final String nsURI = getType().getNamespaceURI();
+	    final String localPart = getType().getName();
+	    if (parent instanceof CMDIMetadataElementImpl) {
+		// Add path char sequence, should be more efficient if it's a StringBuilder, no unnecessary toString() conversions
+		pathString = CMDIAttributeType.createAttributePathString(((CMDIMetadataElementImpl) parent).getPathCharSequence(), nsURI, localPart);
+	    } else {
+		pathString = CMDIAttributeType.createAttributePathString(parent.getPathString(), nsURI, localPart);
+	    }
 	}
 	return pathString;
-    }
-
-    private String createAttributePathString() {
-	final String nsURI = getType().getNamespaceURI();
-	final String localPart = getType().getName();
-	final StringBuilder path = new StringBuilder();
-	if (parent instanceof CMDIMetadataElementImpl) {
-	    // Add path char sequence, should be more efficient if it's a StringBuilder, no unnecessary toString() conversions
-	    path.append(((CMDIMetadataElementImpl) parent).getPathCharSequence());
-	} else {
-	    path.append(parent.getPathString());
-	}
-	path.append("/@");
-	if (nsURI != null && nsURI.length() > 0) {
-	    path.append("{");
-	    path.append(nsURI);
-	    path.append("}");
-	}
-	path.append(localPart).toString();
-	return path.toString();
     }
 
     @Override
