@@ -27,6 +27,7 @@ import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElementFactory;
 import nl.mpi.metadata.cmdi.api.model.Element;
 import nl.mpi.metadata.cmdi.api.model.MultilingualElement;
+import nl.mpi.metadata.cmdi.api.type.CMDIAttributeType;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
@@ -49,7 +50,7 @@ public class CMDIComponentReader {
     private CMDIMetadataElementFactory elementFactory;
 
     /**
-     * Will create a new ComponentReader with the specified CMDIMetadataElementFactoryImpl
+     * Will create a new ComponentReader with the specified CMDIMetadataElementFactory
      *
      * @param elementFactory element factory to use for instantiating profile elements
      */
@@ -140,7 +141,7 @@ public class CMDIComponentReader {
 			readLanguageAttribute(attributeNode, (MultilingualElement) metadataElement);
 		    } else {
 			// Other attribute, add as element attribute
-			readElementAttribute(attributeType, attributeNode, metadataElement);
+			readElementAttribute((CMDIAttributeType) attributeType, attributeNode, metadataElement);
 		    }
 		}
 	    }
@@ -170,24 +171,9 @@ public class CMDIComponentReader {
 	}
     }
 
-    private void readElementAttribute(MetadataElementAttributeType attributeType, Node attributeNode, CMDIMetadataElement metadataElement) throws DOMException {
-	final String attributePath = createAttributePathString(attributeNode, metadataElement);
-	final Attribute<String> attribute = new Attribute<String>(attributeType, attributePath);
+    private void readElementAttribute(CMDIAttributeType attributeType, Node attributeNode, CMDIMetadataElement metadataElement) throws DOMException {
+	final Attribute<String> attribute = elementFactory.createAttribute(metadataElement, attributeType);
 	attribute.setValue(attributeNode.getNodeValue());
 	metadataElement.addAttribute(attribute);
-    }
-
-    private String createAttributePathString(Node attributeNode, CMDIMetadataElement metadataElement) {
-	final String nsURI = attributeNode.getNamespaceURI();
-	final String localPart = attributeNode.getLocalName();
-	final StringBuilder path = new StringBuilder(metadataElement.getPathString());
-	path.append("/@");
-	if (nsURI != null && nsURI.length() > 0) {
-	    path.append("{");
-	    path.append(nsURI);
-	    path.append("}");
-	}
-	path.append(localPart).toString();
-	return path.toString();
     }
 }

@@ -16,11 +16,13 @@
  */
 package nl.mpi.metadata.cmdi.api.model.impl;
 
+import nl.mpi.metadata.cmdi.api.model.Attribute;
 import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElementFactory;
 import nl.mpi.metadata.cmdi.api.model.Component;
 import nl.mpi.metadata.cmdi.api.model.Element;
+import nl.mpi.metadata.cmdi.api.type.CMDIAttributeType;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
@@ -55,5 +57,10 @@ public class CMDIMetadataElementFactoryImpl implements CMDIMetadataElementFactor
 	    // None of the above types
 	    throw new AssertionError("Cannot handle CMDIMetadataElement type " + type.getClass().getName());
 	}
+    }
+
+    @Override
+    public <T> Attribute<T> createAttribute(CMDIMetadataElement parent, CMDIAttributeType type) {
+	return new AttributeImpl<T>(type, parent);
     }
 }

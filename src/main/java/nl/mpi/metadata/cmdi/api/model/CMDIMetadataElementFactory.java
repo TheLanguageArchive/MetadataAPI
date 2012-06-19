@@ -16,6 +16,7 @@
  */
 package nl.mpi.metadata.cmdi.api.model;
 
+import nl.mpi.metadata.cmdi.api.type.CMDIAttributeType;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 
 /**
@@ -33,4 +34,13 @@ public interface CMDIMetadataElementFactory {
      * @return new element or component instance depending on the type
      */
     CMDIMetadataElement createNewMetadataElement(CMDIContainerMetadataElement parentElement, CMDIProfileElement type);
+    
+    /**
+     * Instantiates a new attribute of the specified type and value type
+     * @param <T> value type for attribute
+     * @param parent parent element of attribute
+     * @param type attribute type for attribute
+     * @return new attribute
+     */
+    <T> Attribute<T> createAttribute(CMDIMetadataElement parent, CMDIAttributeType type);
 }

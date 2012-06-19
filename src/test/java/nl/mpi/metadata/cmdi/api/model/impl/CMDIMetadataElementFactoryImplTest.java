@@ -17,14 +17,19 @@
 package nl.mpi.metadata.cmdi.api.model.impl;
 
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
+import nl.mpi.metadata.cmdi.api.model.Attribute;
+import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.Component;
 import nl.mpi.metadata.cmdi.api.model.Element;
 import nl.mpi.metadata.cmdi.api.model.MultilingualElement;
+import nl.mpi.metadata.cmdi.api.type.CMDIAttributeType;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,10 +43,13 @@ import static org.junit.Assert.assertTrue;
 public class CMDIMetadataElementFactoryImplTest extends CMDIAPITestCase {
 
     private CMDIDocument document;
+    private CMDIMetadataElementFactoryImpl instance;
+    private Mockery context = new JUnit4Mockery();
 
     @Before
     public void setUp() throws Exception {
 	document = getNewTestDocument(CMDI_METADATA_ELEMENT_FACTORY);
+	instance = new CMDIMetadataElementFactoryImpl();
     }
 
     /**
@@ -52,7 +60,6 @@ public class CMDIMetadataElementFactoryImplTest extends CMDIAPITestCase {
 	System.out.println("createNewMetadataElement");
 
 	CMDIProfileElement type = document.getType().getContainableTypeByName("Collection");
-	CMDIMetadataElementFactoryImpl instance = new CMDIMetadataElementFactoryImpl();
 	CMDIMetadataElement result = instance.createNewMetadataElement(document, type);
 
 	assertTrue(result instanceof Component);
@@ -71,8 +78,6 @@ public class CMDIMetadataElementFactoryImplTest extends CMDIAPITestCase {
 	Component component = new ComponentImpl(componentType, document); // adding GeneralInfo directly to document doesn't really match the model but it doesn't matter here
 	CMDIProfileElement type = componentType.getContainableTypeByName("Name");
 
-	CMDIMetadataElementFactoryImpl instance = new CMDIMetadataElementFactoryImpl();
-
 	// Test for base Element
 	CMDIMetadataElement result = instance.createNewMetadataElement(component, type);
 	assertTrue(result instanceof Element);
@@ -86,5 +91,33 @@ public class CMDIMetadataElementFactoryImplTest extends CMDIAPITestCase {
 	assertTrue(result instanceof MultilingualElement);
 	assertEquals(type, result.getType());
 	assertEquals(component, ((Element) result).getParent());
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testCreateElementUnknownType() {
+	// Create new implementation of CMDIProfileElement that the factory cannot handle
+	CMDIContainerMetadataElement parent = context.mock(CMDIContainerMetadataElement.class);
+	CMDIProfileElement cmdiProfileElement = new CMDIProfileElement(document.getDocumentType().getSchemaElement(), null) {
+
+	    @Override
+	    public String getPathString() {
+		return null;
+	    }
+	};
+
+	// This line should throw an exception because of the unknown type
+	instance.createNewMetadataElement(parent, cmdiProfileElement);
+    }
+
+    @Test
+    public void testCreateNewAttribute() throws Exception {
+	Component component = context.mock(Component.class);
+
+	CMDIAttributeType attributeType = new CMDIAttributeType();
+	attributeType.setName("attributeName");
+	Attribute<String> result = instance.createAttribute(component, attributeType);
+
+	assertTrue(result instanceof Attribute);
+	assertEquals(attributeType, result.getType());
     }
 }

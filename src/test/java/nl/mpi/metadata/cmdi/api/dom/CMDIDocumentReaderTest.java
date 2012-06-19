@@ -43,7 +43,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import static nl.mpi.metadata.cmdi.api.CMDIConstants.*;
@@ -168,8 +167,7 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
      */
     @Test
     public void testReadAttributesAndLanguages() throws Exception {
-	final Document dom = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
-	CMDIDocument cmdi = readTestDocument(dom);
+	CMDIDocument cmdi = readTestDocument();
 
 	// Get Collection/GeneralInfo/Description/Description
 	final Element description = (Element) cmdi.getChildElement("Collection/GeneralInfo/Description/Description");
@@ -181,11 +179,7 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 	assertEquals("nl", attribute.getValue());
 	assertEquals("LanguageID", attribute.getType().getName());
 	assertEquals("", attribute.getType().getNamespaceURI()); // default namespace
-	// Test path of attribute
-	final Node attributeDomNode = XPathAPI.selectSingleNode(dom, attribute.getPathString());
-	assertNotNull(attributeDomNode);
-	assertEquals("nl", attributeDomNode.getNodeValue());
-	
+
 	// Get Collection/GeneralInfo/Name element
 	final MultilingualElement name = (MultilingualElement) cmdi.getChildElement("Collection/GeneralInfo/Name");
 	// Check attributes
@@ -196,11 +190,6 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 
     private CMDIDocument readTestDocument() throws SAXException, DOMException, MetadataException, ParserConfigurationException, IOException {
 	final Document dom = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
-	return readTestDocument(dom);
-    }
-
-    private CMDIDocument readTestDocument(Document dom) throws SAXException, DOMException, MetadataException, ParserConfigurationException, IOException {
-	// Read from DOM
 	final CMDIDocument cmdi = reader.read(dom, null);
 	assertNotNull(cmdi);
 	return cmdi;

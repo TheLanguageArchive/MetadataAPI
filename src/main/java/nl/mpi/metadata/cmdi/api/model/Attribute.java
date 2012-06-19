@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2012 Max Planck Institute for Psycholinguistics
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,58 +23,29 @@ import nl.mpi.metadata.api.type.MetadataElementAttributeType;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class Attribute<T> implements MetadataElementAttribute<T> {
+public interface Attribute<T> extends MetadataElementAttribute<T> {
 
-    private final String path;
-    private final MetadataElementAttributeType type;
-    private T value;
-
-    /**
-     *
-     * @param type attribute type of the new attribute
-     * @throws NullPointerException if type is null, this is not allowed
-     */
-    public Attribute(MetadataElementAttributeType type, String path) throws NullPointerException {
-	if (type == null) {
-	    throw new NullPointerException("Type cannot be null for a new Attribute");
-	}
-	this.type = type;
-	this.path = path;
-    }
-
-    public String getPathString() {
-	return path;
-    }
+    String getPathString();
 
     /**
      * Get the value of type
      *
      * @return the value of type
      */
-    public MetadataElementAttributeType getType() {
-	return type;
-    }
+    MetadataElementAttributeType getType();
 
     /**
      * Get the value of value
      *
      * @return the value of value
      */
-    public T getValue() {
-	return value;
-    }
+    T getValue();
 
     /**
      * Set the value of value
      *
      * @param value new value of value
      */
-    public void setValue(T value) {
-	this.value = value;
-    }
-
-    @Override
-    public String toString() {
-	return String.format("[@%1$s=%2$s]", getType().getName(), getValue());
-    }
+    void setValue(T value);
+    
 }

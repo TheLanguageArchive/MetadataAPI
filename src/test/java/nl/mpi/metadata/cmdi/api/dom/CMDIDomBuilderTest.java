@@ -24,10 +24,12 @@ import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
+import nl.mpi.metadata.cmdi.api.model.impl.AttributeImpl;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.Component;
 import nl.mpi.metadata.cmdi.api.model.DataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.Element;
+import nl.mpi.metadata.cmdi.api.model.MultilingualElement;
 import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.impl.CMDIDocumentImpl;
 import nl.mpi.metadata.cmdi.api.model.impl.ComponentImpl;
@@ -215,6 +217,8 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 
     @Test
     public void testBuildDomForDocumentNewDocument() throws Exception {
+	//TODO: Use more mocking...
+
 	// Create a new document on basis of a profile
 	CMDIProfile profile = getNewTestProfileAndRead();
 	CMDIDocument document = new CMDIDocumentImpl(profile);
@@ -237,7 +241,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	collection.addChildElement(generalInfo);
 
 	// Add multilingual name element with language set
-	MultilingualElementImpl name = new MultilingualElementImpl(nameType, generalInfo, "test element");
+	MultilingualElement name = new MultilingualElementImpl(nameType, generalInfo, "test element");
 	generalInfo.addChildElement(name);
 	name.setLanguage("nl");
 
@@ -248,7 +252,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	Element description = new ElementImpl(descriptionType, descriptionComponent, "description element");
 	descriptionComponent.addChildElement(description);
 
-	Attribute langAttr = new Attribute(descriptionType.getAttributeTypeByName(null, "LanguageID"), "@attribute");
+	Attribute langAttr = new AttributeImpl(descriptionType.getAttributeTypeByName(null, "LanguageID"), description);
 	langAttr.setValue("en");
 	description.addAttribute(langAttr);
 
