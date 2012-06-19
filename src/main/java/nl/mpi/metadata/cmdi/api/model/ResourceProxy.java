@@ -107,4 +107,9 @@ public abstract class ResourceProxy implements Reference, HandleCarrier {
 	    throw new IllegalArgumentException("ResourceProxy only supports URI handles", usEx);
 	}
     }
+
+    @Override
+    public String toString() {
+	return String.format("{%1$s} %2$s", getId(), getURI());
+    }
 }
