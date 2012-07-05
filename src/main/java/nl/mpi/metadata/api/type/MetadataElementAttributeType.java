@@ -76,11 +76,6 @@ public interface MetadataElementAttributeType {
      * @param namespace new value of namespace
      */
     void setNamespaceURI(String namespace);
-
-    /**
-     * @param type new value of attribute type
-     */
-    void setType(String type);
         
     /**
      * Returns an XPath that, when applied to a metadata <em>instance</em>, returns a list 

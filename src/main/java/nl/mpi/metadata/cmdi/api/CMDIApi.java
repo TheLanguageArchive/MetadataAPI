@@ -30,6 +30,7 @@ import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.MetadataTypeException;
 import nl.mpi.metadata.api.dom.MetadataDocumentReader;
 import nl.mpi.metadata.api.dom.MetadataDocumentWriter;
+import nl.mpi.metadata.api.model.MetadataElementAttributeContainer;
 import nl.mpi.metadata.api.type.MetadataDocumentTypeReader;
 import nl.mpi.metadata.api.validation.MetadataValidator;
 import nl.mpi.metadata.cmdi.api.dom.CMDIApiDOMBuilderFactory;
@@ -39,11 +40,13 @@ import nl.mpi.metadata.cmdi.api.dom.CMDIDocumentWriter;
 import nl.mpi.metadata.cmdi.api.dom.CMDIDomBuilder;
 import nl.mpi.metadata.cmdi.api.dom.CMDIResourceProxyReader;
 import nl.mpi.metadata.cmdi.api.dom.DOMBuilderFactory;
+import nl.mpi.metadata.cmdi.api.model.Attribute;
 import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElementFactory;
 import nl.mpi.metadata.cmdi.api.model.impl.CMDIMetadataElementFactoryImpl;
+import nl.mpi.metadata.cmdi.api.type.CMDIAttributeType;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
@@ -61,7 +64,7 @@ import org.xml.sax.SAXException;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMDIMetadataElement, CMDIContainerMetadataElement, CMDIDocument> {
+public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMDIMetadataElement, CMDIAttributeType, Attribute, CMDIContainerMetadataElement, CMDIDocument> {
 
     /**
      * SAX entity resolver for custom resolving of resources while parsing
@@ -285,6 +288,24 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	CMDIMetadataElement newMetadataElement = metadataElementFactory.createNewMetadataElement(container, elementType);
 	if (container.addChildElement(newMetadataElement)) {
 	    return newMetadataElement;
+	} else {
+	    return null;
+	}
+    }
+
+    public Attribute insertAttribute(MetadataElementAttributeContainer<Attribute> container, CMDIAttributeType attributeType) throws MetadataException {
+	if (!(container instanceof CMDIMetadataElement)) {
+	    throw new MetadataException(String.format("Cannot handle container of type %1$s" + container.getClass()));
+	}
+
+	CMDIMetadataElement containerElement = (CMDIMetadataElement) container;
+	if (!containerElement.getType().getAttributes().contains(attributeType)) {
+	    throw new MetadataElementException(containerElement, String.format("Attribute type %1$s cannot be contained by provided element container type %2$s", attributeType, containerElement.getType()));
+	}
+
+	Attribute attribute = metadataElementFactory.createAttribute(containerElement, attributeType);
+	if (container.addAttribute(attribute)) {
+	    return attribute;
 	} else {
 	    return null;
 	}

@@ -24,8 +24,11 @@ import javax.xml.transform.stream.StreamResult;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.model.MetadataElement;
+import nl.mpi.metadata.api.model.MetadataElementAttribute;
+import nl.mpi.metadata.api.model.MetadataElementAttributeContainer;
 import nl.mpi.metadata.api.model.ReferencingMetadataElement;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
+import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.api.type.MetadataElementType;
 import org.junit.After;
 import org.junit.Before;
@@ -132,6 +135,22 @@ public abstract class MetadataAPITest {
 	}
     }
 
+    @Test
+    public void testInsertAttribute() throws Exception {
+	MetadataDocument validDocument = getProvider().createDocument(api);
+	MetadataElementAttributeContainer parentElement = getProvider().createAttributeParent(api, validDocument);
+	MetadataElementAttributeType addableType = getProvider().createAddableAttributeType(api);
+	MetadataElementAttribute insertedElement = api.insertAttribute(parentElement, addableType);
+	assertNotNull(insertedElement);
+	MetadataElementAttributeType unaddableType = getProvider().createUnaddableAttributeType(api);
+	try {
+	    api.insertAttribute(parentElement, unaddableType);
+	    fail("insertion of unaddable type should lead to MetadataElementException");
+	} catch (MetadataElementException mdeEx) {
+	    // This should occur
+	}
+    }
+
     protected abstract MetadataAPITestProvider getProvider();
 
     protected interface MetadataAPITestProvider<A extends MetadataAPI> {
@@ -149,6 +168,12 @@ public abstract class MetadataAPITest {
 	MetadataElementType createAddableType(A api) throws Exception;
 
 	MetadataElementType createUnaddableType(A api) throws Exception;
+
+	MetadataElementAttributeContainer createAttributeParent(A api, MetadataDocument document) throws Exception;
+
+	MetadataElementAttributeType createAddableAttributeType(A api) throws Exception;
+
+	MetadataElementAttributeType createUnaddableAttributeType(A api) throws Exception;
 
 	ReferencingMetadataElement getReferencingMetadataElement(A api, MetadataDocument document);
 

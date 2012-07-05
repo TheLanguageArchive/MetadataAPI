@@ -22,14 +22,19 @@ import java.net.URL;
 import nl.mpi.metadata.api.MetadataAPI;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataDocument;
+import nl.mpi.metadata.api.model.MetadataElementAttributeContainer;
 import nl.mpi.metadata.api.model.ReferencingMetadataElement;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
+import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.api.type.MetadataElementType;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.impl.ComponentImpl;
+import nl.mpi.metadata.cmdi.api.model.impl.ElementImpl;
+import nl.mpi.metadata.cmdi.api.type.CMDIAttributeType;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
+import nl.mpi.metadata.cmdi.api.type.ElementType;
 
 /**
  * Implementation of MetadataAPI test for {@link CMDIApi}
@@ -107,6 +112,29 @@ public class MetadataAPITest extends nl.mpi.metadata.api.MetadataAPITest {
 
 	public URI getDocumentTypeURI() {
 	    return schemaURI;
+	}
+
+	public MetadataElementAttributeContainer createAttributeParent(CMDIApi api, MetadataDocument document) throws Exception {
+	    CMDIDocument cmdiDocument = (CMDIDocument) document;
+	    CMDIProfile profile = api.getProfileContainer().getProfile(schemaURI);
+	    ComponentType collectionType = (ComponentType) profile.getContainableTypeByName("Collection");
+	    ComponentType generalInfoType = (ComponentType) collectionType.getContainableTypeByName("GeneralInfo");
+	    ComponentType descriptionType = (ComponentType) generalInfoType.getContainableTypeByName("Description");
+	    ElementType descriptionElementType = (ElementType) descriptionType.getContainableTypeByName("Description");
+	    return new ElementImpl(descriptionElementType, cmdiDocument);
+	}
+
+	public MetadataElementAttributeType createAddableAttributeType(CMDIApi api) throws Exception {
+	    CMDIProfile profile = api.getProfileContainer().getProfile(schemaURI);
+	    ComponentType collectionType = (ComponentType) profile.getContainableTypeByName("Collection");
+	    ComponentType generalInfoType = (ComponentType) collectionType.getContainableTypeByName("GeneralInfo");
+	    ComponentType descriptionType = (ComponentType) generalInfoType.getContainableTypeByName("Description");
+	    ElementType descriptionElementType = (ElementType) descriptionType.getContainableTypeByName("Description");
+	    return descriptionElementType.getAttributeTypeByName(null, "LanguageID");
+	}
+
+	public MetadataElementAttributeType createUnaddableAttributeType(CMDIApi api) {
+	    return new CMDIAttributeType("foo", "bogustype");
 	}
     }
 }

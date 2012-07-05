@@ -27,14 +27,15 @@ public class CMDIAttributeType implements MetadataElementAttributeType {
 
     private String name;
     private String namespaceURI;
-    private String type;
     private boolean mandatory;
     private String defaultValue;
     private SchemaProperty schemaElement;
+    private final String type;
     private final String path;
 
-    public CMDIAttributeType(String path) {
+    public CMDIAttributeType(String path, String type) {
 	this.path = path;
+	this.type = type;
     }
 
     /**
@@ -44,8 +45,10 @@ public class CMDIAttributeType implements MetadataElementAttributeType {
      * @param namespaceURI namespace URI of attribute
      * @param localPart local part of attribute name
      */
-    protected CMDIAttributeType(CharSequence parentPath, final String namespaceURI, final String localPart) {
-	this(createAttributePathString(parentPath, namespaceURI, localPart));
+    protected CMDIAttributeType(CharSequence parentPath, final String namespaceURI, final String localPart, final String type) {
+	this(createAttributePathString(parentPath, namespaceURI, localPart), type);
+	this.namespaceURI  = namespaceURI;
+	this.name = localPart;
     }
 
     /**
@@ -69,13 +72,6 @@ public class CMDIAttributeType implements MetadataElementAttributeType {
      */
     public String getType() {
 	return type;
-    }
-
-    /**
-     * @param type new value of attribute type
-     */
-    public void setType(String type) {
-	this.type = type;
     }
 
     /**

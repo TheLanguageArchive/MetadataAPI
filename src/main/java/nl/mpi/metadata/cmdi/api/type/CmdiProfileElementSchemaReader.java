@@ -119,14 +119,10 @@ public class CmdiProfileElementSchemaReader {
 	    readMultilingual((ElementType) profileElement, attributeLocalPart, attributeNamespaceURI);
 	}
 
-	CMDIAttributeType attribute = new CMDIAttributeType(profileElement.getPathString(), attributeNamespaceURI, attributeLocalPart);
+	final String type = attributeProperty.getType().toString();  // consider .getName().getLocalPart()) but getName can
+	CMDIAttributeType attribute = new CMDIAttributeType(profileElement.getPathString(), attributeNamespaceURI, attributeLocalPart, type);
 	attribute.setSchemaElement(attributeProperty);
-	attribute.setName(attributeLocalPart);
-	if (attributeNamespaceURI != null) {
-	    attribute.setNamespaceURI(attributeNamespaceURI);
-	}
 
-	attribute.setType(attributeProperty.getType().toString());  // consider .getName().getLocalPart()) but getName can
 	// be null, see documentation
 	attribute.setDefaultValue(attributeProperty.getDefaultText());
 	attribute.setMandatory(attributeProperty.getMinOccurs().compareTo(BigInteger.ZERO) > 0);

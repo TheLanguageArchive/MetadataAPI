@@ -40,7 +40,7 @@ public class AttributeImplTest {
 
     @Before
     public void setUp() {
-	attributeType = new CMDIAttributeType("@path");
+	attributeType = new CMDIAttributeType("@path","testtype");
 	parent = context.mock(CMDIMetadataElement.class);
     }
 

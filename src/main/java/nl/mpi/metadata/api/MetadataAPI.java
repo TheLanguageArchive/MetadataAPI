@@ -24,7 +24,10 @@ import javax.xml.transform.stream.StreamResult;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.model.MetadataElement;
+import nl.mpi.metadata.api.model.MetadataElementAttribute;
+import nl.mpi.metadata.api.model.MetadataElementAttributeContainer;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
+import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.api.type.MetadataElementType;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -37,7 +40,7 @@ import org.xml.sax.SAXException;
  * @param <D> Metadata document class
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface MetadataAPI<DT extends MetadataDocumentType, MT extends MetadataElementType, M extends MetadataElement, C extends MetadataContainer<M>, D extends MetadataDocument<M>> {
+public interface MetadataAPI<DT extends MetadataDocumentType, MT extends MetadataElementType, M extends MetadataElement, AT extends MetadataElementAttributeType, A extends MetadataElementAttribute, C extends MetadataContainer<M>, D extends MetadataDocument<M>> {
 
     /**
      * Loads the metadata document type (profile) at the specified location
@@ -77,7 +80,18 @@ public interface MetadataAPI<DT extends MetadataDocumentType, MT extends Metadat
      * @throws MetadataException
      * @throws MetadataElementException if the specified child type is not compatible with the type of the container
      */
-    M insertMetadataElement(C container, MT elementType) throws MetadataException;
+    M insertMetadataElement(C container, MT elementType) throws MetadataException, MetadataElementException;
+
+    /**
+     * Creates a new attribute of the specified type and adds it to the specified container
+     *
+     * @param container attribute container to add the new element to
+     * @param attributeType type of the new element to be added
+     * @return newly created element
+     * @throws MetadataException
+     * @throws MetadataElementException if the specified attribute type is not compatible with the type of the attribute container
+     */
+    A insertAttribute(MetadataElementAttributeContainer<A> container, AT attributeType) throws MetadataException, MetadataElementException;
 
     /**
      * Validates a metadata document to its schema
