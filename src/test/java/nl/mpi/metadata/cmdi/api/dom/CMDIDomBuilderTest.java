@@ -16,21 +16,19 @@
  */
 package nl.mpi.metadata.cmdi.api.dom;
 
-import com.sun.org.apache.xpath.internal.XPathAPI;
 import java.net.URI;
 import java.util.Collections;
 import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
-import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
-import nl.mpi.metadata.cmdi.api.model.impl.AttributeImpl;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.Component;
 import nl.mpi.metadata.cmdi.api.model.DataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.Element;
 import nl.mpi.metadata.cmdi.api.model.MultilingualElement;
 import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
+import nl.mpi.metadata.cmdi.api.model.impl.AttributeImpl;
 import nl.mpi.metadata.cmdi.api.model.impl.CMDIDocumentImpl;
 import nl.mpi.metadata.cmdi.api.model.impl.ComponentImpl;
 import nl.mpi.metadata.cmdi.api.model.impl.ElementImpl;
@@ -40,6 +38,7 @@ import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.apache.xpath.CachedXPathAPI;
+import org.apache.xpath.XPathAPI;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.BeforeClass;

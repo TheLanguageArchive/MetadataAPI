@@ -97,17 +97,19 @@ public class CmdiProfileElementSchemaReader {
 	SchemaProperty[] attributeProperties = profileElement.getSchemaElement().getType().getAttributeProperties();
 	if (attributeProperties != null && attributeProperties.length > 0) {
 	    Collection<MetadataElementAttributeType> attributes = new ArrayList<MetadataElementAttributeType>(attributeProperties.length);
+	    Collection<MetadataElementAttributeType> excludedAttributes = new ArrayList<MetadataElementAttributeType>();
 	    for (SchemaProperty attributeProperty : attributeProperties) {
-		readAttribute(attributeProperty, profileElement, attributes);
+		readAttribute(attributeProperty, profileElement, attributes, excludedAttributes);
 	    }
 	    profileElement.setAttributes(attributes);
+	    profileElement.setExcludedAttributes(excludedAttributes);
 	} else {
 	    Collection<MetadataElementAttributeType> attributes = Collections.emptySet();
 	    profileElement.setAttributes(attributes);
 	}
     }
 
-    private void readAttribute(SchemaProperty attributeProperty, CMDIProfileElement profileElement, Collection<MetadataElementAttributeType> attributes) {
+    private void readAttribute(SchemaProperty attributeProperty, CMDIProfileElement profileElement, Collection<MetadataElementAttributeType> attributes, Collection<MetadataElementAttributeType> excludedAttributes) {
 	final QName attributeName = attributeProperty.getName();
 	final String attributeLocalPart = attributeName.getLocalPart();
 	final String attributeNamespaceURI = attributeName.getNamespaceURI();
@@ -115,8 +117,9 @@ public class CmdiProfileElementSchemaReader {
 	logger.debug("Creating attribute type '{}' of type {}", attributeName, attributeProperty.getType());
 
 	//Elements should be checked for xml:lang attribute, if so should be set to multilingual
+	boolean multilingualAttribute = false;
 	if (profileElement instanceof ElementType) {
-	    readMultilingual((ElementType) profileElement, attributeLocalPart, attributeNamespaceURI);
+	    multilingualAttribute = readMultilingual((ElementType) profileElement, attributeLocalPart, attributeNamespaceURI);
 	}
 
 	final String type = attributeProperty.getType().toString();  // consider .getName().getLocalPart()) but getName can
@@ -126,14 +129,21 @@ public class CmdiProfileElementSchemaReader {
 	// be null, see documentation
 	attribute.setDefaultValue(attributeProperty.getDefaultText());
 	attribute.setMandatory(attributeProperty.getMinOccurs().compareTo(BigInteger.ZERO) > 0);
-	attributes.add(attribute);
+	
+	// Language attribute is an excluded attribute
+	if (multilingualAttribute) {
+	    excludedAttributes.add(attribute);
+	} else {
+	    attributes.add(attribute);
+	}
     }
 
-    private void readMultilingual(ElementType elementType, final String attributeLocalPart, final String attributeNamespaceURI) {
+    private boolean readMultilingual(ElementType elementType, final String attributeLocalPart, final String attributeNamespaceURI) {
 	final boolean multilingual = CMDIConstants.CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAME.equals(attributeLocalPart)
 		&& CMDIConstants.CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAMESPACE_URI.equals(attributeNamespaceURI);
 	elementType.setMultilingual(multilingual);
 	logger.debug("Set multilingual property of {} to {}", elementType, multilingual);
+	return multilingual;
     }
 
     /**

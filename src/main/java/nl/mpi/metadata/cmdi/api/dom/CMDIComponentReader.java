@@ -126,7 +126,7 @@ public class CMDIComponentReader {
     private void readAttributes(Node instanceNode, CMDIMetadataElement metadataElement, CMDIProfileElement metadataType) {
 	final NamedNodeMap attributesMap = instanceNode.getAttributes();
 	if (attributesMap.getLength() > 0) {
-	    for (MetadataElementAttributeType attributeType : metadataType.getAttributes()) {
+	    for (MetadataElementAttributeType attributeType : metadataType.getAllAttributes()) {
 		final Node attributeNode = getAttributeNodeByType(attributesMap, attributeType);
 		if (attributeNode != null) {
 		    final String localName = attributeNode.getLocalName();

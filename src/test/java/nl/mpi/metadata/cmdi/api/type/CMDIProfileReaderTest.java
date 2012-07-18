@@ -30,12 +30,12 @@ import static org.junit.Assert.*;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIProfileReaderTest extends CMDIAPITestCase {
-
+    
     @Test
     public void testLoadSchema() throws Exception {
 	CMDIProfileReader reader = new CMDIProfileReader(CMDI_API_TEST_ENTITY_RESOLVER);
 	CMDIProfile profile = reader.read(testSchemaTextCorpus.toURI());
-
+	
 	ComponentType corpusType = (ComponentType) profile.getType("Corpus");
 	ComponentType generalInfoType = (ComponentType) ((ComponentType) profile.getType("Collection")).getContainableTypeByName("GeneralInfo");
 
@@ -49,6 +49,7 @@ public class CMDIProfileReaderTest extends CMDIAPITestCase {
 	// Test components and elements
 	ElementType topicType = (ElementType) corpusType.getType("Topic");
 	ElementType nameType = (ElementType) generalInfoType.getContainableTypeByName("Name");
+	ElementType descriptionType = (ElementType) ((ComponentType) generalInfoType.getContainableTypeByName("Description")).getContainableTypeByName("Description");
 	ElementType titleType = (ElementType) generalInfoType.getContainableTypeByName("Title");
 	ElementType idType = (ElementType) generalInfoType.getContainableTypeByName("ID");
 	assertNotNull(corpusType);
@@ -84,21 +85,22 @@ public class CMDIProfileReaderTest extends CMDIAPITestCase {
 	assertNull(titleType.getDescription());
 
 	//Test attributes
-	assertEquals(1, nameType.getAttributes().size()); //xml:lang attribute
+	assertEquals(1, descriptionType.getAttributes().size()); //xml:lang attribute
+	assertEquals(2, descriptionType.getAllAttributes().size()); //xml:lang attribute
 	assertEquals(0, idType.getAttributes().size());
 	// Test attribute path
-	final MetadataElementAttributeType attribute = nameType.getAttributes().iterator().next();
-	assertEquals("/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Name/@{http://www.w3.org/XML/1998/namespace}lang", attribute.getPathString());
+	final MetadataElementAttributeType attribute = descriptionType.getAttributes().iterator().next();
+	assertEquals("/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Description/:Description/@LanguageID", attribute.getPathString());
 
 	//Test multilingual
 	assertTrue(nameType.isMultilingual());
 	assertFalse(idType.isMultilingual());
     }
-
+    
     @Test
     public void testCustomEntityResolver() throws Exception {
 	final URL remoteURL = new URL(REMOTE_TEXT_CORPUS_SCHEMA_URL);
-
+	
 	TestEntityResolver testResolver = new TestEntityResolver(remoteURL, testSchemaTextCorpus);
 	assertEquals(0, testResolver.byteStreamRequested);
 
@@ -110,7 +112,7 @@ public class CMDIProfileReaderTest extends CMDIAPITestCase {
 	// Should still match REMOTE schema location
 	assertEquals(new URI(REMOTE_TEXT_CORPUS_SCHEMA_URL), profile.getSchemaLocation());
     }
-
+    
     @Test
     public void testNoEntityResolver() throws Exception {
 	// Small schema has no xml:lang import

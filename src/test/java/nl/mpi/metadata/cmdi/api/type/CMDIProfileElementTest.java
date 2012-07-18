@@ -21,6 +21,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import javax.xml.namespace.QName;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
@@ -88,6 +89,29 @@ public class CMDIProfileElementTest {
 	Collection result = instance.getAttributes();
 	assertEquals(3, result.size());
 	assertTrue(Arrays.deepEquals(attributesList.toArray(), result.toArray()));
+    }
+
+    /**
+     * Test of getAttributes method, of class CMDIProfileElement.
+     */
+    @Test
+    public void testGetAllAttributes() {
+	CMDIProfileElement instance = new CMDIProfileElementTestImpl();
+	List<MetadataElementAttributeType> attributesList = setAttributes(instance);
+
+	Collection result = instance.getAllAttributes();
+	assertEquals(3, result.size());
+
+	instance.setExcludedAttributes(Collections.<MetadataElementAttributeType>emptySet());
+	assertEquals(3, result.size());
+
+	attrType1 = getMockMetadataElementAttributeType("http://namespace", "excluded", "type");
+	attrType2 = getMockMetadataElementAttributeType("http://namespace2", "excluded2", "type2");
+	final List<MetadataElementAttributeType> excludedAttributesList = Arrays.asList(attrType1, attrType2, attrType3);
+	instance.setExcludedAttributes(excludedAttributesList);
+
+	result = instance.getAllAttributes();
+	assertEquals(5, result.size());
     }
 
     /**
