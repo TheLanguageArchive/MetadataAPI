@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2012 Max Planck Institute for Psycholinguistics
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,12 +35,11 @@ import org.xml.sax.SAXException;
 /**
  *
  * @param <DT> Metadata document type class
- * @param <M> Metadata element class
  * @param <C> Metadata container class
  * @param <D> Metadata document class
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface MetadataAPI<DT extends MetadataDocumentType, MT extends MetadataElementType, M extends MetadataElement, AT extends MetadataElementAttributeType, A extends MetadataElementAttribute, C extends MetadataContainer<M>, D extends MetadataDocument<M>> {
+public interface MetadataAPI<DT extends MetadataDocumentType, MT extends MetadataElementType, AT extends MetadataElementAttributeType, A extends MetadataElementAttribute, C extends MetadataContainer, D extends MetadataDocument> {
 
     /**
      * Loads the metadata document type (profile) at the specified location
@@ -50,7 +49,7 @@ public interface MetadataAPI<DT extends MetadataDocumentType, MT extends Metadat
      * @throws IOException in case of an I/O exception while reading the document type from the location
      * @throws MetadataException in case of a processing error while loading the document type
      */
-    DT getMetadataDocumentType(URI uri) throws IOException, MetadataException;
+    MetadataDocumentType getMetadataDocumentType(URI uri) throws IOException, MetadataException;
 
     /**
      * Loads the metadata document at the specified location
@@ -60,7 +59,7 @@ public interface MetadataAPI<DT extends MetadataDocumentType, MT extends Metadat
      * @throws IOException in case of an I/O exception while reading the document from the location
      * @throws MetadataException in case of a processing error while loading the document
      */
-    D getMetadataDocument(URL url) throws IOException, MetadataException;
+    MetadataDocument getMetadataDocument(URL url) throws IOException, MetadataException;
 
     /**
      * Creates a metadata document of the specified type
@@ -69,7 +68,7 @@ public interface MetadataAPI<DT extends MetadataDocumentType, MT extends Metadat
      * @return newly instantiated document of specified type
      * @throws MetadataException in case of a processing error while creating the document
      */
-    D createMetadataDocument(DT type) throws MetadataException;
+    MetadataDocument createMetadataDocument(DT type) throws MetadataException;
 
     /**
      * Creates a new element of the specified type and adds it to the specified container
@@ -80,7 +79,7 @@ public interface MetadataAPI<DT extends MetadataDocumentType, MT extends Metadat
      * @throws MetadataException
      * @throws MetadataElementException if the specified child type is not compatible with the type of the container
      */
-    M insertMetadataElement(C container, MT elementType) throws MetadataException, MetadataElementException;
+    MetadataElement insertMetadataElement(C container, MT elementType) throws MetadataException, MetadataElementException;
 
     /**
      * Creates a new attribute of the specified type and adds it to the specified container
@@ -91,7 +90,7 @@ public interface MetadataAPI<DT extends MetadataDocumentType, MT extends Metadat
      * @throws MetadataException
      * @throws MetadataElementException if the specified attribute type is not compatible with the type of the attribute container
      */
-    A insertAttribute(MetadataElementAttributeContainer<A> container, AT attributeType) throws MetadataException, MetadataElementException;
+    MetadataElementAttribute insertAttribute(MetadataElementAttributeContainer<A> container, AT attributeType) throws MetadataException, MetadataElementException;
 
     /**
      * Validates a metadata document to its schema

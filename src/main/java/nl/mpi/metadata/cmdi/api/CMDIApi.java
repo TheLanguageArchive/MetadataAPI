@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2012 Max Planck Institute for Psycholinguistics
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ import org.xml.sax.SAXException;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMDIMetadataElement, CMDIAttributeType, Attribute, CMDIContainerMetadataElement, CMDIDocument> {
+public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMDIAttributeType, Attribute, CMDIContainerMetadataElement, CMDIDocument> {
 
     /**
      * SAX entity resolver for custom resolving of resources while parsing
