@@ -59,7 +59,7 @@ public class CMDIMetadataElementFactoryImplTest extends CMDIAPITestCase {
     public void testCreateNewComponent() throws Exception {
 	System.out.println("createNewMetadataElement");
 
-	CMDIProfileElement type = document.getType().getContainableTypeByName("Collection");
+	CMDIProfileElement type = document.getType().getType("Collection");
 	CMDIMetadataElement result = instance.createNewMetadataElement(document, type);
 
 	assertTrue(result instanceof Component);
@@ -74,9 +74,9 @@ public class CMDIMetadataElementFactoryImplTest extends CMDIAPITestCase {
     public void testCreateNewElement() throws Exception {
 	System.out.println("createNewMetadataElement");
 
-	ComponentType componentType = (ComponentType) ((ComponentType) document.getType().getContainableTypeByName("Collection")).getContainableTypeByName("GeneralInfo");
+	ComponentType componentType = (ComponentType) ((ComponentType) document.getType().getType("Collection")).getType("GeneralInfo");
 	Component component = new ComponentImpl(componentType, document); // adding GeneralInfo directly to document doesn't really match the model but it doesn't matter here
-	CMDIProfileElement type = componentType.getContainableTypeByName("Name");
+	CMDIProfileElement type = componentType.getType("Name");
 
 	// Test for base Element
 	CMDIMetadataElement result = instance.createNewMetadataElement(component, type);

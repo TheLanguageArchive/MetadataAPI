@@ -82,22 +82,22 @@ public class MetadataAPITest extends nl.mpi.metadata.api.MetadataAPITest {
 	public MetadataContainer createEmptyParentElement(CMDIApi api, MetadataDocument document) throws Exception {
 	    CMDIDocument cmdiDocument = (CMDIDocument) document;
 	    CMDIProfile profile = api.getProfileContainer().getProfile(schemaURI);
-	    ComponentType collectionType = (ComponentType) profile.getContainableTypeByName("Collection");
+	    ComponentType collectionType = (ComponentType) profile.getType("Collection");
 	    return new ComponentImpl(collectionType, cmdiDocument);
 	}
 
 	public MetadataElementType createAddableType(CMDIApi api) throws Exception {
 	    CMDIProfile profile = api.getProfileContainer().getProfile(schemaURI);
-	    ComponentType collectionType = (ComponentType) profile.getContainableTypeByName("Collection");
-	    CMDIProfileElement generalInfoType = collectionType.getContainableTypeByName("GeneralInfo");
+	    ComponentType collectionType = (ComponentType) profile.getType("Collection");
+	    CMDIProfileElement generalInfoType = collectionType.getType("GeneralInfo");
 	    return generalInfoType;
 	}
 
 	public MetadataElementType createUnaddableType(CMDIApi api) throws Exception {
 	    CMDIProfile profile = api.getProfileContainer().getProfile(schemaURI);
-	    ComponentType collectionType = (ComponentType) profile.getContainableTypeByName("Collection");
-	    ComponentType generalInfoType = (ComponentType) collectionType.getContainableTypeByName("GeneralInfo");
-	    CMDIProfileElement nameType = generalInfoType.getContainableTypeByName("Name");
+	    ComponentType collectionType = (ComponentType) profile.getType("Collection");
+	    ComponentType generalInfoType = (ComponentType) collectionType.getType("GeneralInfo");
+	    CMDIProfileElement nameType = generalInfoType.getType("Name");
 	    return nameType;
 	}
 
@@ -117,19 +117,19 @@ public class MetadataAPITest extends nl.mpi.metadata.api.MetadataAPITest {
 	public MetadataElementAttributeContainer createAttributeParent(CMDIApi api, MetadataDocument document) throws Exception {
 	    CMDIDocument cmdiDocument = (CMDIDocument) document;
 	    CMDIProfile profile = api.getProfileContainer().getProfile(schemaURI);
-	    ComponentType collectionType = (ComponentType) profile.getContainableTypeByName("Collection");
-	    ComponentType generalInfoType = (ComponentType) collectionType.getContainableTypeByName("GeneralInfo");
-	    ComponentType descriptionType = (ComponentType) generalInfoType.getContainableTypeByName("Description");
-	    ElementType descriptionElementType = (ElementType) descriptionType.getContainableTypeByName("Description");
+	    ComponentType collectionType = (ComponentType) profile.getType("Collection");
+	    ComponentType generalInfoType = (ComponentType) collectionType.getType("GeneralInfo");
+	    ComponentType descriptionType = (ComponentType) generalInfoType.getType("Description");
+	    ElementType descriptionElementType = (ElementType) descriptionType.getType("Description");
 	    return new ElementImpl(descriptionElementType, cmdiDocument);
 	}
 
 	public MetadataElementAttributeType createAddableAttributeType(CMDIApi api) throws Exception {
 	    CMDIProfile profile = api.getProfileContainer().getProfile(schemaURI);
-	    ComponentType collectionType = (ComponentType) profile.getContainableTypeByName("Collection");
-	    ComponentType generalInfoType = (ComponentType) collectionType.getContainableTypeByName("GeneralInfo");
-	    ComponentType descriptionType = (ComponentType) generalInfoType.getContainableTypeByName("Description");
-	    ElementType descriptionElementType = (ElementType) descriptionType.getContainableTypeByName("Description");
+	    ComponentType collectionType = (ComponentType) profile.getType("Collection");
+	    ComponentType generalInfoType = (ComponentType) collectionType.getType("GeneralInfo");
+	    ComponentType descriptionType = (ComponentType) generalInfoType.getType("Description");
+	    ElementType descriptionElementType = (ElementType) descriptionType.getType("Description");
 	    return descriptionElementType.getAttributeTypeByName(null, "LanguageID");
 	}
 

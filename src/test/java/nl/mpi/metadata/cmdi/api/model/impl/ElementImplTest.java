@@ -48,8 +48,8 @@ public class ElementImplTest extends CMDIMetadataElementImplTest {
     @BeforeClass
     public static void setUpTest() throws Exception {
 	CMDIProfile profile = getNewTestProfileAndRead();
-	parentType = (ComponentType) profile.getContainableTypeByName("Collection");
-	type = (ElementType) ((ComponentType) parentType.getContainableTypeByName("GeneralInfo")).getContainableTypeByName("Name");
+	parentType = (ComponentType) profile.getType("Collection");
+	type = (ElementType) ((ComponentType) parentType.getType("GeneralInfo")).getType("Name");
     }
 
     protected ElementImpl createInstance(ElementType type, Component parent, String value) {

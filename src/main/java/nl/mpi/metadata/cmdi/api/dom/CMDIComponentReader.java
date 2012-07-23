@@ -101,7 +101,7 @@ public class CMDIComponentReader {
 	    final Node childNode = childNodes.item(i);
 	    if (childNode instanceof org.w3c.dom.Element) {
 		logger.debug("Found DOM Element node {}, will create CMDI metadata element", childNode);
-		CMDIProfileElement childType = parentType.getContainableTypeByName(childNode.getLocalName());
+		CMDIProfileElement childType = parentType.getType(childNode.getLocalName());
 		if (childType == null) {
 		    throw new MetadataException(String.format("Cannot infer component type for DOM node: %1$s", childNode));
 		}

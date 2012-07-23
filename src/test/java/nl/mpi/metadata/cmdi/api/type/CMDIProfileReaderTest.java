@@ -37,7 +37,7 @@ public class CMDIProfileReaderTest extends CMDIAPITestCase {
 	CMDIProfile profile = reader.read(testSchemaTextCorpus.toURI());
 	
 	ComponentType corpusType = (ComponentType) profile.getType("Corpus");
-	ComponentType generalInfoType = (ComponentType) ((ComponentType) profile.getType("Collection")).getContainableTypeByName("GeneralInfo");
+	ComponentType generalInfoType = (ComponentType) ((ComponentType) profile.getType("Collection")).getType("GeneralInfo");
 
 	// Test profile
 	assertEquals(profile.getName(), "TextCorpusProfile");
@@ -48,10 +48,10 @@ public class CMDIProfileReaderTest extends CMDIAPITestCase {
 
 	// Test components and elements
 	ElementType topicType = (ElementType) corpusType.getType("Topic");
-	ElementType nameType = (ElementType) generalInfoType.getContainableTypeByName("Name");
-	ElementType descriptionType = (ElementType) ((ComponentType) generalInfoType.getContainableTypeByName("Description")).getContainableTypeByName("Description");
-	ElementType titleType = (ElementType) generalInfoType.getContainableTypeByName("Title");
-	ElementType idType = (ElementType) generalInfoType.getContainableTypeByName("ID");
+	ElementType nameType = (ElementType) generalInfoType.getType("Name");
+	ElementType descriptionType = (ElementType) ((ComponentType) generalInfoType.getType("Description")).getType("Description");
+	ElementType titleType = (ElementType) generalInfoType.getType("Title");
+	ElementType idType = (ElementType) generalInfoType.getType("ID");
 	assertNotNull(corpusType);
 	assertNotNull(topicType);
 

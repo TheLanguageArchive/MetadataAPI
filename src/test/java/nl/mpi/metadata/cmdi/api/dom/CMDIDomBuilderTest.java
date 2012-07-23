@@ -223,12 +223,12 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	CMDIDocument document = new CMDIDocumentImpl(profile);
 
 	// Add some child elements
-	ComponentType collectionType = (ComponentType) profile.getContainableTypeByName("Collection");
-	ComponentType originLocationType = (ComponentType) collectionType.getContainableTypeByName("OriginLocation");
-	ComponentType generalInfoType = (ComponentType) collectionType.getContainableTypeByName("GeneralInfo");
-	ComponentType descriptionComponentType = (ComponentType) generalInfoType.getContainableTypeByName("Description");
-	ElementType nameType = (ElementType) generalInfoType.getContainableTypeByName("Name");
-	ElementType descriptionType = (ElementType) descriptionComponentType.getContainableTypeByName("Description");
+	ComponentType collectionType = (ComponentType) profile.getType("Collection");
+	ComponentType originLocationType = (ComponentType) collectionType.getType("OriginLocation");
+	ComponentType generalInfoType = (ComponentType) collectionType.getType("GeneralInfo");
+	ComponentType descriptionComponentType = (ComponentType) generalInfoType.getType("Description");
+	ElementType nameType = (ElementType) generalInfoType.getType("Name");
+	ElementType descriptionType = (ElementType) descriptionComponentType.getType("Description");
 
 	Component collection = new ComponentImpl(collectionType, document);
 	document.addChildElement(collection);

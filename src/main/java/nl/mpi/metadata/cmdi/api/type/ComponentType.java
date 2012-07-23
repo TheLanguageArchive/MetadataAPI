@@ -47,15 +47,6 @@ public class ComponentType extends CMDIProfileElement implements MetadataContain
 	this.path = path;
     }
 
-    public CMDIProfileElement getContainableTypeByName(String name) {
-	for (CMDIProfileElement child : children) {
-	    if (child.getName().equals(name)) {
-		return child;
-	    }
-	}
-	return null;
-    }
-
     public List<MetadataElementType> getContainableTypes() {
 	return Collections.<MetadataElementType>unmodifiableList(children);
     }

@@ -50,9 +50,9 @@ public class CMDIContainerMetadataElementImplTest extends CMDIMetadataElementImp
     public void setUp() throws Exception {
 	CMDIProfile profile = getNewTestProfileAndRead();;
 	document = new CMDIDocumentImpl(profile);
-	collectionType = (ComponentType) getNewTestProfileAndRead().getContainableTypeByName("Collection");
-	originLocationType = (ComponentType) collectionType.getContainableTypeByName("OriginLocation");
-	generalInfoType = (ComponentType) collectionType.getContainableTypeByName("GeneralInfo");
+	collectionType = (ComponentType) getNewTestProfileAndRead().getType("Collection");
+	originLocationType = (ComponentType) collectionType.getType("OriginLocation");
+	generalInfoType = (ComponentType) collectionType.getType("GeneralInfo");
 	collection = new CMDIContainerMetadataElementImpl(collectionType, document);
 	originLocation = new CMDIContainerMetadataElementImpl(originLocationType, document);
     }
@@ -102,9 +102,9 @@ public class CMDIContainerMetadataElementImplTest extends CMDIMetadataElementImp
     
     @Test
     public void testGetDisplayValue() throws MetadataElementException {
-	final ElementType nameType = (ElementType) generalInfoType.getContainableTypeByName("Name");
+	final ElementType nameType = (ElementType) generalInfoType.getType("Name");
 	assertNotNull("Type not found in schema", nameType);
-	final ElementType titleType = (ElementType) generalInfoType.getContainableTypeByName("Title");
+	final ElementType titleType = (ElementType) generalInfoType.getType("Title");
 	assertNotNull("Type not found in schema", titleType);
 	
 	final CMDIContainerMetadataElement generalInfo = new CMDIContainerMetadataElementImpl(generalInfoType, document);
@@ -188,7 +188,7 @@ public class CMDIContainerMetadataElementImplTest extends CMDIMetadataElementImp
 	// Error on type level (cannot contain itself)
 	assertFalse(collection.canAddInstanceOfType(collectionType));
 	// Error on type level (cannot contain grandchild)
-	CMDIProfileElement nameType = generalInfoType.getContainableTypeByName("Name");
+	CMDIProfileElement nameType = generalInfoType.getType("Name");
 	assertFalse(collection.canAddInstanceOfType(nameType));
 	// Should work because of type
 	assertTrue(collection.canAddInstanceOfType(generalInfoType));
@@ -206,7 +206,7 @@ public class CMDIContainerMetadataElementImplTest extends CMDIMetadataElementImp
      */
     @Test
     public void testGetChildElement() throws Exception {
-	ComponentType locationType = (ComponentType) originLocationType.getContainableTypeByName("Location");
+	ComponentType locationType = (ComponentType) originLocationType.getType("Location");
 	CMDIContainerMetadataElement location1 = new CMDIContainerMetadataElementImpl(locationType, document);
 	CMDIContainerMetadataElement location2 = new CMDIContainerMetadataElementImpl(locationType, document);
 	
