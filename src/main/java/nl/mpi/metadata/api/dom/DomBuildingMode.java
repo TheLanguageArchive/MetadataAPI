@@ -16,22 +16,21 @@
  */
 package nl.mpi.metadata.api.dom;
 
-import nl.mpi.metadata.api.MetadataDocumentException;
-import nl.mpi.metadata.api.model.MetadataDocument;
-import org.w3c.dom.Document;
-
 /**
- * Takes a metadata document and builds a DOM document for it
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface MetadataDOMBuilder<T extends MetadataDocument> {
-
+/**
+ * Mode for initial construction of document
+ */
+public enum DomBuildingMode {
     /**
-     * Builds a DOM document for a provided metadata document
-     *
-     * @param document document to build DOM for
-     * @return DOM for provided document
+     * Don't add any elements, not even mandatory ones
      */
-    Document buildDomForDocument(T document) throws MetadataDocumentException;
+    EMPTY, /**
+     * Add only mandatory elements
+     */ MANDATORY, /**
+     * Add dummy data
+     */ DUMMY
+    
 }

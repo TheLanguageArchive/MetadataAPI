@@ -21,6 +21,8 @@ import java.net.URI;
 import java.net.URL;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
+import nl.mpi.metadata.api.dom.MetadataDOMBuilder;
+import nl.mpi.metadata.api.dom.DomBuildingMode;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.model.MetadataElement;
@@ -62,13 +64,24 @@ public interface MetadataAPI<DT extends MetadataDocumentType, MT extends Metadat
     MetadataDocument getMetadataDocument(URL url) throws IOException, MetadataException;
 
     /**
-     * Creates a metadata document of the specified type
+     * Creates a metadata document of the specified type using building mode {@link DomBuildingMode#MANDATORY}
      *
      * @param type type of document to create
      * @return newly instantiated document of specified type
      * @throws MetadataException in case of a processing error while creating the document
+     * @see #createMetadataDocument(nl.mpi.metadata.api.type.MetadataDocumentType, nl.mpi.metadata.api.dom.DomBuildingMode)
      */
     MetadataDocument createMetadataDocument(DT type) throws MetadataException;
+
+    /**
+     * Creates a metadata document of the specified type using the specified building mode
+     *
+     * @param type type of document to create
+     * @param buildingMode building mode for constructing the new document
+     * @return newly instantiated document of specified type
+     * @throws MetadataException in case of a processing error while creating the document
+     */
+    MetadataDocument createMetadataDocument(DT type, DomBuildingMode buildingMode) throws MetadataException;
 
     /**
      * Creates a new element of the specified type and adds it to the specified container

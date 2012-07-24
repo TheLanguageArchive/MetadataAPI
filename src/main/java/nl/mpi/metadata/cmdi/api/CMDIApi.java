@@ -28,6 +28,7 @@ import nl.mpi.metadata.api.MetadataAPI;
 import nl.mpi.metadata.api.MetadataElementException;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.MetadataTypeException;
+import nl.mpi.metadata.api.dom.DomBuildingMode;
 import nl.mpi.metadata.api.dom.MetadataDocumentReader;
 import nl.mpi.metadata.api.dom.MetadataDocumentWriter;
 import nl.mpi.metadata.api.model.MetadataElementAttributeContainer;
@@ -241,11 +242,15 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
     }
 
     public CMDIDocument createMetadataDocument(CMDIProfile type) throws MetadataException, MetadataTypeException {
+	return createMetadataDocument(type, DomBuildingMode.MANDATORY);
+    }
+
+    public CMDIDocument createMetadataDocument(CMDIProfile type, DomBuildingMode buildingMode) throws MetadataException, MetadataTypeException {
 	// Create new DOM instance
 	Document document;
 
 	try {
-	    document = componentBuilder.createDomFromSchema(type.getSchemaLocation());
+	    document = componentBuilder.createDomFromSchema(type.getSchemaLocation(), buildingMode);
 	    // TODO: Handle errors properly
 	} catch (FileNotFoundException ex) {
 	    throw new MetadataTypeException(type, ex);

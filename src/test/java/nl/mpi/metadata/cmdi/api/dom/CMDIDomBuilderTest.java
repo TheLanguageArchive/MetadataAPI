@@ -19,7 +19,7 @@ package nl.mpi.metadata.cmdi.api.dom;
 import java.net.URI;
 import java.util.Collections;
 import nl.mpi.metadata.api.MetadataDocumentException;
-import nl.mpi.metadata.api.dom.MetadataDOMBuilder;
+import nl.mpi.metadata.api.dom.DomBuildingMode;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
@@ -72,7 +72,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
     @Test
     public void testCreateDomFromSchema() throws Exception {
 	CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER, CMDI_API_TEST_DOM_BUILDER_FACTORY);
-	Document document = instance.createDomFromSchema(new URI(REMOTE_TEXT_CORPUS_SCHEMA_URL));
+	Document document = instance.createDomFromSchema(new URI(REMOTE_TEXT_CORPUS_SCHEMA_URL), DomBuildingMode.MANDATORY);
 
 	// Check DOM
 	Node rootNode = document.getFirstChild();
@@ -93,8 +93,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
     @Test
     public void testCreateEmptyDomFromSchema() throws Exception {
 	CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER, CMDI_API_TEST_DOM_BUILDER_FACTORY);
-	instance.setBuildingMode(MetadataDOMBuilder.DomBuildingMode.EMPTY);
-	Document document = instance.createDomFromSchema(new URI(REMOTE_TEXT_CORPUS_SCHEMA_URL));
+	Document document = instance.createDomFromSchema(new URI(REMOTE_TEXT_CORPUS_SCHEMA_URL), DomBuildingMode.EMPTY);
 
 	// Check DOM
 	Node rootNode = document.getFirstChild();
@@ -345,11 +344,14 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 
 	CachedXPathAPI xPathAPI = new CachedXPathAPI();
 	// Select mandatory element 
-	Node node = xPathAPI.selectSingleNode(baseDocument, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Name");
+	
+	Node node = xPathAPI.selectSingleNode(baseDocument, "/:CMD/:Components/:TextCorpusProfile");
 	// Should be there
-	assertNotNull(node);
-	// But no content
-	assertEquals("", node.getTextContent());
+	assertNotNull(node);	
+	// Select mandatory element
+	node = xPathAPI.selectSingleNode(baseDocument, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Name");
+	// Should not be there
+	assertNull(node);
 	// Select optional element
 	node = xPathAPI.selectSingleNode(baseDocument, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:OriginLocation");
 	// Should not be there

@@ -34,6 +34,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.MetadataException;
+import nl.mpi.metadata.api.dom.DomBuildingMode;
 import nl.mpi.metadata.api.dom.MetadataDOMBuilder;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.api.model.MetadataElement;
@@ -84,7 +85,6 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
     private final static Logger logger = LoggerFactory.getLogger(CMDIDomBuilder.class);
     private final EntityResolver entityResolver;
     private final DOMBuilderFactory domBuilderFactory;
-    private DomBuildingMode buildingMode = DomBuildingMode.MANDATORY;
 
     /**
      * Creates CMDIDomBuilder with no EntityResolver specified
@@ -138,7 +138,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	} else {
 	    // 
 	    try {
-		return createDomFromSchema(metadataDocument.getType().getSchemaLocation());
+		return createDomFromSchema(metadataDocument.getType().getSchemaLocation(), DomBuildingMode.EMPTY);
 	    } catch (IOException ioEx) {
 		throw new MetadataDocumentException(metadataDocument, "IOException while trying to create new DOM from schema", ioEx);
 	    } catch (XmlException xEx) {
@@ -301,10 +301,10 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	}
     }
 
-    public final Document createDomFromSchema(URI xsdFile) throws FileNotFoundException, XmlException, MalformedURLException, IOException {
+    public final Document createDomFromSchema(URI xsdFile, DomBuildingMode buildingMode) throws FileNotFoundException, XmlException, MalformedURLException, IOException {
 	Document workingDocument = domBuilderFactory.newDOMBuilder().newDocument();
 	SchemaType schemaType = getFirstSchemaType(xsdFile);
-	constructXml(schemaType.getElementProperties()[0], workingDocument, xsdFile.toString(), null);
+	constructXml(schemaType.getElementProperties()[0], workingDocument, xsdFile.toString(), null, buildingMode);
 	return reloadDom(workingDocument);
     }
 
@@ -323,7 +323,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	}
     }
 
-    private Node constructXml(SchemaProperty currentSchemaProperty, Document workingDocument, String nameSpaceUri, org.w3c.dom.Element parentElement) {
+    private Node constructXml(SchemaProperty currentSchemaProperty, Document workingDocument, String nameSpaceUri, org.w3c.dom.Element parentElement, final DomBuildingMode buildingMode) {
 	final SchemaType currentSchemaType = currentSchemaProperty.getType();
 	final Node currentElement = appendNode(workingDocument, nameSpaceUri, parentElement, currentSchemaProperty, true);
 
@@ -349,7 +349,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 		}
 		if (currentElement instanceof org.w3c.dom.Element) {
 		    for (BigInteger addNodeCounter = BigInteger.ZERO; addNodeCounter.compareTo(maxNumberToAdd) < 0; addNodeCounter = addNodeCounter.add(BigInteger.ONE)) {
-			constructXml(schemaProperty, workingDocument, nameSpaceUri, (org.w3c.dom.Element) currentElement);
+			constructXml(schemaProperty, workingDocument, nameSpaceUri, (org.w3c.dom.Element) currentElement, buildingMode);
 		    }
 		}
 	    }
@@ -446,12 +446,5 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
      */
     protected EntityResolver getEntityResolver() {
 	return entityResolver;
-    }
-
-    /**
-     * @param buildingMode the buildingMode to set
-     */
-    public void setBuildingMode(DomBuildingMode buildingMode) {
-	this.buildingMode = buildingMode;
     }
 }
