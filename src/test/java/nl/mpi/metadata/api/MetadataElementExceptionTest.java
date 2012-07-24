@@ -16,16 +16,11 @@
  */
 package nl.mpi.metadata.api;
 
-import java.net.URI;
-import java.util.Collection;
-import java.util.List;
-import nl.mpi.metadata.api.events.MetadataDocumentListener;
-import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.model.MetadataElement;
-import nl.mpi.metadata.api.type.ContainedMetadataElementType;
-import nl.mpi.metadata.api.type.MetadataDocumentType;
-import nl.mpi.metadata.api.type.MetadataElementType;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,124 +37,21 @@ public class MetadataElementExceptionTest {
     private Throwable cause;
     private MetadataElementException exception;
     private final static String MESSAGE = "My exception message";
+    private final Mockery context = new JUnit4Mockery();
 
     @Before
     public void setUp() {
 
-	document = new MetadataDocument() {
+	document = context.mock(MetadataDocument.class);
+	element = context.mock(MetadataElement.class);
 
-	    public MetadataElementType getType() {
-		throw new UnsupportedOperationException("Not supported yet.");
+	context.checking(new Expectations() {
+
+	    {
+		oneOf(element).getMetadataDocument();
+		will(returnValue(document));
 	    }
-
-	    public MetadataDocumentType getDocumentType() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-
-	    public URI getFileLocation() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-
-	    public Collection getHeaderInformation() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-
-	    public void addMetadataDocumentListener(MetadataDocumentListener listener) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-
-	    public void removeMetadataDocumentListener(MetadataDocumentListener listener) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-
-	    public MetadataElement getChildElement(String path) throws IllegalArgumentException {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-
-	    public List getChildren() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-
-	    public List getChildren(ContainedMetadataElementType childType) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-
-	    public boolean addChildElement(MetadataElement element) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-
-	    public boolean removeChildElement(MetadataElement element) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-
-	    public Collection getDocumentReferences() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-
-	    public String getName() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-
-	    public MetadataDocument getMetadataDocument() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-
-	    public void addMetadataElementListener(MetadataElementListener listener) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-
-	    public void removeMetadataElementListener(MetadataElementListener listener) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-
-	    public String getDisplayValue() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-
-	    public boolean canAddInstanceOfType(ContainedMetadataElementType type) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-
-	    public void setFileLocation(URI uri) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-
-	    public String getPathString() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-	};
-
-	element = new MetadataElement() {
-
-	    public String getName() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-
-	    public MetadataElementType getType() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-
-	    public MetadataDocument getMetadataDocument() {
-		return document;
-	    }
-
-	    public void addMetadataElementListener(MetadataElementListener listener) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-
-	    public void removeMetadataElementListener(MetadataElementListener listener) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-
-	    public String getDisplayValue() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-
-	    public String getPathString() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-	};
-
+	});
 	cause = new Exception();
 	exception = new MetadataElementException(element, MESSAGE, cause);
     }
