@@ -80,9 +80,11 @@ import org.xml.sax.SAXException;
  */
 public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 
+    private static final BigInteger DUMMY_NUMBER_TO_ADD = BigInteger.valueOf(3);
     private final static Logger logger = LoggerFactory.getLogger(CMDIDomBuilder.class);
     private final EntityResolver entityResolver;
     private final DOMBuilderFactory domBuilderFactory;
+    private DomBuildingMode buildingMode = DomBuildingMode.MANDATORY;
 
     /**
      * Creates CMDIDomBuilder with no EntityResolver specified
@@ -136,7 +138,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	} else {
 	    // 
 	    try {
-		return createDomFromSchema(metadataDocument.getType().getSchemaLocation(), false);
+		return createDomFromSchema(metadataDocument.getType().getSchemaLocation());
 	    } catch (IOException ioEx) {
 		throw new MetadataDocumentException(metadataDocument, "IOException while trying to create new DOM from schema", ioEx);
 	    } catch (XmlException xEx) {
@@ -299,10 +301,10 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	}
     }
 
-    public final Document createDomFromSchema(URI xsdFile, boolean addDummyData) throws FileNotFoundException, XmlException, MalformedURLException, IOException {
+    public final Document createDomFromSchema(URI xsdFile) throws FileNotFoundException, XmlException, MalformedURLException, IOException {
 	Document workingDocument = domBuilderFactory.newDOMBuilder().newDocument();
 	SchemaType schemaType = getFirstSchemaType(xsdFile);
-	constructXml(schemaType.getElementProperties()[0], workingDocument, xsdFile.toString(), null, addDummyData);
+	constructXml(schemaType.getElementProperties()[0], workingDocument, xsdFile.toString(), null);
 	return reloadDom(workingDocument);
     }
 
@@ -321,36 +323,43 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	}
     }
 
-    private Node constructXml(SchemaProperty currentSchemaProperty, Document workingDocument, String nameSpaceUri, org.w3c.dom.Element parentElement, boolean addDummyData) {
+    private Node constructXml(SchemaProperty currentSchemaProperty, Document workingDocument, String nameSpaceUri, org.w3c.dom.Element parentElement) {
 	final SchemaType currentSchemaType = currentSchemaProperty.getType();
 	final Node currentElement = appendNode(workingDocument, nameSpaceUri, parentElement, currentSchemaProperty, true);
 
-	for (SchemaProperty schemaProperty : currentSchemaType.getElementProperties()) {
-	    BigInteger maxNumberToAdd;
-	    if (addDummyData) {
-		maxNumberToAdd = schemaProperty.getMaxOccurs();
-		BigInteger dummyNumberToAdd = BigInteger.ONE.add(BigInteger.ONE).add(BigInteger.ONE);
-		if (maxNumberToAdd == null) {
-		    maxNumberToAdd = dummyNumberToAdd;
+	// EMPTY mode building should not continue after root Component
+	if (DomBuildingMode.EMPTY != buildingMode || !shouldTerminateEmptyModeBuilding(currentElement)) {
+	    for (SchemaProperty schemaProperty : currentSchemaType.getElementProperties()) {
+		BigInteger maxNumberToAdd;
+		if (DomBuildingMode.DUMMY == buildingMode) {
+		    maxNumberToAdd = schemaProperty.getMaxOccurs();
+		    if (maxNumberToAdd == null) {
+			maxNumberToAdd = DUMMY_NUMBER_TO_ADD;
+		    } else {
+			if (DUMMY_NUMBER_TO_ADD.compareTo(maxNumberToAdd) == -1) {
+			    // limit the number added and make sure it is less than the max number to add
+			    maxNumberToAdd = DUMMY_NUMBER_TO_ADD;
+			}
+		    }
 		} else {
-		    if (dummyNumberToAdd.compareTo(maxNumberToAdd) == -1) {
-			// limit the number added and make sure it is less than the max number to add
-			maxNumberToAdd = dummyNumberToAdd;
+		    maxNumberToAdd = schemaProperty.getMinOccurs();
+		    if (maxNumberToAdd == null) {
+			maxNumberToAdd = BigInteger.ZERO;
 		    }
 		}
-	    } else {
-		maxNumberToAdd = schemaProperty.getMinOccurs();
-		if (maxNumberToAdd == null) {
-		    maxNumberToAdd = BigInteger.ZERO;
-		}
-	    }
-	    if (currentElement instanceof org.w3c.dom.Element) {
-		for (BigInteger addNodeCounter = BigInteger.ZERO; addNodeCounter.compareTo(maxNumberToAdd) < 0; addNodeCounter = addNodeCounter.add(BigInteger.ONE)) {
-		    constructXml(schemaProperty, workingDocument, nameSpaceUri, (org.w3c.dom.Element) currentElement, addDummyData);
+		if (currentElement instanceof org.w3c.dom.Element) {
+		    for (BigInteger addNodeCounter = BigInteger.ZERO; addNodeCounter.compareTo(maxNumberToAdd) < 0; addNodeCounter = addNodeCounter.add(BigInteger.ONE)) {
+			constructXml(schemaProperty, workingDocument, nameSpaceUri, (org.w3c.dom.Element) currentElement);
+		    }
 		}
 	    }
 	}
 	return currentElement;
+    }
+
+    private boolean shouldTerminateEmptyModeBuilding(final Node currentElement) {
+	// Building in EMPTY mode should stop at first child of /CMD/Components, so check parent node name
+	return currentElement.getParentNode().getNodeName().equals(CMDIConstants.CMD_COMPONENTS_NODE_NAME);
     }
 
     private Node appendNode(Document workingDocument, String nameSpaceUri, org.w3c.dom.Element parentElement, SchemaProperty schemaProperty, boolean addRequiredAttributes) {
@@ -437,5 +446,12 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
      */
     protected EntityResolver getEntityResolver() {
 	return entityResolver;
+    }
+
+    /**
+     * @param buildingMode the buildingMode to set
+     */
+    public void setBuildingMode(DomBuildingMode buildingMode) {
+	this.buildingMode = buildingMode;
     }
 }

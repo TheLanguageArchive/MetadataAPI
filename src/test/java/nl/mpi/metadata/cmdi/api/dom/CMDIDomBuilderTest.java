@@ -19,6 +19,7 @@ package nl.mpi.metadata.cmdi.api.dom;
 import java.net.URI;
 import java.util.Collections;
 import nl.mpi.metadata.api.MetadataDocumentException;
+import nl.mpi.metadata.api.dom.MetadataDOMBuilder;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
@@ -71,7 +72,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
     @Test
     public void testCreateDomFromSchema() throws Exception {
 	CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER, CMDI_API_TEST_DOM_BUILDER_FACTORY);
-	Document document = instance.createDomFromSchema(new URI(REMOTE_TEXT_CORPUS_SCHEMA_URL), false);
+	Document document = instance.createDomFromSchema(new URI(REMOTE_TEXT_CORPUS_SCHEMA_URL));
 
 	// Check DOM
 	Node rootNode = document.getFirstChild();
@@ -84,6 +85,25 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	Node descriptionNode = XPathAPI.selectSingleNode(document, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Description/:Description");
 	assertEquals(1, descriptionNode.getAttributes().getLength());
 	assertEquals("LanguageID", descriptionNode.getAttributes().item(0).getLocalName());
+    }
+
+    /**
+     * Test of createDomFromSchema method, of class CMDIDomBuilder.
+     */
+    @Test
+    public void testCreateEmptyDomFromSchema() throws Exception {
+	CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER, CMDI_API_TEST_DOM_BUILDER_FACTORY);
+	instance.setBuildingMode(MetadataDOMBuilder.DomBuildingMode.EMPTY);
+	Document document = instance.createDomFromSchema(new URI(REMOTE_TEXT_CORPUS_SCHEMA_URL));
+
+	// Check DOM
+	Node rootNode = document.getFirstChild();
+	assertEquals("CMD", rootNode.getLocalName());
+	Node componentsNode = rootNode.getLastChild();
+	assertEquals("Components", componentsNode.getLocalName());
+	final Node profileRootNode = componentsNode.getFirstChild();
+	assertEquals("TextCorpusProfile", profileRootNode.getLocalName());
+	assertEquals(0, profileRootNode.getChildNodes().getLength());
     }
 
     /**

@@ -22,14 +22,37 @@ import org.w3c.dom.Document;
 
 /**
  * Takes a metadata document and builds a DOM document for it
+ *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public interface MetadataDOMBuilder<T extends MetadataDocument> {
 
     /**
      * Builds a DOM document for a provided metadata document
+     *
      * @param document document to build DOM for
      * @return DOM for provided document
      */
     Document buildDomForDocument(T document) throws MetadataDocumentException;
+
+    void setBuildingMode(DomBuildingMode buildingMode);
+
+    /**
+     * Mode for initial construction of document
+     */
+    public enum DomBuildingMode {
+
+	/**
+	 * Don't add any elements, not even mandatory ones
+	 */
+	EMPTY,
+	/**
+	 * Add only mandatory elements
+	 */
+	MANDATORY,
+	/**
+	 * Add dummy data
+	 */
+	DUMMY
+    }
 }

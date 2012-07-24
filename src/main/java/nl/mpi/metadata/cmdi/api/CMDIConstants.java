@@ -28,6 +28,7 @@ public final class CMDIConstants {
      * XPath to CMDI components
      */
     public static final String CMD_COMPONENTS_PATH = "/:CMD/:Components";
+    public static final String CMD_COMPONENTS_NODE_NAME = "Components";
     /**
      * XPath to resource proxy list
      */
