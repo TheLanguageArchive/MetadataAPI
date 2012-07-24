@@ -322,10 +322,8 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
     }
 
     private Node constructXml(SchemaProperty currentSchemaProperty, Document workingDocument, String nameSpaceUri, org.w3c.dom.Element parentElement, boolean addDummyData) {
-	Node returnNode = null;
-	SchemaType currentSchemaType = currentSchemaProperty.getType();
-	Node currentElement = appendNode(workingDocument, nameSpaceUri, parentElement, currentSchemaProperty, true);
-	returnNode = currentElement;
+	final SchemaType currentSchemaType = currentSchemaProperty.getType();
+	final Node currentElement = appendNode(workingDocument, nameSpaceUri, parentElement, currentSchemaProperty, true);
 
 	for (SchemaProperty schemaProperty : currentSchemaType.getElementProperties()) {
 	    BigInteger maxNumberToAdd;
@@ -352,7 +350,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 		}
 	    }
 	}
-	return returnNode;
+	return currentElement;
     }
 
     private Node appendNode(Document workingDocument, String nameSpaceUri, org.w3c.dom.Element parentElement, SchemaProperty schemaProperty, boolean addRequiredAttributes) {
