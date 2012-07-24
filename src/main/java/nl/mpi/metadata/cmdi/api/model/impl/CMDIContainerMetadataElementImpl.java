@@ -296,9 +296,9 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
     }
 
     @Override
-    public synchronized List<CMDIMetadataElement> getChildren(CMDIProfileElement childType) {
+    public synchronized List<MetadataElement> getChildren(ContainedMetadataElementType childType) {
 	if (childrenTypeMap.containsKey(childType.getName())) {
-	    return childrenTypeMap.get(childType.getName());
+	    return Collections.<MetadataElement>unmodifiableList(childrenTypeMap.get(childType.getName()));
 	} else {
 	    return Collections.emptyList();
 	}

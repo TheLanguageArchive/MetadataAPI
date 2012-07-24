@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.model.ContainedMetadataElement;
+import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
@@ -188,7 +189,7 @@ public abstract class CMDIMetadataElementImpl implements CMDIMetadataElement {
 		// Component and Element implement ContainedMetadataElement, path can be inferred from parent
 		final CMDIContainerMetadataElementImpl parentContainer = (CMDIContainerMetadataElementImpl) ((ContainedMetadataElement) this).getParent();
 		// Get index among siblings
-		final List<CMDIMetadataElement> siblings = parentContainer.getChildren(getType());
+		final List<MetadataElement> siblings = parentContainer.getChildren(getType());
 		final int index = siblings.indexOf(this);
 		if (index < 0) {
 		    throw new RuntimeException("Node not found in parent's children");

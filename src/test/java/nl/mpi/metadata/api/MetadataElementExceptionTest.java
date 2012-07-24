@@ -80,6 +80,10 @@ public class MetadataElementExceptionTest {
 		throw new UnsupportedOperationException("Not supported yet.");
 	    }
 
+	    public List getChildren(ContainedMetadataElementType childType) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	    }
+
 	    public boolean addChildElement(MetadataElement element) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	    }

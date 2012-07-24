@@ -34,6 +34,8 @@ public interface MetadataContainer<M extends MetadataElement> {
     M getChildElement(String path) throws IllegalArgumentException;
 
     List<MetadataElement> getChildren();
+    
+    List<MetadataElement> getChildren(ContainedMetadataElementType childType);
 
     public boolean addChildElement(M element) throws MetadataElementException;
 

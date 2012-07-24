@@ -18,6 +18,8 @@ package nl.mpi.metadata.cmdi.api.model;
 
 import java.util.List;
 import nl.mpi.metadata.api.model.MetadataContainer;
+import nl.mpi.metadata.api.model.MetadataElement;
+import nl.mpi.metadata.api.type.ContainedMetadataElementType;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 
@@ -39,7 +41,7 @@ public interface CMDIContainerMetadataElement extends CMDIMetadataElement, Metad
     CMDIMetadataElement getChildElement(CMDIProfileElement type, int index) throws IndexOutOfBoundsException;
 
 
-    List<CMDIMetadataElement> getChildren(CMDIProfileElement childType);
+    List<MetadataElement> getChildren(ContainedMetadataElementType childType);
 
     /**
      * Finds the number children of this element that are of the specified type
