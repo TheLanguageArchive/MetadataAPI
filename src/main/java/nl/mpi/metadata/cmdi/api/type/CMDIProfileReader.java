@@ -40,6 +40,7 @@ import org.xml.sax.SAXException;
 
 /**
  * Loads and reads a CMDI profile from a URI
+ *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile> {
@@ -52,6 +53,7 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
 
     /**
      * Constructs new CMDIProfileReader with a {@link CMDIEntityResolver} and a {@link CMDIApiDOMBuilderFactory} using that entity resolver
+     *
      * @see CMDIEntityResolver
      * @see CMDIApiDOMBuilderFactory
      */
@@ -61,6 +63,7 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
 
     /**
      * Constructs new CMDIProfileReader with the specified EntityResolver and a {@link CMDIApiDOMBuilderFactory} using that entity resolver
+     *
      * @param entityResolver entity resolver to be used when reading profile schema
      * @see CMDIApiDOMBuilderFactory
      */
@@ -76,6 +79,7 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
 
     /**
      * Constructs a CMDIProfileReader with the specified EntityResolver and DOMBuilderFactory
+     *
      * @param entityResolver Entity resolver to be used while parsing the schema file
      * @param domBuilderFactory DOM builder factory to be used for creating dom representation of profile schema
      */
@@ -85,8 +89,9 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
     }
 
     public CMDIProfile read(URI uri) throws IOException, CMDITypeException {
+	SchemaType schemaRoot = loadSchemaType(uri);
 	// Find the schema element
-	SchemaProperty schemaElement = loadSchema(uri);
+	SchemaProperty schemaElement = loadComponentsProperty(schemaRoot);
 	// Determine root path
 	StringBuilder rootPath = new StringBuilder("/:CMD/:Components/:").append(schemaElement.getName().getLocalPart());
 	// Instantiate profile
@@ -106,13 +111,13 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
     }
 
     /**
-     * Loads the schema file, i.e. finds the root component element 
-     * 
+     * Loads the schema file, i.e. finds the root component element
+     *
      * @return
      * @throws IOException
-     * @throws CMDITypeException 
+     * @throws CMDITypeException
      */
-    private SchemaProperty loadSchema(URI uri) throws IOException, CMDITypeException {
+    private SchemaType loadSchemaType(URI uri) throws IOException, CMDITypeException {
 	InputStream inputStream = CMDIEntityResolver.getInputStreamForURI(entityResolver, uri);
 	try {
 	    XmlOptions xmlOptions = new XmlOptions();
@@ -120,15 +125,10 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
 	    if (entityResolver != null) {
 		xmlOptions.setEntityResolver(entityResolver);
 	    }
-
 	    // Compile schema
 	    SchemaTypeSystem sts = XmlBeans.compileXsd(new XmlObject[]{XmlObject.Factory.parse(inputStream, xmlOptions)}, XmlBeans.getBuiltinTypeSystem(), xmlOptions);
 	    // Find document root element type (CMD)
-	    SchemaType cmdType = findCmdType(sts);
-	    // Find components root element type (CMD/Component)
-	    SchemaProperty componentsElement = findComponentsElement(cmdType);
-	    // Find child, there should be only one
-	    return findRootComponentElement(componentsElement);
+	    return findCmdType(sts);
 	} catch (XmlException ex) {
 	    throw new CMDITypeException(null, "XML exception while loading schema " + uri, ex);
 	} finally {
@@ -147,6 +147,13 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
 	    throw new CMDITypeException(null, "Element CMD not found in profile schema");
 	}
 	return cmdType;
+    }
+
+    private SchemaProperty loadComponentsProperty(SchemaType cmdType) throws CMDITypeException {
+	// Find components root element type (CMD/Component)
+	SchemaProperty componentsElement = findComponentsElement(cmdType);
+	// Find child, there should be only one
+	return findRootComponentElement(componentsElement);
     }
 
     private static SchemaProperty findComponentsElement(SchemaType cmdType) throws CMDITypeException {
