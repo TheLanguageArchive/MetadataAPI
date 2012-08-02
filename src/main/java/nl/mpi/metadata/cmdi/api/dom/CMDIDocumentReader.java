@@ -233,6 +233,10 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	HeaderInfo<String> headerInfo = new HeaderInfo<String>(headerChild.getNodeName(), headerChild.getTextContent());
 	// (CMDI header does not support attributes)
 	// Put into metadata document
-	cmdiDocument.putHeaderInformation(headerInfo);
+	try {
+	    cmdiDocument.putHeaderInformation(headerInfo);
+	} catch (MetadataException mdEx) {
+	    logger.warn("Skipping header that is rejected by document", mdEx);
+	}
     }
 }

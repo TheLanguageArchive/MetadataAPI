@@ -36,6 +36,7 @@ import nl.mpi.metadata.cmdi.api.model.DataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.MetadataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
+import nl.mpi.metadata.cmdi.api.type.CMDITypeException;
 
 /**
  * A CMDI metadata document. Instance of a CMDIProfile
@@ -100,8 +101,12 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
     }
 
     @Override
-    public synchronized void putHeaderInformation(HeaderInfo headerInfoItem) {
-	headerInfo.put(headerInfoItem.getName(), headerInfoItem);
+    public synchronized void putHeaderInformation(HeaderInfo headerInfoItem) throws CMDITypeException {
+	if (profile.getHeaderNames().contains(headerInfoItem.getName())) {
+	    headerInfo.put(headerInfoItem.getName(), headerInfoItem);
+	} else {
+	    throw new CMDITypeException(profile, "Profile does not support header with name " + headerInfoItem.getName());
+	}
     }
 
     public synchronized HeaderInfo getHeaderInformation(String name) {
@@ -332,7 +337,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
     }
 
     @Override
-    public void setHandle(String handle) {
+    public void setHandle(String handle) throws CMDITypeException {
 	putHeaderInformation(new HeaderInfo(CMDIConstants.CMD_HEADER_MD_SELF_LINK, handle));
     }
 

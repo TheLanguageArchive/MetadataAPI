@@ -92,22 +92,31 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
      * Test of getHeaderInformation method, of class CMDIDocumentImpl.
      */
     @Test
-    public void testGetHeaderInformation() {
+    public void testGetHeaderInformation() throws MetadataException {
 	assertEquals(0, document.getHeaderInformation().size());
-	assertNull(document.getHeaderInformation("Key"));
-	assertNull(document.getHeaderInformation("OtherKey"));
-	document.putHeaderInformation(new HeaderInfo("Key", "Value"));
+
+	assertNull(document.getHeaderInformation("MdProfile"));
+	document.putHeaderInformation(new HeaderInfo("MdProfile", "Value"));
 	document.getHeaderInformation();
 	assertEquals(1, document.getHeaderInformation().size());
-	assertNotNull(document.getHeaderInformation("Key"));
-	assertSame(document.getHeaderInformation("Key"), document.getHeaderInformation().iterator().next());
-	assertEquals("Value", document.getHeaderInformation("Key").getValue());
-	assertNull(document.getHeaderInformation("OtherKey"));
-	document.removeHeaderInformation("OtherKey");
+	assertNotNull(document.getHeaderInformation("MdProfile"));
+	assertSame(document.getHeaderInformation("MdProfile"), document.getHeaderInformation().iterator().next());
+	assertEquals("Value", document.getHeaderInformation("MdProfile").getValue());
+
+	assertNull(document.getHeaderInformation("MdCreationDate"));
+	document.removeHeaderInformation("MdCreationDate");
 	assertEquals(1, document.getHeaderInformation().size());
-	document.removeHeaderInformation("Key");
+	document.removeHeaderInformation("MdProfile");
 	assertEquals(0, document.getHeaderInformation().size());
-	assertNull(document.getHeaderInformation("Key"));
+	assertNull(document.getHeaderInformation("MdProfile"));
+    }
+
+    /**
+     * Test of getHeaderInformation method, of class CMDIDocumentImpl.
+     */
+    @Test(expected = MetadataException.class)
+    public void testPutHeaderInformationIllegal() throws MetadataException {
+	document.putHeaderInformation(new HeaderInfo("MyIllegalHeader", "Value"));
     }
 
     @Test
@@ -257,7 +266,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
     }
 
     @Test
-    public void testGetHandle() {
+    public void testGetHandle() throws MetadataException {
 	// Handle is read from MdSelfLink header element
 	document.putHeaderInformation(new HeaderInfo(CMDIConstants.CMD_HEADER_MD_SELF_LINK, "test:test-handle"));
 	assertEquals("test:test-handle", document.getHandle());
@@ -266,7 +275,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
     }
 
     @Test
-    public void testSetHandle() {
+    public void testSetHandle() throws MetadataException {
 	document.setHandle("test:test-handle");
 	// Handle is stored in MdSelfLink header element
 	assertEquals("test:test-handle", document.getHeaderInformation(CMDIConstants.CMD_HEADER_MD_SELF_LINK).getValue());

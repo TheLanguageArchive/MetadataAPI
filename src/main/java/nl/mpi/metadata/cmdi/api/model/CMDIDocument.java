@@ -68,7 +68,7 @@ public interface CMDIDocument extends CMDIContainerMetadataElement, HandleCarrie
 
     CMDIProfile getDocumentType();
 
-    void putHeaderInformation(HeaderInfo headerInfoItem);
+    void putHeaderInformation(HeaderInfo headerInfoItem) throws MetadataException;
 
     HeaderInfo getHeaderInformation(String name);
 
