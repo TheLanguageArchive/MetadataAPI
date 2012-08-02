@@ -30,12 +30,12 @@ import static org.junit.Assert.*;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIProfileReaderTest extends CMDIAPITestCase {
-    
+
     @Test
     public void testLoadSchema() throws Exception {
 	CMDIProfileReader reader = new CMDIProfileReader(CMDI_API_TEST_ENTITY_RESOLVER);
 	CMDIProfile profile = reader.read(testSchemaTextCorpus.toURI());
-	
+
 	ComponentType corpusType = (ComponentType) profile.getType("Corpus");
 	ComponentType generalInfoType = (ComponentType) ((ComponentType) profile.getType("Collection")).getType("GeneralInfo");
 
@@ -95,12 +95,15 @@ public class CMDIProfileReaderTest extends CMDIAPITestCase {
 	//Test multilingual
 	assertTrue(nameType.isMultilingual());
 	assertFalse(idType.isMultilingual());
+
+	//Test headers
+	assertArrayEquals(new Object[]{"MdCreator", "MdCreationDate", "MdSelfLink", "MdProfile", "MdCollectionDisplayName"}, profile.getHeaderNames().toArray());
     }
-    
+
     @Test
     public void testCustomEntityResolver() throws Exception {
 	final URL remoteURL = new URL(REMOTE_TEXT_CORPUS_SCHEMA_URL);
-	
+
 	TestEntityResolver testResolver = new TestEntityResolver(remoteURL, testSchemaTextCorpus);
 	assertEquals(0, testResolver.byteStreamRequested);
 
@@ -112,7 +115,7 @@ public class CMDIProfileReaderTest extends CMDIAPITestCase {
 	// Should still match REMOTE schema location
 	assertEquals(new URI(REMOTE_TEXT_CORPUS_SCHEMA_URL), profile.getSchemaLocation());
     }
-    
+
     @Test
     public void testNoEntityResolver() throws Exception {
 	// Small schema has no xml:lang import

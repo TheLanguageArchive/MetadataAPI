@@ -19,6 +19,9 @@ package nl.mpi.metadata.cmdi.api.type;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
@@ -34,6 +37,8 @@ import org.apache.xmlbeans.XmlBeans;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
@@ -44,7 +49,8 @@ import org.xml.sax.SAXException;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile> {
-
+    
+    private final static Logger logger = LoggerFactory.getLogger(CMDIProfileReader.class);
     public final static QName CMD_TYPE_NAME = new QName(CMDIConstants.CMD_NAMESPACE, "CMD");
     public final static QName COMPONENTS_TYPE_NAME = new QName(CMDIConstants.CMD_NAMESPACE, "Components");
     public final static QName HEADER_TYPE_NAME = new QName(CMDIConstants.CMD_NAMESPACE, "Header");
@@ -69,7 +75,7 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
      */
     public CMDIProfileReader(final EntityResolver entityResolver) {
 	this(entityResolver, new CMDIApiDOMBuilderFactory() {
-
+	    
 	    @Override
 	    protected EntityResolver getEntityResolver() {
 		return entityResolver;
@@ -87,15 +93,19 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
 	this.entityResolver = entityResolver;
 	this.domBuilderFactory = domBuilderFactory;
     }
-
+    
     public CMDIProfile read(URI uri) throws IOException, CMDITypeException {
+	logger.debug("Reading profile at {}", uri);
+	
 	SchemaType schemaRoot = loadSchemaRootElement(uri);
 	// Find the schema element
-	SchemaProperty schemaElement = loadComponentsProperty(schemaRoot);
+	SchemaProperty schemaElement = loadRootComponentProperty(schemaRoot);
 	// Determine root path
 	StringBuilder rootPath = new StringBuilder("/:CMD/:Components/:").append(schemaElement.getName().getLocalPart());
+	
+	List<String> headerNames = readHeaderNames(schemaRoot);
 	// Instantiate profile
-	CMDIProfile profile = new CMDIProfile(uri, schemaElement, rootPath);
+	CMDIProfile profile = new CMDIProfile(uri, schemaElement, rootPath, headerNames);
 	try {
 	    // Get schema dom, schema reader needs it to get annotations
 	    Document schemaDom = getSchemaDocument(uri);
@@ -135,7 +145,7 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
 	    inputStream.close();
 	}
     }
-
+    
     private SchemaType findCmdType(SchemaTypeSystem sts) throws CMDITypeException {
 	// Get CMD root element
 	SchemaType[] documentTypes = sts.documentTypes();
@@ -148,22 +158,22 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
 	}
 	return cmdType;
     }
-
-    private SchemaProperty loadComponentsProperty(SchemaType cmdType) throws CMDITypeException {
+    
+    private SchemaProperty loadRootComponentProperty(SchemaType cmdType) throws CMDITypeException {
 	// Find components root element type (CMD/Component)
-	SchemaProperty componentsElement = findComponentsElement(cmdType);
+	SchemaProperty componentsElement = findPropertyByName(cmdType, COMPONENTS_TYPE_NAME);
 	// Find child, there should be only one
 	return findRootComponentElement(componentsElement);
     }
-
-    private SchemaProperty findComponentsElement(SchemaType cmdType) throws CMDITypeException {
-	SchemaProperty componentsType = cmdType.getElementProperty(COMPONENTS_TYPE_NAME);
+    
+    private SchemaProperty findPropertyByName(SchemaType parentType, QName propertyName) throws CMDITypeException {
+	SchemaProperty componentsType = parentType.getElementProperty(propertyName);
 	if (componentsType == null) {
 	    throw new CMDITypeException(null, "Element Components not found in profile schema");
 	}
 	return componentsType;
     }
-
+    
     private SchemaProperty findRootComponentElement(SchemaProperty componentsElement) throws CMDITypeException {
 	SchemaProperty[] componentsChildren = componentsElement.getType().getElementProperties();
 	if (componentsChildren.length != 1) {
@@ -171,7 +181,7 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
 	}
 	return componentsChildren[0];
     }
-
+    
     private Document getSchemaDocument(URI uri) throws ParserConfigurationException, IOException, SAXException {
 	DocumentBuilder documentBuilder = domBuilderFactory.newDOMBuilder();
 	InputStream schemaDomInputStream = CMDIEntityResolver.getInputStreamForURI(entityResolver, uri);
@@ -180,6 +190,22 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
 	    return document;
 	} finally {
 	    schemaDomInputStream.close();
+	}
+    }
+    
+    private List<String> readHeaderNames(SchemaType cmdType) throws CMDITypeException {
+	SchemaProperty headersProperty = findPropertyByName(cmdType, HEADER_TYPE_NAME);
+	if (headersProperty == null) {
+	    logger.warn("No header element found in profile");
+	    return Collections.emptyList();
+	} else {
+	    SchemaProperty[] headerProperties = headersProperty.getType().getProperties();
+	    List<String> headerNames = new ArrayList<String>(headerProperties.length);
+	    for (SchemaProperty headerProperty : headerProperties) {
+		logger.debug("Found header item {}", headerProperty.getName());
+		headerNames.add(headerProperty.getName().getLocalPart());
+	    }
+	    return headerNames;
 	}
     }
 }
