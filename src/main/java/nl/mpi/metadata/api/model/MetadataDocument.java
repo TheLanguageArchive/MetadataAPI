@@ -43,7 +43,7 @@ public interface MetadataDocument<M extends MetadataElement> extends MetadataCon
     void setFileLocation(URI location);
 
     /**
-     * @return Header information in this document (can be null)
+     * @return An <em>unmodifiable collection</em> of the header information in this document (can be null)
      *
      */
     Collection<HeaderInfo> getHeaderInformation();
