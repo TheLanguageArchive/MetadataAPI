@@ -89,7 +89,7 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
     }
 
     public CMDIProfile read(URI uri) throws IOException, CMDITypeException {
-	SchemaType schemaRoot = loadSchemaType(uri);
+	SchemaType schemaRoot = loadSchemaRootElement(uri);
 	// Find the schema element
 	SchemaProperty schemaElement = loadComponentsProperty(schemaRoot);
 	// Determine root path
@@ -113,11 +113,11 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
     /**
      * Loads the schema file, i.e. finds the root component element
      *
-     * @return
+     * @return the type for the root element (/CMD)
      * @throws IOException
      * @throws CMDITypeException
      */
-    private SchemaType loadSchemaType(URI uri) throws IOException, CMDITypeException {
+    private SchemaType loadSchemaRootElement(URI uri) throws IOException, CMDITypeException {
 	InputStream inputStream = CMDIEntityResolver.getInputStreamForURI(entityResolver, uri);
 	try {
 	    XmlOptions xmlOptions = new XmlOptions();
@@ -136,7 +136,7 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
 	}
     }
 
-    private static SchemaType findCmdType(SchemaTypeSystem sts) throws CMDITypeException {
+    private SchemaType findCmdType(SchemaTypeSystem sts) throws CMDITypeException {
 	// Get CMD root element
 	SchemaType[] documentTypes = sts.documentTypes();
 	if (documentTypes.length != 1) {
@@ -156,7 +156,7 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
 	return findRootComponentElement(componentsElement);
     }
 
-    private static SchemaProperty findComponentsElement(SchemaType cmdType) throws CMDITypeException {
+    private SchemaProperty findComponentsElement(SchemaType cmdType) throws CMDITypeException {
 	SchemaProperty componentsType = cmdType.getElementProperty(COMPONENTS_TYPE_NAME);
 	if (componentsType == null) {
 	    throw new CMDITypeException(null, "Element Components not found in profile schema");
@@ -164,7 +164,7 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
 	return componentsType;
     }
 
-    private static SchemaProperty findRootComponentElement(SchemaProperty componentsElement) throws CMDITypeException {
+    private SchemaProperty findRootComponentElement(SchemaProperty componentsElement) throws CMDITypeException {
 	SchemaProperty[] componentsChildren = componentsElement.getType().getElementProperties();
 	if (componentsChildren.length != 1) {
 	    throw new CMDITypeException(null, "Expecting 1 root component for profile, found " + componentsChildren.length);
