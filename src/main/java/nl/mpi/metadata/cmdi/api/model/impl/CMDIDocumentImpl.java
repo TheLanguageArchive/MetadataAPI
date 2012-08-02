@@ -17,11 +17,13 @@
 package nl.mpi.metadata.cmdi.api.model.impl;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import nl.mpi.metadata.api.MetadataException;
@@ -123,8 +125,8 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
      * @return An <em>unmodifiable</em> copy of the collection of header info entries
      */
     @Override
-    public synchronized Collection<HeaderInfo> getHeaderInformation() {
-	return Collections.unmodifiableCollection(headerInfo.values());
+    public synchronized List<HeaderInfo> getHeaderInformation() {
+	return Collections.unmodifiableList(new ArrayList<HeaderInfo>(headerInfo.values()));
     }
 
     /**

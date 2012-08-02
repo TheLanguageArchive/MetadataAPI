@@ -17,7 +17,7 @@
 package nl.mpi.metadata.api.model;
 
 import java.net.URI;
-import java.util.Collection;
+import java.util.List;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
 
@@ -43,10 +43,10 @@ public interface MetadataDocument<M extends MetadataElement> extends MetadataCon
     void setFileLocation(URI location);
 
     /**
-     * @return An <em>unmodifiable collection</em> of the header information in this document (can be null)
+     * @return An <em>unmodifiable list</em> of the header information in this document (can be null)
      *
      */
-    Collection<HeaderInfo> getHeaderInformation();
+    List<HeaderInfo> getHeaderInformation();
 
     /**
      * Registers a {@link MetadataDocumentListener} for this document
