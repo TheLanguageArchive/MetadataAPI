@@ -17,6 +17,8 @@
 package nl.mpi.metadata.cmdi.api.type;
 
 import java.net.URI;
+import java.util.Collections;
+import java.util.List;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
 import nl.mpi.metadata.api.type.MetadataDocumentTypeReader;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
@@ -33,6 +35,7 @@ import org.apache.xmlbeans.SchemaProperty;
 public class CMDIProfile extends ComponentType implements MetadataDocumentType<CMDIProfileElement> {
 
     private final URI schemaLocation;
+    private final List<String> headerNames;
 
     /**
      * Constructs a new profile object for a schema element with the specified location and root path.
@@ -43,12 +46,21 @@ public class CMDIProfile extends ComponentType implements MetadataDocumentType<C
      * @param rootPath path to the root element in the instance
      * @see CMDIEntityResolver
      */
-    public CMDIProfile(URI schemaLocation, SchemaProperty schemaElement, StringBuilder rootPath) {
+    public CMDIProfile(URI schemaLocation, SchemaProperty schemaElement, StringBuilder rootPath, List<String> headerNames) {
 	super(schemaElement, null, rootPath);
 	this.schemaLocation = schemaLocation;
+	if (headerNames == null) {
+	    this.headerNames = Collections.emptyList();
+	} else {
+	    this.headerNames = Collections.unmodifiableList(headerNames);
+	}
     }
 
     public URI getSchemaLocation() {
 	return schemaLocation;
+    }
+
+    public List<String> getHeaderNames() {
+	return headerNames;
     }
 }
