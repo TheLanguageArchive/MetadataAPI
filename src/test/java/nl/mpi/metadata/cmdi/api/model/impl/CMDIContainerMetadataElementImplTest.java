@@ -239,7 +239,7 @@ public class CMDIContainerMetadataElementImplTest extends CMDIMetadataElementImp
     /**
      * Test of getPathForNewElement method, of class CMDIContainerMetadataElementImpl.
      */
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testGetChildIllegalPath() throws Exception {
 	collection.getChildElement("/");
     }
