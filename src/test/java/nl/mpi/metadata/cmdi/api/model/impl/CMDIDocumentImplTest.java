@@ -42,13 +42,13 @@ import static org.junit.Assert.*;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
-
+    
     public CMDIDocumentImplTest() {
     }
     private CMDIDocument document;
     private CMDIProfile profile;
     private Mockery mockContext = new JUnit4Mockery();
-
+    
     @Before
     public void setUp() throws Exception {
 	profile = getNewTestProfileAndRead(testSchemaTextCorpus.toURI());
@@ -94,21 +94,38 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
     @Test
     public void testGetHeaderInformation() throws MetadataException {
 	assertEquals(0, document.getHeaderInformation().size());
-
+	
 	assertNull(document.getHeaderInformation("MdProfile"));
 	document.putHeaderInformation(new HeaderInfo("MdProfile", "Value"));
-	document.getHeaderInformation();
 	assertEquals(1, document.getHeaderInformation().size());
 	assertNotNull(document.getHeaderInformation("MdProfile"));
 	assertSame(document.getHeaderInformation("MdProfile"), document.getHeaderInformation().iterator().next());
 	assertEquals("Value", document.getHeaderInformation("MdProfile").getValue());
-
+	
 	assertNull(document.getHeaderInformation("MdCreationDate"));
 	document.removeHeaderInformation("MdCreationDate");
 	assertEquals(1, document.getHeaderInformation().size());
 	document.removeHeaderInformation("MdProfile");
 	assertEquals(0, document.getHeaderInformation().size());
 	assertNull(document.getHeaderInformation("MdProfile"));
+    }
+    
+    @Test
+    public void testPutHeaderInformation() throws MetadataException {
+	document.putHeaderInformation(new HeaderInfo("MdProfile", "Value"));
+	assertEquals("MdProfile", document.getHeaderInformation().get(0).getName());
+	// Add header info that should be inserted before the previous one
+	document.putHeaderInformation(new HeaderInfo("MdCreator", "Value"));
+	// Order should match profile order
+	assertEquals("MdCreator should have been inserted before MdProfile.", "MdCreator", document.getHeaderInformation().get(0).getName());
+	assertEquals("MdProfile should be second in the list after MdCreator.", "MdProfile", document.getHeaderInformation().get(1).getName());
+	document.putHeaderInformation(new HeaderInfo("MdCollectionDisplayName", "Value"));
+	assertEquals("MdCollectionDisplayName should be second in the list after MdCreator.", "MdCollectionDisplayName", document.getHeaderInformation().get(2).getName());
+
+	// Replace value
+	assertEquals("Value", document.getHeaderInformation().get(1).getValue());
+	document.putHeaderInformation(new HeaderInfo("MdProfile", "NewValue"));
+	assertEquals("NewValue", document.getHeaderInformation().get(1).getValue());
     }
 
     /**
@@ -118,7 +135,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
     public void testPutHeaderInformationIllegal() throws MetadataException {
 	document.putHeaderInformation(new HeaderInfo("MyIllegalHeader", "Value"));
     }
-
+    
     @Test
     public void testGetDocumentResourceProxyById() throws URISyntaxException {
 	assertNull(document.getDocumentResourceProxy("rpId"));
@@ -131,7 +148,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 	document.addDocumentResourceProxy(resourceProxy2);
 	assertEquals(resourceProxy2, document.getDocumentResourceProxy("rpId"));
     }
-
+    
     @Test
     public void testGetDocumentReferenceByURI() throws URISyntaxException {
 	assertNull(document.getDocumentReferenceByURI(new URI("http://resource")));
@@ -145,7 +162,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 	assertNull(document.getDocumentReferenceByURI(new URI("http://resource")));
 	assertEquals(resourceProxy2, document.getDocumentReferenceByURI(new URI("http://resource2")));
     }
-
+    
     @Test
     public void testAddDocumentResourceProxy() throws URISyntaxException {
 	assertEquals(0, document.getDocumentReferences().size());
@@ -154,7 +171,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 	assertEquals(1, document.getDocumentReferences().size());
 	assertEquals(resourceProxy, document.getDocumentReferences().iterator().next());
     }
-
+    
     @Test
     public void testRemoveDocumentResourceProxy() throws URISyntaxException {
 	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), "test/mime-type");
@@ -163,7 +180,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 	document.removeDocumentResourceProxy("rpId");
 	assertEquals(0, document.getDocumentReferences().size());
     }
-
+    
     @Test
     public void testCreateDocumentResourceProxy() throws Exception {
 	assertEquals(0, document.getDocumentReferences().size());
@@ -177,7 +194,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 	assertEquals(1, document.getDocumentReferences().size());
 	// Create again, should have ignored mime type	
 	assertEquals("test/mime-type", resourceProxy2.getMimetype());
-
+	
 	try {
 	    // Cause conflict: add md proxy
 	    document.addDocumentResourceProxy(new MetadataResourceProxy("mdrp", new URI("http://resource2"), "test/mime-type"));
@@ -189,7 +206,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 	    // Should occur
 	}
     }
-
+    
     @Test
     public void testCreateDocumentMetadataResourceProxy() throws Exception {
 	assertEquals(0, document.getDocumentReferences().size());
@@ -203,8 +220,8 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 	assertEquals(1, document.getDocumentReferences().size());
 	// Create again, should have ignored mime type	
 	assertEquals("test/mime-type", resourceProxy2.getMimetype());
-
-
+	
+	
 	try {
 	    // Cause conflict: add resource proxy
 	    document.addDocumentResourceProxy(new DataResourceProxy("mdrp", new URI("http://resource2"), "test/mime-type"));
@@ -216,7 +233,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 	    // Should occur
 	}
     }
-
+    
     @Test
     public void testRegisterResourceProxyReference() throws Exception {
 	DataResourceProxy proxy = new DataResourceProxy(UUID.randomUUID().toString(), new URI("http://resource"), "test/mime-type");
@@ -233,7 +250,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 	document.registerResourceProxyReference(proxy, element);
 	assertEquals(1, document.getResourceProxyReferences(proxy).size());
     }
-
+    
     @Test
     public void testUnregisterResourceProxyReference() throws Exception {
 	DataResourceProxy proxy = new DataResourceProxy(UUID.randomUUID().toString(), new URI("http://resource"), "test/mime-type");
@@ -256,7 +273,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 	result = document.unregisterResourceProxyReference(proxy, mockContext.mock(CMDIMetadataElement.class, "anotherElement"));
 	assertFalse(result);
     }
-
+    
     @Test
     public void testRemoveDocumentReference() throws Exception {
 	DataResourceProxy resourceProxy = document.createDocumentResourceReference(new URI("http://resource"), "test/mime-type");
@@ -264,7 +281,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 	document.removeDocumentReference(resourceProxy);
 	assertFalse(document.getDocumentReferences().contains(resourceProxy));
     }
-
+    
     @Test
     public void testGetHandle() throws MetadataException {
 	// Handle is read from MdSelfLink header element
@@ -273,14 +290,14 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 	document.putHeaderInformation(new HeaderInfo(CMDIConstants.CMD_HEADER_MD_SELF_LINK, null));
 	assertEquals(null, document.getHandle());
     }
-
+    
     @Test
     public void testSetHandle() throws MetadataException {
 	document.setHandle("test:test-handle");
 	// Handle is stored in MdSelfLink header element
 	assertEquals("test:test-handle", document.getHeaderInformation(CMDIConstants.CMD_HEADER_MD_SELF_LINK).getValue());
     }
-
+    
     @Test
     public void testGetPathString() {
 	assertEquals("/:CMD/:Components/:TextCorpusProfile", document.getPathString());
@@ -328,12 +345,12 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 	// TODO review the generated test code and remove the default call to fail.
 	fail("The test case is a prototype.");
     }
-
+    
     @Override
     CMDIMetadataElement getInstance() {
 	return document;
     }
-
+    
     @Override
     CMDIDocument getDocument() {
 	return document;

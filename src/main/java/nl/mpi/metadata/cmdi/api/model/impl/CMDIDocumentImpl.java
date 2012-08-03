@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import nl.mpi.metadata.api.MetadataElementException;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.api.model.HeaderInfo;
@@ -102,8 +103,16 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
 	this.fileLocation = location;
     }
 
+    /**
+     * Puts a header item in the document. If a header item with the same name already exists, it gets replaced by the provided one.
+     * Header items are guaranteed to be inserted in the order as specified by the the {@link CMDIProfile} this document is an instance of.
+     *
+     * @param headerInfoItem
+     * @throws CMDITypeException if the {@link CMDIProfile} does not allow this header item (by its name)
+     * @throws MetadataElementException if the header item could not be inserted into the document
+     */
     @Override
-    public synchronized void putHeaderInformation(HeaderInfo headerInfoItem) throws CMDITypeException {
+    public synchronized void putHeaderInformation(HeaderInfo headerInfoItem) throws CMDITypeException, MetadataElementException {
 	if (profile.getHeaderNames().contains(headerInfoItem.getName())) {
 	    HeaderInfo oldInfo = getHeaderInformation(headerInfoItem.getName());
 	    if (oldInfo == null) {
@@ -116,12 +125,44 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
 	}
     }
 
-    public void addNewHeaderInfo(HeaderInfo headerInfoItem) {
-	headerInfo.add(headerInfoItem);
+    /**
+     * Adds a new item to the header info list
+     *
+     * @param headerInfoItem item to add
+     * @throws MetadataElementException if adding the items fails
+     */
+    private void addNewHeaderInfo(HeaderInfo headerInfoItem) throws MetadataElementException {
+	HeaderInfo insertBeforeHeaderInfo = getInsertBeforeHeaderInfo(headerInfoItem);
+	if (insertBeforeHeaderInfo == null) {
+	    // Insert at the end of the list
+	    if (!headerInfo.add(headerInfoItem)) {
+		throw new MetadataElementException(this, String.format("Failed to add header info item %1$s", headerInfoItem));
+	    }
+	} else {
+	    // Insert in place
+	    headerInfo.add(headerInfo.indexOf(insertBeforeHeaderInfo), headerInfoItem);
+	}
+    }
+
+    private HeaderInfo getInsertBeforeHeaderInfo(HeaderInfo headerInfoItem) {
+	final String itemName = headerInfoItem.getName();
+	final List<String> profileHeaderNames = profile.getHeaderNames();
+	for (int index = profileHeaderNames.indexOf(itemName) + 1; index < profileHeaderNames.size(); index++) {
+	    // See if the document has an header item with this name
+	    HeaderInfo nextItem = getHeaderInformation(profileHeaderNames.get(index));
+	    if (nextItem != null) {
+		// Item exist, new item should be inserted before this
+		return nextItem;
+	    }
+	}
+	return null;
     }
 
     /**
      * Replaces the old info by the new info, keeping the index of the old info
+     *
+     * @param oldInfo item to replace
+     * @param newInfo new item
      */
     private void replaceHeaderInfo(HeaderInfo oldInfo, HeaderInfo newInfo) {
 	int index = headerInfo.indexOf(oldInfo);
@@ -365,7 +406,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
     }
 
     @Override
-    public void setHandle(String handle) throws CMDITypeException {
+    public void setHandle(String handle) throws MetadataException {
 	putHeaderInformation(new HeaderInfo(CMDIConstants.CMD_HEADER_MD_SELF_LINK, handle));
     }
 
