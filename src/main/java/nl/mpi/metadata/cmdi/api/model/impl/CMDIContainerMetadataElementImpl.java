@@ -36,6 +36,8 @@ import nl.mpi.metadata.cmdi.api.model.Element;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract base class for Component and Profile instance classes
@@ -45,7 +47,8 @@ import nl.mpi.metadata.cmdi.api.type.ElementType;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataElementImpl implements CMDIContainerMetadataElement {
-
+    
+    private static final Logger logger = LoggerFactory.getLogger(CMDIContainerMetadataElementImpl.class);
     /**
      * e.g. test:Actor[1]/:Language -> ((test):(Actor))([(1)])(/(:Language))
      *
@@ -64,7 +67,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
      * Map of {type name => child elements}
      */
     private final Map<String, List<CMDIMetadataElement>> childrenTypeMap;
-
+    
     public CMDIContainerMetadataElementImpl(final ComponentType type) {
 	this.type = type;
 	this.children = Collections.synchronizedList(new ArrayList<CMDIMetadataElement>());
@@ -131,7 +134,8 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
     }
 
     /**
-     * Inserts element to {@link CMDIContainerMetadataElementImpl#childrenTypeMap} at the end of the list on the appropriate key. Creates a list
+     * Inserts element to {@link CMDIContainerMetadataElementImpl#childrenTypeMap} at the end of the list on the appropriate key. Creates a
+     * list
      * if no value is present yet. Assumes child was not already in map!
      *
      * @param element element to add
@@ -170,7 +174,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
 	    return false;
 	}
     }
-
+    
     @Override
     public boolean canAddInstanceOfType(ContainedMetadataElementType type) {
 	// Can only add CMDI elements
@@ -242,7 +246,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
 	    final String rootChildPath = path.substring(getMetadataDocument().getPathString().length() + 1); // Add one character for trailing slash
 	    return getMetadataDocument().getChildElement(rootChildPath);
 	}
-
+	
 	final Matcher pathMatcher = PATH_PATTERN.matcher(path);
 	if (pathMatcher.find()) {
 	    // Ignoring namespace (group 3) in this implementation
@@ -250,7 +254,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
 	    if (elementName != null && elementName.length() > 0) {
 		final String elementIndexString = pathMatcher.group(PATH_PATTERN_ELEMENT_INDEX_GROUP);
 		final String childPath = pathMatcher.group(PATH_PATTERN_CHILD_PATH_GROUP);
-
+		
 		return getChildElement(elementName, elementIndexString, childPath);
 	    }
 	}
@@ -272,15 +276,20 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
 	    final int elementIndex = (elementIndexString == null || elementIndexString.length() == 0)
 		    ? 0
 		    : Integer.valueOf(elementIndexString) - 1; // In the path, counting starts at 1, so substract to get array index
-	    final CMDIMetadataElement childElement = elements.get(elementIndex);
-	    if (childPath != null && childPath.length() > 0) {
-		// Path specifies child path
-		if (childElement instanceof CMDIContainerMetadataElement) {
-		    return ((CMDIContainerMetadataElement) childElement).getChildElement(childPath);
+	    try {
+		final CMDIMetadataElement childElement = elements.get(elementIndex);
+		if (childPath != null && childPath.length() > 0) {
+		    // Path specifies child path
+		    if (childElement instanceof CMDIContainerMetadataElement) {
+			return ((CMDIContainerMetadataElement) childElement).getChildElement(childPath);
+		    }
+		} else {
+		    // End of path
+		    return childElement;
 		}
-	    } else {
-		// End of path
-		return childElement;
+	    } catch (IndexOutOfBoundsException ioobEx) {
+		logger.warn("Requested node has index >= collection size: {}[{}]. Remaining child path:", new Object[]{elementName, elementIndexString, childPath});
+		return null;
 	    }
 	}
 	return null;
@@ -294,7 +303,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
     public synchronized List<MetadataElement> getChildren() {
 	return Collections.<MetadataElement>unmodifiableList(children);
     }
-
+    
     @Override
     public synchronized List<MetadataElement> getChildren(ContainedMetadataElementType childType) {
 	if (childrenTypeMap.containsKey(childType.getName())) {
@@ -318,17 +327,17 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
 	    return 0;
 	}
     }
-
+    
     @Override
     public void addMetadataElementListener(MetadataElementListener listener) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     @Override
     public void removeMetadataElementListener(MetadataElementListener listener) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     @Override
     public String getName() {
 	return type.getName();
@@ -369,7 +378,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
 	    return getName();
 	}
     }
-
+    
     @Override
     public ComponentType getType() {
 	return type;

@@ -38,14 +38,14 @@ import static org.junit.Assert.*;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIContainerMetadataElementImplTest extends CMDIMetadataElementImplTest {
-    
+
     ComponentType collectionType;
     ComponentType originLocationType;
     ComponentType generalInfoType;
     CMDIContainerMetadataElement collection;
     CMDIContainerMetadataElement originLocation;
     CMDIDocument document;
-    
+
     @Before
     public void setUp() throws Exception {
 	CMDIProfile profile = getNewTestProfileAndRead();;
@@ -56,11 +56,11 @@ public class CMDIContainerMetadataElementImplTest extends CMDIMetadataElementImp
 	collection = new CMDIContainerMetadataElementImpl(collectionType, document);
 	originLocation = new CMDIContainerMetadataElementImpl(originLocationType, document);
     }
-    
+
     @After
     public void tearDown() {
     }
-    
+
     @Test
     public void testAddChildElement() throws Exception {
 	assertEquals(0, collection.getChildren().size());
@@ -93,20 +93,20 @@ public class CMDIContainerMetadataElementImplTest extends CMDIMetadataElementImp
 	// should have been added before originLocation (profile determines order)
 	assertTrue(children.indexOf(generalInfo) < children.indexOf(originLocation));
     }
-    
+
     @Test
     public void testGetName() {
 	final CMDIContainerMetadataElement generalInfo = new CMDIContainerMetadataElementImpl(generalInfoType, document);
 	assertEquals("GeneralInfo", generalInfo.getName());
     }
-    
+
     @Test
     public void testGetDisplayValue() throws MetadataElementException {
 	final ElementType nameType = (ElementType) generalInfoType.getType("Name");
 	assertNotNull("Type not found in schema", nameType);
 	final ElementType titleType = (ElementType) generalInfoType.getType("Title");
 	assertNotNull("Type not found in schema", titleType);
-	
+
 	final CMDIContainerMetadataElement generalInfo = new CMDIContainerMetadataElementImpl(generalInfoType, document);
 	// No children, name equals type name
 	assertEquals("GeneralInfo", generalInfo.getDisplayValue());
@@ -146,7 +146,7 @@ public class CMDIContainerMetadataElementImplTest extends CMDIMetadataElementImp
 	name.setValue(null); // will skip Name
 	assertEquals("titleValue", generalInfo.getDisplayValue());
     }
-    
+
     @Test
     public void testRemoveChildElement() throws Exception {
 	assertEquals(0, collection.getChildren().size());
@@ -160,7 +160,7 @@ public class CMDIContainerMetadataElementImplTest extends CMDIMetadataElementImp
 	// Remove non-child (should not work)
 	assertFalse(collection.removeChildElement(new CMDIContainerMetadataElementImpl(originLocationType, document)));
     }
-    
+
     @Test
     public void testRemoveChildElementGetByPath() throws Exception {
 	CMDIContainerMetadataElement originLocation2 = new CMDIContainerMetadataElementImpl(originLocationType, document);
@@ -174,15 +174,9 @@ public class CMDIContainerMetadataElementImplTest extends CMDIMetadataElementImp
 	collection.removeChildElement(originLocation);
 	// Second child should now be first
 	assertEquals(originLocation2, collection.getChildElement("OriginLocation[1]"));
-	try {
-	    collection.getChildElement("OriginLocation[2]");
-	    // Child should no longer be there
-	    fail("Expected IndexOutOfBoundsException");
-	} catch (IndexOutOfBoundsException ex) {
-	    // Good
-	}
+	assertNull(collection.getChildElement("OriginLocation[2]"));
     }
-    
+
     @Test
     public void testCanAddInstanceOfType() throws Exception {
 	// Error on type level (cannot contain itself)
@@ -209,20 +203,21 @@ public class CMDIContainerMetadataElementImplTest extends CMDIMetadataElementImp
 	ComponentType locationType = (ComponentType) originLocationType.getType("Location");
 	CMDIContainerMetadataElement location1 = new CMDIContainerMetadataElementImpl(locationType, document);
 	CMDIContainerMetadataElement location2 = new CMDIContainerMetadataElementImpl(locationType, document);
-	
+
 	document.addChildElement(collection);
 	collection.addChildElement(originLocation);
-	
+
 	assertEquals(originLocation, collection.getChildElement("OriginLocation"));
 	assertEquals(originLocation, collection.getChildElement("OriginLocation[1]"));
-	
+
 	originLocation.addChildElement(location1);
 	originLocation.addChildElement(location2);
-	
+
 	assertEquals(location1, collection.getChildElement("OriginLocation/Location"));
 	assertEquals(location1, collection.getChildElement("OriginLocation[1]/Location[1]"));
 	assertEquals(location2, collection.getChildElement("OriginLocation/Location[2]"));
 	assertNull(collection.getChildElement("NoSuchChildNode"));
+	assertNull(collection.getChildElement("OriginLocation/Location[3]"));
 
 	// Test paths with namespaces (should be ignored at this stage)
 	assertEquals(location1, collection.getChildElement(":OriginLocation/:Location"));
@@ -230,11 +225,12 @@ public class CMDIContainerMetadataElementImplTest extends CMDIMetadataElementImp
 	assertEquals(location1, collection.getChildElement(":OriginLocation[1]/Location[1]"));
 	assertEquals(location2, collection.getChildElement(":OriginLocation/:Location[2]"));
 	assertNull(collection.getChildElement(":NoSuchChildNode"));
-	
+	assertNull(collection.getChildElement(":OriginLocation/:Location[3]"));
+
 	assertEquals(location1, originLocation.getChildElement(locationType, 0));
 	assertEquals(location2, originLocation.getChildElement(locationType, 1));
 	assertNull(originLocation.getChildElement(collectionType, 0));
-	
+
 	// Get from root
 	assertEquals(collection, collection.getChildElement("/:CMD/:Components/:TextCorpusProfile/:Collection"));
 	assertEquals(originLocation, collection.getChildElement("/:CMD/:Components/:TextCorpusProfile/:Collection/:OriginLocation"));
@@ -243,7 +239,7 @@ public class CMDIContainerMetadataElementImplTest extends CMDIMetadataElementImp
     /**
      * Test of getPathForNewElement method, of class CMDIContainerMetadataElementImpl.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IndexOutOfBoundsException.class)
     public void testGetChildIllegalPath() throws Exception {
 	collection.getChildElement("/");
     }
@@ -256,26 +252,26 @@ public class CMDIContainerMetadataElementImplTest extends CMDIMetadataElementImp
 	collection.addChildElement(originLocation);
 	collection.getChildElement(originLocationType, 1);
     }
-    
+
     @Override
     CMDIMetadataElement getInstance() {
 	return collection;
     }
-    
+
     @Override
     CMDIDocument getDocument() {
 	return document;
     }
-    
+
     private class CMDIContainerMetadataElementImpl extends nl.mpi.metadata.cmdi.api.model.impl.CMDIContainerMetadataElementImpl {
-	
+
 	private final CMDIDocument document;
-	
+
 	public CMDIContainerMetadataElementImpl(ComponentType type, CMDIDocument document) {
 	    super(type);
 	    this.document = document;
 	}
-	
+
 	@Override
 	public CMDIDocument getMetadataDocument() {
 	    return document;
