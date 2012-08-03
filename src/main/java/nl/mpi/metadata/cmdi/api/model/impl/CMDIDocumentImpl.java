@@ -17,12 +17,12 @@
 package nl.mpi.metadata.cmdi.api.model.impl;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -49,7 +49,7 @@ import nl.mpi.metadata.cmdi.api.type.CMDITypeException;
 public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implements CMDIDocument {
 
     private final CMDIProfile profile;
-    private final Map<String, HeaderInfo> headerInfo;
+    private final List<HeaderInfo> headerInfo;
     private final Map<String, ResourceProxy> resourceProxies;
     private final Map<Reference, Collection<CMDIMetadataElement>> resourceProxyReferences;
     private final Collection<MetadataDocumentListener> listeners;
@@ -76,7 +76,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
 	this.profile = profile;
 	this.fileLocation = fileLocation;
 
-	this.headerInfo = new LinkedHashMap<String, HeaderInfo>(); // LinkedHashMap so that order is preserved
+	this.headerInfo = new LinkedList<HeaderInfo>(); // LinkedHashMap so that order is preserved
 	this.resourceProxies = new LinkedHashMap<String, ResourceProxy>(); // LinkedHashMap so that order is preserved
 	this.resourceProxyReferences = new HashMap<Reference, Collection<CMDIMetadataElement>>();
 	this.listeners = new HashSet<MetadataDocumentListener>();
@@ -105,19 +105,45 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
     @Override
     public synchronized void putHeaderInformation(HeaderInfo headerInfoItem) throws CMDITypeException {
 	if (profile.getHeaderNames().contains(headerInfoItem.getName())) {
-	    headerInfo.put(headerInfoItem.getName(), headerInfoItem);
+	    HeaderInfo oldInfo = getHeaderInformation(headerInfoItem.getName());
+	    if (oldInfo == null) {
+		addNewHeaderInfo(headerInfoItem);
+	    } else {
+		replaceHeaderInfo(oldInfo, headerInfoItem);
+	    }
 	} else {
 	    throw new CMDITypeException(profile, "Profile does not support header with name " + headerInfoItem.getName());
 	}
     }
 
+    public void addNewHeaderInfo(HeaderInfo headerInfoItem) {
+	headerInfo.add(headerInfoItem);
+    }
+
+    /**
+     * Replaces the old info by the new info, keeping the index of the old info
+     */
+    private void replaceHeaderInfo(HeaderInfo oldInfo, HeaderInfo newInfo) {
+	int index = headerInfo.indexOf(oldInfo);
+	headerInfo.remove(oldInfo);
+	headerInfo.add(index, newInfo);
+    }
+
     public synchronized HeaderInfo getHeaderInformation(String name) {
-	return headerInfo.get(name);
+	for (HeaderInfo info : headerInfo) {
+	    if (info.getName().equals(name)) {
+		return info;
+	    }
+	}
+	return null;
     }
 
     @Override
     public synchronized void removeHeaderInformation(String name) {
-	headerInfo.remove(name);
+	HeaderInfo info = getHeaderInformation(name);
+	if (info != null) {
+	    headerInfo.remove(info);
+	}
     }
 
     /**
@@ -126,7 +152,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
      */
     @Override
     public synchronized List<HeaderInfo> getHeaderInformation() {
-	return Collections.unmodifiableList(new ArrayList<HeaderInfo>(headerInfo.values()));
+	return Collections.unmodifiableList(headerInfo);
     }
 
     /**
