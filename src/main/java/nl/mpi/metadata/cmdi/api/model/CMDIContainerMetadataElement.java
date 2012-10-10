@@ -40,16 +40,21 @@ public interface CMDIContainerMetadataElement extends CMDIMetadataElement, Metad
      */
     CMDIMetadataElement getChildElement(CMDIProfileElement type, int index) throws IndexOutOfBoundsException;
 
-
     List<MetadataElement> getChildren(ContainedMetadataElementType childType);
+
+    /**
+     *
+     * @return the total number of {@link CMDIMetadataElement} element children of this container
+     */
+    int getChildrenCount();
 
     /**
      * Finds the number children of this element that are of the specified type
      *
      * @param childType metadata type to look for
-     * @return number of childern of the specified type
+     * @return number of children of the specified type
      */
     int getChildrenCount(CMDIProfileElement childType);
-    
-    ComponentType getType();    
+
+    ComponentType getType();
 }

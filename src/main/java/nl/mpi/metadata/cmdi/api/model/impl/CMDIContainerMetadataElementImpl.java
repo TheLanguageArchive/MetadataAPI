@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataElementImpl implements CMDIContainerMetadataElement {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(CMDIContainerMetadataElementImpl.class);
     /**
      * e.g. test:Actor[1]/:Language -> ((test):(Actor))([(1)])(/(:Language))
@@ -67,7 +67,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
      * Map of {type name => child elements}
      */
     private final Map<String, List<CMDIMetadataElement>> childrenTypeMap;
-    
+
     public CMDIContainerMetadataElementImpl(final ComponentType type) {
 	this.type = type;
 	this.children = Collections.synchronizedList(new ArrayList<CMDIMetadataElement>());
@@ -174,7 +174,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
 	    return false;
 	}
     }
-    
+
     @Override
     public boolean canAddInstanceOfType(ContainedMetadataElementType type) {
 	// Can only add CMDI elements
@@ -231,8 +231,11 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
      * Among other things, the following features are <strong>not supported</strong>:
      * <ul>
      * <li>arbitrary starting nodes (e.g. <em>../Actor[3]</em>)</li>
-     * <li>retrieving attributes (e.g. <em>Actor[2]/@name</em>)</li>
-     * <li>conditions (e.g. <em>Actor[@name='Joe']</em>)</li>
+     * <li>retrieving attributes (e.g. <em>Actor[2]/
+     *
+     * @name</em>)</li>
+     * <li>conditions (e.g. <em>Actor[
+     * @name='Joe']</em>)</li>
      * </ul>
      *
      * @param path specification of child element to return
@@ -246,7 +249,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
 	    final String rootChildPath = path.substring(getMetadataDocument().getPathString().length() + 1); // Add one character for trailing slash
 	    return getMetadataDocument().getChildElement(rootChildPath);
 	}
-	
+
 	final Matcher pathMatcher = PATH_PATTERN.matcher(path);
 	if (pathMatcher.find()) {
 	    // Ignoring namespace (group 3) in this implementation
@@ -254,7 +257,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
 	    if (elementName != null && elementName.length() > 0) {
 		final String elementIndexString = pathMatcher.group(PATH_PATTERN_ELEMENT_INDEX_GROUP);
 		final String childPath = pathMatcher.group(PATH_PATTERN_CHILD_PATH_GROUP);
-		
+
 		return getChildElement(elementName, elementIndexString, childPath);
 	    }
 	}
@@ -303,7 +306,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
     public synchronized List<MetadataElement> getChildren() {
 	return Collections.<MetadataElement>unmodifiableList(children);
     }
-    
+
     @Override
     public synchronized List<MetadataElement> getChildren(ContainedMetadataElementType childType) {
 	if (childrenTypeMap.containsKey(childType.getName())) {
@@ -311,6 +314,10 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
 	} else {
 	    return Collections.emptyList();
 	}
+    }
+
+    public int getChildrenCount() {
+	return children.size();
     }
 
     /**
@@ -327,17 +334,17 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
 	    return 0;
 	}
     }
-    
+
     @Override
     public void addMetadataElementListener(MetadataElementListener listener) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
     @Override
     public void removeMetadataElementListener(MetadataElementListener listener) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
     @Override
     public String getName() {
 	return type.getName();
@@ -378,7 +385,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
 	    return getName();
 	}
     }
-    
+
     @Override
     public ComponentType getType() {
 	return type;

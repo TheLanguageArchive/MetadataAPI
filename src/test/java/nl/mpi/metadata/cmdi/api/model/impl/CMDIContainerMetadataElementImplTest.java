@@ -63,34 +63,36 @@ public class CMDIContainerMetadataElementImplTest extends CMDIMetadataElementImp
 
     @Test
     public void testAddChildElement() throws Exception {
-	assertEquals(0, collection.getChildren().size());
+	assertEquals(0, collection.getChildrenCount());
 	assertEquals(0, collection.getChildrenCount(originLocationType));
 
 	// Add a new child
 	assertTrue(collection.addChildElement(originLocation));
-	assertEquals(1, collection.getChildren().size());
+	assertEquals(1, collection.getChildrenCount());
 	assertEquals(1, collection.getChildrenCount(originLocationType));
 
 	// Add the same child (should not get added)
 	assertFalse(collection.addChildElement(originLocation));
-	assertEquals(1, collection.getChildren().size());
+	assertEquals(1, collection.getChildrenCount());
 	assertEquals(1, collection.getChildrenCount(originLocationType));
 
 	// Add an aditional child
 	final CMDIContainerMetadataElement originLocation2 = new CMDIContainerMetadataElementImpl(originLocationType, document);
 	assertTrue(collection.addChildElement(originLocation2));
-	List<MetadataElement> children = collection.getChildren();
-	assertEquals(2, children.size());
+	assertEquals(2, collection.getChildrenCount());
 	assertEquals(2, collection.getChildrenCount(originLocationType));
 	// should have been added after first originLocation
+	List<MetadataElement> children = collection.getChildren();
 	assertTrue(children.indexOf(originLocation) < children.indexOf(originLocation2));
 
 	// Add GeneralInfo, which should appear before OriginLocation
 	final CMDIContainerMetadataElement generalInfo = new CMDIContainerMetadataElementImpl(generalInfoType, document);
 	assertTrue(collection.addChildElement(generalInfo));
-	children = collection.getChildren();
-	assertEquals(3, children.size());
+	assertEquals(3, collection.getChildrenCount());
+	assertEquals(2, collection.getChildrenCount(originLocationType));
+	assertEquals(1, collection.getChildrenCount(generalInfoType));
 	// should have been added before originLocation (profile determines order)
+	children = collection.getChildren();
 	assertTrue(children.indexOf(generalInfo) < children.indexOf(originLocation));
     }
 
@@ -149,14 +151,14 @@ public class CMDIContainerMetadataElementImplTest extends CMDIMetadataElementImp
 
     @Test
     public void testRemoveChildElement() throws Exception {
-	assertEquals(0, collection.getChildren().size());
+	assertEquals(0, collection.getChildrenCount());
 	// Add two children
 	assertTrue(collection.addChildElement(originLocation));
 	assertTrue(collection.addChildElement(new CMDIContainerMetadataElementImpl(originLocationType, document)));
-	assertEquals(2, collection.getChildren().size());
+	assertEquals(2, collection.getChildrenCount());
 	// Remove first child
 	assertTrue(collection.removeChildElement(originLocation));
-	assertEquals(1, collection.getChildren().size());
+	assertEquals(1, collection.getChildrenCount());
 	// Remove non-child (should not work)
 	assertFalse(collection.removeChildElement(new CMDIContainerMetadataElementImpl(originLocationType, document)));
     }
