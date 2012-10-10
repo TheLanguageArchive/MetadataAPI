@@ -18,6 +18,7 @@ package nl.mpi.metadata.api.model;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.List;
 import nl.mpi.metadata.api.MetadataException;
 
 /**
@@ -36,7 +37,7 @@ public interface ReferencingMetadataDocument<M extends MetadataElement, R extend
      *
      * @return All references that exist in this document (can be null)
      */
-    Collection<Reference> getDocumentReferences();
+    List<Reference> getDocumentReferences();
 
     /**
      * Creates a reference to a resource on this element

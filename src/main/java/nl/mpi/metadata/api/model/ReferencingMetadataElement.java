@@ -17,7 +17,7 @@
 package nl.mpi.metadata.api.model;
 
 import java.net.URI;
-import java.util.Collection;
+import java.util.List;
 import nl.mpi.metadata.api.MetadataException;
 
 /**
@@ -32,7 +32,7 @@ public interface ReferencingMetadataElement<R extends Reference> extends Metadat
      */
     int getReferencesCount();
     
-    Collection<Reference> getReferences();
+    List<Reference> getReferences();
 
     /**
      * Creates a reference to a resource on this element

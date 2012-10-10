@@ -17,6 +17,7 @@
 package nl.mpi.metadata.cmdi.api.model.impl;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -370,8 +371,13 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
      * resource proxies.
      */
     @Override
-    public Collection<Reference> getDocumentReferences() {
-	return Collections.<Reference>unmodifiableCollection(resourceProxies.values());
+    public List<Reference> getDocumentReferences() {
+	final Collection<ResourceProxy> proxies = resourceProxies.values();
+	if (proxies instanceof List) {
+	    return Collections.<Reference>unmodifiableList((List) proxies);
+	} else {
+	    return Collections.<Reference>unmodifiableList(new ArrayList<Reference>(proxies));
+	}
     }
 
     @Override

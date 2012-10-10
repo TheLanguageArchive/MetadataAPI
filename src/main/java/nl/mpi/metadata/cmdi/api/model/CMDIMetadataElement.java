@@ -18,6 +18,7 @@ package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.List;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.model.MetadataElementAttributeContainer;
 import nl.mpi.metadata.api.model.Reference;
@@ -84,7 +85,7 @@ public interface CMDIMetadataElement extends MetadataElementAttributeContainer<A
      *
      * @return an <em>unmodifiable</em> copy of the collection of resource proxies referenced by this element
      */
-    Collection<Reference> getReferences();
+    List<Reference> getReferences();
 
     CMDIProfileElement getType();
 

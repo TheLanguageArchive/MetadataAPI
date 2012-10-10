@@ -17,6 +17,7 @@
 package nl.mpi.metadata.cmdi.api.model.impl;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -26,7 +27,6 @@ import nl.mpi.metadata.api.model.ContainedMetadataElement;
 import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
-import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.DataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.MetadataResourceProxy;
@@ -42,12 +42,12 @@ public abstract class CMDIMetadataElementImpl implements CMDIMetadataElement {
 
     private final static Logger logger = LoggerFactory.getLogger(CMDIMetadataElementImpl.class);
     private final Collection<Attribute> attributes;
-    private final Collection<ResourceProxy> resourceProxies;
+    private final List<ResourceProxy> resourceProxies;
     private CharSequence pathCharSequence = null;
 
     protected CMDIMetadataElementImpl() {
 	this.attributes = new HashSet<Attribute>();
-	this.resourceProxies = new HashSet<ResourceProxy>();
+	this.resourceProxies = new ArrayList<ResourceProxy>();
     }
 
     @Override
@@ -122,8 +122,8 @@ public abstract class CMDIMetadataElementImpl implements CMDIMetadataElement {
      * @return an <em>unmodifiable</em> copy of the collection of resource proxies referenced by this element
      */
     @Override
-    public Collection<Reference> getReferences() {
-	return Collections.<Reference>unmodifiableCollection(resourceProxies);
+    public List<Reference> getReferences() {
+	return Collections.<Reference>unmodifiableList(resourceProxies);
     }
 
     /**
