@@ -112,6 +112,11 @@ public abstract class CMDIMetadataElementImpl implements CMDIMetadataElement {
 	return null;
     }
 
+    @Override
+    public int getReferencesCount() {
+	return resourceProxies.size();
+    }
+    
     /**
      *
      * @return an <em>unmodifiable</em> copy of the collection of resource proxies referenced by this element

@@ -83,8 +83,8 @@ public abstract class CMDIMetadataElementImplTest extends CMDIAPITestCase {
 	// Add to element
 	getInstance().addDocumentResourceProxyReference(newId);
 	// Get from element
+	assertEquals(1, getInstance().getReferencesCount());
 	references = getInstance().getReferences();
-	assertEquals(1, references.size());
 	assertSame(proxy, references.iterator().next());
     }
 
@@ -94,8 +94,8 @@ public abstract class CMDIMetadataElementImplTest extends CMDIAPITestCase {
 	DataResourceProxy createdReference = getInstance().createResourceReference(new URI("http://test"), "test/test");
 	assertNotNull(createdReference);
 	// Get reference from element
+	assertEquals(1, getInstance().getReferencesCount());
 	Collection<Reference> references = getInstance().getReferences();
-	assertEquals(1, references.size());
 	assertSame(createdReference, references.iterator().next());
 	// Should also be on document
 	ResourceProxy documentResourceProxy = getDocument().getDocumentResourceProxy(createdReference.getId());
@@ -108,8 +108,8 @@ public abstract class CMDIMetadataElementImplTest extends CMDIAPITestCase {
 	MetadataResourceProxy createdReference = getInstance().createMetadataReference(new URI("http://test"), "test/test");
 	assertNotNull(createdReference);
 	// Get reference from element
+	assertEquals(1, getInstance().getReferencesCount());
 	Collection<Reference> references = getInstance().getReferences();
-	assertEquals(1, references.size());
 	assertSame(createdReference, references.iterator().next());
 	// Should also be on document
 	ResourceProxy documentResourceProxy = getDocument().getDocumentResourceProxy(createdReference.getId());
@@ -123,20 +123,17 @@ public abstract class CMDIMetadataElementImplTest extends CMDIAPITestCase {
 	// Create metadata reference on element
 	MetadataResourceProxy createdMetadataReference = getInstance().createMetadataReference(new URI("http://test/md"), "test/test");
 	assertNotNull(createdMetadataReference);
-	Collection<Reference> references = getInstance().getReferences();
-	assertEquals(1, references.size());
+	assertEquals(1, getInstance().getReferencesCount());
 
 	// Create resource reference on element
 	DataResourceProxy createdResourceReference = getInstance().createResourceReference(new URI("http://test/res"), "test/test");
 	assertNotNull(createdResourceReference);
-	references = getInstance().getReferences();
-	assertEquals(2, references.size());
+	assertEquals(2, getInstance().getReferencesCount());
 
 	// Remove metadata reference
 	Reference removedMetadataReference = getInstance().removeReference(createdMetadataReference);
 	assertSame(removedMetadataReference, createdMetadataReference);
-	references = getInstance().getReferences();
-	assertEquals(1, references.size());
+	assertEquals(1, getInstance().getReferencesCount());
 	// Try to remove once more - should have no result
 	assertNull(getInstance().removeReference(createdMetadataReference));
 	// Reference should have been removed as well
@@ -145,8 +142,7 @@ public abstract class CMDIMetadataElementImplTest extends CMDIAPITestCase {
 	// Remove resource reference
 	Reference removedResourceReference = getInstance().removeReference(createdResourceReference);
 	assertSame(removedResourceReference, createdResourceReference);
-	references = getInstance().getReferences();
-	assertEquals(0, references.size());
+	assertEquals(0, getInstance().getReferencesCount());
 	// Try to remove once more - should have no result
 	assertNull(getInstance().removeReference(createdResourceReference));
 	// Reference should have been removed as well

@@ -242,7 +242,8 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
      * @param uri URI for resource proxy
      * @param mimetype MIME type for resource proxy
      * @return newly created resource or existing resource with specified URI
-     * @throws MetadataException if resource with specified URI already exists but is not a {@link DataResourceProxy} (i.e. is a {@link MetadataResourceProxy})
+     * @throws MetadataException if resource with specified URI already exists but is not a {@link DataResourceProxy} (i.e. is a
+     * {@link MetadataResourceProxy})
      */
     @Override
     public synchronized DataResourceProxy createDocumentResourceReference(URI uri, String mimetype) throws MetadataException {
@@ -312,7 +313,8 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
      * @param uri URI for resource proxy
      * @param mimetype MIME type for resource proxy
      * @return newly created resource or existing resource with specified URI
-     * @throws MetadataException if resource with specified URI already exists but is not a {@link MetadataResourceProxy} (i.e. is a {@link DataResourceProxy})
+     * @throws MetadataException if resource with specified URI already exists but is not a {@link MetadataResourceProxy} (i.e. is a
+     * {@link DataResourceProxy})
      */
     @Override
     public MetadataResourceProxy createDocumentMetadataReference(URI uri, String mimetype) throws MetadataException {
@@ -355,6 +357,11 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
     public ResourceProxy removeDocumentReference(ResourceProxy reference) {
 	removeDocumentResourceProxy(reference.getId());
 	return reference;
+    }
+
+    @Override
+    public int getDocumentReferencesCount() {
+	return resourceProxies.size();
     }
 
     /**

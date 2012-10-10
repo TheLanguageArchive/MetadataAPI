@@ -28,6 +28,12 @@ public interface ReferencingMetadataDocument<M extends MetadataElement, R extend
 
     /**
      *
+     * @return The number of {@link R references} that exist in this document
+     */
+    int getDocumentReferencesCount();
+
+    /**
+     *
      * @return All references that exist in this document (can be null)
      */
     Collection<Reference> getDocumentReferences();

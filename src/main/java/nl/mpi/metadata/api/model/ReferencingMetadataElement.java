@@ -26,6 +26,12 @@ import nl.mpi.metadata.api.MetadataException;
  */
 public interface ReferencingMetadataElement<R extends Reference> extends MetadataElement {
 
+    /**
+     * 
+     * @return the number {@link R references} that exist in this element
+     */
+    int getReferencesCount();
+    
     Collection<Reference> getReferences();
 
     /**
