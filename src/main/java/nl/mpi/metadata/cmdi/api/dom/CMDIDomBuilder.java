@@ -67,6 +67,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 
@@ -109,9 +110,13 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
     public Document buildDomForDocument(CMDIDocument metadataDocument) throws MetadataDocumentException {
 	// Get base document
 	Document domDocument = getBaseDocument(metadataDocument);
-	pruneDom(metadataDocument, domDocument);
-	setHeaders(metadataDocument, domDocument);
-	buildProxies(metadataDocument, domDocument);
+	//pruneDom(metadataDocument, domDocument);
+
+	if (metadataDocument.isDirty()) {
+	    pruneHeaderAndResourceProxies(metadataDocument, domDocument);
+	    setHeaders(metadataDocument, domDocument);
+	    buildProxies(metadataDocument, domDocument);
+	}
 	buildComponents(metadataDocument, domDocument);
 	return domDocument;
     }
@@ -147,24 +152,15 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	}
     }
 
-    private void pruneDom(CMDIDocument metadataDocument, Document domDocument) throws MetadataDocumentException {
+    private void pruneHeaderAndResourceProxies(CMDIDocument metadataDocument, Document domDocument) throws DOMException, MetadataDocumentException {
 	try {
 	    final CachedXPathAPI xPathAPI = new CachedXPathAPI();
 	    Node headerNode = xPathAPI.selectSingleNode(domDocument, CMDIConstants.CMD_HEADER_PATH);
-	    Node componentsNode = xPathAPI.selectSingleNode(domDocument, CMDIConstants.CMD_COMPONENTS_PATH);
 	    Node resourceProxyListNode = xPathAPI.selectSingleNode(domDocument, CMDIConstants.CMD_RESOURCE_PROXY_LIST_PATH);
-	    Node rootComponentNode = CMDIComponentReader.getRootComponentNode(metadataDocument, domDocument, xPathAPI);
-
 	    // Remove header items
 	    removeChildren(headerNode);
 	    // Remove resource proxies
 	    removeChildren(resourceProxyListNode);
-	    // Remove components
-	    if (rootComponentNode.getParentNode().equals(componentsNode)) {
-		componentsNode.removeChild(rootComponentNode);
-	    } else {
-		throw new MetadataDocumentException(metadataDocument, "Root component node specified by profile is not a child of Components node");
-	    }
 	} catch (TransformerException tEx) {
 	    throw new MetadataDocumentException(metadataDocument, "TransformerException while preparing for building metadata DOM", tEx);
 	} catch (MetadataException mdEx) {
@@ -172,6 +168,18 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	}
     }
 
+//    private void pruneComponents(CMDIDocument metadataDocument, Document domDocument) throws MetadataDocumentException, TransformerException, MetadataException {
+//	final CachedXPathAPI xPathAPI = new CachedXPathAPI();
+//
+//	Node componentsNode = xPathAPI.selectSingleNode(domDocument, CMDIConstants.CMD_COMPONENTS_PATH);
+//	Node rootComponentNode = CMDIComponentReader.getRootComponentNode(metadataDocument, domDocument, xPathAPI);
+//	// Remove components
+//	if (rootComponentNode.getParentNode().equals(componentsNode)) {
+//	    componentsNode.removeChild(rootComponentNode);
+//	} else {
+//	    throw new MetadataDocumentException(metadataDocument, "Root component node specified by profile is not a child of Components node");
+//	}
+//    }
     private void removeChildren(Node parent) throws DOMException, MetadataException {
 	// replace node by undeep clone of itself
 	parent.getParentNode().replaceChild(parent.cloneNode(false), parent);
@@ -245,18 +253,28 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	}
     }
 
-    private void buildMetadataElement(Document domDocument, Node parentNode, CMDIMetadataElement metadataElement, String schemaLocation) throws DOMException {
-	// Add child node to DOM
-	org.w3c.dom.Element elementNode = appendElementNode(domDocument, schemaLocation, parentNode, metadataElement.getType().getSchemaElement(), false);
-	// Set value if element
-	if (metadataElement instanceof Element) {
-	    final Object elementValue = ((Element) metadataElement).getValue();
-	    elementNode.setTextContent(elementValue == null ? "" : elementValue.toString());
+    private void buildMetadataElement(Document domDocument, Node parentNode, CMDIMetadataElement metadataElement, String schemaLocation) throws DOMException, TransformerException {
+	final SchemaProperty elementSchemaProperty = metadataElement.getType().getSchemaElement();
+
+	//org.w3c.dom.Element elementNode = getExistingElement(parentNode, elementSchemaProperty);
+	org.w3c.dom.Element elementNode = (org.w3c.dom.Element) XPathAPI.selectSingleNode(parentNode, metadataElement.getPathString());
+
+	if (metadataElement.isDirty()) {
+	    if (elementNode != null) {
+		parentNode.removeChild(elementNode);
+	    }
+	    // Add child node to DOM
+	    elementNode = appendElementNode(domDocument, schemaLocation, parentNode, elementSchemaProperty, false);
+	    // Set value if element
+	    if (metadataElement instanceof Element) {
+		final Object elementValue = ((Element) metadataElement).getValue();
+		elementNode.setTextContent(elementValue == null ? "" : elementValue.toString());
+	    }
+	    // Add attributes
+	    buildElementAttributes(domDocument, elementNode, metadataElement);
+	    // Add proxy refs
+	    buildProxyReferences(metadataElement, elementNode);
 	}
-	// Add attributes
-	buildElementAttributes(domDocument, elementNode, metadataElement);
-	// Add proxy refs
-	buildProxyReferences(metadataElement, elementNode);
 	// Iterate over children if container
 	if (metadataElement instanceof CMDIContainerMetadataElement) {
 	    for (MetadataElement child : ((CMDIContainerMetadataElement) metadataElement).getChildren()) {
@@ -446,5 +464,19 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
      */
     protected EntityResolver getEntityResolver() {
 	return entityResolver;
+    }
+
+    private org.w3c.dom.Element getExistingElement(Node parentNode, final SchemaProperty elementSchemaProperty) {
+	NodeList childNodes = parentNode.getChildNodes();
+	for (int i = 0; i < childNodes.getLength(); i++) {
+	    Node node = childNodes.item(i);
+	    //schemaProperty.getName().getNamespaceURI(), getPrefixedName(schemaProperty)
+	    if (node instanceof org.w3c.dom.Element
+		    && node.getNodeName().equals(getPrefixedName(elementSchemaProperty))
+		    && node.getNamespaceURI().equals(elementSchemaProperty.getName().getNamespaceURI())) {
+		return (org.w3c.dom.Element) node;
+	    }
+	}
+	return null;
     }
 }

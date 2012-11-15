@@ -44,6 +44,7 @@ public abstract class CMDIMetadataElementImpl implements CMDIMetadataElement {
     private final Collection<Attribute> attributes;
     private final List<ResourceProxy> resourceProxies;
     private CharSequence pathCharSequence = null;
+    private boolean dirty = true;
 
     protected CMDIMetadataElementImpl() {
 	this.attributes = new HashSet<Attribute>();
@@ -91,7 +92,8 @@ public abstract class CMDIMetadataElementImpl implements CMDIMetadataElement {
     }
 
     /**
-     * Removes the document resource proxy references. This also unregisters the current element as reference to the proxy from the {@link CMDIDocument}
+     * Removes the document resource proxy references. This also unregisters the current element as reference to the proxy from the
+     * {@link CMDIDocument}
      *
      * @param id ID of resource proxy to remove as reference
      * @return the resource proxy that has been added as a reference. Null if not found in document or not removed.
@@ -116,7 +118,7 @@ public abstract class CMDIMetadataElementImpl implements CMDIMetadataElement {
     public int getReferencesCount() {
 	return resourceProxies.size();
     }
-    
+
     /**
      *
      * @return an <em>unmodifiable</em> copy of the collection of resource proxies referenced by this element
@@ -214,5 +216,13 @@ public abstract class CMDIMetadataElementImpl implements CMDIMetadataElement {
 	    }
 	}
 	return pathCharSequence;
+    }
+
+    public void setDirty(boolean dirty) {
+	this.dirty = dirty;
+    }
+
+    public boolean isDirty() {
+	return dirty;
     }
 }

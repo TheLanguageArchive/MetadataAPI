@@ -18,10 +18,9 @@ package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
 import java.util.Collection;
-import java.util.List;
 import nl.mpi.metadata.api.MetadataException;
+import nl.mpi.metadata.api.model.DirtyStateProvider;
 import nl.mpi.metadata.api.model.MetadataElementAttributeContainer;
-import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.api.model.ReferencingMetadataElement;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 
@@ -29,9 +28,7 @@ import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface CMDIMetadataElement extends MetadataElementAttributeContainer<Attribute>, ReferencingMetadataElement<ResourceProxy> {
-
-    boolean addAttribute(Attribute attribute);
+public interface CMDIMetadataElement extends MetadataElementAttributeContainer<Attribute>, ReferencingMetadataElement<ResourceProxy>, DirtyStateProvider {
 
     /**
      * Adds a reference to a resource proxy in {@link #getMetadataDocument() this document} to this element
@@ -74,22 +71,7 @@ public interface CMDIMetadataElement extends MetadataElementAttributeContainer<A
      */
     CMDIDocument getMetadataDocument();
 
-    /**
-     * Constructs path string from parent's path string, element name and index among siblings.
-     *
-     * @return XPath to this CMDIMetadataElement from the DOM root
-     */
-    String getPathString();
-
-    /**
-     *
-     * @return an <em>unmodifiable</em> copy of the collection of resource proxies referenced by this element
-     */
-    List<Reference> getReferences();
-
     CMDIProfileElement getType();
-
-    boolean removeAttribute(Attribute attribute);
 
     /**
      *
@@ -99,4 +81,6 @@ public interface CMDIMetadataElement extends MetadataElementAttributeContainer<A
     ResourceProxy removeDocumentResourceProxyReference(String id);
 
     ResourceProxy removeReference(ResourceProxy reference) throws MetadataException;
+
+    void setDirty(boolean dirty);
 }
