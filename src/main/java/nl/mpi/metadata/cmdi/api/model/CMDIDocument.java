@@ -30,6 +30,7 @@ import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 
 /**
  * An instance of a CMDI profile
+ *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  * @see CMDIProfile
  */
@@ -68,6 +69,14 @@ public interface CMDIDocument extends CMDIContainerMetadataElement, HandleCarrie
 
     CMDIProfile getDocumentType();
 
+    /**
+     * Puts a header item in the document. If a header item with the same name already exists, it gets replaced by the provided one.
+     * Header items are guaranteed to be inserted in the order as specified by the the {@link CMDIProfile} this document is an instance of.
+     *
+     * @param headerInfoItem
+     * @throws CMDITypeException if the {@link CMDIProfile} does not allow this header item (by its name)
+     * @throws MetadataElementException if the header item could not be inserted into the document
+     */
     void putHeaderInformation(HeaderInfo headerInfoItem) throws MetadataException;
 
     HeaderInfo getHeaderInformation(String name);

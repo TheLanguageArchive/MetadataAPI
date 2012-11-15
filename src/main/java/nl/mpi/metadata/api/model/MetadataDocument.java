@@ -18,6 +18,7 @@ package nl.mpi.metadata.api.model;
 
 import java.net.URI;
 import java.util.List;
+import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.api.type.MetadataDocumentType;
 
@@ -35,9 +36,9 @@ public interface MetadataDocument<M extends MetadataElement> extends MetadataCon
      * @return Location of the file this document represents (can be null)
      */
     URI getFileLocation();
-    
+
     /**
-     * 
+     *
      * @param location Location of the file this document represents (can be null)
      */
     void setFileLocation(URI location);
@@ -49,13 +50,26 @@ public interface MetadataDocument<M extends MetadataElement> extends MetadataCon
     List<HeaderInfo> getHeaderInformation();
 
     /**
+     * Puts a header item in the document. If a header item with the same name already exists, it gets replaced by the provided one.
+     * Header items are guaranteed to be inserted in the order as specified by the the {@link MetadataDocumentType} this document is an
+     * instance of.
+     *
+     * @param headerInfoItem
+     * @throws MetadataException if the {@link MetadataDocumentType} does not allow this header item (e.g. by its name)
+     * @throws MetadataElementException if the header item could not be inserted into the document
+     */
+    void putHeaderInformation(HeaderInfo headerInfoItem) throws MetadataException;
+
+    /**
      * Registers a {@link MetadataDocumentListener} for this document
+     *
      * @param listener Listener to add
      */
     void addMetadataDocumentListener(MetadataDocumentListener listener);
 
     /**
      * Unregisters a {@link MetadataDocumentListener} from this document
+     *
      * @param listener Listener to remove
      */
     void removeMetadataDocumentListener(MetadataDocumentListener listener);
