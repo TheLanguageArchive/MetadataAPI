@@ -73,8 +73,18 @@ public class ElementImpl<T> extends CMDIMetadataElementImpl implements Element<T
 	return value;
     }
 
+    /**
+     * Sets the value of this element.
+     *
+     * Sets this element's {@link #isDirty()  dirty state} to true if new value not equal to current value
+     *
+     * @param value
+     */
     @Override
     public void setValue(T value) {
+	if (value != null && !value.equals(this.value) || value == null && this.value != null) {
+	    setDirty(true);
+	}
 	this.value = value;
     }
 

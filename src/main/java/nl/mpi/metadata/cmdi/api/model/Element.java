@@ -27,4 +27,13 @@ import nl.mpi.metadata.cmdi.api.type.ElementType;
  * @see ElementType
  */
 public interface Element<T> extends CMDIMetadataElement, MetadataField<T, CMDIMetadataElement> {
+
+    /**
+     * Sets the value of this element.
+     *
+     * Sets this element's {@link #isDirty()  dirty state} to true if new value not equal to current value
+     *
+     * @param value
+     */
+    void setValue(T value);
 }

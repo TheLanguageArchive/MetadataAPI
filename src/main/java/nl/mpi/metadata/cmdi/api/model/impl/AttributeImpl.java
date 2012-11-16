@@ -65,14 +65,10 @@ public class AttributeImpl<T> implements Attribute<T> {
 	return value;
     }
 
-    /**
-     * Set the value of value
-     *
-     * @param value new value of value
-     */
     @Override
     public void setValue(T value) {
 	this.value = value;
+	parent.setDirty(true);
     }
 
     @Override

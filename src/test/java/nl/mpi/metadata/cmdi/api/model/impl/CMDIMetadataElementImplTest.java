@@ -38,32 +38,43 @@ public abstract class CMDIMetadataElementImplTest extends CMDIAPITestCase {
 
     @Test
     public void testAddDocumentResourceProxyReference() throws Exception {
+	getInstance().setDirty(false);
+
 	String newId = UUID.randomUUID().toString();
 	// Add unknown proxy by id 
 	ResourceProxy proxy = getInstance().addDocumentResourceProxyReference(newId);
 	assertNull(proxy);
+	assertFalse(getInstance().isDirty());
 	// Add proxy to document
 	proxy = new DataResourceProxy(newId, new URI("http://test"), "test/test");
 	getDocument().addDocumentResourceProxy(proxy);
 	// Add known proxy by id
 	ResourceProxy addedReference = getInstance().addDocumentResourceProxyReference(newId);
 	assertSame(proxy, addedReference);
+	assertTrue(getInstance().isDirty());
     }
 
     @Test
     public void testRemoveResourceProxyReference() throws Exception {
+	getInstance().setDirty(false);
+
 	String newId = UUID.randomUUID().toString();
 	// Remove unknown proxy by id
 	ResourceProxy proxy = getInstance().removeDocumentResourceProxyReference(newId);
 	assertNull(proxy);
+	assertFalse(getInstance().isDirty());
 	// Add proxy to document
 	proxy = new DataResourceProxy(newId, new URI("http://test"), "test/test");
 	getDocument().addDocumentResourceProxy(proxy);
 	// Add reference to element
 	assertNotNull(getInstance().addDocumentResourceProxyReference(newId));
+	assertTrue(getInstance().isDirty());
+	getInstance().setDirty(false);
+
 	// Remove from element
 	ResourceProxy removedProxy = getInstance().removeDocumentResourceProxyReference(newId);
 	assertSame(proxy, removedProxy);
+	assertTrue(getInstance().isDirty());
 	// Remove from element again
 	removedProxy = getInstance().removeDocumentResourceProxyReference(newId);
 	assertNull(removedProxy);

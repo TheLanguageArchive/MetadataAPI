@@ -41,8 +41,11 @@ public interface Attribute<T> extends MetadataElementAttribute<T> {
      */
     T getValue();
 
+
     /**
-     * Set the value of value
+     * Set the value of value.
+     *
+     * Sets this attributes {@link #parent parent}'s selement's {@link CMDIMetadataElement#isDirty()  dirty state} to true
      *
      * @param value new value of value
      */

@@ -93,6 +93,8 @@ public class CMDIComponentReader {
 	    }
 	}
 	readAttributes(domNode, element, type);
+	// Element is freshly read and has not been altered. Unsetting the default 'dirty' state!
+	element.setDirty(false);
     }
 
     private void readChildElements(final Node parentNode, final CMDIContainerMetadataElement parentElement, final ComponentType parentType) throws MetadataException {
@@ -108,7 +110,6 @@ public class CMDIComponentReader {
 		CMDIMetadataElement childElement = createElementInstance(parentElement, childNode, childType);
 		parentElement.addChildElement(childElement);
 		readElement(childNode, childElement, childType);
-
 	    } else {
 		logger.debug("Skipping non-element node {}", childNode);
 	    }

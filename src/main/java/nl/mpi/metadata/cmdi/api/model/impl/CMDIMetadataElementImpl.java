@@ -46,19 +46,48 @@ public abstract class CMDIMetadataElementImpl implements CMDIMetadataElement {
     private CharSequence pathCharSequence = null;
     private boolean dirty = true;
 
+    /**
+     * Creates a new CMDI metadata element implementation. {@link #isDirty()  Dirty state} will be set to true initially!
+     *
+     * @see #isDirty()
+     */
     protected CMDIMetadataElementImpl() {
 	this.attributes = new HashSet<Attribute>();
 	this.resourceProxies = new ArrayList<ResourceProxy>();
     }
 
+    /**
+     * Adds an attribute.
+     * Sets this element's {@link #isDirty()  dirty state} to true if successful
+     *
+     * @param attribute
+     * @return
+     */
     @Override
     public synchronized boolean addAttribute(Attribute attribute) {
-	return attributes.add(attribute);
+	if (attributes.add(attribute)) {
+	    setDirty(true);
+	    return true;
+	} else {
+	    return false;
+	}
     }
 
+    /**
+     * Removes an attribute.
+     * Sets this element's {@link #isDirty()  dirty state} to true if successful
+     *
+     * @param attribute
+     * @return
+     */
     @Override
     public synchronized boolean removeAttribute(Attribute attribute) {
-	return attributes.remove(attribute);
+	if (attributes.remove(attribute)) {
+	    setDirty(true);
+	    return true;
+	} else {
+	    return false;
+	}
     }
 
     /**
@@ -72,7 +101,9 @@ public abstract class CMDIMetadataElementImpl implements CMDIMetadataElement {
 
     /**
      * Adds a reference to a resource proxy in {@link #getMetadataDocument() this document} to this element.
-     * This also registers the current element as reference to the proxy on the {@link CMDIDocument}
+     * This also registers the current element as reference to the proxy on the {@link CMDIDocument}.
+     *
+     * Sets this element's {@link #isDirty()  dirty state} to true if resource proxy was actually added (return value is not null)
      *
      * @param id ID of resource proxy to add as reference
      * @return the resource proxy that has been added as a reference. Null if not found in document.
@@ -84,6 +115,7 @@ public abstract class CMDIMetadataElementImpl implements CMDIMetadataElement {
 	ResourceProxy resourceProxy = getMetadataDocument().getDocumentResourceProxy(id);
 	if (resourceProxy != null) {
 	    if (resourceProxies.add(resourceProxy)) {
+		setDirty(true);
 		getMetadataDocument().registerResourceProxyReference(resourceProxy, this);
 		return resourceProxy;
 	    }
@@ -95,6 +127,8 @@ public abstract class CMDIMetadataElementImpl implements CMDIMetadataElement {
      * Removes the document resource proxy references. This also unregisters the current element as reference to the proxy from the
      * {@link CMDIDocument}
      *
+     * Sets this element's {@link #isDirty()  dirty state} to true if resource proxy was actually added (return value is not null)
+     *
      * @param id ID of resource proxy to remove as reference
      * @return the resource proxy that has been added as a reference. Null if not found in document or not removed.
      * @see CMDIDocument#unregisterResourceProxyReference(nl.mpi.metadata.cmdi.api.model.ResourceProxy,
@@ -105,6 +139,7 @@ public abstract class CMDIMetadataElementImpl implements CMDIMetadataElement {
 	ResourceProxy resourceProxy = getMetadataDocument().getDocumentResourceProxy(id);
 	if (resourceProxy != null) {
 	    if (resourceProxies.remove(resourceProxy)) {
+		setDirty(true);
 		if (!getMetadataDocument().unregisterResourceProxyReference(resourceProxy, this)) {
 		    logger.warn("Removed resource proxy with id {} was not registered with document!");
 		}

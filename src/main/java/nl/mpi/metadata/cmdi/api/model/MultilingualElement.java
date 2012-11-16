@@ -24,4 +24,12 @@ import nl.mpi.metadata.api.model.LanguageSpecifier;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public interface MultilingualElement<T> extends Element<T>, LanguageSpecifier {
+
+    /**
+     * Sets the language of this element.
+     * Sets this element's {@link #isDirty()  dirty state} to true
+     *
+     * @param language
+     */
+    void setLanguage(String language);
 }

@@ -152,16 +152,11 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
 	    throw new MetadataElementException(this, String.format("Failed to add child element to childrenTypeMap %1$s", element));
 	}
     }
-
-    /**
-     * Removes a child from this element
-     *
-     * @param element element to remove
-     * @return whether the child was removed. Will be false if the child is not registered as a child.
-     */
+    
     @Override
     public synchronized boolean removeChildElement(CMDIMetadataElement element) throws MetadataElementException {
 	if (children.remove(element)) {
+	    setDirty(true);
 	    List<CMDIMetadataElement> elements = childrenTypeMap.get(element.getType().getName());
 	    if (elements == null) {
 		throw new AssertionError("No list in children map for removed child element");

@@ -108,6 +108,8 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
      * Puts a header item in the document. If a header item with the same name already exists, it gets replaced by the provided one.
      * Header items are guaranteed to be inserted in the order as specified by the the {@link CMDIProfile} this document is an instance of.
      *
+     * Sets this document's {@link #isDirty()  dirty state} to true
+     *
      * @param headerInfoItem
      * @throws CMDITypeException if the {@link CMDIProfile} does not allow this header item (by its name)
      * @throws MetadataElementException if the header item could not be inserted into the document
@@ -121,6 +123,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
 	    } else {
 		replaceHeaderInfo(oldInfo, headerInfoItem);
 	    }
+	    setDirty(true);
 	} else {
 	    throw new CMDITypeException(profile, "Profile does not support header with name " + headerInfoItem.getName());
 	}
@@ -180,11 +183,19 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
 	return null;
     }
 
+    /**
+     * Removes a header item from the document.
+     *
+     * Sets this document's {@link #isDirty()  dirty state} to true
+     *
+     * @param name
+     */
     @Override
     public synchronized void removeHeaderInformation(String name) {
 	HeaderInfo info = getHeaderInformation(name);
 	if (info != null) {
 	    headerInfo.remove(info);
+	    setDirty(true);
 	}
     }
 
@@ -226,13 +237,16 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
     }
 
     /**
-     * Adds an existing resource proxy to the resource proxy map for this document
+     * Adds an existing resource proxy to the resource proxy map for this document.
+     *
+     * Sets this document's {@link #isDirty()  dirty state} to true
      *
      * @param resourceProxy resource proxy to add
      */
     @Override
     public synchronized void addDocumentResourceProxy(ResourceProxy resourceProxy) {
 	resourceProxies.put(resourceProxy.getId(), resourceProxy);
+	setDirty(true);
     }
 
     /**
@@ -341,11 +355,14 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
      * Removes a resource proxy from the resource proxy map for this document. Does not check if it is linked from any of the metadata
      * elements.
      *
+     * Sets this document's {@link #isDirty()  dirty state} to true
+     *
      * @param id ID of resource proxy to remove
      */
     @Override
     public synchronized void removeDocumentResourceProxy(String id) {
 	resourceProxies.remove(id);
+	setDirty(true);
     }
 
     /**

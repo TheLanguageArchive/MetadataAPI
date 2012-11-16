@@ -30,6 +30,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -147,6 +149,29 @@ public class ElementImplTest extends CMDIMetadataElementImplTest {
     @Test
     public void testGetPathString() {
 	assertEquals("/:CMD/:Components/:TextCorpusProfile/:Collection[2]/:Name[1]", instance.getPathString());
+    }
+
+    @Test
+    public void testDirtyAfterValueChange() {
+	instance.setDirty(false);
+
+	// changing value should make dirty
+	instance.setValue("newValue");
+	assertTrue(instance.isDirty());
+
+	// make undirty and set same value. Should not become dirty.
+	instance.setDirty(false);
+	instance.setValue("newValue");
+	assertFalse(instance.isDirty());
+
+	// setting to null should also make dirty
+	instance.setValue(null);
+	assertTrue(instance.isDirty());
+
+	// but not after a second time
+	instance.setDirty(false);
+	instance.setValue(null);
+	assertFalse(instance.isDirty());
     }
 
     /**

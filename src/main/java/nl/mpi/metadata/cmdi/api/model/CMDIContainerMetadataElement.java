@@ -17,6 +17,7 @@
 package nl.mpi.metadata.cmdi.api.model;
 
 import java.util.List;
+import nl.mpi.metadata.api.MetadataElementException;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.type.ContainedMetadataElementType;
@@ -57,4 +58,14 @@ public interface CMDIContainerMetadataElement extends CMDIMetadataElement, Metad
     int getChildrenCount(CMDIProfileElement childType);
 
     ComponentType getType();
+
+    /**
+     * Removes a child from this element.
+     *
+     * Sets this element's {@link #isDirty()  dirty state} to true
+     *
+     * @param element element to remove
+     * @return whether the child was removed. Will be false if the child is not registered as a child.
+     */
+    boolean removeChildElement(CMDIMetadataElement element) throws MetadataElementException;
 }

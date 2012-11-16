@@ -61,10 +61,19 @@ public class MultilingualElementImpl<T> extends ElementImpl<T> implements Multil
 	this.language = language;
     }
 
+    /**
+     * Sets the language of this element.
+     * Sets this element's {@link #isDirty()  dirty state} to true
+     *
+     * @param language
+     */
+    @Override
     public void setLanguage(String language) {
 	this.language = language;
+	setDirty(true);
     }
 
+    @Override
     public String getLanguage() {
 	return language;
     }

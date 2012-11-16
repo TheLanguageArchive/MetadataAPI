@@ -37,7 +37,9 @@ import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 public interface CMDIDocument extends CMDIContainerMetadataElement, HandleCarrier, MetadataDocument<CMDIMetadataElement>, ReferencingMetadataDocument<CMDIMetadataElement, ResourceProxy> {
 
     /**
-     * Adds an existing resource proxy to the resource proxy map for this document
+     * Adds an existing resource proxy to the resource proxy map for this document.
+     *
+     * Sets this document's {@link #isDirty()  dirty state} to true
      *
      * @param resourceProxy resource proxy to add
      */
@@ -73,6 +75,8 @@ public interface CMDIDocument extends CMDIContainerMetadataElement, HandleCarrie
      * Puts a header item in the document. If a header item with the same name already exists, it gets replaced by the provided one.
      * Header items are guaranteed to be inserted in the order as specified by the the {@link CMDIProfile} this document is an instance of.
      *
+     * Sets this document's {@link #isDirty()  dirty state} to true
+     *
      * @param headerInfoItem
      * @throws CMDITypeException if the {@link CMDIProfile} does not allow this header item (by its name)
      * @throws MetadataElementException if the header item could not be inserted into the document
@@ -85,10 +89,19 @@ public interface CMDIDocument extends CMDIContainerMetadataElement, HandleCarrie
      * Removes a resource proxy from the resource proxy map for this document. Does not check if it is linked from any of the metadata
      * elements.
      *
+     * Sets this document's {@link #isDirty()  dirty state} to true
+     *
      * @param id ID of resource proxy to remove
      */
     void removeDocumentResourceProxy(String id);
 
+    /**
+     * Removes a header item from the document.
+     *
+     * Sets this document's {@link #isDirty()  dirty state} to true
+     *
+     * @param name
+     */
     void removeHeaderInformation(String name);
 
     MetadataResourceProxy createDocumentMetadataReference(URI uri, String mimetype) throws MetadataException;

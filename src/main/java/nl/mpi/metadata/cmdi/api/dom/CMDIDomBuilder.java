@@ -246,20 +246,26 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	    final String schemaLocation = metadataDocument.getType().getSchemaLocation().toString();
 	    final Node componentsNode = XPathAPI.selectSingleNode(domDocument, CMDIConstants.CMD_COMPONENTS_PATH);
 	    buildMetadataElement(domDocument, componentsNode, metadataDocument, schemaLocation);
-	} catch (DOMException mdEx) {
-	    throw new MetadataDocumentException(metadataDocument, "DOMException while building components in DOM", mdEx);
+	} catch (DOMException domEx) {
+	    throw new MetadataDocumentException(metadataDocument, "DOMException while building components in DOM", domEx);
 	} catch (TransformerException tEx) {
 	    throw new MetadataDocumentException(metadataDocument, "TransformerException while building components in DOM", tEx);
 	}
     }
 
     private void buildMetadataElement(Document domDocument, Node parentNode, CMDIMetadataElement metadataElement, String schemaLocation) throws DOMException, TransformerException {
-	final SchemaProperty elementSchemaProperty = metadataElement.getType().getSchemaElement();
+	logger.debug("Building metadata element [{}]", metadataElement);
 
-	//org.w3c.dom.Element elementNode = getExistingElement(parentNode, elementSchemaProperty);
-	org.w3c.dom.Element elementNode = (org.w3c.dom.Element) XPathAPI.selectSingleNode(parentNode, metadataElement.getPathString());
+	final SchemaProperty elementSchemaProperty = metadataElement.getType().getSchemaElement();
+	org.w3c.dom.Element elementNode;
+	if (parentNode == null) {
+	    elementNode = (org.w3c.dom.Element) XPathAPI.selectSingleNode(domDocument, metadataElement.getPathString());
+	} else {
+	    elementNode = (org.w3c.dom.Element) XPathAPI.selectSingleNode(parentNode, metadataElement.getPathString());
+	}
 
 	if (metadataElement.isDirty()) {
+	    logger.debug("Metadata element is dirty. Rewriting component in DOM.");
 	    if (elementNode != null) {
 		parentNode.removeChild(elementNode);
 	    }
@@ -274,9 +280,17 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	    buildElementAttributes(domDocument, elementNode, metadataElement);
 	    // Add proxy refs
 	    buildProxyReferences(metadataElement, elementNode);
+
+	    metadataElement.setDirty(false);
+	} else {
+	    logger.debug("Metadata element not marked dirty. Leaving as is in DOM.");
 	}
+
 	// Iterate over children if container
 	if (metadataElement instanceof CMDIContainerMetadataElement) {
+	    if (logger.isDebugEnabled()) {
+		logger.debug("Element is container. Iterating over {} child elements", ((CMDIContainerMetadataElement) metadataElement).getChildrenCount());
+	    }
 	    for (MetadataElement child : ((CMDIContainerMetadataElement) metadataElement).getChildren()) {
 		buildMetadataElement(domDocument, elementNode, (CMDIMetadataElement) child, schemaLocation);
 	    }

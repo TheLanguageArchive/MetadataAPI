@@ -45,14 +45,15 @@ import org.w3c.dom.NodeList;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> {
-
+    
     private static Logger logger = LoggerFactory.getLogger(CMDIDocumentReader.class);
     private final CMDIProfileContainer profileContainer;
     private final CMDIComponentReader componentReader;
     private final CMDIResourceProxyReader resourceReader;
 
     /**
-     * Creates a CMDI document reader that uses the specified profile container and a new {@link CMDIComponentReader} and {@link CMDIResourceProxyReader}
+     * Creates a CMDI document reader that uses the specified profile container and a new {@link CMDIComponentReader} and
+     * {@link CMDIResourceProxyReader}
      *
      * @param profileContainer profile container that should be used to retrieve CMDI profiles
      * @param elementFactory metadata element factory to use for creating new components and elements
@@ -88,23 +89,24 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	final CachedXPathAPI xPathAPI = new CachedXPathAPI();
 	final CMDIProfile profile = getProfileForDocument(document, documentURI, xPathAPI);
 	final CMDIDocument cmdiDocument = createCMDIDocument(xPathAPI, document, documentURI, profile);
-
+	
 	readHeader(cmdiDocument, document, xPathAPI);
 	resourceReader.readResourceProxies(cmdiDocument, document, xPathAPI);
 	componentReader.readComponents(cmdiDocument, document, xPathAPI);
-
+	
+	cmdiDocument.setDirty(false);
 	return cmdiDocument;
     }
-
+    
     private CMDIDocument createCMDIDocument(final CachedXPathAPI xPathAPI, final Document document, URI documentURI, final CMDIProfile profile) throws MetadataException {
 	final String rootComponentNodePath = profile.getPathString();
 	try {
 	    final Node rootComponentNode = xPathAPI.selectSingleNode(document, rootComponentNodePath);
-
+	    
 	    if (rootComponentNode == null) {
 		throw new MetadataException(String.format("Root component node not found at specified path: %1$s", rootComponentNodePath));
 	    }
-
+	    
 	    logger.debug("Found documentNode at {}", rootComponentNodePath);
 	    //TODO: Use factory
 	    return new CMDIDocumentImpl(profile, documentURI);
@@ -191,7 +193,7 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	// No schemaLocation specified (so null)
 	return null;
     }
-
+    
     private URI getDocumentNamespace(final Document document) throws URISyntaxException {
 	// Try to get document namespace from root element
 	final Node documentElement = document.getDocumentElement();
@@ -204,7 +206,7 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	logger.warn("Cannot find namespace in document, assuming standard namespace {}", CMDIConstants.CMD_NAMESPACE);
 	return new URI(CMDIConstants.CMD_NAMESPACE);
     }
-
+    
     private void readHeader(final CMDIDocument cmdiDocument, final Document document, final CachedXPathAPI xPathAPI) throws MetadataDocumentException {
 	try {
 	    // Find the <Header> Element. Should be there!
@@ -225,7 +227,7 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 		    "TransformationException while reading header information in document. See nested exception for details.", tEx);
 	}
     }
-
+    
     private void addHeaderInformationFromDocument(final Node headerChild, final CMDIDocument cmdiDocument) throws DOMException {
 	// Put String values in header info
 	// Take name from element name, value from text content

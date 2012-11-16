@@ -40,7 +40,7 @@ public class AttributeImplTest {
 
     @Before
     public void setUp() {
-	attributeType = new CMDIAttributeType("@path","testtype");
+	attributeType = new CMDIAttributeType("@path", "testtype");
 	parent = context.mock(CMDIMetadataElement.class);
     }
 
@@ -64,6 +64,11 @@ public class AttributeImplTest {
     @Test
     public void testGetValue() {
 	AttributeImpl instance = new AttributeImpl(attributeType, parent);
+	context.checking(new Expectations() {
+	    {
+		oneOf(parent).setDirty(true);
+	    }
+	});
 	instance.setValue("testValue");
 	assertEquals("testValue", instance.getValue());
     }
@@ -73,10 +78,15 @@ public class AttributeImplTest {
 	attributeType.setName("attributeType");
 
 	AttributeImpl instance = new AttributeImpl(attributeType, parent);
+
+	context.checking(new Expectations() {
+	    {
+		oneOf(parent).setDirty(true);
+	    }
+	});
 	instance.setValue("testValue");
 
 	context.checking(new Expectations() {
-
 	    {
 		oneOf(parent).getPathString();
 		will(returnValue("/path/to/parent"));
@@ -92,10 +102,14 @@ public class AttributeImplTest {
 	attributeType.setNamespaceURI("http://namespace/uri");
 
 	AttributeImpl instance = new AttributeImpl(attributeType, parent);
+	context.checking(new Expectations() {
+	    {
+		oneOf(parent).setDirty(true);
+	    }
+	});
 	instance.setValue("testValue");
 
 	context.checking(new Expectations() {
-
 	    {
 		oneOf(parent).getPathString();
 		will(returnValue("/path/to/parent"));
