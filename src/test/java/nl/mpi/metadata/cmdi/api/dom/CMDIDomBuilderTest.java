@@ -59,13 +59,6 @@ import static org.junit.Assert.*;
  */
 public class CMDIDomBuilderTest extends CMDIAPITestCase {
 
-    @BeforeClass
-    public static void setUpTest() {
-	XMLUnit.setIgnoreWhitespace(true);
-	XMLUnit.setIgnoreComments(true);
-	XMLUnit.setIgnoreAttributeOrder(true);
-    }
-
     /**
      * Test of createDomFromSchema method, of class CMDIDomBuilder.
      */
@@ -331,6 +324,11 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	Document builtDocument = instance.buildDomForDocument(metadataDocument);
 	// Compare to reading of original DOM
 	Document originalDocument = XMLUnit.buildControlDocument(new InputSource(getClass().getResourceAsStream(TEXT_CORPUS_INSTANCE_LOCATION)));
+	
+	XMLUnit.setIgnoreWhitespace(false);
+	XMLUnit.setIgnoreComments(false);
+	XMLUnit.setIgnoreAttributeOrder(false);
+	
 	Diff compareXML = XMLUnit.compareXML(originalDocument, builtDocument);
 	assertTrue(compareXML.toString(), compareXML.identical());
     }
@@ -344,10 +342,10 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 
 	CachedXPathAPI xPathAPI = new CachedXPathAPI();
 	// Select mandatory element 
-	
+
 	Node node = xPathAPI.selectSingleNode(baseDocument, "/:CMD/:Components/:TextCorpusProfile");
 	// Should be there
-	assertNotNull(node);	
+	assertNotNull(node);
 	// Select mandatory element
 	node = xPathAPI.selectSingleNode(baseDocument, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Name");
 	// Should not be there
