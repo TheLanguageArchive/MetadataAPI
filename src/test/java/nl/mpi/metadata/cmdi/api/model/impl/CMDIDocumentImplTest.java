@@ -95,25 +95,40 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
     public void testGetHeaderInformation() throws MetadataException {
 	assertEquals(0, document.getHeaderInformation().size());
 
+	document.getHeaderDirtyState().setDirty(false);
+
 	assertNull(document.getHeaderInformation("MdProfile"));
 	document.putHeaderInformation(new HeaderInfo("MdProfile", "Value"));
 	assertEquals(1, document.getHeaderInformation().size());
 	assertNotNull(document.getHeaderInformation("MdProfile"));
 	assertSame(document.getHeaderInformation("MdProfile"), document.getHeaderInformation().iterator().next());
 	assertEquals("Value", document.getHeaderInformation("MdProfile").getValue());
+	assertTrue(document.getHeaderDirtyState().isDirty());
+
+	document.getHeaderDirtyState().setDirty(false);
 
 	assertNull(document.getHeaderInformation("MdCreationDate"));
 	document.removeHeaderInformation("MdCreationDate");
 	assertEquals(1, document.getHeaderInformation().size());
+	// Nothing removed, dirty state should not have changed
+	assertFalse(document.getHeaderDirtyState().isDirty());
+
 	document.removeHeaderInformation("MdProfile");
 	assertEquals(0, document.getHeaderInformation().size());
 	assertNull(document.getHeaderInformation("MdProfile"));
+	// Header item removed, dirty state should have changed
+	assertTrue(document.getHeaderDirtyState().isDirty());
     }
 
     @Test
     public void testPutHeaderInformation() throws MetadataException {
+	document.getHeaderDirtyState().setDirty(false);
+
 	document.putHeaderInformation(new HeaderInfo("MdProfile", "Value"));
 	assertEquals("MdProfile", document.getHeaderInformation().get(0).getName());
+	// Should have changed dirty state to true
+	assertTrue(document.getHeaderDirtyState().isDirty());
+
 	// Add header info that should be inserted before the previous one
 	document.putHeaderInformation(new HeaderInfo("MdCreator", "Value"));
 	// Order should match profile order
@@ -165,11 +180,15 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 
     @Test
     public void testAddDocumentResourceProxy() throws URISyntaxException {
+	document.getResourceProxiesDirtyState().setDirty(false);
+
 	assertEquals(0, document.getDocumentReferencesCount());
 	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), "test/mime-type");
 	document.addDocumentResourceProxy(resourceProxy);
 	assertEquals(1, document.getDocumentReferencesCount());
 	assertEquals(resourceProxy, document.getDocumentReferences().iterator().next());
+	// Addition should have changed the document's dirty state
+	assertTrue(document.getResourceProxiesDirtyState().isDirty());
     }
 
     @Test
@@ -177,8 +196,12 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), "test/mime-type");
 	document.addDocumentResourceProxy(resourceProxy);
 	assertEquals(1, document.getDocumentReferencesCount());
+
+	document.getResourceProxiesDirtyState().setDirty(false);
 	document.removeDocumentResourceProxy("rpId");
 	assertEquals(0, document.getDocumentReferencesCount());
+	// Removal should have changed the document's dirty state
+	assertTrue(document.getResourceProxiesDirtyState().isDirty());
     }
 
     @Test
