@@ -61,6 +61,14 @@ public interface MetadataDocument<M extends MetadataElement> extends MetadataCon
     void putHeaderInformation(HeaderInfo headerInfoItem) throws MetadataException;
 
     /**
+     * Gets a specific header item by its name
+     *
+     * @param name name of the header item to retrieve
+     * @return the header item with the specified name, or null if not found
+     */
+    HeaderInfo getHeaderInformation(String name);
+
+    /**
      * Registers a {@link MetadataDocumentListener} for this document
      *
      * @param listener Listener to add
