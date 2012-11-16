@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataElementImpl implements CMDIContainerMetadataElement {
-
+    
     private static final Logger logger = LoggerFactory.getLogger(CMDIContainerMetadataElementImpl.class);
     /**
      * e.g. test:Actor[1]/:Language -> ((test):(Actor))([(1)])(/(:Language))
@@ -67,7 +67,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
      * Map of {type name => child elements}
      */
     private final Map<String, List<CMDIMetadataElement>> childrenTypeMap;
-
+    
     public CMDIContainerMetadataElementImpl(final ComponentType type) {
 	this.type = type;
 	this.children = Collections.synchronizedList(new ArrayList<CMDIMetadataElement>());
@@ -75,7 +75,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
     }
 
     /**
-     * Adds the provided element as a child
+     * Adds the provided element as a child. This does <em>not</em> change the dirty state of this element!
      *
      * @param element element to add
      * @return whether the child was added. Will be false if the child is already registered as a child.
@@ -169,7 +169,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
 	    return false;
 	}
     }
-
+    
     @Override
     public boolean canAddInstanceOfType(ContainedMetadataElementType type) {
 	// Can only add CMDI elements
@@ -244,7 +244,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
 	    final String rootChildPath = path.substring(getMetadataDocument().getPathString().length() + 1); // Add one character for trailing slash
 	    return getMetadataDocument().getChildElement(rootChildPath);
 	}
-
+	
 	final Matcher pathMatcher = PATH_PATTERN.matcher(path);
 	if (pathMatcher.find()) {
 	    // Ignoring namespace (group 3) in this implementation
@@ -252,7 +252,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
 	    if (elementName != null && elementName.length() > 0) {
 		final String elementIndexString = pathMatcher.group(PATH_PATTERN_ELEMENT_INDEX_GROUP);
 		final String childPath = pathMatcher.group(PATH_PATTERN_CHILD_PATH_GROUP);
-
+		
 		return getChildElement(elementName, elementIndexString, childPath);
 	    }
 	}
@@ -287,6 +287,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
 		}
 	    } catch (IndexOutOfBoundsException ioobEx) {
 		logger.warn("Requested node has index >= collection size: {}[{}]. Remaining child path:", new Object[]{elementName, elementIndexString, childPath});
+		logger.debug("IndexOutOfBoundsException details:", ioobEx);
 		return null;
 	    }
 	}
@@ -301,7 +302,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
     public synchronized List<MetadataElement> getChildren() {
 	return Collections.<MetadataElement>unmodifiableList(children);
     }
-
+    
     @Override
     public synchronized List<MetadataElement> getChildren(ContainedMetadataElementType childType) {
 	if (childrenTypeMap.containsKey(childType.getName())) {
@@ -310,7 +311,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
 	    return Collections.emptyList();
 	}
     }
-
+    
     public int getChildrenCount() {
 	return children.size();
     }
@@ -329,17 +330,17 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
 	    return 0;
 	}
     }
-
+    
     @Override
     public void addMetadataElementListener(MetadataElementListener listener) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     @Override
     public void removeMetadataElementListener(MetadataElementListener listener) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     @Override
     public String getName() {
 	return type.getName();
@@ -380,7 +381,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
 	    return getName();
 	}
     }
-
+    
     @Override
     public ComponentType getType() {
 	return type;

@@ -21,11 +21,14 @@ import java.util.Collection;
 import java.util.UUID;
 import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
+import nl.mpi.metadata.cmdi.api.model.Attribute;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.DataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.MetadataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -35,6 +38,8 @@ import static org.junit.Assert.*;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public abstract class CMDIMetadataElementImplTest extends CMDIAPITestCase {
+
+    private Mockery context = new JUnit4Mockery();
 
     @Test
     public void testAddDocumentResourceProxyReference() throws Exception {
@@ -158,6 +163,49 @@ public abstract class CMDIMetadataElementImplTest extends CMDIAPITestCase {
 	assertNull(getInstance().removeReference(createdResourceReference));
 	// Reference should have been removed as well
 	assertEquals(0, getDocument().getResourceProxyReferences(createdResourceReference).size());
+    }
+
+    /**
+     * Test of addAttribute method, of class CMDIMetadataElementImpl.
+     */
+    @Test
+    public void testAddAttribute() {
+	// Mark clean
+	getInstance().setDirty(false);
+	// Should be empty...
+	assertEquals(0, getInstance().getAttributes().size());
+
+	// Add an attribute
+	Attribute mockAttribute = context.mock(Attribute.class);
+	getInstance().addAttribute(mockAttribute);
+	// Addition should have made element dirty
+	assertTrue(getInstance().isDirty());
+
+	// Check contents
+	final Collection<Attribute> attributes = getInstance().getAttributes();
+	assertEquals(1, attributes.size());
+	assertSame(mockAttribute, attributes.iterator().next());
+    }
+
+    /**
+     * Test of removeAttribute method, of class CMDIMetadataElementImpl.
+     */
+    @Test
+    public void testRemoveAttribute() {
+	// Add an arbitrary attribute
+	Attribute mockAttribute = context.mock(Attribute.class);
+	getInstance().addAttribute(mockAttribute);
+	assertEquals(1, getInstance().getAttributes().size());
+
+	// Mark clean
+	getInstance().setDirty(false);
+
+	// Remove attribute
+	getInstance().removeAttribute(mockAttribute);
+	// Should be empty now
+	assertEquals(0, getInstance().getAttributes().size());
+	// Removal should have made element dirty
+	assertTrue(getInstance().isDirty());
     }
 
     abstract CMDIMetadataElement getInstance();

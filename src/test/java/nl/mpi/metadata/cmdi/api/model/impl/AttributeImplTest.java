@@ -18,7 +18,6 @@ package nl.mpi.metadata.cmdi.api.model.impl;
 
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
-import nl.mpi.metadata.cmdi.api.model.impl.AttributeImpl;
 import nl.mpi.metadata.cmdi.api.type.CMDIAttributeType;
 import org.jmock.Expectations;
 import org.jmock.Mockery;

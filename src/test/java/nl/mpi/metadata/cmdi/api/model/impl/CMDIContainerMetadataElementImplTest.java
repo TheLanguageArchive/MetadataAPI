@@ -152,15 +152,28 @@ public class CMDIContainerMetadataElementImplTest extends CMDIMetadataElementImp
     @Test
     public void testRemoveChildElement() throws Exception {
 	assertEquals(0, collection.getChildrenCount());
+
+	collection.setDirty(false);
+
 	// Add two children
 	assertTrue(collection.addChildElement(originLocation));
 	assertTrue(collection.addChildElement(new CMDIContainerMetadataElementImpl(originLocationType, document)));
 	assertEquals(2, collection.getChildrenCount());
+	// Adding children should NOT change the dirty state
+	assertFalse(collection.isDirty());
+
 	// Remove first child
 	assertTrue(collection.removeChildElement(originLocation));
 	assertEquals(1, collection.getChildrenCount());
+	// This should have set the dirty state to true
+	assertTrue(collection.isDirty());
+
+	collection.setDirty(false);
+
 	// Remove non-child (should not work)
 	assertFalse(collection.removeChildElement(new CMDIContainerMetadataElementImpl(originLocationType, document)));
+	// Nothing has changed, dirty state should not have change
+	assertFalse(collection.isDirty());
     }
 
     @Test
