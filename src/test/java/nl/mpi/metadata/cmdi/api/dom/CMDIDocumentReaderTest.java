@@ -76,6 +76,8 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
     @Test
     public void testReadHeader() throws Exception {
 	CMDIDocument cmdi = readTestDocument();
+	// After read header state should be clean
+	assertFalse(cmdi.getHeaderDirtyState().isDirty());
 
 	// Profile should be loaded from specified schemaLocation
 	assertEquals("http://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/profiles/clarin.eu:cr1:p_1271859438164/xsd", cmdi.getType().getSchemaLocation().toString());
@@ -110,16 +112,22 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
      */
     @Test
     public void testReadComponents() throws Exception {
-	CMDIDocument cmdi = readTestDocument();
+	CMDIDocument cmdi = readTestDocument();	
+	// After read document should be a clean metadata element
+	assertFalse(cmdi.isDirty());
 	assertEquals(3, cmdi.getChildren().size());
 
 	final Component collection = (Component) cmdi.getChildElement("Collection");
 	assertNotNull(collection);
+	// Component should be clean, fresh read
+	assertFalse(collection.isDirty());
 
 	// Get Collection/GeneralInfo/Name element
 	final Component generalInfo = (Component) cmdi.getChildElement("Collection/GeneralInfo");
 	assertNotNull(generalInfo);
 	assertEquals(0, generalInfo.getAttributes().size());
+	// Component should be clean, fresh read
+	assertFalse(generalInfo.isDirty());
 
 	// Get Collection/GeneralInfo/Name element
 	final Element name = (Element) cmdi.getChildElement("Collection/GeneralInfo/Name");
@@ -128,6 +136,8 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 	assertEquals(name, collection.getChildElement("GeneralInfo/Name"));
 	// Value should match document
 	assertEquals("TextCorpus test", name.getValue());
+	// Element should be clean, fresh read
+	assertFalse(name.isDirty());
 
 	// Check component with multiple occurences
 	final Component originLocation = (Component) cmdi.getChildElement("Collection/OriginLocation");
