@@ -131,4 +131,14 @@ public interface CMDIDocument extends CMDIContainerMetadataElement, HandleCarrie
      * @param referencingElement element that references the proxy
      */
     boolean unregisterResourceProxyReference(ResourceProxy proxy, CMDIMetadataElement referencingElement);
+
+    /**
+     * Sets the dirty state of this document as a metadata element to false as well as the {@link #getHeaderDirtyState() header's} and
+     * {@link #getResourceProxiesDirtyState()  } dirty states;
+     */
+    void setAllClean();
+
+    SettableDirtyStateProvider getHeaderDirtyState();
+
+    SettableDirtyStateProvider getResourceProxiesDirtyState();
 }

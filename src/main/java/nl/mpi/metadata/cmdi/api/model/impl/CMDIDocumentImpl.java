@@ -39,6 +39,7 @@ import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.DataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.MetadataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
+import nl.mpi.metadata.cmdi.api.model.SettableDirtyStateProvider;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDITypeException;
 
@@ -56,6 +57,8 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
     private final Map<Reference, Collection<CMDIMetadataElement>> resourceProxyReferences;
     private final Collection<MetadataDocumentListener> listeners;
     private URI fileLocation;
+    private SettableDirtyStateProvider headerDirtyState;
+    private SettableDirtyStateProvider resourceProxiesDirtyState;
 
     /**
      * Construct an unsaved profile instance (no location associated)
@@ -82,6 +85,9 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
 	this.resourceProxies = new LinkedHashMap<String, ResourceProxy>(); // LinkedHashMap so that order is preserved
 	this.resourceProxyReferences = new HashMap<Reference, Collection<CMDIMetadataElement>>();
 	this.listeners = new HashSet<MetadataDocumentListener>();
+
+	this.headerDirtyState = new SettableDirtyStateProvider(true);
+	this.resourceProxiesDirtyState = new SettableDirtyStateProvider(true);
     }
 
     @Override
@@ -123,7 +129,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
 	    } else {
 		replaceHeaderInfo(oldInfo, headerInfoItem);
 	    }
-	    setDirty(true);
+	    headerDirtyState.setDirty(true);
 	} else {
 	    throw new CMDITypeException(profile, "Profile does not support header with name " + headerInfoItem.getName());
 	}
@@ -195,7 +201,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
 	HeaderInfo info = getHeaderInformation(name);
 	if (info != null) {
 	    headerInfo.remove(info);
-	    setDirty(true);
+	    headerDirtyState.setDirty(true);
 	}
     }
 
@@ -246,7 +252,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
     @Override
     public synchronized void addDocumentResourceProxy(ResourceProxy resourceProxy) {
 	resourceProxies.put(resourceProxy.getId(), resourceProxy);
-	setDirty(true);
+	resourceProxiesDirtyState.setDirty(true);
     }
 
     /**
@@ -362,7 +368,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
     @Override
     public synchronized void removeDocumentResourceProxy(String id) {
 	resourceProxies.remove(id);
-	setDirty(true);
+	resourceProxiesDirtyState.setDirty(true);
     }
 
     /**
@@ -447,5 +453,23 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
     @Override
     protected final CharSequence getPathCharSequence() {
 	return getType().getPath();
+    }
+
+    /**
+     * Sets the dirty state of this document as a metadata element to false as well as the {@link #getHeaderDirtyState() header's} and
+     * {@link #getResourceProxiesDirtyState() } dirty states;
+     */
+    public void setAllClean() {
+	setDirty(false);
+	headerDirtyState.setDirty(false);
+	resourceProxiesDirtyState.setDirty(false);
+    }
+
+    public SettableDirtyStateProvider getHeaderDirtyState() {
+	return headerDirtyState;
+    }
+
+    public SettableDirtyStateProvider getResourceProxiesDirtyState() {
+	return resourceProxiesDirtyState;
     }
 }

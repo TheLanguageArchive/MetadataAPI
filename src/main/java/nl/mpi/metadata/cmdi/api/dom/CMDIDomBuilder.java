@@ -109,14 +109,20 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 
     public Document buildDomForDocument(CMDIDocument metadataDocument) throws MetadataDocumentException {
 	// Get base document
-	Document domDocument = getBaseDocument(metadataDocument);
-	//pruneDom(metadataDocument, domDocument);
+	final Document domDocument = getBaseDocument(metadataDocument);
 
-	if (metadataDocument.isDirty()) {
-	    pruneHeaderAndResourceProxies(metadataDocument, domDocument);
+	// See if headers need updating
+	if (metadataDocument.getHeaderDirtyState().isDirty()) {
+	    pruneHeader(metadataDocument, domDocument);
 	    setHeaders(metadataDocument, domDocument);
+	}
+
+	// See if resource proxies need updating
+	if (metadataDocument.getResourceProxiesDirtyState().isDirty()) {
+	    pruneResourceProxies(metadataDocument, domDocument);
 	    buildProxies(metadataDocument, domDocument);
 	}
+
 	buildComponents(metadataDocument, domDocument);
 	return domDocument;
     }
@@ -152,13 +158,21 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	}
     }
 
-    private void pruneHeaderAndResourceProxies(CMDIDocument metadataDocument, Document domDocument) throws DOMException, MetadataDocumentException {
+    private void pruneHeader(CMDIDocument metadataDocument, Document domDocument) throws DOMException, MetadataDocumentException {
 	try {
-	    final CachedXPathAPI xPathAPI = new CachedXPathAPI();
-	    Node headerNode = xPathAPI.selectSingleNode(domDocument, CMDIConstants.CMD_HEADER_PATH);
-	    Node resourceProxyListNode = xPathAPI.selectSingleNode(domDocument, CMDIConstants.CMD_RESOURCE_PROXY_LIST_PATH);
+	    final Node headerNode = XPathAPI.selectSingleNode(domDocument, CMDIConstants.CMD_HEADER_PATH);
 	    // Remove header items
 	    removeChildren(headerNode);
+	} catch (TransformerException tEx) {
+	    throw new MetadataDocumentException(metadataDocument, "TransformerException while preparing for building metadata DOM", tEx);
+	} catch (MetadataException mdEx) {
+	    throw new MetadataDocumentException(metadataDocument, "MetadataException while preparing for building metadata DOM", mdEx);
+	}
+    }
+
+    private void pruneResourceProxies(CMDIDocument metadataDocument, Document domDocument) throws DOMException, MetadataDocumentException {
+	try {
+	    Node resourceProxyListNode = XPathAPI.selectSingleNode(domDocument, CMDIConstants.CMD_RESOURCE_PROXY_LIST_PATH);
 	    // Remove resource proxies
 	    removeChildren(resourceProxyListNode);
 	} catch (TransformerException tEx) {
@@ -196,6 +210,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 		}
 		headerNode.appendChild(headerItemNode);
 	    }
+	    metadataDocument.getHeaderDirtyState().setDirty(false);
 	} catch (TransformerException tEx) {
 	    throw new MetadataDocumentException(metadataDocument, "TransformerException while setting headers in metadata DOM", tEx);
 	}
@@ -210,6 +225,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 		    // We can safely cast resourceProxy to ResourceProxy since only ResourceProxies can be added to CMDIDocument
 		    builResourceProxy(metadataDocument, domDocument, proxiesNode, (ResourceProxy) resourceProxy);
 		}
+		metadataDocument.getResourceProxiesDirtyState().setDirty(false);
 	    } catch (TransformerException tEx) {
 		throw new MetadataDocumentException(metadataDocument, "TransformerException while building resource proxies in DOM", tEx);
 	    }
