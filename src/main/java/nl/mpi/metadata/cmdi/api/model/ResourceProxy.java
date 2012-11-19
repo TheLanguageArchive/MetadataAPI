@@ -18,6 +18,7 @@ package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import nl.mpi.metadata.api.model.DirtyStateProvider;
 import nl.mpi.metadata.api.model.HandleCarrier;
 import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
@@ -26,42 +27,47 @@ import nl.mpi.metadata.cmdi.api.CMDIConstants;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public abstract class ResourceProxy implements Reference, HandleCarrier {
-
+public abstract class ResourceProxy implements Reference, HandleCarrier, DirtyStateProvider {
+    
     private final String id;
     private final String type;
     private URI uri;
     private String mimeType;
-
+    private boolean dirty;
+    
     public ResourceProxy(String id, URI uri, String type) {
 	this(id, uri, type, null);
     }
-
+    
     public ResourceProxy(String id, URI uri, String type, String mimeType) {
 	this.id = id;
 	this.uri = uri;
 	this.mimeType = mimeType;
 	this.type = type;
+	
+	this.dirty = true;
     }
-
+    
     public String getId() {
 	return id;
     }
-
+    
     public synchronized URI getURI() {
 	return uri;
     }
-
+    
     public synchronized void setURI(URI uri) {
 	this.uri = uri;
+	setDirty(true);
     }
-
+    
     public synchronized String getMimetype() {
 	return mimeType;
     }
-
+    
     public synchronized void setMimeType(String mimeType) {
 	this.mimeType = mimeType;
+	setDirty(true);
     }
 
     /**
@@ -72,7 +78,7 @@ public abstract class ResourceProxy implements Reference, HandleCarrier {
     public String getType() {
 	return type;
     }
-
+    
     @Override
     public boolean equals(Object obj) {
 	if (obj == null) {
@@ -93,7 +99,7 @@ public abstract class ResourceProxy implements Reference, HandleCarrier {
 	}
 	return true;
     }
-
+    
     @Override
     public int hashCode() {
 	int hash = 7;
@@ -122,9 +128,17 @@ public abstract class ResourceProxy implements Reference, HandleCarrier {
 	    throw new IllegalArgumentException("ResourceProxy only supports URI handles", usEx);
 	}
     }
-
+    
     @Override
     public String toString() {
 	return String.format("{%1$s} %2$s", getId(), getURI());
+    }
+    
+    public boolean isDirty() {
+	return dirty;
+    }
+    
+    public void setDirty(boolean dirty) {
+	this.dirty = dirty;
     }
 }

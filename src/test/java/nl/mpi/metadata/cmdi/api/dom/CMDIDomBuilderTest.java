@@ -200,6 +200,21 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
     }
 
     @Test
+    public void testBuildDomForDocumentProxiesWithModifiedContent() throws Exception {
+	final CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER, CMDI_API_TEST_DOM_BUILDER_FACTORY);
+	final CMDIDocument metadataDocument = getNewTestDocument(CMDI_METADATA_ELEMENT_FACTORY);
+
+	// Modify the first of the resource proxies
+	metadataDocument.getDocumentResourceProxy("resource1").setURI(new URI("http://resources/1/changed"));
+
+	// Build DOM
+	final Document document = instance.buildDomForDocument(metadataDocument);
+	// Resource ref was modified, see if the change has been written to the DOM
+	final Node resourceRefNode = XPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[1]/:ResourceRef");
+	assertEquals("http://resources/1/changed", resourceRefNode.getTextContent());
+    }
+
+    @Test
     public void testBuildDomForDocumentComponents() throws Exception {
 	CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER, CMDI_API_TEST_DOM_BUILDER_FACTORY);
 	CMDIDocument metadataDocument = getNewTestDocument(CMDI_METADATA_ELEMENT_FACTORY);

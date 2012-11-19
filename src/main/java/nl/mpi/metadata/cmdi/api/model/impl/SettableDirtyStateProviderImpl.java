@@ -14,18 +14,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api.model;
+package nl.mpi.metadata.cmdi.api.model.impl;
 
-import nl.mpi.metadata.api.model.DirtyStateProvider;
+import nl.mpi.metadata.cmdi.api.model.SettableDirtyStateProvider;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public interface SettableDirtyStateProvider extends DirtyStateProvider {
+public class SettableDirtyStateProviderImpl implements SettableDirtyStateProvider {
 
-    boolean isDirty();
+    private boolean dirty;
 
-    void setDirty(boolean dirty);
-    
+    public SettableDirtyStateProviderImpl(boolean dirty) {
+	this.dirty = dirty;
+    }
+
+    @Override
+    public void setDirty(boolean dirty) {
+	this.dirty = dirty;
+    }
+
+    @Override
+    public boolean isDirty() {
+	return dirty;
+    }
 }

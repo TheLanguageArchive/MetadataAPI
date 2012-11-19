@@ -60,8 +60,10 @@ public class ResourceProxyTest {
 
     @Test
     public void testSetURI() throws URISyntaxException {
+	resourceProxy.setDirty(false);
 	resourceProxy.setURI(new URI("http://newURI"));
 	assertEquals(new URI("http://newURI"), resourceProxy.getURI());
+	assertTrue(resourceProxy.isDirty());
     }
 
     /**
@@ -74,8 +76,10 @@ public class ResourceProxyTest {
 
     @Test
     public void testSetMimeType() {
+	resourceProxy.setDirty(false);
 	resourceProxy.setMimeType("test/new-mime-type");
 	assertEquals("test/new-mime-type", resourceProxy.getMimetype());
+	assertTrue(resourceProxy.isDirty());
     }
 
     @Test
@@ -99,8 +103,8 @@ public class ResourceProxyTest {
 	resourceProxy.setHandle("http://newuri");
 	assertEquals("http://newuri", resourceProxy.getHandle());
     }
- 
-   /**
+
+    /**
      * Test of equals method, of class ResourceProxy.
      */
     @Test

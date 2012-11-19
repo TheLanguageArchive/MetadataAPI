@@ -86,8 +86,8 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
 	this.resourceProxyReferences = new HashMap<Reference, Collection<CMDIMetadataElement>>();
 	this.listeners = new HashSet<MetadataDocumentListener>();
 
-	this.headerDirtyState = new SettableDirtyStateProvider(true);
-	this.resourceProxiesDirtyState = new SettableDirtyStateProvider(true);
+	this.headerDirtyState = new SettableDirtyStateProviderImpl(true);
+	this.resourceProxiesDirtyState = new ResourceProxyDirtyStateProvider(true);
     }
 
     @Override
@@ -464,5 +464,40 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
 
     public SettableDirtyStateProvider getResourceProxiesDirtyState() {
 	return resourceProxiesDirtyState;
+    }
+
+    /**
+     * Dirty state provider for the headers. Has a general state and proxies for the state of the individual headers.
+     */
+    private class ResourceProxyDirtyStateProvider extends SettableDirtyStateProviderImpl {
+
+	public ResourceProxyDirtyStateProvider(boolean dirty) {
+	    super(dirty);
+	}
+
+	@Override
+	public boolean isDirty() {
+	    return super.isDirty() || documentHasDirtyHeaders();
+	}
+
+	private boolean documentHasDirtyHeaders() {
+	    for (ResourceProxy proxy : resourceProxies.values()) {
+		if (proxy.isDirty()) {
+		    return true;
+		}
+	    }
+	    return false;
+	}
+
+	@Override
+	public void setDirty(boolean dirty) {
+	    super.setDirty(dirty);
+	    if (!dirty) {
+		// Clean state should trickle down (setting dirty will already affect entire state)
+		for (ResourceProxy proxy : resourceProxies.values()) {
+		    proxy.setDirty(dirty);
+		}
+	    }
+	}
     }
 }

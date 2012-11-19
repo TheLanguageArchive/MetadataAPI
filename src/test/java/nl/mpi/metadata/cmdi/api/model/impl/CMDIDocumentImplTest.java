@@ -187,7 +187,12 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 	document.addDocumentResourceProxy(resourceProxy);
 	assertEquals(1, document.getDocumentReferencesCount());
 	assertEquals(resourceProxy, document.getDocumentReferences().iterator().next());
-	// Addition should have changed the document's dirty state
+	// Addition should have changed the resource proxies' dirty state
+	assertTrue(document.getResourceProxiesDirtyState().isDirty());
+
+	document.getResourceProxiesDirtyState().setDirty(false);
+	// Changing an existing resource proxy should also make the state dirty
+	resourceProxy.setMimeType("test/new-mime-type");
 	assertTrue(document.getResourceProxiesDirtyState().isDirty());
     }
 

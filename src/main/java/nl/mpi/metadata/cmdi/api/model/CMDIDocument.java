@@ -147,11 +147,19 @@ public interface CMDIDocument extends CMDIContainerMetadataElement, HandleCarrie
 
     /**
      * Sets the dirty state of this document as a metadata element to false as well as the {@link #getHeaderDirtyState() header's} and
-     * {@link #getResourceProxiesDirtyState()  } dirty states;
+     * {@link #getResourceProxiesDirtyState() } dirty states;
      */
     void setAllClean();
 
+    /**
+     *
+     * @return modifiable state that indicates whether the list of resource proxies has changed
+     */
     SettableDirtyStateProvider getHeaderDirtyState();
 
+    /**
+     *
+     * @return modifiable state that indicates whether the list of resource proxies or one of its items has unsaved changes
+     */
     SettableDirtyStateProvider getResourceProxiesDirtyState();
 }

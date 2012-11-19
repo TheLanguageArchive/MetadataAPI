@@ -63,21 +63,21 @@ public class CMDIResourceProxyReaderTest extends CMDIAPITestCase {
 	{
 	    ResourceProxy resource1 = cmdiDocument.getDocumentResourceProxy("resource1");
 	    assertNotNull(resource1);
-	    assertTrue("Resource should be data resource proxy", resource1 instanceof DataResourceProxy);
+	    assertEquals(DataResourceProxy.class, resource1.getClass());
 	    assertEquals("text/plain", resource1.getMimetype());
 	    assertEquals(new URI("http://resources/1"), resource1.getURI());
 	}
 	{
 	    ResourceProxy resource2 = cmdiDocument.getDocumentResourceProxy("resource2");
 	    assertNotNull(resource2);
-	    assertTrue("Resource should be data resource proxy", resource2 instanceof DataResourceProxy);
+	    assertEquals(DataResourceProxy.class, resource2.getClass());
 	    assertNull("Resource should have no mimetype", resource2.getMimetype());
 	    assertEquals(new URI("http://resources/2"), resource2.getURI());
 	}
 	{
 	    ResourceProxy metadata1 = cmdiDocument.getDocumentResourceProxy("metadata1");
 	    assertNotNull(metadata1);
-	    assertTrue("Resource should be metadata resource proxy", metadata1 instanceof MetadataResourceProxy);
+	    assertEquals(MetadataResourceProxy.class, metadata1.getClass());
 	    assertEquals("application/xml", metadata1.getMimetype());
 	    assertEquals(new URI("http://metadata/1"), metadata1.getURI());
 	}
