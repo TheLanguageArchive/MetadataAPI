@@ -45,7 +45,9 @@ public class CMDIResourceProxyReader {
     private final static Logger logger = LoggerFactory.getLogger(CMDIResourceProxyReader.class);
 
     /**
-     * Reads resource proxies from a specified CMDI DOM into the specified CMDI document instance
+     * Reads resource proxies from a specified CMDI DOM into the specified CMDI document instance. This will add
+     * {@link MetadataResourceProxy MetadataResourceProxies} for proxies with type Metadata, and
+     * {@link DataResourceProxy DataResourceProxies} for all other types (including SearchPage, SearchService and others).
      *
      * @param cmdiDocument CMDI document to add resource proxies to
      * @param domDocument DOM to read resource proxies from
@@ -74,34 +76,36 @@ public class CMDIResourceProxyReader {
     }
 
     /**
-     * Creates a ResourceProxy object from a DOM node
+     * Creates a ResourceProxy object from a DOM node. The result will be a {@link MetadataResourceProxy} if the resource type is Metadata,
+     * otherwise it will be a {@link DataResourceProxy} with the {@link DataResourceProxy#getType() } type taken from the type specified
+     * in the DOM.
      *
      * @param proxyNode DOM node of the resource proxy
      * @param xPathAPI Cached XPathAPI for the DOM
      * @return new resource proxy based on provided DOM node
      * @throws DOMException in case of failure to retrieve node or node content from DOM
      * @throws TransformerException if any of the XPath lookups fails
-     * @throws MetadataException if required element or attribute is missing, or if resource type is not known
+     * @throws MetadataException if required element or attribute is missing
      */
     protected ResourceProxy createResourceProxy(final Node proxyNode, final CachedXPathAPI xPathAPI) throws DOMException, TransformerException, MetadataException {
-	Node resourceTypeNode = getResourceTypeNode(proxyNode, xPathAPI);
-	String resourceType = resourceTypeNode.getTextContent();
+	final Node resourceTypeNode = getResourceTypeNode(proxyNode, xPathAPI);
+	final String resourceType = resourceTypeNode.getTextContent();
 
-	String id = getResourceProxyId(proxyNode);
-	URI resourceRef = getResourceRef(proxyNode, xPathAPI);
-	String mimeType = getResourceProxyMimeType(resourceTypeNode);
+	final String id = getResourceProxyId(proxyNode);
+	final URI resourceRef = getResourceRef(proxyNode, xPathAPI);
+	final String type = resourceTypeNode.getTextContent();
+	final String mimeType = getResourceProxyMimeType(resourceTypeNode);
 
-	if (CMDIConstants.CMD_RESOURCE_PROXY_TYPE_RESOURCE.equals(resourceType)) {
-	    return new DataResourceProxy(id, resourceRef, mimeType);
-	} else if (CMDIConstants.CMD_RESOURCE_PROXY_TYPE_METADATA.equals(resourceType)) {
+	if (CMDIConstants.CMD_RESOURCE_PROXY_TYPE_METADATA.equals(resourceType)) {
 	    return new MetadataResourceProxy(id, resourceRef, mimeType);
 	} else {
-	    throw new MetadataException("Unknown ResourceType: " + resourceType);
+	    // Consider it to be a data resource proxy with the specified type
+	    return new DataResourceProxy(id, resourceRef, type, mimeType);
 	}
     }
 
     private Node getResourceTypeNode(final Node proxyNode, final CachedXPathAPI xPathAPI) throws TransformerException, MetadataException {
-	Node resourceTypeNode = xPathAPI.selectSingleNode(proxyNode, "./:ResourceType");
+	Node resourceTypeNode = xPathAPI.selectSingleNode(proxyNode, "./:" + CMDIConstants.CMD_RESOURCE_PROXY_TYPE_ELEMENT);
 	if (resourceTypeNode != null) {
 	    return resourceTypeNode;
 	} else {

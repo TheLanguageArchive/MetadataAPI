@@ -21,19 +21,21 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import javax.xml.transform.TransformerException;
 import nl.mpi.metadata.api.MetadataException;
+import nl.mpi.metadata.api.model.ResourceReference;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
-import nl.mpi.metadata.cmdi.api.model.impl.CMDIDocumentImpl;
 import nl.mpi.metadata.cmdi.api.model.DataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.MetadataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
+import nl.mpi.metadata.cmdi.api.model.impl.CMDIDocumentImpl;
 import org.apache.xpath.CachedXPathAPI;
 import org.custommonkey.xmlunit.XMLUnit;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -57,22 +59,42 @@ public class CMDIResourceProxyReaderTest extends CMDIAPITestCase {
 	Document domDocument = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
 	instance.readResourceProxies(cmdiDocument, domDocument, new CachedXPathAPI());
 
-	assertEquals(3, cmdiDocument.getDocumentReferences().size());
-
-	ResourceProxy resource1 = cmdiDocument.getDocumentResourceProxy("resource1");
-	assertTrue("Resource should be data resource proxy", resource1 instanceof DataResourceProxy);
-	assertEquals("text/plain", resource1.getMimetype());
-	assertEquals(new URI("http://resources/1"), resource1.getURI());
-
-	ResourceProxy resource2 = cmdiDocument.getDocumentResourceProxy("resource2");
-	assertTrue("Resource should be data resource proxy", resource2 instanceof DataResourceProxy);
-	assertNull("Resource should have no mimetype", resource2.getMimetype());
-	assertEquals(new URI("http://resources/2"), resource2.getURI());
-
-	ResourceProxy metadata1 = cmdiDocument.getDocumentResourceProxy("metadata1");
-	assertTrue("Resource should be metadata resource proxy", metadata1 instanceof MetadataResourceProxy);
-	assertEquals("application/xml", metadata1.getMimetype());
-	assertEquals(new URI("http://metadata/1"), metadata1.getURI());
+	assertEquals(5, cmdiDocument.getDocumentReferences().size());
+	{
+	    ResourceProxy resource1 = cmdiDocument.getDocumentResourceProxy("resource1");
+	    assertNotNull(resource1);
+	    assertTrue("Resource should be data resource proxy", resource1 instanceof DataResourceProxy);
+	    assertEquals("text/plain", resource1.getMimetype());
+	    assertEquals(new URI("http://resources/1"), resource1.getURI());
+	}
+	{
+	    ResourceProxy resource2 = cmdiDocument.getDocumentResourceProxy("resource2");
+	    assertNotNull(resource2);
+	    assertTrue("Resource should be data resource proxy", resource2 instanceof DataResourceProxy);
+	    assertNull("Resource should have no mimetype", resource2.getMimetype());
+	    assertEquals(new URI("http://resources/2"), resource2.getURI());
+	}
+	{
+	    ResourceProxy metadata1 = cmdiDocument.getDocumentResourceProxy("metadata1");
+	    assertNotNull(metadata1);
+	    assertTrue("Resource should be metadata resource proxy", metadata1 instanceof MetadataResourceProxy);
+	    assertEquals("application/xml", metadata1.getMimetype());
+	    assertEquals(new URI("http://metadata/1"), metadata1.getURI());
+	}
+	{
+	    ResourceProxy searchPage = cmdiDocument.getDocumentResourceProxy("searchPage1");
+	    assertNotNull(searchPage);
+	    assertEquals(DataResourceProxy.class, searchPage.getClass());
+	    assertNull(searchPage.getMimetype());
+	    assertEquals(new URI("http://www.google.com"), searchPage.getURI());
+	}
+	{
+	    ResourceProxy searchService = cmdiDocument.getDocumentResourceProxy("searchService1");
+	    assertNotNull(searchService);
+	    assertEquals(DataResourceProxy.class, searchService.getClass());
+	    assertNull(searchService.getMimetype());
+	    assertEquals(new URI("http://cqlservlet.mpi.nl"), searchService.getURI());
+	}
     }
 
     @Test
@@ -83,16 +105,19 @@ public class CMDIResourceProxyReaderTest extends CMDIAPITestCase {
 		+ "</ResourceProxy>";
 	Node resourceProxyNode = getResourceProxyNode(xml);
 	ResourceProxy resourceProxy = instance.createResourceProxy(resourceProxyNode, new CachedXPathAPI());
+	assertTrue(resourceProxy instanceof ResourceReference);
 	assertEquals("resource1", resourceProxy.getId());
+	assertEquals("Resource", ((ResourceReference) resourceProxy).getType());
 	assertEquals("text/plain", resourceProxy.getMimetype());
 	assertEquals(new URI("http://resources/1"), resourceProxy.getURI());
 
 	xml = "<ResourceProxy id=\"resource1\">"
-		+ "<ResourceType>Resource</ResourceType>"
+		+ "<ResourceType>SearchPage</ResourceType>"
 		+ "<ResourceRef>http://resources/1</ResourceRef>"
 		+ "</ResourceProxy>";
 	resourceProxyNode = getResourceProxyNode(xml);
 	resourceProxy = instance.createResourceProxy(resourceProxyNode, new CachedXPathAPI());
+	assertEquals("SearchPage", ((ResourceReference) resourceProxy).getType());
 	assertNull(resourceProxy.getMimetype());
     }
 
@@ -108,23 +133,6 @@ public class CMDIResourceProxyReaderTest extends CMDIAPITestCase {
 	} catch (MetadataException mEx) {
 	    // Should be thrown
 	    assertTrue(mEx.getMessage().startsWith("Encountered resource proxy without ResourceType"));
-	}
-    }
-
-    @Test
-    public void testCreateResourceProxyInvalidType() throws Exception {
-	String xml = "<ResourceProxy id=\"resource1\">"
-		+ "<ResourceType>InvalidType</ResourceType>"
-		+ "<ResourceRef>http://resources/1</ResourceRef>"
-		+ "</ResourceProxy>";
-	Node resourceProxyNode = getResourceProxyNode(xml);
-	try {
-	    instance.createResourceProxy(resourceProxyNode, new CachedXPathAPI());
-	    fail("Should fail because of invalid resource type");
-	} catch (MetadataException mEx) {
-	    // Should be thrown
-	    assertTrue(mEx.getMessage().startsWith("Unknown ResourceType"));
-	    assertTrue(mEx.getMessage().contains("InvalidType"));
 	}
     }
 

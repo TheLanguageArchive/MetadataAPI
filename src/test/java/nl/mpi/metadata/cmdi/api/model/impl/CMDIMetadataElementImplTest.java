@@ -51,7 +51,7 @@ public abstract class CMDIMetadataElementImplTest extends CMDIAPITestCase {
 	assertNull(proxy);
 	assertFalse(getInstance().isDirty());
 	// Add proxy to document
-	proxy = new DataResourceProxy(newId, new URI("http://test"), "test/test");
+	proxy = new DataResourceProxy(newId, new URI("http://test"), null, "test/test");
 	getDocument().addDocumentResourceProxy(proxy);
 	// Add known proxy by id
 	ResourceProxy addedReference = getInstance().addDocumentResourceProxyReference(newId);
@@ -69,7 +69,7 @@ public abstract class CMDIMetadataElementImplTest extends CMDIAPITestCase {
 	assertNull(proxy);
 	assertFalse(getInstance().isDirty());
 	// Add proxy to document
-	proxy = new DataResourceProxy(newId, new URI("http://test"), "test/test");
+	proxy = new DataResourceProxy(newId, new URI("http://test"), "Resource", "test/test");
 	getDocument().addDocumentResourceProxy(proxy);
 	// Add reference to element
 	assertNotNull(getInstance().addDocumentResourceProxyReference(newId));
@@ -89,7 +89,7 @@ public abstract class CMDIMetadataElementImplTest extends CMDIAPITestCase {
     public void testGetReferences() throws Exception {
 	// Add ref to document
 	String newId = UUID.randomUUID().toString();
-	ResourceProxy proxy = new DataResourceProxy(newId, new URI("http://test"), "test/test");
+	ResourceProxy proxy = new DataResourceProxy(newId, new URI("http://test"), "Resource", "test/test");
 	getDocument().addDocumentResourceProxy(proxy);
 
 	// References in element should be empty
@@ -107,7 +107,7 @@ public abstract class CMDIMetadataElementImplTest extends CMDIAPITestCase {
     @Test
     public void testCreateResourceReference() throws Exception {
 	// Create reference on element
-	DataResourceProxy createdReference = getInstance().createResourceReference(new URI("http://test"), "test/test");
+	DataResourceProxy createdReference = getInstance().createResourceReference(new URI("http://test"), "Resource", "test/test");
 	assertNotNull(createdReference);
 	// Get reference from element
 	assertEquals(1, getInstance().getReferencesCount());
@@ -142,7 +142,7 @@ public abstract class CMDIMetadataElementImplTest extends CMDIAPITestCase {
 	assertEquals(1, getInstance().getReferencesCount());
 
 	// Create resource reference on element
-	DataResourceProxy createdResourceReference = getInstance().createResourceReference(new URI("http://test/res"), "test/test");
+	DataResourceProxy createdResourceReference = getInstance().createResourceReference(new URI("http://test/res"), "Resource", "test/test");
 	assertNotNull(createdResourceReference);
 	assertEquals(2, getInstance().getReferencesCount());
 

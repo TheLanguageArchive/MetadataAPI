@@ -255,22 +255,15 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
 	resourceProxiesDirtyState.setDirty(true);
     }
 
-    /**
-     * Creates a new non-metadata resource proxy in this document if it does not exist yet. If a reference with the same URI already exist,
-     * it will be retrieved. In this case, the MIME type will be ignored!
-     * New references will not be linked by any element including the document root node.
-     *
-     * @param uri URI for resource proxy
-     * @param mimetype MIME type for resource proxy
-     * @return newly created resource or existing resource with specified URI
-     * @throws MetadataException if resource with specified URI already exists but is not a {@link DataResourceProxy} (i.e. is a
-     * {@link MetadataResourceProxy})
-     */
     @Override
-    public synchronized DataResourceProxy createDocumentResourceReference(URI uri, String mimetype) throws MetadataException {
+    public synchronized DataResourceProxy createDocumentResourceReference(URI uri, String type, String mimetype) throws MetadataException {
 	final ResourceProxy resourceProxy = getDocumentReferenceByURI(uri);
 	if (resourceProxy == null) {
-	    final DataResourceProxy newResourceProxy = new DataResourceProxy(newUUID(), uri, mimetype);
+	    if (type == null) {
+		// null type should fall back to default
+		type = CMDIConstants.CMD_RESOURCE_PROXY_TYPE_RESOURCE;
+	    }
+	    final DataResourceProxy newResourceProxy = new DataResourceProxy(newUUID(), uri, type, mimetype);
 	    addDocumentResourceProxy(newResourceProxy);
 	    return newResourceProxy;
 	} else {

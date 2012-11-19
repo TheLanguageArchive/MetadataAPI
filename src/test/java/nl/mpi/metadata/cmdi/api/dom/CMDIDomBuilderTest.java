@@ -150,7 +150,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 
 	// Modify resource proxies
 	metadataDocument.removeDocumentResourceProxy("resource1");
-	metadataDocument.addDocumentResourceProxy(new DataResourceProxy("resource3", new URI("http://resources/3"), "test/test-resource"));
+	metadataDocument.addDocumentResourceProxy(new DataResourceProxy("resource3", new URI("http://resources/3"), "MyResourceType", "test/test-resource"));
 
 	// Build DOM
 	Document document = instance.buildDomForDocument(metadataDocument);
@@ -159,38 +159,44 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	CachedXPathAPI xPathAPI = new CachedXPathAPI();
 	Node proxiesNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList");
 	NodeList proxyListchildNodes = proxiesNode.getChildNodes();
-	assertEquals(3, proxyListchildNodes.getLength());
+	assertEquals(5, proxyListchildNodes.getLength());
 
+	// Check existing resource proxy items read from file
 	assertEquals("resource2", proxyListchildNodes.item(0).getAttributes().getNamedItem("id").getNodeValue());
 
 	assertEquals("metadata1", proxyListchildNodes.item(1).getAttributes().getNamedItem("id").getNodeValue());
 	Node resourceTypeNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[2]/:ResourceType");
 	assertNotNull(resourceTypeNode);
 	assertEquals("Metadata", resourceTypeNode.getTextContent());
-	Node mimeTypeAttribute = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[2]/:ResourceType/@mimetype");
-
 	Node resourceRefNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[2]/:ResourceRef");
 	assertNotNull(resourceRefNode);
 	assertEquals("http://metadata/1", resourceRefNode.getTextContent());
 
-	assertEquals("resource3", proxyListchildNodes.item(2).getAttributes().getNamedItem("id").getNodeValue());
+	assertEquals("searchPage1", proxyListchildNodes.item(2).getAttributes().getNamedItem("id").getNodeValue());
 	resourceTypeNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[3]/:ResourceType");
 	assertNotNull(resourceTypeNode);
-	assertEquals("Resource", resourceTypeNode.getTextContent());
+	assertEquals("SearchPage", resourceTypeNode.getTextContent());
 	resourceRefNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[3]/:ResourceRef");
 	assertNotNull(resourceRefNode);
-	assertEquals("http://resources/3", resourceRefNode.getTextContent());
+	assertEquals("http://www.google.com", resourceRefNode.getTextContent());
 
-	// Build with unknown proxy type added
-	ResourceProxy unknownTypeProxy = new ResourceProxy("unknown", new URI("http://unknown/3"), "test/unknown") {
-	};
-	metadataDocument.addDocumentResourceProxy(unknownTypeProxy);
-	try {
-	    instance.buildDomForDocument(metadataDocument);
-	    fail("Dom builder should throw exception because of unknown resource proxy type");
-	} catch (MetadataDocumentException mdEx) {
-	    // This should happen!
-	}
+	assertEquals("searchService1", proxyListchildNodes.item(3).getAttributes().getNamedItem("id").getNodeValue());
+	resourceTypeNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[4]/:ResourceType");
+	assertNotNull(resourceTypeNode);
+	assertEquals("SearchService", resourceTypeNode.getTextContent());
+	resourceRefNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[4]/:ResourceRef");
+	assertNotNull(resourceRefNode);
+	assertEquals("http://cqlservlet.mpi.nl", resourceRefNode.getTextContent());
+
+	// This resource was added after reading from file
+
+	assertEquals("resource3", proxyListchildNodes.item(4).getAttributes().getNamedItem("id").getNodeValue());
+	resourceTypeNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[5]/:ResourceType");
+	assertNotNull(resourceTypeNode);
+	assertEquals("MyResourceType", resourceTypeNode.getTextContent());
+	resourceRefNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[5]/:ResourceRef");
+	assertNotNull(resourceRefNode);
+	assertEquals("http://resources/3", resourceRefNode.getTextContent());
     }
 
     @Test
@@ -324,11 +330,11 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	Document builtDocument = instance.buildDomForDocument(metadataDocument);
 	// Compare to reading of original DOM
 	Document originalDocument = XMLUnit.buildControlDocument(new InputSource(getClass().getResourceAsStream(TEXT_CORPUS_INSTANCE_LOCATION)));
-	
+
 	XMLUnit.setIgnoreWhitespace(false);
 	XMLUnit.setIgnoreComments(false);
 	XMLUnit.setIgnoreAttributeOrder(false);
-	
+
 	Diff compareXML = XMLUnit.compareXML(originalDocument, builtDocument);
 	assertTrue(compareXML.toString(), compareXML.identical());
     }

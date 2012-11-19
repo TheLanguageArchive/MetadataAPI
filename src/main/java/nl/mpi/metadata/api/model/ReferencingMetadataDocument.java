@@ -43,11 +43,12 @@ public interface ReferencingMetadataDocument<M extends MetadataElement, R extend
      * Creates a reference to a resource on this element
      *
      * @param uri URI of new reference
-     * @param mimetype MIME type of new reference
+     * @param type The type of the reference that should be specified (if supported)
+     * @param mimetype MIME type of new reference that should be specified (if supported)
      * @return reference as it has been created on this element (null if none created)
      * @throws MetadataException in case any error occurs while create the reference
      */
-    ResourceReference createDocumentResourceReference(URI uri, String mimetype) throws MetadataException;
+    ResourceReference createDocumentResourceReference(URI uri, String type, String mimetype) throws MetadataException;
 
     /**
      * Creates a reference to another metadata instance on this element

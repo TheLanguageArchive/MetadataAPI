@@ -21,4 +21,8 @@ package nl.mpi.metadata.api.model;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public interface ResourceReference extends Reference {
+
+    String getType();
+
+    String getMimetype();
 }

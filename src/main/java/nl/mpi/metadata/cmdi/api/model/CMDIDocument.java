@@ -26,6 +26,7 @@ import nl.mpi.metadata.api.model.MetadataDocument;
 import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.api.model.ReferencingMetadataDocument;
+import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 
 /**
@@ -106,7 +107,19 @@ public interface CMDIDocument extends CMDIContainerMetadataElement, HandleCarrie
 
     MetadataResourceProxy createDocumentMetadataReference(URI uri, String mimetype) throws MetadataException;
 
-    DataResourceProxy createDocumentResourceReference(URI uri, String mimetype) throws MetadataException;
+    /**
+     * Creates a new non-metadata resource proxy in this document if it does not exist yet. If a reference with the same URI already exist,
+     * it will be retrieved. In this case, the MIME type will be ignored!
+     * New references will not be linked by any element including the document root node.
+     *
+     * @param uri URI for resource proxy
+     * @param type type for resource proxy, null for default ({@link CMDIConstants#CMD_RESOURCE_PROXY_TYPE_RESOURCE})
+     * @param mimetype MIME type for resource proxy
+     * @return newly created resource or existing resource with specified URI
+     * @throws MetadataException if resource with specified URI already exists but is not a {@link DataResourceProxy} (i.e. is a
+     * {@link MetadataResourceProxy})
+     */
+    DataResourceProxy createDocumentResourceReference(URI uri, String type, String mimetype) throws MetadataException;
 
     /**
      *

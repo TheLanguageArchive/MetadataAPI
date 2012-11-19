@@ -37,11 +37,12 @@ public interface ReferencingMetadataElement<R extends Reference> extends Metadat
     /**
      * Creates a reference to a resource on this element
      * @param uri URI of new reference
+     * @param type type of the new reference (null for default)
      * @param mimetype MIME type of new reference
      * @return reference as it has been created on this element (null if none created)
      * @throws MetadataException in case any error occurs while create the reference
      */
-    ResourceReference createResourceReference(URI uri, String mimetype) throws MetadataException;
+    ResourceReference createResourceReference(URI uri, String type, String mimetype) throws MetadataException;
 
     /**
      * Creates a reference to another metadata instance on this element

@@ -23,10 +23,16 @@ import nl.mpi.metadata.api.model.ResourceReference;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class DataResourceProxy extends ResourceProxy implements ResourceReference{
+public class DataResourceProxy extends ResourceProxy implements ResourceReference {
 
-    public DataResourceProxy(String id, URI uri, String mimeType) {
+    private final String type;
+
+    public DataResourceProxy(String id, URI uri, String type, String mimeType) {
 	super(id, uri, mimeType);
+	this.type = type;
     }
-    
+
+    public String getType() {
+	return type;
+    }
 }

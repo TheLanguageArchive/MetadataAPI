@@ -7,10 +7,10 @@
     <Header>
 	<MdCreator>Joe Unit</MdCreator>
 	<MdCreationDate>2009-11-18</MdCreationDate>
-      <!-- A reference to the unique identifier of the profile this metadata instance is based on -->
+	<!-- A reference to the unique identifier of the profile this metadata instance is based on -->
 	<MdSelfLink>TextCorpusProfile-instance.cmdi</MdSelfLink>
 	<MdProfile>clarin.eu:cr1:p_1271859438164</MdProfile>
-      <!-- An (optional but recommended) plain text indication to which collection this file belongs. Used for the Collection facet in the VLO -->
+	<!-- An (optional but recommended) plain text indication to which collection this file belongs. Used for the Collection facet in the VLO -->
 	<MdCollectionDisplayName>Metadata API test instances</MdCollectionDisplayName>
     </Header>
     <Resources>
@@ -26,6 +26,14 @@
 	    <ResourceProxy id="metadata1">
 		<ResourceType mimetype="application/xml">Metadata</ResourceType>
 		<ResourceRef>http://metadata/1</ResourceRef>
+	    </ResourceProxy>
+	    <ResourceProxy id="searchPage1">
+		<ResourceType>SearchPage</ResourceType>
+		<ResourceRef>http://www.google.com</ResourceRef>
+	    </ResourceProxy>
+	    <ResourceProxy id="searchService1">
+		<ResourceType>SearchService</ResourceType>
+		<ResourceRef>http://cqlservlet.mpi.nl</ResourceRef>
 	    </ResourceProxy>
 	</ResourceProxyList>
 	<JournalFileProxyList/>

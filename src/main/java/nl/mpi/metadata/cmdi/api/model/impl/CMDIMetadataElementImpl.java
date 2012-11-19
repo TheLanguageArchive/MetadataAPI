@@ -174,8 +174,8 @@ public abstract class CMDIMetadataElementImpl implements CMDIMetadataElement {
      * @see #addDocumentResourceProxyReference(java.lang.String)
      */
     @Override
-    public DataResourceProxy createResourceReference(URI uri, String mimetype) throws MetadataException {
-	DataResourceProxy resourceProxy = getMetadataDocument().createDocumentResourceReference(uri, mimetype);
+    public DataResourceProxy createResourceReference(URI uri, String type, String mimetype) throws MetadataException {
+	DataResourceProxy resourceProxy = getMetadataDocument().createDocumentResourceReference(uri, type, mimetype);
 	return (DataResourceProxy) addDocumentResourceProxyReference(resourceProxy.getId());
     }
 

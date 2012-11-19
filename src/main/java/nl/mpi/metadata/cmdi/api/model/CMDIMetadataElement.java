@@ -58,10 +58,11 @@ public interface CMDIMetadataElement extends MetadataElementAttributeContainer<A
      * to that proxy in this metadata element.
      *
      * @param uri URI of the new resource proxy
+     * @param type type of the new resource proxy (null for default)
      * @param mimetype mimetype of the new resource proxy (can be null)
      * @return the newly created resource proxy. Null if not created or added.
      */
-    DataResourceProxy createResourceReference(URI uri, String mimetype) throws MetadataException;
+    DataResourceProxy createResourceReference(URI uri, String type, String mimetype) throws MetadataException;
 
     /**
      *

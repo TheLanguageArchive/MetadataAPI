@@ -155,11 +155,11 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
     public void testGetDocumentResourceProxyById() throws URISyntaxException {
 	assertNull(document.getDocumentResourceProxy("rpId"));
 	// add a proxy
-	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), "test/mime-type");
+	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), "Resource", "test/mime-type");
 	document.addDocumentResourceProxy(resourceProxy);
 	assertEquals(resourceProxy, document.getDocumentResourceProxy("rpId"));
 	// replace by proxy with same id
-	DataResourceProxy resourceProxy2 = new DataResourceProxy("rpId", new URI("http://resource2"), "test/mime-type");
+	DataResourceProxy resourceProxy2 = new DataResourceProxy("rpId", new URI("http://resource2"), "Resource", "test/mime-type");
 	document.addDocumentResourceProxy(resourceProxy2);
 	assertEquals(resourceProxy2, document.getDocumentResourceProxy("rpId"));
     }
@@ -168,11 +168,11 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
     public void testGetDocumentReferenceByURI() throws URISyntaxException {
 	assertNull(document.getDocumentReferenceByURI(new URI("http://resource")));
 	// add a proxy
-	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), "test/mime-type");
+	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), "Resource", "test/mime-type");
 	document.addDocumentResourceProxy(resourceProxy);
 	assertEquals(resourceProxy, document.getDocumentReferenceByURI(new URI("http://resource")));
 	// replace by proxy with same id
-	DataResourceProxy resourceProxy2 = new DataResourceProxy("rpId", new URI("http://resource2"), "test/mime-type");
+	DataResourceProxy resourceProxy2 = new DataResourceProxy("rpId", new URI("http://resource2"), "Resource", "test/mime-type");
 	document.addDocumentResourceProxy(resourceProxy2);
 	assertNull(document.getDocumentReferenceByURI(new URI("http://resource")));
 	assertEquals(resourceProxy2, document.getDocumentReferenceByURI(new URI("http://resource2")));
@@ -183,7 +183,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 	document.getResourceProxiesDirtyState().setDirty(false);
 
 	assertEquals(0, document.getDocumentReferencesCount());
-	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), "test/mime-type");
+	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), "Resource", "test/mime-type");
 	document.addDocumentResourceProxy(resourceProxy);
 	assertEquals(1, document.getDocumentReferencesCount());
 	assertEquals(resourceProxy, document.getDocumentReferences().iterator().next());
@@ -193,7 +193,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 
     @Test
     public void testRemoveDocumentResourceProxy() throws URISyntaxException {
-	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), "test/mime-type");
+	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), "Resource", "test/mime-type");
 	document.addDocumentResourceProxy(resourceProxy);
 	assertEquals(1, document.getDocumentReferencesCount());
 
@@ -207,27 +207,36 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
     @Test
     public void testCreateDocumentResourceProxy() throws Exception {
 	assertEquals(0, document.getDocumentReferencesCount());
-	DataResourceProxy resourceProxy = document.createDocumentResourceReference(new URI("http://resource"), "test/mime-type");
+	DataResourceProxy resourceProxy = document.createDocumentResourceReference(new URI("http://resource"), null, "test/mime-type");
 	assertEquals(1, document.getDocumentReferencesCount());
 	assertTrue(document.getDocumentReferences().contains(resourceProxy));
+	// Default resource type should have been set
+	assertEquals("Resource", resourceProxy.getType());
 	// Create again, should return same object
-	DataResourceProxy resourceProxy2 = document.createDocumentResourceReference(new URI("http://resource"), "test/new-mime-type");
+	DataResourceProxy resourceProxy2 = document.createDocumentResourceReference(new URI("http://resource"), "MyNewResourceType", "test/new-mime-type");
 	assertSame(resourceProxy2, resourceProxy);
 	// Nothing should have been added
 	assertEquals(1, document.getDocumentReferencesCount());
-	// Create again, should have ignored mime type	
+	// Should have ignored resource type	
+	assertEquals("Resource", resourceProxy2.getType());
+	// Should have ignored mime type	
 	assertEquals("test/mime-type", resourceProxy2.getMimetype());
 
 	try {
 	    // Cause conflict: add md proxy
 	    document.addDocumentResourceProxy(new MetadataResourceProxy("mdrp", new URI("http://resource2"), "test/mime-type"));
 	    // Try to create resource proxy with same URI
-	    document.createDocumentResourceReference(new URI("http://resource2"), "test/mime-type");
+	    document.createDocumentResourceReference(new URI("http://resource2"), null, "test/mime-type");
 	    // Exception gets thrown, shouldn't get this far
 	    fail("Collision should throw MetadataException");
 	} catch (MetadataException mdEx) {
 	    // Should occur
 	}
+
+	// Test using non-default resource type
+	DataResourceProxy resourceProxy3 = document.createDocumentResourceReference(new URI("http://resource/3"), "MyCustomResourceType", "test/mime-type");
+	// Custom resource type should have been set
+	assertEquals("MyCustomResourceType", resourceProxy3.getType());
     }
 
     @Test
@@ -247,7 +256,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 
 	try {
 	    // Cause conflict: add resource proxy
-	    document.addDocumentResourceProxy(new DataResourceProxy("mdrp", new URI("http://resource2"), "test/mime-type"));
+	    document.addDocumentResourceProxy(new DataResourceProxy("mdrp", new URI("http://resource2"), "Resource", "test/mime-type"));
 	    // Try to create metadata proxy with same URI
 	    document.createDocumentMetadataReference(new URI("http://resource2"), "test/mime-type");
 	    // Exception gets thrown, shouldn't get this far
@@ -259,7 +268,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 
     @Test
     public void testRegisterResourceProxyReference() throws Exception {
-	DataResourceProxy proxy = new DataResourceProxy(UUID.randomUUID().toString(), new URI("http://resource"), "test/mime-type");
+	DataResourceProxy proxy = new DataResourceProxy(UUID.randomUUID().toString(), new URI("http://resource"), "Resource", "test/mime-type");
 	// No references yet
 	assertEquals(0, document.getResourceProxyReferences(proxy).size());
 
@@ -276,7 +285,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 
     @Test
     public void testUnregisterResourceProxyReference() throws Exception {
-	DataResourceProxy proxy = new DataResourceProxy(UUID.randomUUID().toString(), new URI("http://resource"), "test/mime-type");
+	DataResourceProxy proxy = new DataResourceProxy(UUID.randomUUID().toString(), new URI("http://resource"), "Resource", "test/mime-type");
 
 	// Add a reference to the proxy
 	CMDIMetadataElement element = mockContext.mock(CMDIMetadataElement.class);
@@ -299,7 +308,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 
     @Test
     public void testRemoveDocumentReference() throws Exception {
-	DataResourceProxy resourceProxy = document.createDocumentResourceReference(new URI("http://resource"), "test/mime-type");
+	DataResourceProxy resourceProxy = document.createDocumentResourceReference(new URI("http://resource"), "Resource", "test/mime-type");
 	assertTrue(document.getDocumentReferences().contains(resourceProxy));
 	document.removeDocumentReference(resourceProxy);
 	assertFalse(document.getDocumentReferences().contains(resourceProxy));

@@ -38,7 +38,9 @@ import nl.mpi.metadata.api.dom.DomBuildingMode;
 import nl.mpi.metadata.api.dom.MetadataDOMBuilder;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.api.model.MetadataElement;
+import nl.mpi.metadata.api.model.MetadataReference;
 import nl.mpi.metadata.api.model.Reference;
+import nl.mpi.metadata.api.model.ResourceReference;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
@@ -237,11 +239,10 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	proxyNode.setAttribute(CMDIConstants.CMD_RESOURCE_PROXY_ID_ATTRIBUTE, resourceProxy.getId());
 	proxiesNode.appendChild(proxyNode);
 
-
 	final org.w3c.dom.Element resourceTypeNode = (org.w3c.dom.Element) domDocument.createElementNS(CMDIConstants.CMD_NAMESPACE, CMDIConstants.CMD_RESOURCE_PROXY_TYPE_ELEMENT);
-	if (resourceProxy instanceof DataResourceProxy) {
-	    resourceTypeNode.setTextContent(CMDIConstants.CMD_RESOURCE_PROXY_TYPE_RESOURCE);
-	} else if (resourceProxy instanceof MetadataResourceProxy) {
+	if (resourceProxy instanceof ResourceReference) {
+	    resourceTypeNode.setTextContent(((ResourceReference) resourceProxy).getType());
+	} else if (resourceProxy instanceof MetadataReference) {
 	    resourceTypeNode.setTextContent(CMDIConstants.CMD_RESOURCE_PROXY_TYPE_METADATA);
 	} else {
 	    throw new MetadataDocumentException(metadataDocument, String.format("Resource proxy of unknown type $1%s encountered while building DOM", resourceProxy.getClass()));
