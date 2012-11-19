@@ -56,9 +56,9 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
     private final Map<String, ResourceProxy> resourceProxies;
     private final Map<Reference, Collection<CMDIMetadataElement>> resourceProxyReferences;
     private final Collection<MetadataDocumentListener> listeners;
+    private final SettableDirtyStateProvider headerDirtyState;
+    private final SettableDirtyStateProvider resourceProxiesDirtyState;
     private URI fileLocation;
-    private SettableDirtyStateProvider headerDirtyState;
-    private SettableDirtyStateProvider resourceProxiesDirtyState;
 
     /**
      * Construct an unsaved profile instance (no location associated)
