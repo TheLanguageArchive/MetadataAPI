@@ -224,7 +224,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 		final Node proxiesNode = XPathAPI.selectSingleNode(domDocument, CMDIConstants.CMD_RESOURCE_PROXY_LIST_PATH);
 		for (Reference resourceProxy : documentResourceProxies) {
 		    // We can safely cast resourceProxy to ResourceProxy since only ResourceProxies can be added to CMDIDocument
-		    builResourceProxy(metadataDocument, domDocument, proxiesNode, (ResourceProxy) resourceProxy);
+		    builResourceProxy(domDocument, proxiesNode, (ResourceProxy) resourceProxy);
 		}
 		metadataDocument.getResourceProxiesDirtyState().setDirty(false);
 	    } catch (TransformerException tEx) {
@@ -233,20 +233,14 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	}
     }
 
-    private void builResourceProxy(CMDIDocument metadataDocument, Document domDocument, final Node proxiesNode, ResourceProxy resourceProxy) throws MetadataDocumentException, DOMException {
+    private void builResourceProxy(Document domDocument, final Node proxiesNode, ResourceProxy resourceProxy) throws MetadataDocumentException, DOMException {
 	// Create proxy node
 	final org.w3c.dom.Element proxyNode = (org.w3c.dom.Element) domDocument.createElementNS(CMDIConstants.CMD_NAMESPACE, CMDIConstants.CMD_RESOURCE_PROXY_ELEMENT);
 	proxyNode.setAttribute(CMDIConstants.CMD_RESOURCE_PROXY_ID_ATTRIBUTE, resourceProxy.getId());
 	proxiesNode.appendChild(proxyNode);
 
 	final org.w3c.dom.Element resourceTypeNode = (org.w3c.dom.Element) domDocument.createElementNS(CMDIConstants.CMD_NAMESPACE, CMDIConstants.CMD_RESOURCE_PROXY_TYPE_ELEMENT);
-	if (resourceProxy instanceof ResourceReference) {
-	    resourceTypeNode.setTextContent(((ResourceReference) resourceProxy).getType());
-	} else if (resourceProxy instanceof MetadataReference) {
-	    resourceTypeNode.setTextContent(CMDIConstants.CMD_RESOURCE_PROXY_TYPE_METADATA);
-	} else {
-	    throw new MetadataDocumentException(metadataDocument, String.format("Resource proxy of unknown type $1%s encountered while building DOM", resourceProxy.getClass()));
-	}
+	resourceTypeNode.setTextContent(resourceProxy.getType());
 	if (resourceProxy.getMimetype() != null) {
 	    resourceTypeNode.setAttribute(CMDIConstants.CMD_RESOURCE_PROXY_TYPE_MIMETYPE_ATTRIBUTE, resourceProxy.getMimetype());
 	}

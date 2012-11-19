@@ -27,8 +27,14 @@ public interface Reference {
     URI getURI();
 
     void setURI(URI uri);
-    
+
     String getMimetype();
-    
+
     void setMimeType(String mimeType);
+
+    /**
+     * @return A string representation of the type of this resource, {@literal  e.g.} 'Metadata' or 'Resource', depending on type and
+     * implementation.
+     */
+    String getType();
 }

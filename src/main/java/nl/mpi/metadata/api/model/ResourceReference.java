@@ -22,7 +22,5 @@ package nl.mpi.metadata.api.model;
  */
 public interface ResourceReference extends Reference {
 
-    String getType();
-
     String getMimetype();
 }

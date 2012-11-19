@@ -20,6 +20,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import nl.mpi.metadata.api.model.HandleCarrier;
 import nl.mpi.metadata.api.model.Reference;
+import nl.mpi.metadata.cmdi.api.CMDIConstants;
 
 /**
  *
@@ -28,17 +29,19 @@ import nl.mpi.metadata.api.model.Reference;
 public abstract class ResourceProxy implements Reference, HandleCarrier {
 
     private final String id;
+    private final String type;
     private URI uri;
     private String mimeType;
 
-    public ResourceProxy(String id, URI uri) {
-	this(id, uri, null);
+    public ResourceProxy(String id, URI uri, String type) {
+	this(id, uri, type, null);
     }
 
-    public ResourceProxy(String id, URI uri, String mimeType) {
+    public ResourceProxy(String id, URI uri, String type, String mimeType) {
 	this.id = id;
 	this.uri = uri;
 	this.mimeType = mimeType;
+	this.type = type;
     }
 
     public String getId() {
@@ -61,6 +64,15 @@ public abstract class ResourceProxy implements Reference, HandleCarrier {
 	this.mimeType = mimeType;
     }
 
+    /**
+     * Provides a string representation of the type of this proxy. Usually one of the constants defined in {@link CMDIConstants}.
+     *
+     * @return The type of this resource proxy
+     */
+    public String getType() {
+	return type;
+    }
+
     @Override
     public boolean equals(Object obj) {
 	if (obj == null) {
@@ -71,6 +83,9 @@ public abstract class ResourceProxy implements Reference, HandleCarrier {
 	}
 	final ResourceProxy other = (ResourceProxy) obj;
 	if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
+	    return false;
+	}
+	if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {
 	    return false;
 	}
 	if (this.uri != other.uri && (this.uri == null || !this.uri.equals(other.uri))) {

@@ -18,14 +18,17 @@ package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
 import nl.mpi.metadata.api.model.MetadataReference;
+import nl.mpi.metadata.cmdi.api.CMDIConstants;
 
 /**
+ * A resource proxy of the metadata type. Calling {@link #getType() } will alway return the value of
+ * {@link CMDIConstants#CMD_RESOURCE_PROXY_TYPE_METADATA}.
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class MetadataResourceProxy extends ResourceProxy implements MetadataReference {
 
     public MetadataResourceProxy(String id, URI uri, String mimeType) {
-	super(id, uri, mimeType);
+	super(id, uri, CMDIConstants.CMD_RESOURCE_PROXY_TYPE_METADATA, mimeType);
     }
 }
