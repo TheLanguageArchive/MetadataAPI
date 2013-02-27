@@ -18,6 +18,7 @@ package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
 import nl.mpi.metadata.api.model.ResourceReference;
+import nl.mpi.metadata.cmdi.api.CMDIConstants;
 
 /**
  *
@@ -25,7 +26,26 @@ import nl.mpi.metadata.api.model.ResourceReference;
  */
 public class DataResourceProxy extends ResourceProxy implements ResourceReference {
 
+    /**
+     * Constructor for a resource proxy with a custom {@link #getType()  proxy type}
+     *
+     * @param id Unique identifier for the resource proxy
+     * @param uri URI of the referenced resource
+     * @param type a string representation of the type of this resource, usually 'Resource'
+     * @param mimeType mime type of the referenced resource
+     */
     public DataResourceProxy(String id, URI uri, String type, String mimeType) {
 	super(id, uri, type, mimeType);
+    }
+
+    /**
+     * Constructor for a resource proxy with {@link #getType() type} set to {@link CMDIConstants#CMD_RESOURCE_PROXY_TYPE_RESOURCE Resource}
+     *
+     * @param id Unique identifier for the resource proxy
+     * @param uri URI of the referenced resource
+     * @param mimeType mime type of the referenced resource
+     */
+    public DataResourceProxy(String id, URI uri, String mimeType) {
+	this(id, uri, CMDIConstants.CMD_RESOURCE_PROXY_TYPE_RESOURCE, mimeType);
     }
 }
