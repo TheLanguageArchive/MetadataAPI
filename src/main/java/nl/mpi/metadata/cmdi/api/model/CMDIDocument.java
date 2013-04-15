@@ -108,8 +108,8 @@ public interface CMDIDocument extends CMDIContainerMetadataElement, HandleCarrie
     MetadataResourceProxy createDocumentMetadataReference(URI uri, String mimetype) throws MetadataException;
 
     /**
-     * Creates a new non-metadata resource proxy in this document if it does not exist yet. If a reference with the same URI already exist,
-     * it will be retrieved. In this case, the MIME type will be ignored!
+     * Creates and adds a new non-metadata resource proxy in this document if it does not exist yet. If a reference with the same URI
+     * does already exist, it will be retrieved. In this case, the MIME type will be ignored.
      * New references will not be linked by any element including the document root node.
      *
      * @param uri URI for resource proxy
