@@ -35,6 +35,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 /**
@@ -214,9 +215,13 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 	assertEquals(0, document.getDocumentReferencesCount());
 	DataResourceProxy resourceProxy = document.createDocumentResourceReference(new URI("http://resource"), null, "test/mime-type");
 	assertEquals(1, document.getDocumentReferencesCount());
-	assertTrue(document.getDocumentReferences().contains(resourceProxy));
+	assertThat(resourceProxy, isIn(document.getDocumentReferences()));
 	// Default resource type should have been set
 	assertEquals("Resource", resourceProxy.getType());
+	// Mime type should match specified one
+	assertEquals("test/mime-type", resourceProxy.getMimetype());
+	// Id should start with r for resource references
+	assertThat(resourceProxy.getId(), startsWith("r"));
 	// Create again, should return same object
 	DataResourceProxy resourceProxy2 = document.createDocumentResourceReference(new URI("http://resource"), "MyNewResourceType", "test/new-mime-type");
 	assertSame(resourceProxy2, resourceProxy);
@@ -249,7 +254,12 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 	assertEquals(0, document.getDocumentReferencesCount());
 	MetadataResourceProxy resourceProxy = document.createDocumentMetadataReference(new URI("http://resource"), "test/mime-type");
 	assertEquals(1, document.getDocumentReferencesCount());
-	assertTrue(document.getDocumentReferences().contains(resourceProxy));
+	assertThat(resourceProxy, isIn(document.getDocumentReferences()));
+	// Mime type should match specified one
+	assertEquals("test/mime-type", resourceProxy.getMimetype());
+	// Id should start with m for metadata references
+	assertThat(resourceProxy.getId(), startsWith("m"));
+
 	// Create again, should return same object
 	MetadataResourceProxy resourceProxy2 = document.createDocumentMetadataReference(new URI("http://resource"), "test/new-mime-type");
 	assertSame(resourceProxy2, resourceProxy);

@@ -263,7 +263,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
 		// null type should fall back to default
 		type = CMDIConstants.CMD_RESOURCE_PROXY_TYPE_RESOURCE;
 	    }
-	    final DataResourceProxy newResourceProxy = new DataResourceProxy(newUUID(), uri, type, mimetype);
+	    final DataResourceProxy newResourceProxy = new DataResourceProxy(newResourceProxyId("r"), uri, type, mimetype);
 	    addDocumentResourceProxy(newResourceProxy);
 	    return newResourceProxy;
 	} else {
@@ -334,7 +334,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
     public MetadataResourceProxy createDocumentMetadataReference(URI uri, String mimetype) throws MetadataException {
 	final ResourceProxy resourceProxy = getDocumentReferenceByURI(uri);
 	if (resourceProxy == null) {
-	    final MetadataResourceProxy newResourceProxy = new MetadataResourceProxy(newUUID(), uri, mimetype);
+	    final MetadataResourceProxy newResourceProxy = new MetadataResourceProxy(newResourceProxyId("m"), uri, mimetype);
 	    addDocumentResourceProxy(newResourceProxy);
 	    return newResourceProxy;
 	} else {
@@ -346,8 +346,14 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
 	}
     }
 
-    private static String newUUID() {
-	return UUID.randomUUID().toString();
+    /**
+     *
+     * @param prefix will be prepended to the unique ID. Should not be empty or start with a number, otherwise violates
+     * specification of XML id type!
+     * @return the string resulting from the concatenation of the prefix and the string representation of a random {@link UUID }
+     */
+    private static String newResourceProxyId(String prefix) {
+	return prefix + UUID.randomUUID().toString();
     }
 
     /**
