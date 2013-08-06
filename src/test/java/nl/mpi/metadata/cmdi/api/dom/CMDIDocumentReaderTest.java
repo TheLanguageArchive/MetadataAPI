@@ -45,6 +45,7 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import static nl.mpi.metadata.cmdi.api.CMDIAPITestCase.TEXT_CORPUS_INSTANCE_LOCATION;
 import static nl.mpi.metadata.cmdi.api.CMDIConstants.*;
 import static org.junit.Assert.*;
 
@@ -75,7 +76,7 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
      */
     @Test
     public void testReadHeader() throws Exception {
-	CMDIDocument cmdi = readTestDocument();
+	CMDIDocument cmdi = readTestDocument(TEXT_CORPUS_INSTANCE_LOCATION);
 	// After read header state should be clean
 	assertFalse(cmdi.getHeaderDirtyState().isDirty());
 
@@ -112,7 +113,7 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
      */
     @Test
     public void testReadComponents() throws Exception {
-	CMDIDocument cmdi = readTestDocument();	
+	CMDIDocument cmdi = readTestDocument(TEXT_CORPUS_INSTANCE_LOCATION);	
 	// After read document should be a clean metadata element
 	assertFalse(cmdi.isDirty());
 	assertEquals(3, cmdi.getChildren().size());
@@ -177,7 +178,7 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
      */
     @Test
     public void testReadAttributesAndLanguages() throws Exception {
-	CMDIDocument cmdi = readTestDocument();
+	CMDIDocument cmdi = readTestDocument(TEXT_CORPUS_INSTANCE_LOCATION);
 
 	// Get Collection/GeneralInfo/Description/Description
 	final Element description = (Element) cmdi.getChildElement("Collection/GeneralInfo/Description/Description");
@@ -198,11 +199,20 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 	assertEquals("en", name.getLanguage());
     }
 
-    private CMDIDocument readTestDocument() throws SAXException, DOMException, MetadataException, ParserConfigurationException, IOException {
-	final Document dom = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
+    private CMDIDocument readTestDocument(String resource) throws SAXException, DOMException, MetadataException, ParserConfigurationException, IOException {
+	final Document dom = getDomDocumentForResource(resource);
 	final CMDIDocument cmdi = reader.read(dom, null);
 	assertNotNull(cmdi);
 	return cmdi;
+    }
+    
+    /**
+     * Tries to read a CMDI file that uses "cmd:" namespace prefix for all elements in the CMDI namespace
+     * @throws Exception 
+     */
+    @Test 
+    public void testReadNamespacePrefixDocument() throws Exception {
+	readTestDocument("/cmdi/Soundbites-instance-namespace-prefixes.cmdi");
     }
 
     /**
