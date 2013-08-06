@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.dom.MetadataDocumentReader;
@@ -46,7 +49,8 @@ import org.w3c.dom.NodeList;
  */
 public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> {
 
-    private static Logger logger = LoggerFactory.getLogger(CMDIDocumentReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(CMDIDocumentReader.class);
+    private static final CMDINamespaceContext CMDI_NAMESPACE_CONTEXT = new CMDINamespaceContext();
     private final CMDIProfileContainer profileContainer;
     private final CMDIComponentReader componentReader;
     private final CMDIResourceProxyReader resourceReader;
@@ -85,9 +89,14 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
      * @throws IOException if an I/O error occurs while reading the profile schema through the {@link CMDIProfileContainer} referenced in
      * the document
      */
+    @Override
     public CMDIDocument read(final Document document, final URI documentURI) throws MetadataException, DOMException, IOException {
 	final CachedXPathAPI xPathAPI = new CachedXPathAPI();
-	final CMDIProfile profile = getProfileForDocument(document, documentURI, xPathAPI);
+	final XPath xPath = XPathFactory.newInstance().newXPath();
+	// set namespace context so that 'cmd' and 'xsi' prefixes get mapped to the corresponding namespaces properly
+	xPath.setNamespaceContext(CMDI_NAMESPACE_CONTEXT);
+
+	final CMDIProfile profile = getProfileForDocument(document, documentURI, xPath);
 	final CMDIDocument cmdiDocument = createCMDIDocument(xPathAPI, document, documentURI, profile);
 
 	readHeader(cmdiDocument, document, xPathAPI);
@@ -125,9 +134,9 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
      * @throws MetadataDocumentException
      * @throws IOException
      */
-    private CMDIProfile getProfileForDocument(final Document document, final URI documentURI, final CachedXPathAPI xPathAPI) throws MetadataException, IOException {
+    private CMDIProfile getProfileForDocument(final Document document, final URI documentURI, final XPath xPath) throws MetadataException, IOException {
 	try {
-	    URI profileURI = getProfileURI(document, xPathAPI);
+	    URI profileURI = getProfileURI(document, xPath);
 	    if (profileURI == null) {
 		throw new MetadataException("No profile URI found in metadata document");
 	    }
@@ -139,8 +148,8 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	    } catch (CMDITypeException ctEx) {
 		throw new MetadataException(String.format("CMDITypeException occurred while trying to retrieve profile $1%s. See nested exception for details.", profileURI), ctEx);
 	    }
-	} catch (TransformerException tEx) {
-	    throw new MetadataException("TransformationException while looking for profile URI in metadata document. See nested exception for details.", tEx);
+	} catch (XPathExpressionException ex) {
+	    throw new MetadataException("XPathExpressionException while looking for profile URI in metadata document. See nested exception for details.", ex);
 	} catch (URISyntaxException uEx) {
 	    throw new MetadataException("URISyntaxException while looking for profile URI in metadata document. See nested exception for details.", uEx);
 	}
@@ -153,16 +162,18 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
      * there is only one, <em>irrespective of the namespace mentioned</em>.
      *
      * @param document DOM of document to find schema URI for
+     * @param xPath XPath instance ready to use with CMDI documents, name space context that knows about 'cmd' and 'xsi'
+     * (such as {@link CMDINamespaceContext} is assumed)
      * @return URI of schema, null if not present
      * @throws TransformerException
      * @throws URISyntaxException
      */
-    protected URI getProfileURI(final Document document, final CachedXPathAPI xPathAPI) throws TransformerException, URISyntaxException {
+    protected URI getProfileURI(final Document document, final XPath xPath) throws URISyntaxException, XPathExpressionException {
 	// Find the <CMD xsi:schemaLocation="..."> attribute
-	final Node schemaLocationNode = xPathAPI.selectSingleNode(document, "/:CMD/@xsi:schemaLocation");
-	if (schemaLocationNode != null) {
+	final String schemaLocationValue = xPath.evaluate("/cmd:CMD/@xsi:schemaLocation", document);
+	if (schemaLocationValue != null) {
 	    // SchemaLocation value consists of {namespace,location} pairs. Find CMD namespace and get the location of its schema
-	    final String schemaLocationString = schemaLocationNode.getNodeValue().trim();
+	    final String schemaLocationString = schemaLocationValue.trim();
 	    // Tokenize
 	    final String[] schemaLocationTokens = schemaLocationString.split("\\s+");
 	    // Get document namespace to check against

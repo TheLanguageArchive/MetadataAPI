@@ -24,6 +24,7 @@ public final class CMDIConstants {
 
     public final static String CMD_NAMESPACE = "http://www.clarin.eu/cmd/";
     public final static String XML_NAMESPACE = "http://www.w3.org/XML/1998/namespace";
+    public static final String XSI_NAMESPACE = "http://www.w3.org/2001/XMLSchema-instance";
     /**
      * XPath to CMDI components
      */

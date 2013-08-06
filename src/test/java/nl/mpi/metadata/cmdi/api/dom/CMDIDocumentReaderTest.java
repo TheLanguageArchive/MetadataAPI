@@ -22,6 +22,8 @@ import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Iterator;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
@@ -35,7 +37,6 @@ import nl.mpi.metadata.cmdi.api.model.MetadataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.MultilingualElement;
 import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
-import org.apache.xpath.CachedXPathAPI;
 import org.apache.xpath.XPathAPI;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.After;
@@ -113,7 +114,7 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
      */
     @Test
     public void testReadComponents() throws Exception {
-	CMDIDocument cmdi = readTestDocument(TEXT_CORPUS_INSTANCE_LOCATION);	
+	CMDIDocument cmdi = readTestDocument(TEXT_CORPUS_INSTANCE_LOCATION);
 	// After read document should be a clean metadata element
 	assertFalse(cmdi.isDirty());
 	assertEquals(3, cmdi.getChildren().size());
@@ -205,12 +206,13 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 	assertNotNull(cmdi);
 	return cmdi;
     }
-    
+
     /**
      * Tries to read a CMDI file that uses "cmd:" namespace prefix for all elements in the CMDI namespace
-     * @throws Exception 
+     *
+     * @throws Exception
      */
-    @Test 
+    @Test
     public void testReadNamespacePrefixDocument() throws Exception {
 	readTestDocument("/cmdi/Soundbites-instance-namespace-prefixes.cmdi");
     }
@@ -248,6 +250,9 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 
     @Test
     public void testGetProfileURI() throws Exception {
+	final XPathFactory xpf = XPathFactory.newInstance();
+	final XPath xPath = xpf.newXPath();
+	xPath.setNamespaceContext(new CMDINamespaceContext());
 	// Test with standard CMD namespace
 	Document document = XMLUnit.buildTestDocument(
 		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -255,28 +260,17 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 		+ "CMDVersion=\"1.1\"\n"
 		+ "xsi:schemaLocation=\"http://www.clarin.eu/cmd/ http://schemalocation\">\n"
 		+ "</CMD>\n");
-	URI profileURI = reader.getProfileURI(document, new CachedXPathAPI());
+	URI profileURI = reader.getProfileURI(document, xPath);
 	assertEquals(new URI("http://schemalocation"), profileURI);
 
-	// Test with custom CMD namespace
+	// Test with CMD namespace prefix
 	document = XMLUnit.buildTestDocument(
 		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-		+ "<CMD xmlns=\"http://www.mpi.nl/custom/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+		+ "<cmd:CMD xmlns:cmd=\"http://www.clarin.eu/cmd/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
 		+ "CMDVersion=\"1.1\"\n"
-		+ "xsi:schemaLocation=\"http://www.mpi.nl/custom/ http://schemalocation\">\n"
-		+ "</CMD>\n");
-	profileURI = reader.getProfileURI(document, new CachedXPathAPI());
-	assertEquals(new URI("http://schemalocation"), profileURI);
-
-	// Test with multiple CMD namespaces
-	document = XMLUnit.buildTestDocument(
-		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-		+ "<CMD xmlns=\"http://www.clarin.eu/cmd/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-		+ "CMDVersion=\"1.1\"\n"
-		+ "xsi:schemaLocation=\"http://www.mpi.nl/custom/ http://wrongschemalocation \n"
-		+ "http://www.clarin.eu/cmd/ http://schemalocation\">\n"
-		+ "</CMD>\n");
-	profileURI = reader.getProfileURI(document, new CachedXPathAPI());
+		+ "xsi:schemaLocation=\"http://www.clarin.eu/cmd/ http://schemalocation\">\n"
+		+ "</cmd:CMD>\n");
+	profileURI = reader.getProfileURI(document, xPath);
 	assertEquals(new URI("http://schemalocation"), profileURI);
 
 	// Test with non-matching namespaces
@@ -286,7 +280,7 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 		+ "CMDVersion=\"1.1\"\n"
 		+ "xsi:schemaLocation=\"http://www.mpi.nl/custom/ http://schemalocation\">\n"
 		+ "</CMD>\n");
-	profileURI = reader.getProfileURI(document, new CachedXPathAPI());
+	profileURI = reader.getProfileURI(document, xPath);
 	assertEquals(new URI("http://schemalocation"), profileURI);
 
 	// Test with no specification at all
@@ -295,7 +289,7 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 		+ "<CMD xmlns=\"http://www.clarin.eu/cmd/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
 		+ "CMDVersion=\"1.1\">\n"
 		+ "</CMD>\n");
-	profileURI = reader.getProfileURI(document, new CachedXPathAPI());
+	profileURI = reader.getProfileURI(document, xPath);
 	assertNull(profileURI);
     }
 }
