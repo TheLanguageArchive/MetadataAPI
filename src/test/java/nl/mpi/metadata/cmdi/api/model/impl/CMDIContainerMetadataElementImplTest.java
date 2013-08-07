@@ -247,8 +247,8 @@ public class CMDIContainerMetadataElementImplTest extends CMDIMetadataElementImp
 	assertNull(originLocation.getChildElement(collectionType, 0));
 
 	// Get from root
-	assertEquals(collection, collection.getChildElement("/:CMD/:Components/:TextCorpusProfile/:Collection"));
-	assertEquals(originLocation, collection.getChildElement("/:CMD/:Components/:TextCorpusProfile/:Collection/:OriginLocation"));
+	assertEquals(collection, collection.getChildElement("/cmd:CMD/cmd:Components/cmd:TextCorpusProfile/cmd:Collection"));
+	assertEquals(originLocation, collection.getChildElement("/cmd:CMD/cmd:Components/cmd:TextCorpusProfile/:Collection/cmd:OriginLocation"));
     }
 
     /**

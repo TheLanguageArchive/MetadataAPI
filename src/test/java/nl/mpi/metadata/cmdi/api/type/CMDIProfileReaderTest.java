@@ -90,7 +90,7 @@ public class CMDIProfileReaderTest extends CMDIAPITestCase {
 	assertEquals(0, idType.getAttributes().size());
 	// Test attribute path
 	final MetadataElementAttributeType attribute = descriptionType.getAttributes().iterator().next();
-	assertEquals("/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Description/:Description/@LanguageID", attribute.getPathString());
+	assertEquals("/cmd:CMD/cmd:Components/cmd:TextCorpusProfile/cmd:Collection/cmd:GeneralInfo/cmd:Description/cmd:Description/@LanguageID", attribute.getPathString());
 
 	//Test multilingual
 	assertTrue(nameType.isMultilingual());

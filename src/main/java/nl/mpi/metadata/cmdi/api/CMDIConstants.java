@@ -28,16 +28,16 @@ public final class CMDIConstants {
     /**
      * XPath to CMDI components
      */
-    public static final String CMD_COMPONENTS_PATH = "/:CMD/:Components";
+    public static final String CMD_COMPONENTS_PATH = "/cmd:CMD/cmd:Components";
     public static final String CMD_COMPONENTS_NODE_NAME = "Components";
     /**
      * XPath to resource proxy list
      */
-    public static final String CMD_RESOURCE_PROXY_LIST_PATH = "/:CMD/:Resources/:ResourceProxyList";
+    public static final String CMD_RESOURCE_PROXY_LIST_PATH = "/cmd:CMD/cmd:Resources/cmd:ResourceProxyList";
     /**
      * XPath to resource proxy nodes
      */
-    public final static String CMD_RESOURCE_PROXIES_PATH = "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy";
+    public final static String CMD_RESOURCE_PROXIES_PATH = "/cmd:CMD/cmd:Resources/cmd:ResourceProxyList/cmd:ResourceProxy";
     public final static String CMD_RESOURCE_PROXY_ELEMENT = "ResourceProxy";
     public final static String CMD_RESOURCE_PROXY_TYPE_ELEMENT = "ResourceType";
     public final static String CMD_RESOURCE_PROXY_REF_ELEMENT = "ResourceRef";
@@ -51,7 +51,7 @@ public final class CMDIConstants {
     /**
      * XPath to CMDI headers
      */
-    public static final String CMD_HEADER_PATH = "/:CMD/:Header";
+    public static final String CMD_HEADER_PATH = "/cmd:CMD/cmd:Header";
     public final static String CMD_HEADER_MD_CREATOR = "MdCreator";
     public final static String CMD_HEADER_MD_CREATION_DATE = "MdCreationDate";
     public final static String CMD_HEADER_MD_SELF_LINK = "MdSelfLink";

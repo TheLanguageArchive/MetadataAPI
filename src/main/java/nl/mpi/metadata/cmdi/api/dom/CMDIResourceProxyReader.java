@@ -18,7 +18,9 @@ package nl.mpi.metadata.cmdi.api.dom;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
@@ -26,7 +28,6 @@ import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.DataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.MetadataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
-import org.apache.xpath.CachedXPathAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Attr;
@@ -55,23 +56,23 @@ public class CMDIResourceProxyReader {
      * @throws DOMException in case of failure to retrieve node or node content from DOM
      * @throws MetadataException if required element or attribute is missing, or if resource type is not known
      */
-    public void readResourceProxies(final CMDIDocument cmdiDocument, final Document domDocument, final CachedXPathAPI xPathAPI) throws DOMException, MetadataException {
+    public void readResourceProxies(final CMDIDocument cmdiDocument, final Document domDocument, final XPath xPath) throws DOMException, MetadataException {
 	try {
 	    // Iterate over all ResourceProxy nodes
-	    NodeList resourceProxyNodes = xPathAPI.selectNodeList(domDocument, CMDIConstants.CMD_RESOURCE_PROXIES_PATH);
+	    NodeList resourceProxyNodes = (NodeList) xPath.evaluate(CMDIConstants.CMD_RESOURCE_PROXIES_PATH, domDocument, XPathConstants.NODESET);
 	    for (int i = 0; i < resourceProxyNodes.getLength(); i++) {
 		Node proxyNode = resourceProxyNodes.item(i);
 		try {
 		    // Construct resource proxy
-		    ResourceProxy resourceProxy = createResourceProxy(proxyNode, xPathAPI);
+		    ResourceProxy resourceProxy = createResourceProxy(proxyNode, xPath);
 		    // Add it to map in CMDI document
 		    cmdiDocument.addDocumentResourceProxy(resourceProxy);
 		} catch (MetadataException mEx) {
 		    logger.warn("Skipping resource proxy due to error. See exception for details.", mEx);
 		}
 	    }
-	} catch (TransformerException tEx) {
-	    throw new MetadataDocumentException(cmdiDocument, "TransformerException while reading resource proxies from CMDI document", tEx);
+	} catch (XPathExpressionException ex) {
+	    throw new MetadataDocumentException(cmdiDocument, "XPathExpressionException while reading resource proxies from CMDI document", ex);
 	}
     }
 
@@ -87,12 +88,12 @@ public class CMDIResourceProxyReader {
      * @throws TransformerException if any of the XPath lookups fails
      * @throws MetadataException if required element or attribute is missing
      */
-    protected ResourceProxy createResourceProxy(final Node proxyNode, final CachedXPathAPI xPathAPI) throws DOMException, TransformerException, MetadataException {
-	final Node resourceTypeNode = getResourceTypeNode(proxyNode, xPathAPI);
+    protected ResourceProxy createResourceProxy(final Node proxyNode, final XPath xPath) throws DOMException, MetadataException, XPathExpressionException {
+	final Node resourceTypeNode = getResourceTypeNode(proxyNode, xPath);
 	final String resourceType = resourceTypeNode.getTextContent();
 
 	final String id = getResourceProxyId(proxyNode);
-	final URI resourceRef = getResourceRef(proxyNode, xPathAPI);
+	final URI resourceRef = getResourceRef(proxyNode, xPath);
 	final String type = resourceTypeNode.getTextContent();
 	final String mimeType = getResourceProxyMimeType(resourceTypeNode);
 
@@ -104,8 +105,8 @@ public class CMDIResourceProxyReader {
 	}
     }
 
-    private Node getResourceTypeNode(final Node proxyNode, final CachedXPathAPI xPathAPI) throws TransformerException, MetadataException {
-	Node resourceTypeNode = xPathAPI.selectSingleNode(proxyNode, "./:" + CMDIConstants.CMD_RESOURCE_PROXY_TYPE_ELEMENT);
+    private Node getResourceTypeNode(final Node proxyNode, final XPath xPath) throws XPathExpressionException, MetadataException {
+	Node resourceTypeNode = (Node) xPath.evaluate("./cmd:" + CMDIConstants.CMD_RESOURCE_PROXY_TYPE_ELEMENT, proxyNode, XPathConstants.NODE);
 	if (resourceTypeNode != null) {
 	    return resourceTypeNode;
 	} else {
@@ -122,9 +123,9 @@ public class CMDIResourceProxyReader {
 	}
     }
 
-    private URI getResourceRef(final Node proxyNode, final CachedXPathAPI xPathAPI) throws MetadataException, TransformerException, DOMException {
+    private URI getResourceRef(final Node proxyNode, final XPath xPath) throws MetadataException, XPathExpressionException, DOMException {
 	URI uri = null;
-	Node resourceRefNode = xPathAPI.selectSingleNode(proxyNode, "./:ResourceRef");
+	Node resourceRefNode = (Node) xPath.evaluate("./cmd:" + CMDIConstants.CMD_RESOURCE_PROXY_REF_ELEMENT, proxyNode, XPathConstants.NODE);
 	if (resourceRefNode != null) {
 	    String resourceRef = resourceRefNode.getTextContent();
 	    try {

@@ -207,6 +207,8 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
     /**
      * Gets a child element of this node, selected by the specified path.
      *
+     * TODO: Deal with namespaces now we have namespace aware node paths (i.e. cmd:*)
+     * 
      * This method supports a subset of XPath. Examples:
      * <ul>
      * <li><em>Actor</em>

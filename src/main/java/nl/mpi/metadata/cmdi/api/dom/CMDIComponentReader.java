@@ -16,8 +16,9 @@
  */
 package nl.mpi.metadata.cmdi.api.dom;
 
-import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
@@ -32,7 +33,6 @@ import nl.mpi.metadata.cmdi.api.type.CMDIAttributeType;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
-import org.apache.xpath.CachedXPathAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
@@ -59,16 +59,16 @@ public class CMDIComponentReader {
 	this.elementFactory = elementFactory;
     }
 
-    public void readComponents(final CMDIDocument cmdiDocument, final Document domDocument, final CachedXPathAPI xPathAPI) throws DOMException, MetadataException {
-	final Node rootComponentNode = getRootComponentNode(cmdiDocument, domDocument, xPathAPI);
+    public void readComponents(final CMDIDocument cmdiDocument, final Document domDocument, final XPath xPath) throws DOMException, MetadataException {
+	final Node rootComponentNode = getRootComponentNode(cmdiDocument, domDocument, xPath);
 	final CMDIProfile profile = cmdiDocument.getType();
 	readElement(rootComponentNode, cmdiDocument, profile);
     }
 
-    public static Node getRootComponentNode(final CMDIDocument cmdiDocument, final Document domDocument, final CachedXPathAPI xPathAPI) throws MetadataException {
+    public static Node getRootComponentNode(final CMDIDocument cmdiDocument, final Document domDocument, final XPath xPath) throws MetadataException {
 	final String rootComponentNodePath = cmdiDocument.getType().getPathString();
 	try {
-	    final Node rootComponentNode = xPathAPI.selectSingleNode(domDocument, rootComponentNodePath);
+	    final Node rootComponentNode = (Node) xPath.evaluate(rootComponentNodePath, domDocument, XPathConstants.NODE);
 
 	    if (rootComponentNode == null) {
 		throw new MetadataException(String.format("Root component node not found at specified path: %1$s", rootComponentNodePath));
@@ -77,10 +77,10 @@ public class CMDIComponentReader {
 	    logger.debug("Found documentNode at {}", rootComponentNodePath);
 
 	    return rootComponentNode;
-	} catch (TransformerException tEx) {
+	} catch (XPathExpressionException ex) {
 	    throw new MetadataException(
-		    String.format("TransormationException while looking up root component node at specified path: %1$s", rootComponentNodePath),
-		    tEx);
+		    String.format("XPathExpressionException while looking up root component node at specified path: %1$s", rootComponentNodePath),
+		    ex);
 	}
     }
 

@@ -19,8 +19,8 @@ package nl.mpi.metadata.cmdi.api.dom;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import nl.mpi.metadata.api.MetadataDocumentException;
@@ -34,7 +34,6 @@ import nl.mpi.metadata.cmdi.api.model.impl.CMDIDocumentImpl;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
 import nl.mpi.metadata.cmdi.api.type.CMDITypeException;
-import org.apache.xpath.CachedXPathAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
@@ -91,26 +90,25 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
      */
     @Override
     public CMDIDocument read(final Document document, final URI documentURI) throws MetadataException, DOMException, IOException {
-	final CachedXPathAPI xPathAPI = new CachedXPathAPI();
 	final XPath xPath = XPathFactory.newInstance().newXPath();
 	// set namespace context so that 'cmd' and 'xsi' prefixes get mapped to the corresponding namespaces properly
 	xPath.setNamespaceContext(CMDI_NAMESPACE_CONTEXT);
 
 	final CMDIProfile profile = getProfileForDocument(document, documentURI, xPath);
-	final CMDIDocument cmdiDocument = createCMDIDocument(xPathAPI, document, documentURI, profile);
+	final CMDIDocument cmdiDocument = createCMDIDocument(xPath, document, documentURI, profile);
 
-	readHeader(cmdiDocument, document, xPathAPI);
-	resourceReader.readResourceProxies(cmdiDocument, document, xPathAPI);
-	componentReader.readComponents(cmdiDocument, document, xPathAPI);
+	readHeader(cmdiDocument, document, xPath);
+	resourceReader.readResourceProxies(cmdiDocument, document, xPath);
+	componentReader.readComponents(cmdiDocument, document, xPath);
 
 	cmdiDocument.setAllClean();
 	return cmdiDocument;
     }
 
-    private CMDIDocument createCMDIDocument(final CachedXPathAPI xPathAPI, final Document document, URI documentURI, final CMDIProfile profile) throws MetadataException {
+    private CMDIDocument createCMDIDocument(final XPath xPath, final Document document, URI documentURI, final CMDIProfile profile) throws MetadataException {
 	final String rootComponentNodePath = profile.getPathString();
 	try {
-	    final Node rootComponentNode = xPathAPI.selectSingleNode(document, rootComponentNodePath);
+	    final Node rootComponentNode = (Node) xPath.evaluate(rootComponentNodePath, document, XPathConstants.NODE);
 
 	    if (rootComponentNode == null) {
 		throw new MetadataException(String.format("Root component node not found at specified path: %1$s", rootComponentNodePath));
@@ -119,10 +117,10 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	    logger.debug("Found documentNode at {}", rootComponentNodePath);
 	    //TODO: Use factory
 	    return new CMDIDocumentImpl(profile, documentURI);
-	} catch (TransformerException tEx) {
+	} catch (XPathExpressionException ex) {
 	    throw new MetadataException(
-		    String.format("TransormationException while looking up root component node at specified path: %1$s", rootComponentNodePath),
-		    tEx);
+		    String.format("XPathExpressionException while looking up root component node at specified path: %1$s", rootComponentNodePath),
+		    ex);
 	}
     }
 
@@ -218,10 +216,10 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	return new URI(CMDIConstants.CMD_NAMESPACE);
     }
 
-    private void readHeader(final CMDIDocument cmdiDocument, final Document document, final CachedXPathAPI xPathAPI) throws MetadataDocumentException {
+    private void readHeader(final CMDIDocument cmdiDocument, final Document document, final XPath xPath) throws MetadataDocumentException {
 	try {
 	    // Find the <Header> Element. Should be there!
-	    final Node headerNode = xPathAPI.selectSingleNode(document, "/:CMD/:Header");
+	    final Node headerNode = (Node) xPath.evaluate("/cmd:CMD/cmd:Header", document, XPathConstants.NODE);
 	    if (headerNode == null) {
 		throw new MetadataDocumentException(cmdiDocument, "Header node not found in CMDI document");
 	    }
@@ -233,9 +231,9 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 		    addHeaderInformationFromDocument(headerChild, cmdiDocument);
 		}
 	    }
-	} catch (TransformerException tEx) {
+	} catch (XPathExpressionException ex) {
 	    throw new MetadataDocumentException(cmdiDocument,
-		    "TransformationException while reading header information in document. See nested exception for details.", tEx);
+		    "XPathExpressionException while reading header information in document. See nested exception for details.", ex);
 	}
     }
 
@@ -243,7 +241,7 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	// Put String values in header info
 	// Take name from element name, value from text content
 	// TODO: Some fields should have different type (e.g. URI or Date)
-	HeaderInfo<String> headerInfo = new HeaderInfo<String>(headerChild.getNodeName(), headerChild.getTextContent());
+	HeaderInfo<String> headerInfo = new HeaderInfo<String>(headerChild.getLocalName(), headerChild.getTextContent());
 	// (CMDI header does not support attributes)
 	// Put into metadata document
 	try {

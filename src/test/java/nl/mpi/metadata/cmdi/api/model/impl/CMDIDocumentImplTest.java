@@ -347,7 +347,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 
     @Test
     public void testGetPathString() {
-	assertEquals("/:CMD/:Components/:TextCorpusProfile", document.getPathString());
+	assertEquals("/cmd:CMD/cmd:Components/cmd:TextCorpusProfile", document.getPathString());
     }
 
     /**

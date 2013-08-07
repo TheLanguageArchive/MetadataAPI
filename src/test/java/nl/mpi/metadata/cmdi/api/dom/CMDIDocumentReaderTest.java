@@ -48,6 +48,7 @@ import org.xml.sax.SAXException;
 
 import static nl.mpi.metadata.cmdi.api.CMDIAPITestCase.TEXT_CORPUS_INSTANCE_LOCATION;
 import static nl.mpi.metadata.cmdi.api.CMDIConstants.*;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 /**
@@ -214,7 +215,19 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
      */
     @Test
     public void testReadNamespacePrefixDocument() throws Exception {
-	readTestDocument("/cmdi/Soundbites-instance-namespace-prefixes.cmdi");
+	// Read the document with namespace prefix
+	final CMDIDocument cmdi = readTestDocument("/cmdi/Soundbites-instance-namespace-prefixes.cmdi");
+	// Test profile location
+	assertEquals("http://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/profiles/clarin.eu:cr1:p_1328259700928/xsd", cmdi.getType().getSchemaLocation().toString());
+
+	// Test header
+	assertNotNull(cmdi.getHeaderInformation(CMD_HEADER_MD_CREATOR));
+	assertEquals("Jan Pieter Kunst", cmdi.getHeaderInformation(CMD_HEADER_MD_CREATOR).getValue());
+
+	// Test component contents
+	assertEquals("Soundbites-recording", cmdi.getName());
+	assertThat(cmdi.getChildElement("CreationYear"), instanceOf(Element.class));
+	assertThat(cmdi.getChildElement("GeoLocation"), instanceOf(Component.class));
     }
 
     /**

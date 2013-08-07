@@ -240,7 +240,7 @@ public abstract class CMDIMetadataElementImpl implements CMDIMetadataElement {
 		// Construct path
 		final StringBuilder pathStringBuilder = new StringBuilder(parentContainer.getPathCharSequence());
 		// Append type (=element name)
-		pathStringBuilder.append("/:").append(getType().getName());
+		pathStringBuilder.append("/cmd:").append(getType().getName());
 		// Append index
 		pathStringBuilder.append("[").append(index + 1).append("]");
 

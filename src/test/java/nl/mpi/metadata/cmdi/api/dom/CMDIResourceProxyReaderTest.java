@@ -19,7 +19,10 @@ package nl.mpi.metadata.cmdi.api.dom;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.model.ResourceReference;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
@@ -27,7 +30,6 @@ import nl.mpi.metadata.cmdi.api.model.DataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.MetadataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.impl.CMDIDocumentImpl;
-import org.apache.xpath.CachedXPathAPI;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,7 +59,7 @@ public class CMDIResourceProxyReaderTest extends CMDIAPITestCase {
     public void testReadResourceProxies() throws Exception {
 	CMDIDocumentImpl cmdiDocument = new CMDIDocumentImpl(getNewTestProfileAndRead());
 	Document domDocument = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
-	instance.readResourceProxies(cmdiDocument, domDocument, new CachedXPathAPI());
+	instance.readResourceProxies(cmdiDocument, domDocument, newXPath());
 
 	assertEquals(5, cmdiDocument.getDocumentReferences().size());
 	{
@@ -104,7 +106,7 @@ public class CMDIResourceProxyReaderTest extends CMDIAPITestCase {
 		+ "<ResourceRef>http://resources/1</ResourceRef>"
 		+ "</ResourceProxy>";
 	Node resourceProxyNode = getResourceProxyNode(xml);
-	ResourceProxy resourceProxy = instance.createResourceProxy(resourceProxyNode, new CachedXPathAPI());
+	ResourceProxy resourceProxy = instance.createResourceProxy(resourceProxyNode, newXPath());
 	assertTrue(resourceProxy instanceof ResourceReference);
 	assertEquals("resource1", resourceProxy.getId());
 	assertEquals("Resource", ((ResourceReference) resourceProxy).getType());
@@ -116,7 +118,7 @@ public class CMDIResourceProxyReaderTest extends CMDIAPITestCase {
 		+ "<ResourceRef>http://resources/1</ResourceRef>"
 		+ "</ResourceProxy>";
 	resourceProxyNode = getResourceProxyNode(xml);
-	resourceProxy = instance.createResourceProxy(resourceProxyNode, new CachedXPathAPI());
+	resourceProxy = instance.createResourceProxy(resourceProxyNode, newXPath());
 	assertEquals("SearchPage", ((ResourceReference) resourceProxy).getType());
 	assertNull(resourceProxy.getMimetype());
     }
@@ -128,7 +130,7 @@ public class CMDIResourceProxyReaderTest extends CMDIAPITestCase {
 		+ "</ResourceProxy>";
 	Node resourceProxyNode = getResourceProxyNode(xml);
 	try {
-	    instance.createResourceProxy(resourceProxyNode, new CachedXPathAPI());
+	    instance.createResourceProxy(resourceProxyNode, newXPath());
 	    fail("Should fail because no resource type");
 	} catch (MetadataException mEx) {
 	    // Should be thrown
@@ -144,7 +146,7 @@ public class CMDIResourceProxyReaderTest extends CMDIAPITestCase {
 		+ "</ResourceProxy>";
 	Node resourceProxyNode = getResourceProxyNode(xml);
 	try {
-	    instance.createResourceProxy(resourceProxyNode, new CachedXPathAPI());
+	    instance.createResourceProxy(resourceProxyNode, newXPath());
 	    fail("Should fail because no id");
 	} catch (MetadataException mEx) {
 	    // Should be thrown
@@ -159,7 +161,7 @@ public class CMDIResourceProxyReaderTest extends CMDIAPITestCase {
 		+ "</ResourceProxy>";
 	Node resourceProxyNode = getResourceProxyNode(xml);
 	try {
-	    instance.createResourceProxy(resourceProxyNode, new CachedXPathAPI());
+	    instance.createResourceProxy(resourceProxyNode, newXPath());
 	    fail("Should fail because no resource type");
 	} catch (MetadataException mEx) {
 	    // Should be thrown
@@ -175,7 +177,7 @@ public class CMDIResourceProxyReaderTest extends CMDIAPITestCase {
 		+ "</ResourceProxy>";
 	Node resourceProxyNode = getResourceProxyNode(xml);
 	try {
-	    instance.createResourceProxy(resourceProxyNode, new CachedXPathAPI());
+	    instance.createResourceProxy(resourceProxyNode, newXPath());
 	    fail("Should fail because no resource type");
 	} catch (MetadataException mEx) {
 	    // Should be thrown
@@ -184,7 +186,7 @@ public class CMDIResourceProxyReaderTest extends CMDIAPITestCase {
 	}
     }
 
-    private Node getResourceProxyNode(CharSequence resourceProxyXML) throws SAXException, IOException, TransformerException {
+    private Node getResourceProxyNode(CharSequence resourceProxyXML) throws SAXException, IOException, XPathExpressionException {
 	StringBuilder xmlBuilder = new StringBuilder();
 	xmlBuilder.append("<CMD xmlns=\"http://www.clarin.eu/cmd/\"");
 	xmlBuilder.append(" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
@@ -197,6 +199,13 @@ public class CMDIResourceProxyReaderTest extends CMDIAPITestCase {
 	xmlBuilder.append(" </Resources>");
 	xmlBuilder.append("</CMD>");
 	Document document = XMLUnit.buildTestDocument(xmlBuilder.toString());
-	return new CachedXPathAPI().selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/*");
+	return (Node) newXPath().evaluate("/cmd:CMD/cmd:Resources/cmd:ResourceProxyList/*", document, XPathConstants.NODE);
+    }
+    
+    private XPath newXPath(){
+	XPathFactory xpf = XPathFactory.newInstance();
+	XPath xPath = xpf.newXPath();
+	xPath.setNamespaceContext(new CMDINamespaceContext());
+	return xPath;
     }
 }

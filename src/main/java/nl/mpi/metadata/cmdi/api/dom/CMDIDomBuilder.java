@@ -32,24 +32,24 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.dom.DomBuildingMode;
 import nl.mpi.metadata.api.dom.MetadataDOMBuilder;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.api.model.MetadataElement;
-import nl.mpi.metadata.api.model.MetadataReference;
 import nl.mpi.metadata.api.model.Reference;
-import nl.mpi.metadata.api.model.ResourceReference;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
 import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
-import nl.mpi.metadata.cmdi.api.model.DataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.Element;
-import nl.mpi.metadata.cmdi.api.model.MetadataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.MultilingualElement;
 import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
 import nl.mpi.metadata.cmdi.api.type.CMDIAttributeType;
@@ -61,14 +61,12 @@ import org.apache.xmlbeans.XmlBeans;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
-import org.apache.xpath.XPathAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 
@@ -108,23 +106,25 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	this.domBuilderFactory = domBuilderFactory;
     }
 
+    @Override
     public Document buildDomForDocument(CMDIDocument metadataDocument) throws MetadataDocumentException {
 	// Get base document
 	final Document domDocument = getBaseDocument(metadataDocument);
+	final XPathFactory xPathFactory = XPathFactory.newInstance();
 
 	// See if headers need updating
 	if (metadataDocument.getHeaderDirtyState().isDirty()) {
-	    pruneHeader(metadataDocument, domDocument);
-	    setHeaders(metadataDocument, domDocument);
+	    pruneHeader(metadataDocument, domDocument, xPathFactory);
+	    setHeaders(metadataDocument, domDocument, xPathFactory);
 	}
 
 	// See if resource proxies need updating
 	if (metadataDocument.getResourceProxiesDirtyState().isDirty()) {
-	    pruneResourceProxies(metadataDocument, domDocument);
-	    buildProxies(metadataDocument, domDocument);
+	    pruneResourceProxies(metadataDocument, domDocument, xPathFactory);
+	    buildProxies(metadataDocument, domDocument, xPathFactory);
 	}
 
-	buildComponents(metadataDocument, domDocument);
+	buildComponents(metadataDocument, domDocument, xPathFactory);
 	return domDocument;
     }
 
@@ -159,50 +159,38 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	}
     }
 
-    private void pruneHeader(CMDIDocument metadataDocument, Document domDocument) throws DOMException, MetadataDocumentException {
+    private void pruneHeader(CMDIDocument metadataDocument, Document domDocument, XPathFactory xPathFactory) throws DOMException, MetadataDocumentException {
 	try {
-	    final Node headerNode = XPathAPI.selectSingleNode(domDocument, CMDIConstants.CMD_HEADER_PATH);
+	    final Node headerNode = (Node) newXPath(xPathFactory).evaluate(CMDIConstants.CMD_HEADER_PATH, domDocument, XPathConstants.NODE);
 	    // Remove header items
 	    removeChildren(headerNode);
-	} catch (TransformerException tEx) {
-	    throw new MetadataDocumentException(metadataDocument, "TransformerException while preparing for building metadata DOM", tEx);
+	} catch (XPathExpressionException tEx) {
+	    throw new MetadataDocumentException(metadataDocument, "XPathExpressionException while preparing for building metadata DOM", tEx);
 	} catch (MetadataException mdEx) {
 	    throw new MetadataDocumentException(metadataDocument, "MetadataException while preparing for building metadata DOM", mdEx);
 	}
     }
 
-    private void pruneResourceProxies(CMDIDocument metadataDocument, Document domDocument) throws DOMException, MetadataDocumentException {
+    private void pruneResourceProxies(CMDIDocument metadataDocument, Document domDocument, XPathFactory xPathFactory) throws DOMException, MetadataDocumentException {
 	try {
-	    Node resourceProxyListNode = XPathAPI.selectSingleNode(domDocument, CMDIConstants.CMD_RESOURCE_PROXY_LIST_PATH);
+	    Node resourceProxyListNode = (Node) newXPath(xPathFactory).evaluate(CMDIConstants.CMD_RESOURCE_PROXY_LIST_PATH, domDocument, XPathConstants.NODE);
 	    // Remove resource proxies
 	    removeChildren(resourceProxyListNode);
-	} catch (TransformerException tEx) {
-	    throw new MetadataDocumentException(metadataDocument, "TransformerException while preparing for building metadata DOM", tEx);
+	} catch (XPathExpressionException tEx) {
+	    throw new MetadataDocumentException(metadataDocument, "XPathExpressionException while preparing for building metadata DOM", tEx);
 	} catch (MetadataException mdEx) {
 	    throw new MetadataDocumentException(metadataDocument, "MetadataException while preparing for building metadata DOM", mdEx);
 	}
     }
 
-//    private void pruneComponents(CMDIDocument metadataDocument, Document domDocument) throws MetadataDocumentException, TransformerException, MetadataException {
-//	final CachedXPathAPI xPathAPI = new CachedXPathAPI();
-//
-//	Node componentsNode = xPathAPI.selectSingleNode(domDocument, CMDIConstants.CMD_COMPONENTS_PATH);
-//	Node rootComponentNode = CMDIComponentReader.getRootComponentNode(metadataDocument, domDocument, xPathAPI);
-//	// Remove components
-//	if (rootComponentNode.getParentNode().equals(componentsNode)) {
-//	    componentsNode.removeChild(rootComponentNode);
-//	} else {
-//	    throw new MetadataDocumentException(metadataDocument, "Root component node specified by profile is not a child of Components node");
-//	}
-//    }
     private void removeChildren(Node parent) throws DOMException, MetadataException {
 	// replace node by undeep clone of itself
 	parent.getParentNode().replaceChild(parent.cloneNode(false), parent);
     }
 
-    private void setHeaders(CMDIDocument metadataDocument, Document domDocument) throws MetadataDocumentException {
+    private void setHeaders(CMDIDocument metadataDocument, Document domDocument, XPathFactory xPathFactory) throws MetadataDocumentException {
 	try {
-	    Node headerNode = XPathAPI.selectSingleNode(domDocument, CMDIConstants.CMD_HEADER_PATH);
+	    Node headerNode = (Node) newXPath(xPathFactory).evaluate(CMDIConstants.CMD_HEADER_PATH, domDocument, XPathConstants.NODE);
 	    for (HeaderInfo<?> header : metadataDocument.getHeaderInformation()) {
 		org.w3c.dom.Element headerItemNode = domDocument.createElementNS(CMDIConstants.CMD_NAMESPACE, header.getName());
 		headerItemNode.setTextContent(header.getValue().toString());
@@ -212,23 +200,23 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 		headerNode.appendChild(headerItemNode);
 	    }
 	    metadataDocument.getHeaderDirtyState().setDirty(false);
-	} catch (TransformerException tEx) {
-	    throw new MetadataDocumentException(metadataDocument, "TransformerException while setting headers in metadata DOM", tEx);
+	} catch (XPathExpressionException tEx) {
+	    throw new MetadataDocumentException(metadataDocument, "XPathExpressionException while setting headers in metadata DOM", tEx);
 	}
     }
 
-    private void buildProxies(CMDIDocument metadataDocument, Document domDocument) throws MetadataDocumentException {
+    private void buildProxies(CMDIDocument metadataDocument, Document domDocument, XPathFactory xPathFactory) throws MetadataDocumentException {
 	final Collection<Reference> documentResourceProxies = metadataDocument.getDocumentReferences();
 	if (documentResourceProxies.size() > 0) {
 	    try {
-		final Node proxiesNode = XPathAPI.selectSingleNode(domDocument, CMDIConstants.CMD_RESOURCE_PROXY_LIST_PATH);
+		final Node proxiesNode = (Node) newXPath(xPathFactory).evaluate(CMDIConstants.CMD_RESOURCE_PROXY_LIST_PATH, domDocument, XPathConstants.NODE);
 		for (Reference resourceProxy : documentResourceProxies) {
 		    // We can safely cast resourceProxy to ResourceProxy since only ResourceProxies can be added to CMDIDocument
 		    builResourceProxy(domDocument, proxiesNode, (ResourceProxy) resourceProxy);
 		}
 		metadataDocument.getResourceProxiesDirtyState().setDirty(false);
-	    } catch (TransformerException tEx) {
-		throw new MetadataDocumentException(metadataDocument, "TransformerException while building resource proxies in DOM", tEx);
+	    } catch (XPathExpressionException tEx) {
+		throw new MetadataDocumentException(metadataDocument, "XPathExpressionException while building resource proxies in DOM", tEx);
 	    }
 	}
     }
@@ -251,27 +239,32 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	proxyNode.appendChild(resourceRefNode);
     }
 
-    private void buildComponents(CMDIDocument metadataDocument, Document domDocument) throws MetadataDocumentException {
+    private void buildComponents(CMDIDocument metadataDocument, Document domDocument, XPathFactory xPathFactory) throws MetadataDocumentException {
 	try {
 	    final String schemaLocation = metadataDocument.getType().getSchemaLocation().toString();
-	    final Node componentsNode = XPathAPI.selectSingleNode(domDocument, CMDIConstants.CMD_COMPONENTS_PATH);
-	    buildMetadataElement(domDocument, componentsNode, metadataDocument, schemaLocation);
+	    final Node componentsNode = (Node) newXPath(xPathFactory).evaluate(CMDIConstants.CMD_COMPONENTS_PATH, domDocument, XPathConstants.NODE);
+	    buildMetadataElement(domDocument, componentsNode, metadataDocument, schemaLocation, xPathFactory);
 	} catch (DOMException domEx) {
 	    throw new MetadataDocumentException(metadataDocument, "DOMException while building components in DOM", domEx);
-	} catch (TransformerException tEx) {
-	    throw new MetadataDocumentException(metadataDocument, "TransformerException while building components in DOM", tEx);
+	} catch (XPathExpressionException tEx) {
+	    throw new MetadataDocumentException(metadataDocument, "XPathExpressionException while building components in DOM", tEx);
 	}
     }
 
-    private void buildMetadataElement(Document domDocument, Node parentNode, CMDIMetadataElement metadataElement, String schemaLocation) throws DOMException, TransformerException {
+    private void buildMetadataElement(Document domDocument, Node parentNode, CMDIMetadataElement metadataElement, String schemaLocation, XPathFactory xPathFactory) throws DOMException, XPathExpressionException {
 	logger.debug("Building metadata element [{}]", metadataElement);
 
 	final SchemaProperty elementSchemaProperty = metadataElement.getType().getSchemaElement();
 	org.w3c.dom.Element elementNode;
-	if (parentNode == null) {
-	    elementNode = (org.w3c.dom.Element) XPathAPI.selectSingleNode(domDocument, metadataElement.getPathString());
-	} else {
-	    elementNode = (org.w3c.dom.Element) XPathAPI.selectSingleNode(parentNode, metadataElement.getPathString());
+	try {
+	    if (parentNode == null) {
+		elementNode = (org.w3c.dom.Element) newXPath(xPathFactory).evaluate(metadataElement.getPathString(), domDocument, XPathConstants.NODE);
+	    } else {
+		elementNode = (org.w3c.dom.Element) newXPath(xPathFactory).evaluate(metadataElement.getPathString(), parentNode, XPathConstants.NODE);
+	    }
+	} catch (XPathExpressionException ex) {
+	    logger.error("XPathExpressionException encountered looking up {} in document {}, parent node {}", metadataElement.getPathString(), domDocument, parentNode);
+	    throw ex;
 	}
 
 	if (metadataElement.isDirty()) {
@@ -302,7 +295,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 		logger.debug("Element is container. Iterating over {} child elements", ((CMDIContainerMetadataElement) metadataElement).getChildrenCount());
 	    }
 	    for (MetadataElement child : ((CMDIContainerMetadataElement) metadataElement).getChildren()) {
-		buildMetadataElement(domDocument, elementNode, (CMDIMetadataElement) child, schemaLocation);
+		buildMetadataElement(domDocument, elementNode, (CMDIMetadataElement) child, schemaLocation, xPathFactory);
 	    }
 	}
     }
@@ -490,17 +483,9 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	return entityResolver;
     }
 
-    private org.w3c.dom.Element getExistingElement(Node parentNode, final SchemaProperty elementSchemaProperty) {
-	NodeList childNodes = parentNode.getChildNodes();
-	for (int i = 0; i < childNodes.getLength(); i++) {
-	    Node node = childNodes.item(i);
-	    //schemaProperty.getName().getNamespaceURI(), getPrefixedName(schemaProperty)
-	    if (node instanceof org.w3c.dom.Element
-		    && node.getNodeName().equals(getPrefixedName(elementSchemaProperty))
-		    && node.getNamespaceURI().equals(elementSchemaProperty.getName().getNamespaceURI())) {
-		return (org.w3c.dom.Element) node;
-	    }
-	}
-	return null;
+    private XPath newXPath(XPathFactory factory) {
+	final XPath xPath = factory.newXPath();
+	xPath.setNamespaceContext(new CMDINamespaceContext());
+	return xPath;
     }
 }

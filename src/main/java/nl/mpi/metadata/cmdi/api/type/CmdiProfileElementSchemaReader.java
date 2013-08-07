@@ -24,17 +24,20 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import javax.xml.namespace.QName;
-import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import nl.mpi.metadata.api.type.ControlledVocabularyItem;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
+import nl.mpi.metadata.cmdi.api.dom.CMDINamespaceContext;
 import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategory;
 import org.apache.xmlbeans.SchemaAnnotation;
 import org.apache.xmlbeans.SchemaLocalElement;
 import org.apache.xmlbeans.SchemaParticle;
 import org.apache.xmlbeans.SchemaProperty;
 import org.apache.xmlbeans.XmlAnySimpleType;
-import org.apache.xpath.CachedXPathAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -56,7 +59,7 @@ public class CmdiProfileElementSchemaReader {
 
     private final static Logger logger = LoggerFactory.getLogger(CmdiProfileElementSchemaReader.class);
     private final Document schemaDocument;
-    private final CachedXPathAPI xPathAPI;
+    private final XPath xPath;
 
     /**
      * Creates a new schema reader for the specified document
@@ -67,7 +70,8 @@ public class CmdiProfileElementSchemaReader {
      */
     public CmdiProfileElementSchemaReader(Document document) {
 	this.schemaDocument = document;
-	this.xPathAPI = new CachedXPathAPI();
+	this.xPath = XPathFactory.newInstance().newXPath();
+	xPath.setNamespaceContext(new CMDINamespaceContext());
     }
 
     public void readSchema(CMDIProfileElement profileElement) throws CMDITypeException {
@@ -188,7 +192,7 @@ public class CmdiProfileElementSchemaReader {
     }
 
     private StringBuilder createChildPath(ComponentType componentType, SchemaProperty child) {
-	return new StringBuilder(componentType.getPath()).append("/:").append(child.getName().getLocalPart());
+	return new StringBuilder(componentType.getPath()).append("/cmd:").append(child.getName().getLocalPart());
     }
 
     private void readComponentId(CMDIProfileElement profileElement) {
@@ -231,10 +235,10 @@ public class CmdiProfileElementSchemaReader {
 	    // In case of complex type, try on element specification (xs:element)
 	    if (schemaDocument != null) {
 		// Path to element specification in schema file
-		final String elementPath = profileElement.getPathString().replaceFirst("/:", "//*[@name='").replaceAll("/:", "']//*[@name='") + "']";
+		final String elementPath = profileElement.getPathString().replaceFirst("/cmd:", "//*[@name='").replaceAll("/cmd:", "']//*[@name='") + "']";
 		try {
 		    // Get element specification
-		    Node elementSpecNode = xPathAPI.selectSingleNode(schemaDocument, elementPath);
+		    Node elementSpecNode = (Node) xPath.evaluate(elementPath, schemaDocument, XPathConstants.NODE);
 		    if (elementSpecNode != null) {
 			// Get all attributes on the xs:element and look for annotation data
 			NamedNodeMap attributes = elementSpecNode.getAttributes();
@@ -246,8 +250,8 @@ public class CmdiProfileElementSchemaReader {
 			    saveAnnotationData(profileElement, nodeName, attrNode.getNodeValue());
 			}
 		    }
-		} catch (TransformerException tEx) {
-		    logger.error(String.format("TransformerException while reading annotation for profile element $1%s", profileElement), tEx);
+		} catch (XPathExpressionException ex) {
+		    logger.error(String.format("XPathExpressionException while reading annotation for profile element $1%s", profileElement), ex);
 		}
 	    }
 	}

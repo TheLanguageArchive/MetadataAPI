@@ -18,7 +18,9 @@ package nl.mpi.metadata.cmdi.api.dom;
 
 import java.net.URI;
 import java.util.Collections;
-import nl.mpi.metadata.api.MetadataDocumentException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 import nl.mpi.metadata.api.dom.DomBuildingMode;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
@@ -28,7 +30,6 @@ import nl.mpi.metadata.cmdi.api.model.Component;
 import nl.mpi.metadata.cmdi.api.model.DataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.Element;
 import nl.mpi.metadata.cmdi.api.model.MultilingualElement;
-import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.impl.AttributeImpl;
 import nl.mpi.metadata.cmdi.api.model.impl.CMDIDocumentImpl;
 import nl.mpi.metadata.cmdi.api.model.impl.ComponentImpl;
@@ -42,7 +43,6 @@ import org.apache.xpath.CachedXPathAPI;
 import org.apache.xpath.XPathAPI;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -291,8 +291,9 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	CMDIDomBuilder instance = new CMDIDomBuilder(CMDI_API_TEST_ENTITY_RESOLVER, CMDI_API_TEST_DOM_BUILDER_FACTORY);
 	Document dom = instance.buildDomForDocument(document);
 
-	CachedXPathAPI xPathAPI = new CachedXPathAPI();
-	Node collectionNode = xPathAPI.selectSingleNode(dom, collection.getPathString());
+	XPath xPath = XPathFactory.newInstance().newXPath();
+	xPath.setNamespaceContext(new CMDINamespaceContext());
+	Node collectionNode = (Node) xPath.evaluate(collection.getPathString(), dom, XPathConstants.NODE);
 	NodeList collectionNodeChildren = collectionNode.getChildNodes();
 
 	assertEquals(2, collectionNodeChildren.getLength());
@@ -300,7 +301,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	assertEquals("GeneralInfo", collectionNodeChildren.item(0).getLocalName());
 	assertEquals("OriginLocation", collectionNodeChildren.item(1).getLocalName());
 
-	Node nameNode = xPathAPI.selectSingleNode(dom, name.getPathString());
+	Node nameNode = (Node) xPath.evaluate(name.getPathString(), dom, XPathConstants.NODE);
 	assertEquals("test element", nameNode.getTextContent());
 	assertEquals(1, nameNode.getAttributes().getLength());
 	Node langAttrNode = nameNode.getAttributes().getNamedItem("xml:lang");
@@ -308,7 +309,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	assertEquals("xml:lang", langAttrNode.getNodeName());
 	assertEquals("nl", langAttrNode.getNodeValue());
 
-	Node descriptionNode = xPathAPI.selectSingleNode(dom, description.getPathString());
+	Node descriptionNode = (Node) xPath.evaluate(description.getPathString(), dom, XPathConstants.NODE);
 	assertEquals("description element", descriptionNode.getTextContent());
 	assertEquals(1, descriptionNode.getAttributes().getLength());
 	langAttrNode = descriptionNode.getAttributes().getNamedItem("LanguageID");

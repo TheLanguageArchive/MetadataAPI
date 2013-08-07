@@ -101,7 +101,7 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
 	// Find the schema element
 	SchemaProperty schemaElement = loadRootComponentProperty(schemaRoot);
 	// Determine root path
-	StringBuilder rootPath = new StringBuilder("/:CMD/:Components/:").append(schemaElement.getName().getLocalPart());
+	StringBuilder rootPath = new StringBuilder("/cmd:CMD/cmd:Components/cmd:").append(schemaElement.getName().getLocalPart());
 
 	List<String> headerNames = readHeaderNames(schemaRoot);
 	// Instantiate profile
