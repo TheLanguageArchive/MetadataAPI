@@ -16,11 +16,12 @@
  */
 package nl.mpi.metadata.identifierresolver;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
@@ -35,21 +36,20 @@ public class ChainingIdentifierResolverTest {
     @Test
     public void testCanResolve() throws Exception {
 	URI testUri = new URI("test");
-	ChainingIdentifierResolver resolver = new ChainingIdentifierResolver();
 
 	List<IdentifierResolver> resolverList = new ArrayList<IdentifierResolver>();
-	resolverList.add(new MockIdentifierResolver(false, new URL("first")));
-	resolverList.add(new MockIdentifierResolver(false, new URL("second")));
-	resolver = new ChainingIdentifierResolver(resolverList);
+	resolverList.add(new MockIdentifierResolver(false, new URL("file://first")));
+	resolverList.add(new MockIdentifierResolver(false, new URL("file://second")));
+	ChainingIdentifierResolver resolver = new ChainingIdentifierResolver(resolverList);
 
 	assertFalse(resolver.canResolve(null, testUri));
 
-	resolverList.add(new MockIdentifierResolver(true, new URL("third")));
+	resolverList.add(new MockIdentifierResolver(true, new URL("file://third")));
 	resolver.setChain(resolverList);
 
 	assertTrue(resolver.canResolve(null, testUri));
 
-	resolverList.add(new MockIdentifierResolver(true, new URL("fourth")));
+	resolverList.add(new MockIdentifierResolver(true, new URL("file://fourth")));
 	resolver.setChain(resolverList);
 
 	assertTrue(resolver.canResolve(null, testUri));
@@ -64,16 +64,16 @@ public class ChainingIdentifierResolverTest {
 	ChainingIdentifierResolver resolver = new ChainingIdentifierResolver();
 
 	List<IdentifierResolver> resolverList = new ArrayList<IdentifierResolver>();
-	resolverList.add(new MockIdentifierResolver(false, new URL("first")));
-	resolverList.add(new MockIdentifierResolver(false, new URL("second")));
-	resolverList.add(new MockIdentifierResolver(true, new URL("third")));
+	resolverList.add(new MockIdentifierResolver(false, new URL("file://first")));
+	resolverList.add(new MockIdentifierResolver(false, new URL("file://second")));
+	resolverList.add(new MockIdentifierResolver(true, new URL("file://third")));
 	resolver.setChain(resolverList);
 
-	assertEquals(new URI("third"), resolver.resolveIdentifier(null, testUri));
+	assertEquals(new URL("file://third"), resolver.resolveIdentifier(null, testUri));
 
-	resolverList.add(new MockIdentifierResolver(true, new URL("fourth")));
+	resolverList.add(new MockIdentifierResolver(true, new URL("file://fourth")));
 	resolver.setChain(resolverList);
 
-	assertEquals(new URI("third"), resolver.resolveIdentifier(null, testUri));
+	assertEquals(new URL("file://third"), resolver.resolveIdentifier(null, testUri));
     }
 }
