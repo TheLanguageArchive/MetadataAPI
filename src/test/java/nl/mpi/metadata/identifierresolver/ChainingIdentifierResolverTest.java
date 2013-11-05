@@ -19,6 +19,7 @@ package nl.mpi.metadata.identifierresolver;
 import java.util.ArrayList;
 import java.util.List;
 import java.net.URI;
+import java.net.URL;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -37,18 +38,18 @@ public class ChainingIdentifierResolverTest {
 	ChainingIdentifierResolver resolver = new ChainingIdentifierResolver();
 
 	List<IdentifierResolver> resolverList = new ArrayList<IdentifierResolver>();
-	resolverList.add(new MockIdentifierResolver(false, new URI("first")));
-	resolverList.add(new MockIdentifierResolver(false, new URI("second")));
+	resolverList.add(new MockIdentifierResolver(false, new URL("first")));
+	resolverList.add(new MockIdentifierResolver(false, new URL("second")));
 	resolver = new ChainingIdentifierResolver(resolverList);
 
 	assertFalse(resolver.canResolve(null, testUri));
 
-	resolverList.add(new MockIdentifierResolver(true, new URI("third")));
+	resolverList.add(new MockIdentifierResolver(true, new URL("third")));
 	resolver.setChain(resolverList);
 
 	assertTrue(resolver.canResolve(null, testUri));
 
-	resolverList.add(new MockIdentifierResolver(true, new URI("fourth")));
+	resolverList.add(new MockIdentifierResolver(true, new URL("fourth")));
 	resolver.setChain(resolverList);
 
 	assertTrue(resolver.canResolve(null, testUri));
@@ -63,14 +64,14 @@ public class ChainingIdentifierResolverTest {
 	ChainingIdentifierResolver resolver = new ChainingIdentifierResolver();
 
 	List<IdentifierResolver> resolverList = new ArrayList<IdentifierResolver>();
-	resolverList.add(new MockIdentifierResolver(false, new URI("first")));
-	resolverList.add(new MockIdentifierResolver(false, new URI("second")));
-	resolverList.add(new MockIdentifierResolver(true, new URI("third")));
+	resolverList.add(new MockIdentifierResolver(false, new URL("first")));
+	resolverList.add(new MockIdentifierResolver(false, new URL("second")));
+	resolverList.add(new MockIdentifierResolver(true, new URL("third")));
 	resolver.setChain(resolverList);
 
 	assertEquals(new URI("third"), resolver.resolveIdentifier(null, testUri));
 
-	resolverList.add(new MockIdentifierResolver(true, new URI("fourth")));
+	resolverList.add(new MockIdentifierResolver(true, new URL("fourth")));
 	resolver.setChain(resolverList);
 
 	assertEquals(new URI("third"), resolver.resolveIdentifier(null, testUri));

@@ -16,13 +16,14 @@
  */
 package nl.mpi.metadata.identifierresolver;
 
-import java.io.File;
 import java.net.URI;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import nl.mpi.metadata.api.model.MetadataDocument;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
+
+import static org.jmock.Expectations.returnValue;
 import static org.junit.Assert.*;
 
 /**
@@ -31,24 +32,7 @@ import static org.junit.Assert.*;
  */
 public class URLResolverTest {
 
-    public URLResolverTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
+    private Mockery context = new JUnit4Mockery();
 
     /**
      * Test of canResolve method, of class URLResolver.
@@ -57,22 +41,60 @@ public class URLResolverTest {
     public void testCanResolve() throws Exception {
 	URLResolver instance = new URLResolver();
 	boolean result;
-	
+
+	final MetadataDocument document = context.mock(MetadataDocument.class);
+	context.checking(new Expectations() {
+	    {
+		allowing(document).getFileLocation();
+		will(returnValue(URI.create("file://Users/me/mydocument.cmdi")));
+	    }
+	});
+
 	// File URI
-	result = instance.canResolve(null, File.createTempFile("test", null).toURI());
+	result = instance.canResolve(document, new URI("file://mydocument.txt"));
 	assertTrue(result);
 	// Web URI (http)
-	result = instance.canResolve(null, new URI("http://www.google.com"));
+	result = instance.canResolve(document, new URI("http://www.google.com"));
 	assertTrue(result);
 	// Web URI (https)
-	result = instance.canResolve(null, new URI("https://www.google.com"));
+	result = instance.canResolve(document, new URI("https://www.google.com"));
 	assertTrue(result);
 	// Relative URI
-	result = instance.canResolve(null, new URI("test.xml"));
+	result = instance.canResolve(document, new URI("test.xml"));
 	assertTrue(result);
-	
+
+	// Handle
+	result = instance.canResolve(document, new URI("hdl:123-456"));
+	assertFalse(result);
 	// Mailto
-	result = instance.canResolve(null, new URI("mailto:cmdi@clarin.eu"));
+	result = instance.canResolve(document, new URI("mailto:cmdi@clarin.eu"));
+	assertFalse(result);
+    }
+
+    @Test
+    public void testCanResolveRelativeParent() throws Exception {
+	URLResolver instance = new URLResolver();
+	boolean result;
+	final MetadataDocument document = context.mock(MetadataDocument.class);
+	context.checking(new Expectations() {
+	    {
+		allowing(document).getFileLocation();
+		will(returnValue(URI.create("mydocument.cmdi")));
+	    }
+	});// Relative URI
+	result = instance.canResolve(document, new URI("test.xml"));
+	assertFalse(result);
+    }
+
+    @Test
+    public void testCanResolveNoParent() throws Exception {
+	URLResolver instance = new URLResolver();
+	boolean result;
+	// Absolute file URI, no parent
+	result = instance.canResolve(null, new URI("file://mydocument.txt"));
+	assertTrue(result);
+	// Relative file URI, no parent
+	result = instance.canResolve(null, new URI("mydocument.txt"));
 	assertFalse(result);
     }
 

@@ -16,7 +16,9 @@
  */
 package nl.mpi.metadata.identifierresolver;
 
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import nl.mpi.metadata.api.model.MetadataDocument;
 
 /**
@@ -25,15 +27,41 @@ import nl.mpi.metadata.api.model.MetadataDocument;
  */
 public class URLResolver implements IdentifierResolver {
 
+    @Override
     public boolean canResolve(MetadataDocument document, URI identifier) {
 	final String scheme = identifier.getScheme();
-	return !identifier.isAbsolute()
-		|| scheme.equalsIgnoreCase("http")
-		|| scheme.equalsIgnoreCase("https")
-		|| scheme.equalsIgnoreCase("file");
+	if (identifier.isAbsolute()) {
+	    return scheme.equalsIgnoreCase("http")
+		    || scheme.equalsIgnoreCase("https")
+		    || scheme.equalsIgnoreCase("file");
+	} else {
+	    if (document != null && document.getFileLocation().isAbsolute()) {
+		try {
+		    document.getFileLocation().toURL();
+		    return true;
+		} catch (MalformedURLException ex) {
+		    return false;
+		}
+	    } else {
+		return false;
+	    }
+	}
     }
 
-    public URI resolveIdentifier(MetadataDocument document, URI identifier) {
-	return document.getFileLocation().resolve(identifier);
+    /**
+     *
+     * @param document a document with an absolute file location
+     * @param identifier identifier to resolve on this document
+     * @return the resolved location
+     * @see MetadataDocument#getFileLocation()
+     * @throws IdentifierResolutionException if the document's file location was not absolute
+     */
+    @Override
+    public URL resolveIdentifier(MetadataDocument document, URI identifier) {
+	try {
+	    return document.getFileLocation().resolve(identifier).toURL();
+	} catch (MalformedURLException ex) {
+	    throw new IdentifierResolutionException(ex);
+	}
     }
 }

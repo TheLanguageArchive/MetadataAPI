@@ -17,6 +17,7 @@
 package nl.mpi.metadata.identifierresolver;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -41,6 +42,7 @@ public class ChainingIdentifierResolver implements IdentifierResolver {
 	this.chain = new CopyOnWriteArrayList(chain);
     }
 
+    @Override
     public boolean canResolve(MetadataDocument document, URI identifier) {
 	for (IdentifierResolver resolver : chain) {
 	    if (resolver.canResolve(document, identifier)) {
@@ -50,7 +52,8 @@ public class ChainingIdentifierResolver implements IdentifierResolver {
 	return false;
     }
 
-    public URI resolveIdentifier(MetadataDocument document, URI identifier) {
+    @Override
+    public URL resolveIdentifier(MetadataDocument document, URI identifier) {
 	for (IdentifierResolver resolver : chain) {
 	    if (resolver.canResolve(document, identifier)) {
 		return resolver.resolveIdentifier(document, identifier);

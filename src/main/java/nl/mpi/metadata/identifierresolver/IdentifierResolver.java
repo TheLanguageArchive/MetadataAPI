@@ -17,6 +17,7 @@
 package nl.mpi.metadata.identifierresolver;
 
 import java.net.URI;
+import java.net.URL;
 import nl.mpi.metadata.api.model.MetadataDocument;
 
 /**
@@ -39,5 +40,5 @@ public interface IdentifierResolver {
      * @param identifier Identifier to resolve
      * @return Resolution of identifier. Null if cannot be resolved.
      */
-    URI resolveIdentifier(MetadataDocument document,URI identifier);
+    URL resolveIdentifier(MetadataDocument document,URI identifier) throws IdentifierResolutionException ;
 }

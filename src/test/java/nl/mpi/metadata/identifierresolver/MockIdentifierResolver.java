@@ -17,6 +17,7 @@
 package nl.mpi.metadata.identifierresolver;
 
 import java.net.URI;
+import java.net.URL;
 import nl.mpi.metadata.api.model.MetadataDocument;
 
 /**
@@ -26,18 +27,20 @@ import nl.mpi.metadata.api.model.MetadataDocument;
 public class MockIdentifierResolver implements IdentifierResolver {
 
     protected boolean canResolve;
-    protected URI result;
+    protected URL result;
 
-    public MockIdentifierResolver(boolean canResolve, URI result) {
+    public MockIdentifierResolver(boolean canResolve, URL result) {
 	this.canResolve = canResolve;
 	this.result = result;
     }
 
+    @Override
     public boolean canResolve(MetadataDocument document, URI identifier) {
 	return canResolve;
     }
 
-    public URI resolveIdentifier(MetadataDocument document, URI identifier) {
+    @Override
+    public URL resolveIdentifier(MetadataDocument document, URI identifier) throws IdentifierResolutionException {
 	return result;
     }
 
@@ -55,7 +58,7 @@ public class MockIdentifierResolver implements IdentifierResolver {
      *
      * @param result new value of result
      */
-    public void setResult(URI result) {
+    public void setResult(URL result) {
 	this.result = result;
     }
 }
