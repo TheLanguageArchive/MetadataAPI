@@ -19,15 +19,15 @@ package nl.mpi.metadata.identifierresolver;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import nl.mpi.metadata.api.model.MetadataDocument;
 
 /**
- * Identifier resolver that passes resolution requests on to 
- * one of a set of resolvers that is capable of resolving the specified 
- * id. Custom resolvers can be implemented and similarly chained. 
-
+ * Identifier resolver that passes resolution requests on to
+ * one of a set of resolvers that is capable of resolving the specified
+ * id. Custom resolvers can be implemented and similarly chained.  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class ChainingIdentifierResolver implements IdentifierResolver {
@@ -36,6 +36,10 @@ public class ChainingIdentifierResolver implements IdentifierResolver {
 
     public ChainingIdentifierResolver() {
 	this(new CopyOnWriteArrayList<IdentifierResolver>());
+    }
+
+    public ChainingIdentifierResolver(IdentifierResolver... chain) {
+	this(Arrays.asList(chain));
     }
 
     public ChainingIdentifierResolver(List<IdentifierResolver> chain) {

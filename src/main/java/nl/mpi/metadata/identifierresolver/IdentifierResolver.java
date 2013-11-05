@@ -27,7 +27,7 @@ import nl.mpi.metadata.api.model.MetadataDocument;
 public interface IdentifierResolver {
 
     /**
-     * 
+     *
      * @param document Document to resolve from
      * @param identifier Identifier to resolve
      * @return Whether specified identifier can be resolved
@@ -36,9 +36,10 @@ public interface IdentifierResolver {
 
     /**
      * Resolves specified identifier
+     *
      * @param document Document to resolve from
      * @param identifier Identifier to resolve
      * @return Resolution of identifier. Null if cannot be resolved.
      */
-    URL resolveIdentifier(MetadataDocument document,URI identifier) throws IdentifierResolutionException ;
+    URL resolveIdentifier(MetadataDocument document, URI identifier) throws IdentifierResolutionException;
 }
