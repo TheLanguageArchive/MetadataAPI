@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import nl.mpi.metadata.api.MetadataAPI;
@@ -92,14 +93,12 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      */
     private final CMDIMetadataElementFactory metadataElementFactory;
     private final CMDIProfileContainer profileContainer = new CMDIProfileContainer() {
-
 	@Override
 	public synchronized MetadataDocumentTypeReader<CMDIProfile> getProfileReader() {
 	    return CMDIApi.this.getProfileReader();
 	}
     };
     private final DOMBuilderFactory domBuilderFactory = new CMDIApiDOMBuilderFactory() {
-
 	@Override
 	protected EntityResolver getEntityResolver() {
 	    return CMDIApi.this.entityResolver;
@@ -110,7 +109,6 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      * TODO: Extract interface and support arbitrary implementations
      */
     private CMDIDomBuilder componentBuilder = new CMDIDomBuilder(domBuilderFactory) {
-
 	@Override
 	protected synchronized EntityResolver getEntityResolver() {
 	    return CMDIApi.this.entityResolver;
@@ -226,8 +224,35 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	getCmdiValidator().validateMetadataDocument(document, errorHandler);
     }
 
+    /**
+     * Reads the metadata document at the specified URL
+     *
+     * @param url location to read the document from (will be read by means of {@link URL#openStream() })
+     * @return a CMDI document representing the contents at the specified URL
+     * @throws IOException in case of a reading error
+     * @throws MetadataException in case of a parsing or content error
+     */
     public CMDIDocument getMetadataDocument(URL url) throws IOException, MetadataException {
-	InputStream documentStream = url.openStream();
+	final InputStream documentStream = url.openStream();
+	try {
+	    return getMetadataDocument(url, documentStream);
+	} finally {
+	    documentStream.close();
+	}
+    }
+
+    /**
+     * Loads the metadata document from the provided input stream. The caller is responsible for closing the input stream afterwards!
+     *
+     * @param url URL of the document. This will not be used to locate the contents but will be passed on to the DOM builder (retrieved from
+     * {@link #domBuilderFactory} as the systemId while parsing. It will not be closed in this method!
+     * @param documentStream stream from which the metadata document will be read
+     * @return a CMDI document representing the contents read from the provided stream
+     * @throws IOException in case of a reading error
+     * @throws MetadataException in case of a parsing or content error
+     * @see DocumentBuilder#parse(java.io.InputStream, java.lang.String)
+     */
+    public CMDIDocument getMetadataDocument(URL url, InputStream documentStream) throws IOException, MetadataException {
 	try {
 	    Document document = domBuilderFactory.newDOMBuilder().parse(documentStream, url.toExternalForm());
 	    return getDocumentReader().read(document, url.toURI());
@@ -236,8 +261,6 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	} catch (URISyntaxException usEx) {
 	    // This should not happen, since at this point the stream has already been openend!
 	    throw new RuntimeException("URISyntaxException while building document from " + url, usEx);
-	} finally {
-	    documentStream.close();
 	}
     }
 

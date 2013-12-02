@@ -17,6 +17,7 @@
 package nl.mpi.metadata.api;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import javax.xml.transform.TransformerException;
@@ -56,12 +57,23 @@ public interface MetadataAPI<DT extends MetadataDocumentType, MT extends Metadat
     /**
      * Loads the metadata document at the specified location
      *
-     * @param url location of document to open
-     * @return loaded document
+     * @param url location to read the document from (will be read by means of {@link URL#openStream() })
+     * @return loaded document representing the contents at the specified URL
      * @throws IOException in case of an I/O exception while reading the document from the location
      * @throws MetadataException in case of a processing error while loading the document
      */
     MetadataDocument getMetadataDocument(URL url) throws IOException, MetadataException;
+
+    /**
+     * Loads the metadata document from the provided input stream. The caller is responsible for closing the input stream afterwards!
+     *
+     * @param url URL of the document. This will not be used to locate the contents but may be passed on to the parser
+     * @param documentStream stream from which the metadata document will be read
+     * @return loaded document representing the contents read from the provided stream
+     * @throws IOException in case of an I/O exception while reading the document from the location
+     * @throws MetadataException in case of a processing error while loading the document
+     */
+    MetadataDocument getMetadataDocument(URL url, InputStream documentStream) throws IOException, MetadataException;
 
     /**
      * Creates a metadata document of the specified type using building mode {@link DomBuildingMode#MANDATORY}
