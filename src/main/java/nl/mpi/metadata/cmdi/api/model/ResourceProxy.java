@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
 import nl.mpi.metadata.api.model.DirtyStateProvider;
 import nl.mpi.metadata.api.model.HandleCarrier;
 import nl.mpi.metadata.api.model.Reference;
+import nl.mpi.metadata.api.util.HandleUtil;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
 
 /**
@@ -28,43 +29,44 @@ import nl.mpi.metadata.cmdi.api.CMDIConstants;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public abstract class ResourceProxy implements Reference, HandleCarrier, DirtyStateProvider {
-    
+
     private final String id;
     private final String type;
     private URI uri;
     private String mimeType;
     private boolean dirty;
-    
+    private final HandleUtil handleUtil = new HandleUtil();
+
     public ResourceProxy(String id, URI uri, String type) {
 	this(id, uri, type, null);
     }
-    
+
     public ResourceProxy(String id, URI uri, String type, String mimeType) {
 	this.id = id;
 	this.uri = uri;
 	this.mimeType = mimeType;
 	this.type = type;
-	
+
 	this.dirty = true;
     }
-    
+
     public String getId() {
 	return id;
     }
-    
+
     public synchronized URI getURI() {
 	return uri;
     }
-    
+
     public synchronized void setURI(URI uri) {
 	this.uri = uri;
 	setDirty(true);
     }
-    
+
     public synchronized String getMimetype() {
 	return mimeType;
     }
-    
+
     public synchronized void setMimeType(String mimeType) {
 	this.mimeType = mimeType;
 	setDirty(true);
@@ -78,7 +80,7 @@ public abstract class ResourceProxy implements Reference, HandleCarrier, DirtySt
     public String getType() {
 	return type;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
 	if (obj == null) {
@@ -99,7 +101,7 @@ public abstract class ResourceProxy implements Reference, HandleCarrier, DirtySt
 	}
 	return true;
     }
-    
+
     @Override
     public int hashCode() {
 	int hash = 7;
@@ -112,8 +114,9 @@ public abstract class ResourceProxy implements Reference, HandleCarrier, DirtySt
      *
      * @return String representation of the value returned by {@link #getURI() }
      */
-    public String getHandle() {
-	return String.valueOf(getURI());
+    @Override
+    public URI getHandle() {
+	return handleUtil.createHandleUri(String.valueOf(getURI()));
     }
 
     /**
@@ -121,23 +124,24 @@ public abstract class ResourceProxy implements Reference, HandleCarrier, DirtySt
      *
      * @throws IllegalArgumentException if provided handle does not represent
      */
-    public void setHandle(String handle) throws IllegalArgumentException {
-	try {
-	    setURI(new URI(handle));
-	} catch (URISyntaxException usEx) {
-	    throw new IllegalArgumentException("ResourceProxy only supports URI handles", usEx);
+    @Override
+    public void setHandle(URI handle) throws IllegalArgumentException {
+	if (handleUtil.isHandleUri(handle)) {
+	    setURI(handle);
+	} else {
+	    throw new IllegalArgumentException("Illegal handle URI: " + handle.toString());
 	}
     }
-    
+
     @Override
     public String toString() {
 	return String.format("{%1$s} %2$s", getId(), getURI());
     }
-    
+
     public boolean isDirty() {
 	return dirty;
     }
-    
+
     public void setDirty(boolean dirty) {
 	this.dirty = dirty;
     }

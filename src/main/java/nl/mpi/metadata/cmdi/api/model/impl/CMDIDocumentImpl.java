@@ -33,6 +33,7 @@ import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.model.Reference;
+import nl.mpi.metadata.api.util.HandleUtil;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
@@ -59,6 +60,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
     private final SettableDirtyStateProvider headerDirtyState;
     private final SettableDirtyStateProvider resourceProxiesDirtyState;
     private URI fileLocation;
+    private final HandleUtil handleUtil = new HandleUtil();
 
     /**
      * Construct an unsaved profile instance (no location associated)
@@ -429,20 +431,35 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
 	return this;
     }
 
+    /**
+     *
+     * @return URI representation of the handle of this object, typically of scheme 'hdl' (never 'http'!)
+     */
     @Override
-    public String getHandle() {
+    public URI getHandle() {
 	HeaderInfo handleInfo = getHeaderInformation(CMDIConstants.CMD_HEADER_MD_SELF_LINK);
 	if (handleInfo != null) {
 	    if (handleInfo.getValue() != null) {
-		return handleInfo.getValue().toString();
+		return handleUtil.createHandleUri(handleInfo.getValue().toString());
 	    }
 	}
 	return null;
     }
 
+    /**
+     * Sets the handle of this object
+     *
+     * @param handle handle to set, has to be a URL with scheme 'hdl'
+     * @throws IllegalArgumentException if the provided handle is of a format that cannot be converted into a handle for this object
+     * @throws If the API fails to set the handle because of some internal error
+     */
     @Override
-    public void setHandle(String handle) throws MetadataException {
-	putHeaderInformation(new HeaderInfo(CMDIConstants.CMD_HEADER_MD_SELF_LINK, handle));
+    public void setHandle(URI handle) throws MetadataException {
+	if (handleUtil.isHandleUri(handle)) {
+	    putHeaderInformation(new HeaderInfo(CMDIConstants.CMD_HEADER_MD_SELF_LINK, handle.toString()));
+	} else {
+	    throw new IllegalArgumentException("Illegal handle URI: " + handle.toString());
+	}
     }
 
     /**

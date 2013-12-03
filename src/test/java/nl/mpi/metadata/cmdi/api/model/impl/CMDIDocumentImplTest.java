@@ -332,17 +332,17 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
     @Test
     public void testGetHandle() throws MetadataException {
 	// Handle is read from MdSelfLink header element
-	document.putHeaderInformation(new HeaderInfo(CMDIConstants.CMD_HEADER_MD_SELF_LINK, "test:test-handle"));
-	assertEquals("test:test-handle", document.getHandle());
+	document.putHeaderInformation(new HeaderInfo(CMDIConstants.CMD_HEADER_MD_SELF_LINK, "hdl:1234/test"));
+	assertEquals(URI.create("hdl:1234/test"), document.getHandle());
 	document.putHeaderInformation(new HeaderInfo(CMDIConstants.CMD_HEADER_MD_SELF_LINK, null));
 	assertEquals(null, document.getHandle());
     }
 
     @Test
     public void testSetHandle() throws MetadataException {
-	document.setHandle("test:test-handle");
+	document.setHandle(URI.create("hdl:1234/test"));
 	// Handle is stored in MdSelfLink header element
-	assertEquals("test:test-handle", document.getHeaderInformation(CMDIConstants.CMD_HEADER_MD_SELF_LINK).getValue());
+	assertEquals("hdl:1234/test", document.getHeaderInformation(CMDIConstants.CMD_HEADER_MD_SELF_LINK).getValue());
     }
 
     @Test

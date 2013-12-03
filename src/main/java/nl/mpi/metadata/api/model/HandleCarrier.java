@@ -16,6 +16,7 @@
  */
 package nl.mpi.metadata.api.model;
 
+import java.net.URI;
 import nl.mpi.metadata.api.MetadataException;
 
 /**
@@ -27,17 +28,18 @@ public interface HandleCarrier {
 
     /**
      *
-     * @return String representation of the handle of this object
+     * @return URI representation of the handle of this object, typically of scheme 'hdl' (never 'http'!). 
+     * May return null if no handle or no valid handle has been set on this carrier.
      */
-    String getHandle();
+    URI getHandle();
 
     /**
      * Sets the handle of this object
      *
-     * @param handle
+     * @param handle handle to set, typically a URL of scheme 'hdl'
      * @throws UnsupportedOperationException if the object does not support setting the handle
      * @throws IllegalArgumentException if the provided handle is of a format that cannot be converted into a handle for this object
      * @throws If the API fails to set the handle because of some internal error
      */
-    void setHandle(String handle) throws MetadataException, UnsupportedOperationException, IllegalArgumentException;
+    void setHandle(URI handle) throws MetadataException, UnsupportedOperationException, IllegalArgumentException;
 }
