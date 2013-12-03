@@ -24,17 +24,17 @@ import java.util.Map;
  * Immutable class representing header info
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public final class HeaderInfo<V> {
+public final class HeaderInfo {
 
     private final String name;
-    private final V value;
+    private final String value;
     private final Map<String, String> attributes;
 
-    public HeaderInfo(String name, V value) {
+    public HeaderInfo(String name, String value) {
 	this(name, value, null);
     }
 
-    public HeaderInfo(String name, V value, Map<String, String> attributes) {
+    public HeaderInfo(String name, String value, Map<String, String> attributes) {
 	this.name = name;
 	this.value = value;
 	if (attributes == null) {
@@ -58,7 +58,7 @@ public final class HeaderInfo<V> {
      *
      * @return the value of value
      */
-    public V getValue() {
+    public String getValue() {
 	return value;
     }
 

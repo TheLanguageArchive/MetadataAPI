@@ -70,7 +70,7 @@ public class HeaderInfoTest {
     @Test
     public void testGetValue() {
 	String expResult = "My VALUE";
-	HeaderInfo<String> instance = new HeaderInfo<String>("", expResult);
+	HeaderInfo instance = new HeaderInfo("", expResult);
 	String result = instance.getValue();
 	assertEquals(expResult, result);
     }

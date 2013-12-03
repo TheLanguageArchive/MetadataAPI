@@ -191,9 +191,9 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
     private void setHeaders(CMDIDocument metadataDocument, Document domDocument, XPathFactory xPathFactory) throws MetadataDocumentException {
 	try {
 	    Node headerNode = (Node) newXPath(xPathFactory).evaluate(CMDIConstants.CMD_HEADER_PATH, domDocument, XPathConstants.NODE);
-	    for (HeaderInfo<?> header : metadataDocument.getHeaderInformation()) {
+	    for (HeaderInfo header : metadataDocument.getHeaderInformation()) {
 		org.w3c.dom.Element headerItemNode = domDocument.createElementNS(CMDIConstants.CMD_NAMESPACE, header.getName());
-		headerItemNode.setTextContent(header.getValue().toString());
+		headerItemNode.setTextContent(header.getValue());
 		for (Entry<String, String> attribute : header.getAttributes().entrySet()) {
 		    headerItemNode.setAttribute(attribute.getKey(), attribute.getValue());
 		}

@@ -241,7 +241,7 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	// Put String values in header info
 	// Take name from element name, value from text content
 	// TODO: Some fields should have different type (e.g. URI or Date)
-	HeaderInfo<String> headerInfo = new HeaderInfo<String>(headerChild.getLocalName(), headerChild.getTextContent());
+	HeaderInfo headerInfo = new HeaderInfo(headerChild.getLocalName(), headerChild.getTextContent());
 	// (CMDI header does not support attributes)
 	// Put into metadata document
 	try {
