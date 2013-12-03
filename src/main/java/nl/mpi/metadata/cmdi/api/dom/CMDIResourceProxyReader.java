@@ -63,7 +63,7 @@ public class CMDIResourceProxyReader {
 	    final int resourceProxyNodesCount = resourceProxyNodes.getLength();
 	    logger.debug("Found {} resource proxy nodes in {}", resourceProxyNodesCount, cmdiDocument);
 	    for (int i = 0; i < resourceProxyNodesCount; i++) {
-		logger.debug("Reading resource proxy {}/{} in {}", i, resourceProxyNodesCount, cmdiDocument);
+		logger.debug("Reading resource proxy {}/{} in {}", i + 1, resourceProxyNodesCount, cmdiDocument);
 		Node proxyNode = resourceProxyNodes.item(i);
 		try {
 		    // Construct resource proxy
