@@ -60,7 +60,10 @@ public class CMDIResourceProxyReader {
 	try {
 	    // Iterate over all ResourceProxy nodes
 	    NodeList resourceProxyNodes = (NodeList) xPath.evaluate(CMDIConstants.CMD_RESOURCE_PROXIES_PATH, domDocument, XPathConstants.NODESET);
-	    for (int i = 0; i < resourceProxyNodes.getLength(); i++) {
+	    final int resourceProxyNodesCount = resourceProxyNodes.getLength();
+	    logger.debug("Found {} resource proxy nodes in {}", resourceProxyNodesCount, cmdiDocument);
+	    for (int i = 0; i < resourceProxyNodesCount; i++) {
+		logger.debug("Reading resource proxy {}/{} in {}", i, resourceProxyNodesCount, cmdiDocument);
 		Node proxyNode = resourceProxyNodes.item(i);
 		try {
 		    // Construct resource proxy

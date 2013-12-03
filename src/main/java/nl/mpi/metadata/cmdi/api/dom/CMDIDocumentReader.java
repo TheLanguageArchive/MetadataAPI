@@ -94,11 +94,19 @@ public class CMDIDocumentReader implements MetadataDocumentReader<CMDIDocument> 
 	// set namespace context so that 'cmd' and 'xsi' prefixes get mapped to the corresponding namespaces properly
 	xPath.setNamespaceContext(CMDI_NAMESPACE_CONTEXT);
 
+	logger.debug("Getting profile for {}", documentURI);
 	final CMDIProfile profile = getProfileForDocument(document, documentURI, xPath);
+	logger.debug("Creating document for {}", documentURI);
 	final CMDIDocument cmdiDocument = createCMDIDocument(xPath, document, documentURI, profile);
+	logger.debug("Finished reading {}: {}", cmdiDocument);
 
+	logger.debug("Reading header for {}", documentURI);
 	readHeader(cmdiDocument, document, xPath);
+	
+	logger.debug("Reading resource proxies for {}", documentURI);
 	resourceReader.readResourceProxies(cmdiDocument, document, xPath);
+	
+	logger.debug("Reading components for {}", documentURI);
 	componentReader.readComponents(cmdiDocument, document, xPath);
 
 	cmdiDocument.setAllClean();
