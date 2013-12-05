@@ -28,9 +28,9 @@ import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class TestRunner {
+public class CmdiAPITestRunner {
 
-    private final static String DEFAULT_URL_STRING = "http://hdl.handle.net/1839/00-0000-0000-0001-53A6-F@format=cmdi"; //LAAARGE FILE
+    private final static String DEFAULT_URL_STRING = "http://corpus1.mpi.nl/qfs1/media-archive/CMDI/iprosla/IPROSLA_Corpora/IPROSLA_Nijmegen/Abel.cmdi"; //LAAARGE FILE
 
     public static void main(String[] args) throws MalformedURLException, IOException, MetadataException {
 	final String documentUrlString;
@@ -39,20 +39,26 @@ public class TestRunner {
 	} else {
 	    documentUrlString = DEFAULT_URL_STRING;
 	}
-	
+
 	final URL documentUrl = new URL(documentUrlString);
 	final CMDIApi api = new CMDIApi();
 	final CMDIDocument cmdiDocument = api.getMetadataDocument(documentUrl);
 	printContents(cmdiDocument);
     }
 
-    private static void printContents(CMDIContainerMetadataElement container) {
-	System.out.println(container.toString());
+    private static void printContents(final CMDIDocument cmdiDocument) {
+	System.out.println("\n\n");
+	printContents(cmdiDocument, 0);
+    }
+
+    private static void printContents(CMDIContainerMetadataElement container, int level) {
+	final int whitespace = level + 1;
+	System.out.println(String.format("%" + whitespace + "s+ %s", "", container.toString()));
 	for (MetadataElement child : container.getChildren()) {
 	    if (child instanceof CMDIContainerMetadataElement) {
-		printContents((CMDIContainerMetadataElement) child);
+		printContents((CMDIContainerMetadataElement) child, level + 1);
 	    } else {
-		System.out.println(String.format("-%s: %s", child.getName(), child.getDisplayValue()));
+		System.out.println(String.format("%" + whitespace + "s - %s: %s", "", child.getName(), child.getDisplayValue()));
 	    }
 	}
     }

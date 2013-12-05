@@ -43,6 +43,8 @@ import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.SettableDirtyStateProvider;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDITypeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A CMDI metadata document. Instance of a CMDIProfile
@@ -52,6 +54,7 @@ import nl.mpi.metadata.cmdi.api.type.CMDITypeException;
  */
 public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implements CMDIDocument {
 
+    private static final Logger logger = LoggerFactory.getLogger(CMDIDocumentImpl.class);
     private final CMDIProfile profile;
     private final List<HeaderInfo> headerInfo;
     private final Map<String, ResourceProxy> resourceProxies;
@@ -126,9 +129,11 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
     public synchronized void putHeaderInformation(HeaderInfo headerInfoItem) throws CMDITypeException, MetadataElementException {
 	if (profile.getHeaderNames().contains(headerInfoItem.getName())) {
 	    HeaderInfo oldInfo = getHeaderInformation(headerInfoItem.getName());
-	    if (oldInfo == null) {
+	    if (oldInfo == null /* or multiple headers allowed */) {
+		logger.debug("Creating new header {} on {}", headerInfoItem, this);
 		addNewHeaderInfo(headerInfoItem);
 	    } else {
+		logger.debug("Replacing old header {} with {} on {}", oldInfo, headerInfoItem, this);
 		replaceHeaderInfo(oldInfo, headerInfoItem);
 	    }
 	    headerDirtyState.setDirty(true);
@@ -456,6 +461,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
     @Override
     public void setHandle(URI handle) throws MetadataException {
 	if (handleUtil.isHandleUri(handle)) {
+	    logger.debug("Setting handle of {} to {}", this, handle);
 	    putHeaderInformation(new HeaderInfo(CMDIConstants.CMD_HEADER_MD_SELF_LINK, handle.toString()));
 	} else {
 	    throw new IllegalArgumentException("Illegal handle URI: " + handle.toString());
@@ -476,6 +482,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
      * {@link #getResourceProxiesDirtyState() } dirty states;
      */
     public void setAllClean() {
+	logger.trace("Marking {} all clean", this);
 	setDirty(false);
 	headerDirtyState.setDirty(false);
 	resourceProxiesDirtyState.setDirty(false);

@@ -56,6 +56,8 @@ import nl.mpi.metadata.cmdi.api.type.CMDIProfileReader;
 import nl.mpi.metadata.cmdi.api.validation.DefaultCMDIValidator;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.apache.xmlbeans.XmlException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
@@ -68,6 +70,8 @@ import org.xml.sax.SAXException;
  */
 public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMDIAttributeType, Attribute, CMDIContainerMetadataElement, CMDIDocument> {
 
+    private final static Logger logger =LoggerFactory.getLogger(CMDIApi.class);
+    
     /**
      * SAX entity resolver for custom resolving of resources while parsing
      */
@@ -232,7 +236,9 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      * @throws IOException in case of a reading error
      * @throws MetadataException in case of a parsing or content error
      */
+    @Override
     public CMDIDocument getMetadataDocument(URL url) throws IOException, MetadataException {
+	logger.debug("Opening stream for {}", url);
 	final InputStream documentStream = url.openStream();
 	try {
 	    return getMetadataDocument(url, documentStream);
@@ -252,9 +258,12 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      * @throws MetadataException in case of a parsing or content error
      * @see DocumentBuilder#parse(java.io.InputStream, java.lang.String)
      */
+    @Override
     public CMDIDocument getMetadataDocument(URL url, InputStream documentStream) throws IOException, MetadataException {
 	try {
+	    logger.debug("Reading DOM for {}", url);
 	    Document document = domBuilderFactory.newDOMBuilder().parse(documentStream, url.toExternalForm());
+	    logger.debug("Reading contents of {}", url);
 	    return getDocumentReader().read(document, url.toURI());
 	} catch (SAXException saxEx) {
 	    throw new MetadataException("SAXException while building document from " + url, saxEx);
