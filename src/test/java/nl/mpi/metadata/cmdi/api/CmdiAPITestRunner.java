@@ -23,6 +23,8 @@ import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -33,6 +35,9 @@ public class CmdiAPITestRunner {
     private final static String DEFAULT_URL_STRING = "http://corpus1.mpi.nl/qfs1/media-archive/CMDI/iprosla/IPROSLA_Corpora/IPROSLA_Nijmegen/Abel.cmdi"; //LAAARGE FILE
 
     public static void main(String[] args) throws MalformedURLException, IOException, MetadataException {
+	Logger root = Logger.getLogger("nl.mpi.metadata");
+	root.setLevel(Level.DEBUG);
+
 	final String documentUrlString;
 	if (args.length > 0) {
 	    documentUrlString = args[0];
