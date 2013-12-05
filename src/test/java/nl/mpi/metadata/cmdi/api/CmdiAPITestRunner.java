@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import nl.mpi.metadata.api.MetadataException;
+import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
@@ -52,16 +53,19 @@ public class CmdiAPITestRunner {
     }
 
     private static void printContents(final CMDIDocument cmdiDocument) {
-	System.out.println("\n\n");
-	printContents(cmdiDocument, 0);
+	System.out.println(String.format("\n%s\n [%d resources]", cmdiDocument.getFileLocation(), cmdiDocument.getDocumentReferencesCount()));
+	for(HeaderInfo header: cmdiDocument.getHeaderInformation()){
+	    System.out.println(" " + header.toString());
+	}
+	printComponents(cmdiDocument, 0);
     }
 
-    private static void printContents(CMDIContainerMetadataElement container, int level) {
+    private static void printComponents(CMDIContainerMetadataElement container, int level) {
 	final int whitespace = level + 1;
 	System.out.println(String.format("%" + whitespace + "s+ %s", "", container.toString()));
 	for (MetadataElement child : container.getChildren()) {
 	    if (child instanceof CMDIContainerMetadataElement) {
-		printContents((CMDIContainerMetadataElement) child, level + 1);
+		printComponents((CMDIContainerMetadataElement) child, level + 1);
 	    } else {
 		System.out.println(String.format("%" + whitespace + "s - %s: %s", "", child.getName(), child.getDisplayValue()));
 	    }
