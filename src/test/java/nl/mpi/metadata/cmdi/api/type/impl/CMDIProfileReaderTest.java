@@ -14,12 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api.type;
+package nl.mpi.metadata.cmdi.api.type.impl;
 
 import java.net.URI;
 import java.net.URL;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
+import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
+import nl.mpi.metadata.cmdi.api.type.ComponentType;
+import nl.mpi.metadata.cmdi.api.type.ElementType;
 import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategory;
 import org.junit.Test;
 

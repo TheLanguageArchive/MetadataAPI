@@ -22,7 +22,7 @@ import nl.mpi.metadata.cmdi.api.dom.MockCMDIDocumentReader;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.impl.CMDIMetadataElementFactoryImpl;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
-import nl.mpi.metadata.cmdi.api.type.MockCMDIProfileReader;
+import nl.mpi.metadata.cmdi.api.type.impl.MockCMDIProfileReader;
 import nl.mpi.metadata.cmdi.api.validation.DefaultCMDIValidator;
 import nl.mpi.metadata.cmdi.api.validation.MockCMDIValidator;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;

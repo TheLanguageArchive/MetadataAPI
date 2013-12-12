@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api.type;
+package nl.mpi.metadata.cmdi.api.type.impl;
 
 import java.math.BigInteger;
 import java.net.URI;
@@ -30,6 +30,7 @@ import org.apache.xmlbeans.SchemaProperty;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -38,33 +39,34 @@ import static org.junit.Assert.*;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIProfileElementTest {
+public class CMDIProfileElementImplTest {
 
     private MetadataElementAttributeType attrType1;
     private MetadataElementAttributeType attrType2;
     private MetadataElementAttributeType attrType3;
     private Mockery mockContext = new JUnit4Mockery();
+    private CMDIProfileElementTestImpl instance;
 
-    public CMDIProfileElementTest() {
+    @Before
+    public void setUp() {
+	instance = new CMDIProfileElementTestImpl();
     }
 
     /**
-     * Test of getPathString method, of class CMDIProfileElement.
+     * Test of getPathString method, of class CMDIProfileElementImpl.
      */
     @Test
     public void testGetPathString() {
-	CMDIProfileElementTestImpl instance = new CMDIProfileElementTestImpl();
 	instance.pathString = "/path/to/element";
 	String result = instance.getPathString();
 	assertEquals("/path/to/element", result);
     }
 
     /**
-     * Test of getAttributeTypeByName method, of class CMDIProfileElement.
+     * Test of getAttributeTypeByName method, of class CMDIProfileElementImpl.
      */
     @Test
     public void testGetAttributeTypeByName() {
-	CMDIProfileElement instance = new CMDIProfileElementTestImpl();
 	setAttributes(instance);
 
 	// Get by name and NS
@@ -79,11 +81,11 @@ public class CMDIProfileElementTest {
     }
 
     /**
-     * Test of getAttributes method, of class CMDIProfileElement.
+     * Test of getAttributes method, of class CMDIProfileElementImpl.
      */
     @Test
     public void testGetAttributes() {
-	CMDIProfileElement instance = new CMDIProfileElementTestImpl();
+
 	List<MetadataElementAttributeType> attributesList = setAttributes(instance);
 
 	Collection result = instance.getAttributes();
@@ -92,11 +94,11 @@ public class CMDIProfileElementTest {
     }
 
     /**
-     * Test of getAttributes method, of class CMDIProfileElement.
+     * Test of getAttributes method, of class CMDIProfileElementImpl.
      */
     @Test
     public void testGetAllAttributes() {
-	CMDIProfileElement instance = new CMDIProfileElementTestImpl();
+
 	List<MetadataElementAttributeType> attributesList = setAttributes(instance);
 
 	Collection result = instance.getAllAttributes();
@@ -115,11 +117,11 @@ public class CMDIProfileElementTest {
     }
 
     /**
-     * Test of getDataCategory method, of class CMDIProfileElement.
+     * Test of getDataCategory method, of class CMDIProfileElementImpl.
      */
     @Test
     public void testGetDataCategory() throws URISyntaxException {
-	CMDIProfileElement instance = new CMDIProfileElementTestImpl();
+
 	DataCategory dc = new DataCategory(new URI("http://dc.org/dc-123"));
 	instance.setDataCategory(dc);
 	DataCategory result = instance.getDataCategory();
@@ -127,25 +129,22 @@ public class CMDIProfileElementTest {
     }
 
     /**
-     * Test of getDescription method, of class CMDIProfileElement.
+     * Test of getDescription method, of class CMDIProfileElementImpl.
      */
     @Test
     public void testGetDescription() {
-	CMDIProfileElement instance = new CMDIProfileElementTestImpl();
+
 	instance.setDescription("My test element");
 	String result = instance.getDescription();
 	assertEquals("My test element", result);
     }
 
     /**
-     * Test of getMaxOccurences method, of class CMDIProfileElement.
+     * Test of getMaxOccurences method, of class CMDIProfileElementImpl.
      */
     @Test
     public void testGetMaxOccurences() {
-
-	final CMDIProfileElement instance = new CMDIProfileElementTestImpl();
 	mockContext.checking(new Expectations() {
-
 	    {
 		allowing(instance.getSchemaElement()).getMaxOccurs();
 		will(returnValue(BigInteger.valueOf(5)));
@@ -156,14 +155,13 @@ public class CMDIProfileElementTest {
     }
 
     /**
-     * Test of getMaxOccurences method, of class CMDIProfileElement.
+     * Test of getMaxOccurences method, of class CMDIProfileElementImpl.
      */
     @Test
     public void testGetMaxOccurencesUnbounded() {
 
-	final CMDIProfileElement instance = new CMDIProfileElementTestImpl();
-	mockContext.checking(new Expectations() {
 
+	mockContext.checking(new Expectations() {
 	    {
 		allowing(instance.getSchemaElement()).getMaxOccurs();
 		will(returnValue(null));
@@ -174,13 +172,12 @@ public class CMDIProfileElementTest {
     }
 
     /**
-     * Test of getMinOccurences method, of class CMDIProfileElement.
+     * Test of getMinOccurences method, of class CMDIProfileElementImpl.
      */
     @Test
     public void testGetMinOccurences() {
-	final CMDIProfileElement instance = new CMDIProfileElementTestImpl();
-	mockContext.checking(new Expectations() {
 
+	mockContext.checking(new Expectations() {
 	    {
 		allowing(instance.getSchemaElement()).getMinOccurs();
 		will(returnValue(BigInteger.valueOf(5)));
@@ -192,13 +189,12 @@ public class CMDIProfileElementTest {
     }
 
     /**
-     * Test of getMinOccurences method, of class CMDIProfileElement.
+     * Test of getMinOccurences method, of class CMDIProfileElementImpl.
      */
     @Test
     public void testGetMinOccurencesDefault() {
-	final CMDIProfileElement instance = new CMDIProfileElementTestImpl();
-	mockContext.checking(new Expectations() {
 
+	mockContext.checking(new Expectations() {
 	    {
 		allowing(instance.getSchemaElement()).getMinOccurs();
 		will(returnValue(null));
@@ -210,42 +206,40 @@ public class CMDIProfileElementTest {
     }
 
     /**
-     * Test of getName method, of class CMDIProfileElement.
+     * Test of getName method, of class CMDIProfileElementImpl.
      */
     @Test
     public void testGetName() {
-	final CMDIProfileElement instance = new CMDIProfileElementTestImpl();
+
 	String result = instance.getName();
 	assertEquals("elementName", result);
     }
 
     /**
-     * Test of getSchemaElement method, of class CMDIProfileElement.
+     * Test of getSchemaElement method, of class CMDIProfileElementImpl.
      */
     @Test
     public void testGetSchemaElement() {
-	CMDIProfileElement instance = new CMDIProfileElementTestImpl();
 	assertSame(instance.schemaElement, instance.getSchemaElement());
     }
 
     /**
-     * Test of getParent method, of class CMDIProfileElement.
+     * Test of getParent method, of class CMDIProfileElementImpl.
      */
     @Test
     public void testGetParent() {
 	final SchemaProperty schemaProperty = mockContext.mock(SchemaProperty.class, "parentSchemaElement");
 	mockContext.checking(new Expectations() {
-
 	    {
 		oneOf(schemaProperty).getName();
 	    }
 	});
-	final ComponentType parent = new ComponentType(schemaProperty, null, new StringBuilder("/path"));
-	CMDIProfileElement instance = new CMDIProfileElementTestImpl(parent);
-	assertSame(parent, instance.getParent());
+	final ComponentTypeImpl parent = new ComponentTypeImpl(schemaProperty, null, new StringBuilder("/path"));
+	CMDIProfileElementImpl element = new CMDIProfileElementTestImpl(parent);
+	assertSame(parent, element.getParent());
     }
 
-    public class CMDIProfileElementTestImpl extends CMDIProfileElement {
+    public class CMDIProfileElementTestImpl extends CMDIProfileElementImpl {
 
 	protected String pathString;
 
@@ -253,10 +247,11 @@ public class CMDIProfileElementTest {
 	    this(null);
 	}
 
-	public CMDIProfileElementTestImpl(ComponentType parent) {
+	public CMDIProfileElementTestImpl(ComponentTypeImpl parent) {
 	    super(getSchemaPropertyMock(), parent);
 	}
 
+	@Override
 	public String getPathString() {
 	    return pathString;
 	}
@@ -265,7 +260,6 @@ public class CMDIProfileElementTest {
     private SchemaProperty getSchemaPropertyMock() {
 	final SchemaProperty mock = mockContext.mock(SchemaProperty.class);
 	mockContext.checking(new Expectations() {
-
 	    {
 		// Constructor will ask for schema property name
 		oneOf(mock).getName();
@@ -275,7 +269,7 @@ public class CMDIProfileElementTest {
 	return mock;
     }
 
-    private List<MetadataElementAttributeType> setAttributes(CMDIProfileElement instance) {
+    private List<MetadataElementAttributeType> setAttributes(CMDIProfileElementImpl instance) {
 	attrType1 = getMockMetadataElementAttributeType("http://namespace", "name", "type");
 	attrType2 = getMockMetadataElementAttributeType("http://namespace2", "name2", "type2");
 	attrType3 = getMockMetadataElementAttributeType(null, "name3", "type3");
@@ -287,7 +281,6 @@ public class CMDIProfileElementTest {
     private MetadataElementAttributeType getMockMetadataElementAttributeType(final String namespace, final String name, final String type) {
 	final MetadataElementAttributeType mock = mockContext.mock(MetadataElementAttributeType.class, name);
 	mockContext.checking(new Expectations() {
-
 	    {
 		allowing(mock).getName();
 		will(returnValue(name));

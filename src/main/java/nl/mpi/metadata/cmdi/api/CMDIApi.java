@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import nl.mpi.metadata.api.MetadataAPI;
@@ -52,7 +51,8 @@ import nl.mpi.metadata.cmdi.api.type.CMDIAttributeType;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
-import nl.mpi.metadata.cmdi.api.type.CMDIProfileReader;
+import nl.mpi.metadata.cmdi.api.type.impl.CMDIProfileContainerImpl;
+import nl.mpi.metadata.cmdi.api.type.impl.CMDIProfileReader;
 import nl.mpi.metadata.cmdi.api.validation.DefaultCMDIValidator;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.apache.xmlbeans.XmlException;
@@ -124,7 +124,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	this.documentWriter = new CMDIDocumentWriter(componentBuilder);
 	
 	this.profileReader = new CMDIProfileReader(entityResolver, domBuilderFactory);
-	this.profileContainer = new CMDIProfileContainer(profileReader);
+	this.profileContainer = new CMDIProfileContainerImpl(profileReader);
 	this.documentReader = new CMDIDocumentReader(profileContainer, new CMDIComponentReader(elementFactory), new CMDIResourceProxyReader());
     }
 
@@ -147,7 +147,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	
 	this.domBuilderFactory = new CMDIApiDOMBuilderFactory(entityResolver);
 	this.componentBuilder = new CMDIDomBuilder(entityResolver, domBuilderFactory);
-	this.profileContainer = new CMDIProfileContainer(profileReader);
+	this.profileContainer = new CMDIProfileContainerImpl(profileReader);
     }
 
     @Override

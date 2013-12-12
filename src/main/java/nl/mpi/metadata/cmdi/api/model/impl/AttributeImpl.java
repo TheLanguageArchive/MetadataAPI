@@ -19,7 +19,7 @@ package nl.mpi.metadata.cmdi.api.model.impl;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
-import nl.mpi.metadata.cmdi.api.type.CMDIAttributeType;
+import nl.mpi.metadata.cmdi.api.type.impl.CMDIAttributeTypeImpl;
 
 /**
  *
@@ -78,9 +78,9 @@ public class AttributeImpl<T> implements Attribute<T> {
 	    final String localPart = getType().getName();
 	    if (parent instanceof CMDIMetadataElementImpl) {
 		// Add path char sequence, should be more efficient if it's a StringBuilder, no unnecessary toString() conversions
-		pathString = CMDIAttributeType.createAttributePathString(((CMDIMetadataElementImpl) parent).getPathCharSequence(), nsURI, localPart);
+		pathString = CMDIAttributeTypeImpl.createAttributePathString(((CMDIMetadataElementImpl) parent).getPathCharSequence(), nsURI, localPart);
 	    } else {
-		pathString = CMDIAttributeType.createAttributePathString(parent.getPathString(), nsURI, localPart);
+		pathString = CMDIAttributeTypeImpl.createAttributePathString(parent.getPathString(), nsURI, localPart);
 	    }
 	}
 	return pathString;

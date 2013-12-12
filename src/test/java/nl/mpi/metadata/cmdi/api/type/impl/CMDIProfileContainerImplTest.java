@@ -14,11 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api.type;
+package nl.mpi.metadata.cmdi.api.type.impl;
 
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import java.net.URI;
 import nl.mpi.metadata.api.type.MetadataDocumentTypeReader;
+import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
@@ -31,7 +32,7 @@ import static org.junit.Assert.*;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIProfileContainerTest extends CMDIAPITestCase {
+public class CMDIProfileContainerImplTest extends CMDIAPITestCase {
 
     private Mockery context = new JUnit4Mockery();
 
@@ -39,10 +40,10 @@ public class CMDIProfileContainerTest extends CMDIAPITestCase {
     public void testGetProfile() throws Exception {
 
 	final MetadataDocumentTypeReader<CMDIProfile> reader = context.mock(MetadataDocumentTypeReader.class, "CMDIProfile");
-	final CMDIProfileContainer instance = new CMDIProfileContainer(reader);
+	final CMDIProfileContainerImpl instance = new CMDIProfileContainerImpl(reader);
 
 	final URI testUri = URI.create("http://test/uri");
-	final CMDIProfile testProfile = getNewTestProfileAndRead(); //TODO: Mock once an interface has been extracted from CMDIProfile 
+	final CMDIProfile testProfile = getNewTestProfileAndRead(); //TODO: Mock once an interface has been extracted from CMDIProfileImpl 
 	
 	// Is empty
 	assertFalse(instance.containsProfile(testUri));

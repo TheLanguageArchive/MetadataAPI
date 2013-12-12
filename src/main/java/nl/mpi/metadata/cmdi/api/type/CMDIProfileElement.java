@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 Max Planck Institute for Psycholinguistics
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,9 +17,6 @@
 package nl.mpi.metadata.cmdi.api.type;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import javax.xml.namespace.QName;
 import nl.mpi.metadata.api.type.ContainedMetadataElementType;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategory;
@@ -27,34 +24,17 @@ import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategoryType;
 import org.apache.xmlbeans.SchemaProperty;
 
 /**
- * Base class for Component and Element types
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public abstract class CMDIProfileElement implements DataCategoryType, ContainedMetadataElementType<CMDIProfileElement> {
-
-    protected final ComponentType parent;
-    protected final SchemaProperty schemaElement;
-    protected final QName qName;
-    protected String description;
-    protected DataCategory dataCategory;
-    private Collection<MetadataElementAttributeType> attributes;
-    private Collection<MetadataElementAttributeType> excludedAttributes;
-
-    protected CMDIProfileElement(SchemaProperty schemaElement, ComponentType parent) {
-	this.parent = parent;
-	this.schemaElement = schemaElement;
-	this.qName = schemaElement.getName();
-    }
+public interface CMDIProfileElement extends ContainedMetadataElementType<CMDIProfileElement>, DataCategoryType {
 
     /**
-     * Returns an XPath that, when applied to an <em>instance</em> of this profile element, returns a list
-     * of the nodes in that instance that are of this type.
      *
-     * @see org.apache.xpath.XPathAPI#selectNodeList(org.w3c.dom.Node, java.lang.String)
-     * @return XPath string to find instances
+     * @return the collection of attributes including excluded attributes
+     * @see #setExcludedAttributes(java.util.Collection)
      */
-    public abstract String getPathString();
+    Collection<MetadataElementAttributeType> getAllAttributes();
 
     /**
      * Retrieves the specified attribute. Looks in all attributes, including excluded attributes (those specified
@@ -65,132 +45,51 @@ public abstract class CMDIProfileElement implements DataCategoryType, ContainedM
      * @return attribute with specified name (and optionally namespace), or null if no match found
      * @see #getAllAttributes()
      */
-    public MetadataElementAttributeType getAttributeTypeByName(String namespaceURI, String name) {
-	for (MetadataElementAttributeType child : getAllAttributes()) {
-	    if ((namespaceURI == null || namespaceURI.equals(child.getNamespaceURI()))
-		    && child.getName().equals(name)) {
-		return child;
-	    }
-	}
-	return null;
-    }
+    MetadataElementAttributeType getAttributeTypeByName(String namespaceURI, String name);
 
-    public Collection<MetadataElementAttributeType> getAttributes() {
-	return attributes;
-    }
+    Collection<MetadataElementAttributeType> getAttributes();
+
+    DataCategory getDataCategory();
+
+    String getDescription();
+
+    int getMaxOccurences();
+
+    int getMinOccurences();
+
+    String getName();
+
+    ComponentType getParent();
 
     /**
+     * Returns an XPath that, when applied to an <em>instance</em> of this profile element, returns a list
+     * of the nodes in that instance that are of this type.
      *
-     * @return the collection of attributes including excluded attributes
-     * @see #setExcludedAttributes(java.util.Collection)
+     * @see org.apache.xpath.XPathAPI#selectNodeList(org.w3c.dom.Node, java.lang.String)
+     * @return XPath string to find instances
      */
-    public Collection<MetadataElementAttributeType> getAllAttributes() {
-	// TODO: Maybe cache this
-	if (excludedAttributes == null || excludedAttributes.isEmpty()) {
-	    return attributes;
-	} else {
-	    Set<MetadataElementAttributeType> result = new HashSet<MetadataElementAttributeType>(attributes.size() + excludedAttributes.size());
-	    result.addAll(attributes);
-	    result.addAll(excludedAttributes);
-	    return result;
-	}
-    }
+    String getPathString();
 
-    public DataCategory getDataCategory() {
-	return dataCategory;
-    }
+    SchemaProperty getSchemaElement();
+
+    /**
+     * @param attributes the attributes to set
+     */
+    void setAttributes(Collection<MetadataElementAttributeType> attributes);
 
     /**
      * Sets the data category for this profile element
      *
      * @param dataCategory
      */
-    public void setDataCategory(DataCategory dataCategory) {
-	this.dataCategory = dataCategory;
-    }
-
-    public String getDescription() {
-	return description;
-    }
+    void setDataCategory(DataCategory dataCategory);
 
     /**
      * Sets the element description
      *
      * @param description description to set for this element
      */
-    public void setDescription(String description) {
-	this.description = description;
-    }
-
-    public int getMaxOccurences() {
-	if (getSchemaElement().getMaxOccurs() != null) {
-	    return getSchemaElement().getMaxOccurs().intValue();
-	} else {
-	    return -1;
-	}
-    }
-
-    public int getMinOccurences() {
-	if (getSchemaElement().getMinOccurs() != null) {
-	    return getSchemaElement().getMinOccurs().intValue();
-	} else {
-	    return 0;
-	}
-    }
-
-    public String getName() {
-	if (qName.getLocalPart() != null) {
-	    return qName.getLocalPart();
-	} else {
-	    return qName.toString();
-	}
-    }
-
-    public SchemaProperty getSchemaElement() {
-	return schemaElement;
-    }
-
-    public ComponentType getParent() {
-	return parent;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-	if (obj == null) {
-	    return false;
-	}
-	if (getClass() != obj.getClass()) {
-	    return false;
-	}
-	final CMDIProfileElement other = (CMDIProfileElement) obj;
-	if (this.parent != other.parent && (this.parent == null || !this.parent.equals(other.parent))) {
-	    return false;
-	}
-	if (this.qName != other.qName && (this.qName == null || !this.qName.equals(other.qName))) {
-	    return false;
-	}
-	return true;
-    }
-
-    @Override
-    public int hashCode() {
-	int hash = 7;
-	hash = 67 * hash + (this.parent != null ? this.parent.hashCode() : 0);
-	hash = 67 * hash + (this.qName != null ? this.qName.hashCode() : 0);
-	return hash;
-    }
-
-    @Override
-    public String toString() {
-	return qName.getLocalPart();
-    }
-
-    /**
-     * @param attributes the attributes to set
-     */
-    public void setAttributes(Collection<MetadataElementAttributeType> attributes) {
-	this.attributes = attributes;
-    }
+    void setDescription(String description);
 
     /**
      * Sets the attributes read but not excluded in attribute set. These will be returned by {@link #getAllAttributes() }
@@ -199,7 +98,6 @@ public abstract class CMDIProfileElement implements DataCategoryType, ContainedM
      * @param excludedAttributes attributes excluded in attribute set
      * @see #getAllAttributes()
      */
-    public void setExcludedAttributes(Collection<MetadataElementAttributeType> excludedAttributes) {
-	this.excludedAttributes = excludedAttributes;
-    }
+    void setExcludedAttributes(Collection<MetadataElementAttributeType> excludedAttributes);
+    
 }

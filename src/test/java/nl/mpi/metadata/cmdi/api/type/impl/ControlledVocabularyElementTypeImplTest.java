@@ -14,26 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api.type;
+package nl.mpi.metadata.cmdi.api.type.impl;
 
-import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import java.util.List;
 import nl.mpi.metadata.api.type.ControlledVocabularyItem;
+import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
+import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 
 /**
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class ControlledVocabularyElementTypeTest extends CMDIAPITestCase {
+public class ControlledVocabularyElementTypeImplTest extends CMDIAPITestCase {
 
     @Test
     public void testCVItems() throws Exception {
 	CMDIProfile profile = getNewTestProfileAndRead();
-	ComponentType collectionType = (ComponentType) profile.getType("Collection");
-	ComponentType collectionTypeType = (ComponentType) collectionType.getType("CollectionType");
-	ControlledVocabularyElementType collectionTypeCV = (ControlledVocabularyElementType) collectionTypeType.getType("CollectionType");
+	ComponentTypeImpl collectionType = (ComponentTypeImpl) profile.getType("Collection");
+	ComponentTypeImpl collectionTypeType = (ComponentTypeImpl) collectionType.getType("CollectionType");
+	ControlledVocabularyElementTypeImpl collectionTypeCV = (ControlledVocabularyElementTypeImpl) collectionTypeType.getType("CollectionType");
 	List<ControlledVocabularyItem> items = collectionTypeCV.getItems();
 	// 8 continents + unknown, unspecified
 	assertEquals(items.size(), 5);

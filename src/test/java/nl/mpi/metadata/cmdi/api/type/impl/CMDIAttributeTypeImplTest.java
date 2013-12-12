@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api.type;
+package nl.mpi.metadata.cmdi.api.type.impl;
 
 import org.apache.xmlbeans.SchemaProperty;
 import org.jmock.Mockery;
@@ -29,14 +29,14 @@ import static org.junit.Assert.*;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIAttributeTypeTest {
+public class CMDIAttributeTypeImplTest {
 
-    private CMDIAttributeType instance;
+    private CMDIAttributeTypeImpl instance;
     private Mockery context = new JUnit4Mockery();
 
     @Before
     public void setUp() {
-	instance = new CMDIAttributeType("path", "type");
+	instance = new CMDIAttributeTypeImpl("path", "type");
     }
 
     @After
@@ -45,7 +45,7 @@ public class CMDIAttributeTypeTest {
     }
 
     /**
-     * Test of getName method, of class CMDIAttributeType.
+     * Test of getName method, of class CMDIAttributeTypeImpl.
      */
     @Test
     public void testGetName() {
@@ -53,12 +53,12 @@ public class CMDIAttributeTypeTest {
 	instance.setName("name");
 	assertEquals("name", instance.getName());
 
-	instance = new CMDIAttributeType("path", null, "newName", "type");
+	instance = new CMDIAttributeTypeImpl("path", null, "newName", "type");
 	assertEquals("newName", instance.getName());
     }
 
     /**
-     * Test of getType method, of class CMDIAttributeType.
+     * Test of getType method, of class CMDIAttributeTypeImpl.
      */
     @Test
     public void testGetType() {
@@ -66,7 +66,7 @@ public class CMDIAttributeTypeTest {
     }
 
     /**
-     * Test of isMandatory method, of class CMDIAttributeType.
+     * Test of isMandatory method, of class CMDIAttributeTypeImpl.
      */
     @Test
     public void testIsMandatory() {
@@ -76,7 +76,7 @@ public class CMDIAttributeTypeTest {
     }
 
     /**
-     * Test of getDefaultValue method, of class CMDIAttributeType.
+     * Test of getDefaultValue method, of class CMDIAttributeTypeImpl.
      */
     @Test
     public void testGetDefaultValue() {
@@ -86,19 +86,19 @@ public class CMDIAttributeTypeTest {
     }
 
     /**
-     * Test of getNamespaceURI method, of class CMDIAttributeType.
+     * Test of getNamespaceURI method, of class CMDIAttributeTypeImpl.
      */
     @Test
     public void testGetNamespaceURI() {
 	assertNull(instance.getNamespaceURI());
-	instance = new CMDIAttributeType("path", "nsUri", "localPart", "type");
+	instance = new CMDIAttributeTypeImpl("path", "nsUri", "localPart", "type");
 	assertEquals("nsUri", instance.getNamespaceURI());
 	instance.setNamespaceURI("newNsUri");
 	assertEquals("newNsUri", instance.getNamespaceURI());
     }
 
     /**
-     * Test of toString method, of class CMDIAttributeType.
+     * Test of toString method, of class CMDIAttributeTypeImpl.
      */
     @Test
     public void testToString() {
@@ -106,7 +106,7 @@ public class CMDIAttributeTypeTest {
     }
 
     /**
-     * Test of getSchemaElement method, of class CMDIAttributeType.
+     * Test of getSchemaElement method, of class CMDIAttributeTypeImpl.
      */
     @Test
     public void testGetSchemaElement() {
@@ -117,7 +117,7 @@ public class CMDIAttributeTypeTest {
     }
 
     /**
-     * Test of getPathString method, of class CMDIAttributeType.
+     * Test of getPathString method, of class CMDIAttributeTypeImpl.
      */
     @Test
     public void testGetPathString() {
@@ -125,17 +125,17 @@ public class CMDIAttributeTypeTest {
     }
 
     /**
-     * Test of createAttributePathString method, of class CMDIAttributeType.
+     * Test of createAttributePathString method, of class CMDIAttributeTypeImpl.
      */
     @Test
     public void testCreateAttributePathString() {
 	String parentPath = "/path/to/parent";
 	String localPart = "attribute";
-	String result = CMDIAttributeType.createAttributePathString(parentPath, null, localPart);
+	String result = CMDIAttributeTypeImpl.createAttributePathString(parentPath, null, localPart);
 	assertEquals("/path/to/parent/@attribute", result);
 
 	String nsUri = "namespace";
-	result = CMDIAttributeType.createAttributePathString(parentPath, nsUri, localPart);
+	result = CMDIAttributeTypeImpl.createAttributePathString(parentPath, nsUri, localPart);
 	assertEquals("/path/to/parent/@{namespace}attribute", result);
     }
 }

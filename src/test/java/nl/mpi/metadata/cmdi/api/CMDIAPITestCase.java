@@ -40,10 +40,11 @@ import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElementFactory;
 import nl.mpi.metadata.cmdi.api.model.impl.CMDIMetadataElementFactoryImpl;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
-import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
-import nl.mpi.metadata.cmdi.api.type.CMDIProfileReader;
-import nl.mpi.metadata.cmdi.api.type.CMDIProfileReaderTest;
 import nl.mpi.metadata.cmdi.api.type.CMDITypeException;
+import nl.mpi.metadata.cmdi.api.type.impl.CMDIProfileContainerImpl;
+import nl.mpi.metadata.cmdi.api.type.impl.CMDIProfileImpl;
+import nl.mpi.metadata.cmdi.api.type.impl.CMDIProfileReader;
+import nl.mpi.metadata.cmdi.api.type.impl.CMDIProfileReaderTest;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.junit.Assert;
 import org.slf4j.Logger;
@@ -127,8 +128,8 @@ public abstract class CMDIAPITestCase {
 	return new CMDIDocumentReader(getProfileContainer(), elementFactory);
     }
 
-    protected CMDIProfileContainer getProfileContainer() {
-	return new CMDIProfileContainer(getProfileReader());
+    protected CMDIProfileContainerImpl getProfileContainer() {
+	return new CMDIProfileContainerImpl(getProfileReader());
     }
 
     protected CMDIProfileReader getProfileReader() {

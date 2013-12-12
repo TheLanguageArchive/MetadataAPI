@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 Max Planck Institute for Psycholinguistics
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,132 +23,65 @@ import org.apache.xmlbeans.SchemaProperty;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIAttributeType implements MetadataElementAttributeType {
-
-    private String name;
-    private String namespaceURI;
-    private boolean mandatory;
-    private String defaultValue;
-    private SchemaProperty schemaElement;
-    private final String type;
-    private final String path;
-
-    public CMDIAttributeType(String path, String type) {
-	this.path = path;
-	this.type = type;
-    }
-
-    /**
-     * Creates attribute with path constructed from parameters
-     *
-     * @param parentPath path of parent
-     * @param namespaceURI namespace URI of attribute
-     * @param localPart local part of attribute name
-     */
-    protected CMDIAttributeType(CharSequence parentPath, final String namespaceURI, final String localPart, final String type) {
-	this(createAttributePathString(parentPath, namespaceURI, localPart), type);
-	this.namespaceURI  = namespaceURI;
-	this.name = localPart;
-    }
-
-    /**
-     *
-     * @return the name of the attribute
-     */
-    public String getName() {
-	return name;
-    }
-
-    /**
-     * @param name new name for attribute
-     */
-    public void setName(String name) {
-	this.name = name;
-    }
-
-    /**
-     *
-     * @return string representation of the type of the attribute
-     */
-    public String getType() {
-	return type;
-    }
-
-    /**
-     * @return attribute is mandatory
-     */
-    public boolean isMandatory() {
-	return mandatory;
-    }
-
-    /**
-     * @param mandatory attribute is mandatory
-     */
-    public void setMandatory(boolean mandatory) {
-	this.mandatory = mandatory;
-    }
+public interface CMDIAttributeType extends MetadataElementAttributeType {
 
     /**
      * Get the default value of this attribute
      *
      * @return the value of defaultValue
      */
-    public String getDefaultValue() {
-	return defaultValue;
-    }
+    String getDefaultValue();
 
     /**
-     * Set the default value of this attribute
      *
-     * @param defaultValue new value of defaultValue
+     * @return the name of the attribute
      */
-    public void setDefaultValue(String defaultValue) {
-	this.defaultValue = defaultValue;
-    }
+    String getName();
 
     /**
      * Get the value of namespace
      *
      * @return the value of namespace
      */
-    public String getNamespaceURI() {
-	return namespaceURI;
-    }
+    String getNamespaceURI();
+
+    String getPathString();
+
+    SchemaProperty getSchemaElement();
+
+    /**
+     *
+     * @return string representation of the type of the attribute
+     */
+    String getType();
+
+    /**
+     * @return attribute is mandatory
+     */
+    boolean isMandatory();
+
+    /**
+     * Set the default value of this attribute
+     *
+     * @param defaultValue new value of defaultValue
+     */
+    void setDefaultValue(String defaultValue);
+
+    /**
+     * @param mandatory attribute is mandatory
+     */
+    void setMandatory(boolean mandatory);
+
+    /**
+     * @param name new name for attribute
+     */
+    void setName(String name);
 
     /**
      * Set the value of namespace
      *
      * @param namespace new value of namespace
      */
-    public void setNamespaceURI(String namespace) {
-	this.namespaceURI = namespace;
-    }
-
-    @Override
-    public String toString() {
-	return getType().toString();
-    }
-
-    public SchemaProperty getSchemaElement() {
-	return schemaElement;
-    }
-
-    protected final void setSchemaElement(SchemaProperty element) {
-	this.schemaElement = element;
-    }
-
-    public String getPathString() {
-	return path;
-    }
-
-    public static String createAttributePathString(CharSequence parentPath, final String namespaceURI, final String localPart) {
-	final StringBuilder path = new StringBuilder(parentPath).append("/@");
-	if (namespaceURI != null && namespaceURI.length() > 0) {
-	    path.append("{");
-	    path.append(namespaceURI);
-	    path.append("}");
-	}
-	path.append(localPart).toString();
-	return path.toString();
-    }
+    void setNamespaceURI(String namespace);
+    
 }

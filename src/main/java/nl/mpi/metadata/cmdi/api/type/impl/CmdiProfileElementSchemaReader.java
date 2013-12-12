@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api.type;
+package nl.mpi.metadata.cmdi.api.type.impl;
 
 import java.math.BigInteger;
 import java.net.URI;
@@ -32,6 +32,8 @@ import nl.mpi.metadata.api.type.ControlledVocabularyItem;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.dom.CMDINamespaceContext;
+import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
+import nl.mpi.metadata.cmdi.api.type.CMDITypeException;
 import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategory;
 import org.apache.xmlbeans.SchemaAnnotation;
 import org.apache.xmlbeans.SchemaLocalElement;
@@ -74,7 +76,7 @@ public class CmdiProfileElementSchemaReader {
 	xPath.setNamespaceContext(new CMDINamespaceContext());
     }
 
-    public void readSchema(CMDIProfileElement profileElement) throws CMDITypeException {
+    public void readSchema(CMDIProfileElementImpl profileElement) throws CMDITypeException {
 
 	if (profileElement.getSchemaElement() == null) {
 	    throw new CMDITypeException(null, "Cannot read schema, it has not been set or loaded");
@@ -83,21 +85,21 @@ public class CmdiProfileElementSchemaReader {
 	readProperties(profileElement);
 	readAttributes(profileElement);
 
-	if (profileElement instanceof ComponentType) {
-	    readChildren((ComponentType) profileElement);
+	if (profileElement instanceof ComponentTypeImpl) {
+	    readChildren((ComponentTypeImpl) profileElement);
 	}
     }
 
-    protected void readProperties(CMDIProfileElement profileElement) {
-	if (profileElement instanceof ComponentType) {
+    protected void readProperties(CMDIProfileElementImpl profileElement) {
+	if (profileElement instanceof ComponentTypeImpl) {
 	    readComponentId(profileElement);
-	} else if (profileElement instanceof ControlledVocabularyElementType) {
-	    readVocabularyItems((ControlledVocabularyElementType) profileElement);
+	} else if (profileElement instanceof ControlledVocabularyElementTypeImpl) {
+	    readVocabularyItems((ControlledVocabularyElementTypeImpl) profileElement);
 	}
 	searchForAnnotations(profileElement);
     }
 
-    protected void readAttributes(CMDIProfileElement profileElement) {
+    protected void readAttributes(CMDIProfileElementImpl profileElement) {
 	SchemaProperty[] attributeProperties = profileElement.getSchemaElement().getType().getAttributeProperties();
 	if (attributeProperties != null && attributeProperties.length > 0) {
 	    Collection<MetadataElementAttributeType> attributes = new ArrayList<MetadataElementAttributeType>(attributeProperties.length);
@@ -113,7 +115,7 @@ public class CmdiProfileElementSchemaReader {
 	}
     }
 
-    private void readAttribute(SchemaProperty attributeProperty, CMDIProfileElement profileElement, Collection<MetadataElementAttributeType> attributes, Collection<MetadataElementAttributeType> excludedAttributes) {
+    private void readAttribute(SchemaProperty attributeProperty, CMDIProfileElementImpl profileElement, Collection<MetadataElementAttributeType> attributes, Collection<MetadataElementAttributeType> excludedAttributes) {
 	final QName attributeName = attributeProperty.getName();
 	final String attributeLocalPart = attributeName.getLocalPart();
 	final String attributeNamespaceURI = attributeName.getNamespaceURI();
@@ -122,12 +124,12 @@ public class CmdiProfileElementSchemaReader {
 
 	//Elements should be checked for xml:lang attribute, if so should be set to multilingual
 	boolean multilingualAttribute = false;
-	if (profileElement instanceof ElementType) {
-	    multilingualAttribute = readMultilingual((ElementType) profileElement, attributeLocalPart, attributeNamespaceURI);
+	if (profileElement instanceof ElementTypeImpl) {
+	    multilingualAttribute = readMultilingual((ElementTypeImpl) profileElement, attributeLocalPart, attributeNamespaceURI);
 	}
 
 	final String type = attributeProperty.getType().toString();  // consider .getName().getLocalPart()) but getName can
-	CMDIAttributeType attribute = new CMDIAttributeType(profileElement.getPathString(), attributeNamespaceURI, attributeLocalPart, type);
+	CMDIAttributeTypeImpl attribute = new CMDIAttributeTypeImpl(profileElement.getPathString(), attributeNamespaceURI, attributeLocalPart, type);
 	attribute.setSchemaElement(attributeProperty);
 
 	// be null, see documentation
@@ -142,7 +144,7 @@ public class CmdiProfileElementSchemaReader {
 	}
     }
 
-    private boolean readMultilingual(ElementType elementType, final String attributeLocalPart, final String attributeNamespaceURI) {
+    private boolean readMultilingual(ElementTypeImpl elementType, final String attributeLocalPart, final String attributeNamespaceURI) {
 	final boolean multilingual = CMDIConstants.CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAME.equals(attributeLocalPart)
 		&& CMDIConstants.CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAMESPACE_URI.equals(attributeNamespaceURI);
 	elementType.setMultilingual(multilingual);
@@ -151,11 +153,11 @@ public class CmdiProfileElementSchemaReader {
     }
 
     /**
-     * Recursively loads children (components, elements) for a {@link ComponentType}
+     * Recursively loads children (components, elements) for a {@link ComponentTypeImpl}
      *
      * @throws CMDITypeException
      */
-    private void readChildren(ComponentType componentType) throws CMDITypeException {
+    private void readChildren(ComponentTypeImpl componentType) throws CMDITypeException {
 	SchemaProperty[] elements = componentType.getSchemaElement().getType().getElementProperties();
 
 	List<CMDIProfileElement> children;
@@ -163,7 +165,7 @@ public class CmdiProfileElementSchemaReader {
 	    children = new ArrayList<CMDIProfileElement>(elements.length);
 	    for (SchemaProperty child : elements) {
 
-		CMDIProfileElement childElement;
+		CMDIProfileElementImpl childElement;
 
 		// Is the element a Component (if so, it has ComponentId property)
 		boolean isComponent = null != child.getType().getAttributeProperty(new QName("ComponentId"))
@@ -171,15 +173,15 @@ public class CmdiProfileElementSchemaReader {
 		if (isComponent) {
 		    // Component id found, so create component
 		    logger.debug("Creating child component type {}", child.getName().toString());
-		    childElement = new ComponentType(child, componentType, createChildPath(componentType, child));
+		    childElement = new ComponentTypeImpl(child, componentType, createChildPath(componentType, child));
 		} else {
 		    // Not a component, so create element
 		    if (child.getType().hasStringEnumValues()) {
 			logger.debug("Creating child CV element type {}", child.getName().toString());
-			childElement = new ControlledVocabularyElementType(child, componentType, createChildPath(componentType, child));
+			childElement = new ControlledVocabularyElementTypeImpl(child, componentType, createChildPath(componentType, child));
 		    } else {
 			logger.debug("Creating child element type {}", child.getName().toString());
-			childElement = new ElementType(child, componentType, createChildPath(componentType, child));
+			childElement = new ElementTypeImpl(child, componentType, createChildPath(componentType, child));
 		    }
 		}
 		readSchema(childElement);
@@ -191,27 +193,27 @@ public class CmdiProfileElementSchemaReader {
 	componentType.setChildren(children);
     }
 
-    private StringBuilder createChildPath(ComponentType componentType, SchemaProperty child) {
+    private StringBuilder createChildPath(ComponentTypeImpl componentType, SchemaProperty child) {
 	return new StringBuilder(componentType.getPath()).append("/cmd:").append(child.getName().getLocalPart());
     }
 
-    private void readComponentId(CMDIProfileElement profileElement) {
+    private void readComponentId(CMDIProfileElementImpl profileElement) {
 	SchemaProperty componentIdAttribute = profileElement.getSchemaElement().getType().getAttributeProperty(new QName("ComponentId"));
 	// attribute may not be present, e.g. for profile root component
 	final String componentId = (componentIdAttribute == null) ? null : componentIdAttribute.getDefaultText();
-	((ComponentType) profileElement).setComponentId(componentId);
+	((ComponentTypeImpl) profileElement).setComponentId(componentId);
     }
 
     /**
      * Reads the allowed controlled vocabulary items from the element type
      */
-    private void readVocabularyItems(ControlledVocabularyElementType profileElement) {
+    private void readVocabularyItems(ControlledVocabularyElementTypeImpl profileElement) {
 	XmlAnySimpleType[] itemTypes = profileElement.getSchemaElement().getType().getEnumerationValues();
 	List<ControlledVocabularyItem> items;
 	if (itemTypes != null && itemTypes.length > 0) {
 	    items = new ArrayList<ControlledVocabularyItem>();
 	    for (XmlAnySimpleType itemType : profileElement.getSchemaElement().getType().getEnumerationValues()) {
-		CMDIControlledVocabularyItem item = new CMDIControlledVocabularyItem();
+		CMDIControlledVocabularyItemImpl item = new CMDIControlledVocabularyItemImpl();
 		item.setValue(itemType.getStringValue());
 		// TODO: item.setDescription(itemDescription);
 		// TODO: item.setDataCategory(itemDataCategory);
@@ -226,7 +228,7 @@ public class CmdiProfileElementSchemaReader {
     /**
      * Searches the schema document for annotations for the specified profile element
      */
-    private void searchForAnnotations(CMDIProfileElement profileElement) {
+    private void searchForAnnotations(CMDIProfileElementImpl profileElement) {
 	final SchemaParticle schemaParticle = profileElement.getSchemaElement().getType().getContentModel();
 	if (schemaParticle != null && schemaParticle.getParticleType() == SchemaParticle.ELEMENT) {
 	    SchemaLocalElement schemaLocalElement = (SchemaLocalElement) schemaParticle;
@@ -257,7 +259,7 @@ public class CmdiProfileElementSchemaReader {
 	}
     }
 
-    private void saveAnnotationData(CMDIProfileElement profileElement, SchemaLocalElement schemaLocalElement) {
+    private void saveAnnotationData(CMDIProfileElementImpl profileElement, SchemaLocalElement schemaLocalElement) {
 	SchemaAnnotation schemaAnnotation = schemaLocalElement.getAnnotation();
 	if (schemaAnnotation != null) {
 	    for (SchemaAnnotation.Attribute annotationAttribute : schemaAnnotation.getAttributes()) {
@@ -268,17 +270,17 @@ public class CmdiProfileElementSchemaReader {
 	}
     }
 
-    private void saveAnnotationData(CMDIProfileElement profileElement, final String annotationName, final String annotationValue) {
+    private void saveAnnotationData(CMDIProfileElementImpl profileElement, final String annotationName, final String annotationValue) {
 	//Annotation: {ann}documentation : the title of the book
 	//Annotation: {ann}displaypriority : 1
 	// todo: the url here could be removed provided that it does not make it to unspecific
 
 	if (!"".equals(annotationValue)) {
 	    if ("{http://www.clarin.eu}displaypriority".equals(annotationName)) {
-		if (profileElement instanceof ElementType) {
+		if (profileElement instanceof ElementTypeImpl) {
 		    try {
 			int displayPriority = Integer.parseInt(annotationValue);
-			((ElementType) profileElement).setDisplayPriority(displayPriority);
+			((ElementTypeImpl) profileElement).setDisplayPriority(displayPriority);
 		    } catch (NumberFormatException nfEx) {
 			logger.warn(String.format("NumberFormatException in display priority (value: %1$s) for element %2$s", annotationValue, profileElement), nfEx);
 		    }

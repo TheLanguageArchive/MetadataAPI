@@ -36,7 +36,7 @@ import nl.mpi.metadata.cmdi.api.model.Element;
 import nl.mpi.metadata.cmdi.api.model.MetadataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.MultilingualElement;
 import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
-import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
+import nl.mpi.metadata.cmdi.api.type.impl.CMDIProfileContainerImpl;
 import org.apache.xpath.XPathAPI;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.After;
@@ -59,11 +59,11 @@ import static org.junit.Assert.*;
 public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 
     private CMDIDocumentReader reader;
-    private CMDIProfileContainer profileContainer;
+    private CMDIProfileContainerImpl profileContainer;
 
     @Before
     public void setUp() {
-	profileContainer = new CMDIProfileContainer(getProfileReader());
+	profileContainer = new CMDIProfileContainerImpl(getProfileReader());
 	reader = new CMDIDocumentReader(profileContainer, CMDI_METADATA_ELEMENT_FACTORY);
     }
 

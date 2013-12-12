@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 Max Planck Institute for Psycholinguistics
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,19 +23,8 @@ import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategoryType;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIControlledVocabularyItem extends nl.mpi.metadata.api.type.ControlledVocabularyItem implements DataCategoryType {
+public interface CMDIControlledVocabularyItem extends DataCategoryType {
 
-    private DataCategory dataCategory;
+    DataCategory getDataCategory();
     
-    /**
-     * Set the data category
-     * @param dataCategory 
-     */
-    protected void setDataCategory(DataCategory dataCategory){
-	this.dataCategory = dataCategory;
-    }
-    
-    public DataCategory getDataCategory() {
-	return dataCategory;
-    }
 }

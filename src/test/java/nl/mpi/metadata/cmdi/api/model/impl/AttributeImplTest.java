@@ -18,7 +18,7 @@ package nl.mpi.metadata.cmdi.api.model.impl;
 
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
-import nl.mpi.metadata.cmdi.api.type.CMDIAttributeType;
+import nl.mpi.metadata.cmdi.api.type.impl.CMDIAttributeTypeImpl;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
@@ -39,7 +39,7 @@ public class AttributeImplTest {
 
     @Before
     public void setUp() {
-	attributeType = new CMDIAttributeType("@path", "testtype");
+	attributeType = new CMDIAttributeTypeImpl("@path", "testtype");
 	parent = context.mock(CMDIMetadataElement.class);
     }
 

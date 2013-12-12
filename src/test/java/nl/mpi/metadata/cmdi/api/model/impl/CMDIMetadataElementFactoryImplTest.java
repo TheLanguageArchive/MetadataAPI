@@ -28,6 +28,8 @@ import nl.mpi.metadata.cmdi.api.type.CMDIAttributeType;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
+import nl.mpi.metadata.cmdi.api.type.impl.CMDIAttributeTypeImpl;
+import nl.mpi.metadata.cmdi.api.type.impl.CMDIProfileElementImpl;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Before;
@@ -97,7 +99,7 @@ public class CMDIMetadataElementFactoryImplTest extends CMDIAPITestCase {
     public void testCreateElementUnknownType() {
 	// Create new implementation of CMDIProfileElement that the factory cannot handle
 	CMDIContainerMetadataElement parent = context.mock(CMDIContainerMetadataElement.class);
-	CMDIProfileElement cmdiProfileElement = new CMDIProfileElement(document.getDocumentType().getSchemaElement(), null) {
+	CMDIProfileElement cmdiProfileElement = new CMDIProfileElementImpl(document.getDocumentType().getSchemaElement(), null) {
 
 	    @Override
 	    public String getPathString() {
@@ -113,7 +115,7 @@ public class CMDIMetadataElementFactoryImplTest extends CMDIAPITestCase {
     public void testCreateNewAttribute() throws Exception {
 	Component component = context.mock(Component.class);
 
-	CMDIAttributeType attributeType = new CMDIAttributeType("@path","type");
+	CMDIAttributeType attributeType = new CMDIAttributeTypeImpl("@path","type");
 	attributeType.setName("attributeName");
 	Attribute<String> result = instance.createAttribute(component, attributeType);
 

@@ -37,7 +37,7 @@ import nl.mpi.metadata.cmdi.api.model.impl.ElementImpl;
 import nl.mpi.metadata.cmdi.api.model.impl.MultilingualElementImpl;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
-import nl.mpi.metadata.cmdi.api.type.ElementType;
+import nl.mpi.metadata.cmdi.api.type.impl.ElementTypeImpl;
 import org.apache.xpath.CachedXPathAPI;
 import org.apache.xpath.XPathAPI;
 import org.custommonkey.xmlunit.Diff;
@@ -248,8 +248,8 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	ComponentType originLocationType = (ComponentType) collectionType.getType("OriginLocation");
 	ComponentType generalInfoType = (ComponentType) collectionType.getType("GeneralInfo");
 	ComponentType descriptionComponentType = (ComponentType) generalInfoType.getType("Description");
-	ElementType nameType = (ElementType) generalInfoType.getType("Name");
-	ElementType descriptionType = (ElementType) descriptionComponentType.getType("Description");
+	ElementTypeImpl nameType = (ElementTypeImpl) generalInfoType.getType("Name");
+	ElementTypeImpl descriptionType = (ElementTypeImpl) descriptionComponentType.getType("Description");
 
 	Component collection = new ComponentImpl(collectionType, document);
 	document.addChildElement(collection);

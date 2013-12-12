@@ -45,7 +45,7 @@ public class MockCMDIDocumentReader implements MetadataDocumentReader<CMDIDocume
      * @param document will be ignored
      * @return The document specified in the constructor
      * @throws MetadataDocumentException won't be thrown in this implementation
-     * @see #MockCMDIDocumentReader(nl.mpi.metadata.cmdi.api.model.CMDIDocumentImpl) 
+     * @see #MockCMDIDocumentReader(nl.mpi.metadata.cmdi.api.model.CMDIDocument) 
      */
     public CMDIDocument read(Document document, URI documentLocation) throws MetadataDocumentException {
 	this.document = document;

@@ -14,12 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api.type;
+package nl.mpi.metadata.cmdi.api.type.impl;
 
 import java.io.IOException;
 import java.net.URI;
 import nl.mpi.metadata.api.MetadataTypeException;
 import nl.mpi.metadata.api.type.MetadataDocumentTypeReader;
+import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 
 /**
  *

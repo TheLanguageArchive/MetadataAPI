@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 Max Planck Institute for Psycholinguistics
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,63 +18,41 @@ package nl.mpi.metadata.cmdi.api.type;
 
 import nl.mpi.metadata.api.type.MetadataElementType;
 import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategoryType;
-import org.apache.xmlbeans.SchemaProperty;
 
 /**
- * This class represents an element definition inside a CMDI component, defined by http://www.clarin.eu/cmd/general-component-schema.xsd
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class ElementType extends CMDIProfileElement implements MetadataElementType, DataCategoryType {
-
-    private final String path;
-    private int displayPriority; //defaults to 0
-    private boolean multilingual; //defaults to false
-
-    public ElementType(SchemaProperty schemaElement, ComponentType parent, CharSequence path) {
-	super(schemaElement, parent);
-	// Convert path to String, it's immutable and won't be extended (in contrast to ComponentTypes)
-	this.path = path.toString();
-    }
-
-    @Override
-    public String getPathString() {
-	return path.toString();
-    }
+public interface ElementType extends CMDIProfileElement, DataCategoryType, MetadataElementType {
 
     /**
      * Display priority of this element
      *
      * @return the display priority of this element
      */
-    public int getDisplayPriority() {
-	return displayPriority;
-    }
+    int getDisplayPriority();
 
-    /**
-     * Sets the display priority of this element
-     *
-     * @param displayPriority new display priority of this element
-     */
-    public void setDisplayPriority(int displayPriority) {
-	this.displayPriority = displayPriority;
-    }
+    String getPathString();
 
     /**
      * Gets the multilingual property of this type
      *
      * @return whether this element type is multilingual
      */
-    public boolean isMultilingual() {
-	return multilingual;
-    }
+    boolean isMultilingual();
+
+    /**
+     * Sets the display priority of this element
+     *
+     * @param displayPriority new display priority of this element
+     */
+    void setDisplayPriority(int displayPriority);
 
     /**
      * Sets the multilingual property of this type
      *
      * @param multilingual whether this element type is multilingual
      */
-    public void setMultilingual(boolean multilingual) {
-	this.multilingual = multilingual;
-    }
+    void setMultilingual(boolean multilingual);
+    
 }

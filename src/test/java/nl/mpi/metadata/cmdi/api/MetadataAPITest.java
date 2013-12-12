@@ -36,6 +36,7 @@ import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
+import nl.mpi.metadata.cmdi.api.type.impl.CMDIAttributeTypeImpl;
 import nl.mpi.metadata.cmdi.api.validation.DefaultCMDIValidator;
 
 import static nl.mpi.metadata.cmdi.api.CMDIAPITestCase.CMDI_API_TEST_ENTITY_RESOLVER;
@@ -138,7 +139,7 @@ public class MetadataAPITest extends nl.mpi.metadata.api.MetadataAPITest {
 	}
 	
 	public MetadataElementAttributeType createUnaddableAttributeType(CMDIApi api) {
-	    return new CMDIAttributeType("foo", "bogustype");
+	    return new CMDIAttributeTypeImpl("foo", "bogustype");
 	}
     }
 }

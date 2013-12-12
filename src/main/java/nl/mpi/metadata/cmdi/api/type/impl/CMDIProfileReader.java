@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.mpi.metadata.cmdi.api.type;
+package nl.mpi.metadata.cmdi.api.type.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +29,8 @@ import nl.mpi.metadata.api.type.MetadataDocumentTypeReader;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.dom.CMDIApiDOMBuilderFactory;
 import nl.mpi.metadata.cmdi.api.dom.DOMBuilderFactory;
+import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
+import nl.mpi.metadata.cmdi.api.type.CMDITypeException;
 import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.apache.xmlbeans.SchemaProperty;
 import org.apache.xmlbeans.SchemaType;
@@ -88,6 +90,7 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
 	this.domBuilderFactory = domBuilderFactory;
     }
 
+    @Override
     public CMDIProfile read(URI uri) throws IOException, CMDITypeException {
 	logger.debug("Reading profile at {}", uri);
 
@@ -99,7 +102,7 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
 
 	List<String> headerNames = readHeaderNames(schemaRoot);
 	// Instantiate profile
-	CMDIProfile profile = new CMDIProfile(uri, schemaElement, rootPath, headerNames);
+	CMDIProfileImpl profile = new CMDIProfileImpl(uri, schemaElement, rootPath, headerNames);
 	try {
 	    // Get schema dom, schema reader needs it to get annotations
 	    Document schemaDom = getSchemaDocument(uri);

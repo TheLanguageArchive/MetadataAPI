@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 Max Planck Institute for Psycholinguistics
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,44 +18,18 @@ package nl.mpi.metadata.cmdi.api.type;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 import nl.mpi.metadata.api.MetadataTypeException;
-import nl.mpi.metadata.api.type.MetadataDocumentTypeReader;
 
 /**
- * Class for chaching CMDI profiles
- * @see CMDIProfile
+ *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public class CMDIProfileContainer {
+public interface CMDIProfileContainer {
 
-    private final Map<URI, CMDIProfile> profileMap;
-    private final MetadataDocumentTypeReader<CMDIProfile> profileReader;
+    boolean containsProfile(URI profileUri);
 
-    /**
-     * Creates a profile container with no entityresolver set. In this implementation, {@link #getProfileReader() } 
-     * will instantiate a new instance of {@link CMDIProfileReader} on first request.
-     */
-    public CMDIProfileContainer(MetadataDocumentTypeReader<CMDIProfile> profileReader) {
-	this.profileReader = profileReader;
-	this.profileMap = new HashMap<URI, CMDIProfile>();
-    }
+    boolean containsProfile(CMDIProfile profile);
 
-    public synchronized CMDIProfile getProfile(URI profileUri) throws IOException, MetadataTypeException {
-	CMDIProfile profile = profileMap.get(profileUri);
-	if (profile == null) {
-	    profile = profileReader.read(profileUri);
-	    profileMap.put(profileUri, profile);
-	}
-	return profile;
-    }
-
-    public synchronized boolean containsProfile(URI profileUri) {
-	return profileMap.containsKey(profileUri);
-    }
-
-    public synchronized boolean containsProfile(CMDIProfile profile) {
-	return profileMap.containsValue(profile);
-    }
+    CMDIProfile getProfile(URI profileUri) throws IOException, MetadataTypeException;
+    
 }
