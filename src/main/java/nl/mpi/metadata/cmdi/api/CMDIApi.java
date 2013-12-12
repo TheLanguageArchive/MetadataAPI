@@ -70,8 +70,7 @@ import org.xml.sax.SAXException;
  */
 public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMDIAttributeType, Attribute, CMDIContainerMetadataElement, CMDIDocument> {
 
-    private final static Logger logger =LoggerFactory.getLogger(CMDIApi.class);
-    
+    private final static Logger logger = LoggerFactory.getLogger(CMDIApi.class);
     /**
      * SAX entity resolver for custom resolving of resources while parsing
      */
@@ -127,35 +126,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      * and a new {@link CMDIDocumentReader}, {@link CMDIDocumentWriter} and {@link CMDIProfileReader} based on those
      */
     public CMDIApi() {
-	this(new CMDIEntityResolver());
-    }
-
-    /**
-     * Creates an instance of CMDIApi with the specified EntityResolver,
-     * a new {@link DefaultCMDIValidator},
-     * a new {@link CMDIMetadataElementFactoryImpl}
-     * and a new {@link CMDIDocumentReader}, {@link CMDIDocumentWriter} and {@link CMDIProfileReader} based on those
-     */
-    public CMDIApi(EntityResolver entityResolver) {
-	this(entityResolver, new DefaultCMDIValidator());
-    }
-
-    /**
-     * Creates an instance of CMDIApi with the specified EntityResolver and MetadataValidator
-     * a new {@link CMDIMetadataElementFactoryImpl}
-     * and a new {@link CMDIDocumentReader}, {@link CMDIDocumentWriter} and {@link CMDIProfileReader} based on those
-     */
-    public CMDIApi(EntityResolver entityResolver, MetadataValidator<CMDIDocument> cmdiValidator) {
-	this(entityResolver, cmdiValidator, new CMDIMetadataElementFactoryImpl());
-    }
-
-    /**
-     * Creates an instance of CMDIApi with the specified EntityResolver and element factory,
-     * a new {@link DefaultCMDIValidator},
-     * and a new {@link CMDIDocumentReader}, {@link CMDIDocumentWriter} and {@link CMDIProfileReader} based on those
-     */
-    public CMDIApi(EntityResolver entityResolver, CMDIMetadataElementFactory elementFactory) {
-	this(entityResolver, new DefaultCMDIValidator(), elementFactory);
+	this(new CMDIEntityResolver(), new DefaultCMDIValidator(), new CMDIMetadataElementFactoryImpl());
     }
 
     public CMDIApi(EntityResolver entityResolver, MetadataValidator<CMDIDocument> cmdiValidator, CMDIMetadataElementFactory elementFactory) {
@@ -165,45 +136,6 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	this.documentReader = new CMDIDocumentReader(profileContainer, new CMDIComponentReader(elementFactory), new CMDIResourceProxyReader());
 	this.profileReader = new CMDIProfileReader(entityResolver, domBuilderFactory);
 	this.documentWriter = new CMDIDocumentWriter(componentBuilder);
-    }
-
-    /**
-     * Creates an instance of CMDIApi with the specified MetadataDocumentReader, MetadataDocumentWriter and MetadataDocumentTypeReader and a
-     * {@link DefaultCMDIValidator}
-     *
-     * @param documentReader the MetadataDocumentReader to use
-     * @param documentWriter the MetadataDocumentWriter to use
-     * @param profileReader the MetadataProfileReader to use
-     */
-    public CMDIApi(MetadataDocumentReader<CMDIDocument> documentReader, MetadataDocumentWriter<CMDIDocument> documentWriter, MetadataDocumentTypeReader<CMDIProfile> profileReader) {
-	this(documentReader, documentWriter, profileReader, new DefaultCMDIValidator());
-    }
-
-    /**
-     * Creates an instance of CMDIApi with the specified MetadataDocumentReader, MetadataDocumentWriter, MetadataDocumentTypeReader and
-     * MetadataValidator, and a new {@link CMDIMetadataElementFactoryImpl} and {@link CMDIEntityResolver} for CMDIDocuments
-     *
-     * @param documentReader the MetadataDocumentReader to use
-     * @param documentWriter the MetadataDocumentWriter to use
-     * @param profileReader the MetadataProfileReader to use
-     * @param cmdiValidator the MetadataValidator to use
-     */
-    public CMDIApi(MetadataDocumentReader<CMDIDocument> documentReader, MetadataDocumentWriter<CMDIDocument> documentWriter, MetadataDocumentTypeReader<CMDIProfile> profileReader, MetadataValidator<CMDIDocument> cmdiValidator) {
-	this(documentReader, documentWriter, profileReader, cmdiValidator, new CMDIEntityResolver());
-    }
-
-    /**
-     * Creates an instance of CMDIApi with the specified MetadataDocumentReader, MetadataDocumentWriter, MetadataDocumentTypeReader,
-     * MetadataValidator and EntityResolver, and a new {@link CMDIMetadataElementFactoryImpl}
-     *
-     * @param documentReader the MetadataDocumentReader to use
-     * @param documentWriter the MetadataDocumentWriter to use
-     * @param profileReader the MetadataProfileReader to use
-     * @param cmdiValidator the MetadataValidator to use
-     * @param entityResolver the EntityResolver to use
-     */
-    public CMDIApi(MetadataDocumentReader<CMDIDocument> documentReader, MetadataDocumentWriter<CMDIDocument> documentWriter, MetadataDocumentTypeReader<CMDIProfile> profileReader, MetadataValidator<CMDIDocument> cmdiValidator, EntityResolver entityResolver) {
-	this(documentReader, documentWriter, profileReader, cmdiValidator, entityResolver, new CMDIMetadataElementFactoryImpl());
     }
 
     /**
@@ -224,6 +156,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	this.metadataElementFactory = elementFactory;
     }
 
+    @Override
     public void validateMetadataDocument(CMDIDocument document, ErrorHandler errorHandler) throws SAXException {
 	getCmdiValidator().validateMetadataDocument(document, errorHandler);
     }
@@ -273,10 +206,12 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	}
     }
 
+    @Override
     public CMDIDocument createMetadataDocument(CMDIProfile type) throws MetadataException, MetadataTypeException {
 	return createMetadataDocument(type, DomBuildingMode.MANDATORY);
     }
 
+    @Override
     public CMDIDocument createMetadataDocument(CMDIProfile type, DomBuildingMode buildingMode) throws MetadataException, MetadataTypeException {
 	// Create new DOM instance
 	Document document;
@@ -301,10 +236,12 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	}
     }
 
+    @Override
     public CMDIProfile getMetadataDocumentType(URI uri) throws IOException, MetadataException {
 	return getProfileContainer().getProfile(uri);
     }
 
+    @Override
     public void writeMetadataDocument(CMDIDocument document, StreamResult target) throws IOException, MetadataException, TransformerException {
 	getDocumentWriter().write(document, target);
     }
@@ -318,6 +255,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      * @throws MetadataElementException if specified types are not compatible, or if an error occurs while registering the child with the
      * container
      */
+    @Override
     public CMDIMetadataElement insertMetadataElement(CMDIContainerMetadataElement container, CMDIProfileElement elementType) throws MetadataException {
 	if (!container.getType().canContainType(elementType)) {
 	    throw new MetadataElementException(container, String.format("Element type %1$s cannot be contained by provided container type %2$s", elementType, container.getType()));
@@ -330,6 +268,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	}
     }
 
+    @Override
     public Attribute insertAttribute(MetadataElementAttributeContainer<Attribute> container, CMDIAttributeType attributeType) throws MetadataException {
 	if (!(container instanceof CMDIMetadataElement)) {
 	    throw new MetadataException(String.format("Cannot handle container of type %1$s" + container.getClass()));

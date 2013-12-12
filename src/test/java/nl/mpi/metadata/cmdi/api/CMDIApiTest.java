@@ -20,10 +20,12 @@ import nl.mpi.metadata.api.SimpleErrorHandler;
 import nl.mpi.metadata.cmdi.api.dom.CMDIDocumentWriter;
 import nl.mpi.metadata.cmdi.api.dom.MockCMDIDocumentReader;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
+import nl.mpi.metadata.cmdi.api.model.impl.CMDIMetadataElementFactoryImpl;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.MockCMDIProfileReader;
 import nl.mpi.metadata.cmdi.api.validation.DefaultCMDIValidator;
 import nl.mpi.metadata.cmdi.api.validation.MockCMDIValidator;
+import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,7 +51,7 @@ public class CMDIApiTest extends CMDIAPITestCase {
 	profile = getNewTestProfileAndRead();
 	documentReader = new MockCMDIDocumentReader(testDocument);
 	profileReader = new MockCMDIProfileReader(profile);
-	api = new CMDIApi(documentReader, documentWriter, profileReader, new DefaultCMDIValidator(), CMDI_API_TEST_ENTITY_RESOLVER);
+	api = new CMDIApi(documentReader, documentWriter, profileReader, new DefaultCMDIValidator(), CMDI_API_TEST_ENTITY_RESOLVER, new CMDIMetadataElementFactoryImpl());
     }
 
     /**
@@ -84,7 +86,7 @@ public class CMDIApiTest extends CMDIAPITestCase {
 	SimpleErrorHandler errorHandler = new SimpleErrorHandler();
 	// Set a mock validator that produces the number of errors as specified
 	MockCMDIValidator mockCMDIValidator = new MockCMDIValidator(warnings, errors, fatalErrors);
-	api = new CMDIApi(documentReader, documentWriter, profileReader, mockCMDIValidator);
+	api = new CMDIApi(documentReader, documentWriter, profileReader, mockCMDIValidator, new CMDIEntityResolver(), new CMDIMetadataElementFactoryImpl());
 	// Validate using this mock handler (against simple handler)
 	api.validateMetadataDocument(testDocument = getNewTestDocument(CMDI_METADATA_ELEMENT_FACTORY), errorHandler);
 	// Check if numbers match

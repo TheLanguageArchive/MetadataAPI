@@ -41,16 +41,18 @@ public class DefaultCMDIValidator implements MetadataValidator<CMDIDocument> {
 
     /**
      * Construct with DefaultResourceResolver
+     *
      * @see DefaultResourceResolver
      */
     public DefaultCMDIValidator() {
-	this.resourceResolver = new DefaultResourceResolver();
+	this(new DefaultResourceResolver());
     }
 
     public DefaultCMDIValidator(LSResourceResolver resourceResolver) {
 	this.resourceResolver = resourceResolver;
     }
 
+    @Override
     public void validateMetadataDocument(CMDIDocument document, ErrorHandler errorHandler) throws SAXException {
 	try {
 	    final Validator validator = createValidator(document.getType().getSchemaLocation().toURL());
