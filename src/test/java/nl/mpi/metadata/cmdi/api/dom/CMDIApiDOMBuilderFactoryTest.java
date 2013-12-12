@@ -16,13 +16,12 @@
  */
 package nl.mpi.metadata.cmdi.api.dom;
 
-import nl.mpi.metadata.cmdi.api.dom.CMDIApiDOMBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
-import nl.mpi.metadata.cmdi.api.TracingEntityResolver;
 import org.junit.Test;
+
+import static nl.mpi.metadata.cmdi.api.CMDIAPITestCase.CMDI_API_TEST_ENTITY_RESOLVER;
 import static org.junit.Assert.*;
-import org.xml.sax.EntityResolver;
 
 /**
  *
@@ -35,37 +34,8 @@ public class CMDIApiDOMBuilderFactoryTest extends CMDIAPITestCase {
      */
     @Test
     public void testNewDOMBuilder() {
-	CMDIApiDOMBuilderFactory instance = new CMDIApiDOMBuilderFactory() {
-
-	    public EntityResolver getEntityResolver() {
-		return CMDI_API_TEST_ENTITY_RESOLVER;
-	    }
-	};
+	CMDIApiDOMBuilderFactory instance = new CMDIApiDOMBuilderFactory(CMDI_API_TEST_ENTITY_RESOLVER);
 	DocumentBuilder result = instance.newDOMBuilder();
 	assertNotNull(result);
-    }
-
-    /**
-     * Test of getEntityResolver method, of class CMDIApiDOMBuilderFactory.
-     */
-    @Test
-    public void testGetEntityResolver() throws Exception {
-	final TracingEntityResolver entityResolver = new TracingEntityResolver();
-
-	CMDIApiDOMBuilderFactory instance = new CMDIApiDOMBuilderFactory() {
-
-	    @Override
-	    protected EntityResolver getEntityResolver() {
-		return entityResolver;
-	    }
-	};
-	assertEquals(entityResolver, instance.getEntityResolver());
-	
-	// TODO: trigger entity resolver
-//	DocumentBuilder builder = instance.newDOMBuilder();
-//	assertFalse(entityResolver.isTriggered());
-//	Document document = builder.parse(getClass().getResourceAsStream(TEXT_CORPUS_INSTANCE_LOCATION));
-//	document.getTextContent();
-//	assertTrue(entityResolver.isTriggered());
     }
 }

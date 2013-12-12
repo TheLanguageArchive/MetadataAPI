@@ -38,7 +38,6 @@ import nl.mpi.metadata.cmdi.api.model.impl.MultilingualElementImpl;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
-import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.apache.xpath.CachedXPathAPI;
 import org.apache.xpath.XPathAPI;
 import org.custommonkey.xmlunit.Diff;
@@ -47,7 +46,6 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
 import static nl.mpi.metadata.cmdi.api.CMDIConstants.*;
@@ -96,16 +94,6 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	final Node profileRootNode = componentsNode.getFirstChild();
 	assertEquals("TextCorpusProfile", profileRootNode.getLocalName());
 	assertEquals(0, profileRootNode.getChildNodes().getLength());
-    }
-
-    /**
-     * Test of getEntityResolver method, of class CMDIDomBuilder.
-     */
-    @Test
-    public void testGetEntityResolver() {
-	EntityResolver entityResolver = new CMDIEntityResolver();
-	CMDIDomBuilder instance = new CMDIDomBuilder(entityResolver, CMDI_API_TEST_DOM_BUILDER_FACTORY);
-	assertSame(entityResolver, instance.getEntityResolver());
     }
 
     @Test

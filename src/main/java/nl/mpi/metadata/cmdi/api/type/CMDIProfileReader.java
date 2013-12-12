@@ -74,13 +74,7 @@ public class CMDIProfileReader implements MetadataDocumentTypeReader<CMDIProfile
      * @see CMDIApiDOMBuilderFactory
      */
     public CMDIProfileReader(final EntityResolver entityResolver) {
-	this(entityResolver, new CMDIApiDOMBuilderFactory() {
-
-	    @Override
-	    protected EntityResolver getEntityResolver() {
-		return entityResolver;
-	    }
-	});
+	this(entityResolver, new CMDIApiDOMBuilderFactory(entityResolver));
     }
 
     /**

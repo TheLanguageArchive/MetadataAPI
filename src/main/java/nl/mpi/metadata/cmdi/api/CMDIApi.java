@@ -96,23 +96,12 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      */
     private final CMDIMetadataElementFactory metadataElementFactory;
     private final CMDIProfileContainer profileContainer;
-    
-    private final DOMBuilderFactory domBuilderFactory = new CMDIApiDOMBuilderFactory() {
-	@Override
-	protected EntityResolver getEntityResolver() {
-	    return CMDIApi.this.entityResolver;
-	}
-    };
+    private final DOMBuilderFactory domBuilderFactory;
     /**
      * Service that manipulates DOM representation of CMDI documents
      * TODO: Extract interface and support arbitrary implementations
      */
-    private CMDIDomBuilder componentBuilder = new CMDIDomBuilder(domBuilderFactory) {
-	@Override
-	protected synchronized EntityResolver getEntityResolver() {
-	    return CMDIApi.this.entityResolver;
-	}
-    };
+    private final CMDIDomBuilder componentBuilder;
 
     /**
      * Creates an instance of CMDIApi with
@@ -129,10 +118,14 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	this.entityResolver = entityResolver;
 	this.cmdiValidator = cmdiValidator;
 	this.metadataElementFactory = elementFactory;
+
+	this.domBuilderFactory = new CMDIApiDOMBuilderFactory(entityResolver);
+	this.componentBuilder = new CMDIDomBuilder(entityResolver, domBuilderFactory);
+	this.documentWriter = new CMDIDocumentWriter(componentBuilder);
+	
 	this.profileReader = new CMDIProfileReader(entityResolver, domBuilderFactory);
 	this.profileContainer = new CMDIProfileContainer(profileReader);
 	this.documentReader = new CMDIDocumentReader(profileContainer, new CMDIComponentReader(elementFactory), new CMDIResourceProxyReader());
-	this.documentWriter = new CMDIDocumentWriter(componentBuilder);
     }
 
     /**
@@ -144,13 +137,16 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      * @param entityResolver the EntityResolver to use
      * @param elementFactory the CMDIMetadataElementFactory to use
      */
-    public CMDIApi(MetadataDocumentReader<CMDIDocument> documentReader, MetadataDocumentWriter<CMDIDocument> documentWriter, MetadataDocumentTypeReader<CMDIProfile> profileReader,  MetadataValidator<CMDIDocument> cmdiValidator, EntityResolver entityResolver, CMDIMetadataElementFactory elementFactory) {
-	this.documentReader = documentReader;
-	this.documentWriter = documentWriter;
-	this.profileReader = profileReader;
-	this.cmdiValidator = cmdiValidator;
+    public CMDIApi(MetadataDocumentReader<CMDIDocument> documentReader, MetadataDocumentWriter<CMDIDocument> documentWriter, MetadataDocumentTypeReader<CMDIProfile> profileReader, MetadataValidator<CMDIDocument> cmdiValidator, EntityResolver entityResolver, CMDIMetadataElementFactory elementFactory) {
 	this.entityResolver = entityResolver;
+	this.cmdiValidator = cmdiValidator;
 	this.metadataElementFactory = elementFactory;
+	this.documentWriter = documentWriter;	
+	this.profileReader = profileReader;
+	this.documentReader = documentReader;
+	
+	this.domBuilderFactory = new CMDIApiDOMBuilderFactory(entityResolver);
+	this.componentBuilder = new CMDIDomBuilder(entityResolver, domBuilderFactory);
 	this.profileContainer = new CMDIProfileContainer(profileReader);
     }
 

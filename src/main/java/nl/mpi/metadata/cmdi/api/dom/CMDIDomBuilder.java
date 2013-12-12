@@ -87,15 +87,6 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
     private final DOMBuilderFactory domBuilderFactory;
 
     /**
-     * Creates CMDIDomBuilder with no EntityResolver specified
-     *
-     * @see CMDIDomBuilder#CMDIDomBuilder(org.xml.sax.EntityResolver, nl.mpi.metadata.cmdi.api.dom.DOMBuilderFactory)
-     */
-    public CMDIDomBuilder(DOMBuilderFactory domBuilderFactory) {
-	this(null, domBuilderFactory);
-    }
-
-    /**
      * Creates CMDIDomBuilder with a specified EntityResolver
      *
      * @param entityResolver
@@ -479,7 +470,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
      * @return the EntityResolver used by XmlBeans
      * @see XmlOptions#setEntityResolver(org.xml.sax.EntityResolver)
      */
-    protected EntityResolver getEntityResolver() {
+    private EntityResolver getEntityResolver() {
 	return entityResolver;
     }
 

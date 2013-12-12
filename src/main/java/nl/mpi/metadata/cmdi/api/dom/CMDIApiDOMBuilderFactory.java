@@ -25,17 +25,26 @@ import org.xml.sax.EntityResolver;
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
-public abstract class CMDIApiDOMBuilderFactory implements DOMBuilderFactory {
+public class CMDIApiDOMBuilderFactory implements DOMBuilderFactory {
+
+    private final EntityResolver entityResolver;
+
+    public CMDIApiDOMBuilderFactory(EntityResolver entityResolver) {
+	this.entityResolver = entityResolver;
+    }
 
     /**
      * Creates a fresh instance of DocumentBuilder. A new factory is requested from the DocumentBuilderFactory, which then gets
-     * configured by {@code configureDocumentBuilderFactory(DocumentBuilderFactory)} . On this factory {@code newDocumentBuilder()} is called. The resulting
+     * configured by {@code configureDocumentBuilderFactory(DocumentBuilderFactory)} . On this factory {@code newDocumentBuilder()} is
+     * called. The resulting
      * builder gets configured by {@code configureDocumentBuilder(DocumentBuilder)} and is then returned.
+     *
      * @return a newly instantiated and configured DocumentBuilder from the DocumentBuilderFactory
      * @see DocumentBuilderFactory
-     * @see #configureDocumentBuilderFactory(javax.xml.parsers.DocumentBuilderFactory) 
-     * @see #configureDocumentBuilder(javax.xml.parsers.DocumentBuilder) 
+     * @see #configureDocumentBuilderFactory(javax.xml.parsers.DocumentBuilderFactory)
+     * @see #configureDocumentBuilder(javax.xml.parsers.DocumentBuilder)
      */
+    @Override
     public DocumentBuilder newDOMBuilder() {
 	try {
 	    final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -50,8 +59,9 @@ public abstract class CMDIApiDOMBuilderFactory implements DOMBuilderFactory {
 
     /**
      * Configures a newly instantiated document factory. This gets called from {@code newDOMBuilder()} in this implementation
+     *
      * @param factory a new instance of DocumentFactory
-     * @see #newDOMBuilder() 
+     * @see #newDOMBuilder()
      */
     protected void configureDocumentBuilderFactory(final DocumentBuilderFactory factory) {
 	factory.setNamespaceAware(true);
@@ -60,14 +70,13 @@ public abstract class CMDIApiDOMBuilderFactory implements DOMBuilderFactory {
 
     /**
      * Configures a newly instantiated document builder. This gets called from {@code newDOMBuilder()} in this implementation
+     *
      * @param builder a new instance of DocumentBuilder
-     * @see #newDOMBuilder() 
+     * @see #newDOMBuilder()
      */
     protected void configureDocumentBuilder(final DocumentBuilder builder) {
-	if (getEntityResolver() != null) {
-	    builder.setEntityResolver(getEntityResolver());
+	if (entityResolver!= null) {
+	    builder.setEntityResolver(entityResolver);
 	}
     }
-
-    protected abstract EntityResolver getEntityResolver();
 }
