@@ -18,8 +18,13 @@ package nl.mpi.metadata.cmdi.api.type;
 
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
 import java.net.URI;
+import nl.mpi.metadata.api.type.MetadataDocumentTypeReader;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
 
+import static org.jmock.Expectations.returnValue;
 import static org.junit.Assert.*;
 
 /**
@@ -28,24 +33,40 @@ import static org.junit.Assert.*;
  */
 public class CMDIProfileContainerTest extends CMDIAPITestCase {
 
+    private Mockery context = new JUnit4Mockery();
+
     @Test
     public void testGetProfile() throws Exception {
+
+	final MetadataDocumentTypeReader<CMDIProfile> reader = context.mock(MetadataDocumentTypeReader.class, "CMDIProfile");
+	final CMDIProfileContainer instance = new CMDIProfileContainer(reader);
+
+	final URI testUri = URI.create("http://test/uri");
+	final CMDIProfile testProfile = getNewTestProfileAndRead(); //TODO: Mock once an interface has been extracted from CMDIProfile 
 	
-	//TODO: Mock profile container
-	
-	URI testUri = testSchemaTextCorpus.toURI();
-	CMDIProfileContainer container = new CMDIProfileContainer();
 	// Is empty
-	assertFalse(container.containsProfile(testUri));
+	assertFalse(instance.containsProfile(testUri));
+	
 	// Load profile
-	CMDIProfile profile = container.getProfile(testUri);
+	context.checking(new Expectations() {
+	    {
+		oneOf(reader).read(testUri);
+		will(returnValue(testProfile));
+	    }
+	});
+	CMDIProfile profile = instance.getProfile(testUri);
 	assertNotNull(profile);
 	// Contains this profile
-	assertTrue(container.containsProfile(testUri));
-	assertTrue(container.containsProfile(profile));
+	assertTrue(instance.containsProfile(testUri));
+	assertTrue(instance.containsProfile(profile));
 
 	// Request again, should be the same object
-	CMDIProfile profile2 = container.getProfile(testUri);
+	context.checking(new Expectations() {
+	    {
+		never(reader).read(testUri);
+	    }
+	});
+	CMDIProfile profile2 = instance.getProfile(testUri);
 	assertSame(profile, profile2);
     }
 }

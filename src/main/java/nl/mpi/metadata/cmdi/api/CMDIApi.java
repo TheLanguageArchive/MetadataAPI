@@ -95,12 +95,8 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      * Service that caches CMDIProfile's and ensures that only one copy of each profile is opened.
      */
     private final CMDIMetadataElementFactory metadataElementFactory;
-    private final CMDIProfileContainer profileContainer = new CMDIProfileContainer() {
-	@Override
-	public synchronized MetadataDocumentTypeReader<CMDIProfile> getProfileReader() {
-	    return CMDIApi.this.getProfileReader();
-	}
-    };
+    private final CMDIProfileContainer profileContainer;
+    
     private final DOMBuilderFactory domBuilderFactory = new CMDIApiDOMBuilderFactory() {
 	@Override
 	protected EntityResolver getEntityResolver() {
@@ -133,8 +129,9 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	this.entityResolver = entityResolver;
 	this.cmdiValidator = cmdiValidator;
 	this.metadataElementFactory = elementFactory;
-	this.documentReader = new CMDIDocumentReader(profileContainer, new CMDIComponentReader(elementFactory), new CMDIResourceProxyReader());
 	this.profileReader = new CMDIProfileReader(entityResolver, domBuilderFactory);
+	this.profileContainer = new CMDIProfileContainer(profileReader);
+	this.documentReader = new CMDIDocumentReader(profileContainer, new CMDIComponentReader(elementFactory), new CMDIResourceProxyReader());
 	this.documentWriter = new CMDIDocumentWriter(componentBuilder);
     }
 
@@ -147,13 +144,14 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      * @param entityResolver the EntityResolver to use
      * @param elementFactory the CMDIMetadataElementFactory to use
      */
-    public CMDIApi(MetadataDocumentReader<CMDIDocument> documentReader, MetadataDocumentWriter<CMDIDocument> documentWriter, MetadataDocumentTypeReader<CMDIProfile> profileReader, MetadataValidator<CMDIDocument> cmdiValidator, EntityResolver entityResolver, CMDIMetadataElementFactory elementFactory) {
+    public CMDIApi(MetadataDocumentReader<CMDIDocument> documentReader, MetadataDocumentWriter<CMDIDocument> documentWriter, MetadataDocumentTypeReader<CMDIProfile> profileReader,  MetadataValidator<CMDIDocument> cmdiValidator, EntityResolver entityResolver, CMDIMetadataElementFactory elementFactory) {
 	this.documentReader = documentReader;
 	this.documentWriter = documentWriter;
 	this.profileReader = profileReader;
 	this.cmdiValidator = cmdiValidator;
 	this.entityResolver = entityResolver;
 	this.metadataElementFactory = elementFactory;
+	this.profileContainer = new CMDIProfileContainer(profileReader);
     }
 
     @Override

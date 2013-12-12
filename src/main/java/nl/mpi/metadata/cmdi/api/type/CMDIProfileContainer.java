@@ -30,16 +30,8 @@ import nl.mpi.metadata.api.type.MetadataDocumentTypeReader;
  */
 public class CMDIProfileContainer {
 
-    private Map<URI, CMDIProfile> profileMap;
-    private MetadataDocumentTypeReader<CMDIProfile> profileReader;
-
-    /**
-     * Creates a profile container with no entityresolver or profileReader set. In this implementation {@link #getProfileReader() () } 
-     * will instantiate a new instance of {@link CMDIProfileReader} on first request.
-     */
-    public CMDIProfileContainer() {
-	profileMap = new HashMap<URI, CMDIProfile>();
-    }
+    private final Map<URI, CMDIProfile> profileMap;
+    private final MetadataDocumentTypeReader<CMDIProfile> profileReader;
 
     /**
      * Creates a profile container with no entityresolver set. In this implementation, {@link #getProfileReader() } 
@@ -53,7 +45,7 @@ public class CMDIProfileContainer {
     public synchronized CMDIProfile getProfile(URI profileUri) throws IOException, MetadataTypeException {
 	CMDIProfile profile = profileMap.get(profileUri);
 	if (profile == null) {
-	    profile = getProfileReader().read(profileUri);
+	    profile = profileReader.read(profileUri);
 	    profileMap.put(profileUri, profile);
 	}
 	return profile;
@@ -65,12 +57,5 @@ public class CMDIProfileContainer {
 
     public synchronized boolean containsProfile(CMDIProfile profile) {
 	return profileMap.containsValue(profile);
-    }
-
-    public synchronized MetadataDocumentTypeReader<CMDIProfile> getProfileReader() {
-	if (profileReader == null) {
-	    profileReader = new CMDIProfileReader();
-	}
-	return profileReader;
     }
 }
