@@ -27,12 +27,14 @@ import javax.xml.namespace.QName;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
 import nl.mpi.metadata.cmdi.api.type.datacategory.DataCategory;
 import org.apache.xmlbeans.SchemaProperty;
+import org.apache.xmlbeans.impl.schema.SchemaPropertyImpl;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.jmock.Expectations.returnValue;
 import static org.junit.Assert.*;
 
 /**
@@ -49,7 +51,7 @@ public class CMDIProfileElementImplTest {
 
     @Before
     public void setUp() {
-	instance = new CMDIProfileElementTestImpl();
+	instance = new CMDIProfileElementTestImpl("elementName");
     }
 
     /**
@@ -144,13 +146,7 @@ public class CMDIProfileElementImplTest {
      */
     @Test
     public void testGetMaxOccurences() {
-	mockContext.checking(new Expectations() {
-	    {
-		allowing(instance.getSchemaElement()).getMaxOccurs();
-		will(returnValue(BigInteger.valueOf(5)));
-	    }
-	});
-
+	((SchemaPropertyImpl) instance.getSchemaElement()).setMaxOccurs(BigInteger.valueOf(5));
 	assertEquals(5, instance.getMaxOccurences());
     }
 
@@ -159,15 +155,7 @@ public class CMDIProfileElementImplTest {
      */
     @Test
     public void testGetMaxOccurencesUnbounded() {
-
-
-	mockContext.checking(new Expectations() {
-	    {
-		allowing(instance.getSchemaElement()).getMaxOccurs();
-		will(returnValue(null));
-	    }
-	});
-
+	((SchemaPropertyImpl) instance.getSchemaElement()).setMaxOccurs(null);
 	assertEquals(-1, instance.getMaxOccurences());
     }
 
@@ -176,16 +164,8 @@ public class CMDIProfileElementImplTest {
      */
     @Test
     public void testGetMinOccurences() {
-
-	mockContext.checking(new Expectations() {
-	    {
-		allowing(instance.getSchemaElement()).getMinOccurs();
-		will(returnValue(BigInteger.valueOf(5)));
-	    }
-	});
-
-	int result = instance.getMinOccurences();
-	assertEquals(5, result);
+	((SchemaPropertyImpl) instance.getSchemaElement()).setMinOccurs(BigInteger.valueOf(5));
+	assertEquals(5, instance.getMinOccurences());
     }
 
     /**
@@ -193,16 +173,8 @@ public class CMDIProfileElementImplTest {
      */
     @Test
     public void testGetMinOccurencesDefault() {
-
-	mockContext.checking(new Expectations() {
-	    {
-		allowing(instance.getSchemaElement()).getMinOccurs();
-		will(returnValue(null));
-	    }
-	});
-
-	int result = instance.getMinOccurences();
-	assertEquals(0, result);
+	((SchemaPropertyImpl) instance.getSchemaElement()).setMinOccurs(null);
+	assertEquals(0, instance.getMinOccurences());
     }
 
     /**
@@ -210,7 +182,7 @@ public class CMDIProfileElementImplTest {
      */
     @Test
     public void testGetName() {
-
+	((SchemaPropertyImpl) instance.getSchemaElement()).setName(new QName("elementName"));
 	String result = instance.getName();
 	assertEquals("elementName", result);
     }
@@ -228,27 +200,21 @@ public class CMDIProfileElementImplTest {
      */
     @Test
     public void testGetParent() {
-	final SchemaProperty schemaProperty = mockContext.mock(SchemaProperty.class, "parentSchemaElement");
-	mockContext.checking(new Expectations() {
-	    {
-		oneOf(schemaProperty).getName();
-	    }
-	});
-	final ComponentTypeImpl parent = new ComponentTypeImpl(schemaProperty, null, new StringBuilder("/path"));
-	CMDIProfileElementImpl element = new CMDIProfileElementTestImpl(parent);
+	final ComponentTypeImpl parent = new ComponentTypeImpl(getSchemaProperty("Parent"), null, new StringBuilder("/path"));
+	CMDIProfileElementImpl element = new CMDIProfileElementTestImpl(parent,"childElementName");
 	assertSame(parent, element.getParent());
     }
 
-    public class CMDIProfileElementTestImpl extends CMDIProfileElementImpl {
+    public static class CMDIProfileElementTestImpl extends CMDIProfileElementImpl {
 
 	protected String pathString;
 
-	public CMDIProfileElementTestImpl() {
-	    this(null);
+	public CMDIProfileElementTestImpl(String elementName) {
+	    this(null,elementName);
 	}
 
-	public CMDIProfileElementTestImpl(ComponentTypeImpl parent) {
-	    super(getSchemaPropertyMock(), parent);
+	public CMDIProfileElementTestImpl(ComponentTypeImpl parent, String elementName) {
+	    super(getSchemaProperty(elementName), parent);
 	}
 
 	@Override
@@ -257,16 +223,10 @@ public class CMDIProfileElementImplTest {
 	}
     }
 
-    private SchemaProperty getSchemaPropertyMock() {
-	final SchemaProperty mock = mockContext.mock(SchemaProperty.class);
-	mockContext.checking(new Expectations() {
-	    {
-		// Constructor will ask for schema property name
-		oneOf(mock).getName();
-		will(returnValue(new QName("elementName")));
-	    }
-	});
-	return mock;
+    private static SchemaProperty getSchemaProperty(String elementName) {
+	final SchemaPropertyImpl schemaProperty = new SchemaPropertyImpl();
+	schemaProperty.setName(new QName(elementName));
+	return schemaProperty;
     }
 
     private List<MetadataElementAttributeType> setAttributes(CMDIProfileElementImpl instance) {
