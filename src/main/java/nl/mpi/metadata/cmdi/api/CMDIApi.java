@@ -170,6 +170,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	try {
 	    return getMetadataDocument(url, documentStream);
 	} finally {
+	    logger.debug("Closing stream for {}", url);
 	    documentStream.close();
 	}
     }
