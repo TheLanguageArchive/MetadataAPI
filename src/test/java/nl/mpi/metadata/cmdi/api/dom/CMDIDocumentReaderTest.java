@@ -37,7 +37,6 @@ import nl.mpi.metadata.cmdi.api.model.MetadataResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.MultilingualElement;
 import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
 import nl.mpi.metadata.cmdi.api.type.impl.CMDIProfileContainerImpl;
-import org.apache.xpath.XPathAPI;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.After;
 import org.junit.Before;
@@ -52,7 +51,8 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 /**
- * At the moment tests both {@link CMDIDocumentReader} and {@link CMDIComponentReader}
+ * At the moment tests both {@link CMDIDocumentReader} and
+ * {@link CMDIComponentReader}
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
@@ -63,14 +63,14 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
 
     @Before
     public void setUp() {
-	profileContainer = new CMDIProfileContainerImpl(getProfileReader());
-	reader = new CMDIDocumentReader(profileContainer, CMDI_METADATA_ELEMENT_FACTORY);
+        profileContainer = new CMDIProfileContainerImpl(getProfileReader());
+        reader = new CMDIDocumentReader(profileContainer, CMDI_METADATA_ELEMENT_FACTORY);
     }
 
     @After
     public void tearDown() {
-	profileContainer = null;
-	reader = null;
+        profileContainer = null;
+        reader = null;
     }
 
     /**
@@ -78,18 +78,18 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
      */
     @Test
     public void testReadHeader() throws Exception {
-	CMDIDocument cmdi = readTestDocument(TEXT_CORPUS_INSTANCE_LOCATION);
-	// After read header state should be clean
-	assertFalse(cmdi.getHeaderDirtyState().isDirty());
+        CMDIDocument cmdi = readTestDocument(TEXT_CORPUS_INSTANCE_LOCATION);
+        // After read header state should be clean
+        assertFalse(cmdi.getHeaderDirtyState().isDirty());
 
-	// Profile should be loaded from specified schemaLocation
-	assertEquals("http://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/profiles/clarin.eu:cr1:p_1271859438164/xsd", cmdi.getType().getSchemaLocation().toString());
+        // Profile should be loaded from specified schemaLocation
+        assertEquals("http://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/profiles/clarin.eu:cr1:p_1271859438164/xsd", cmdi.getType().getSchemaLocation().toString());
 
-	// Header information should match
-	assertEquals("Joe Unit", cmdi.getHeaderInformation(CMD_HEADER_MD_CREATOR).getValue());
-	assertEquals("2009-11-18", cmdi.getHeaderInformation(CMD_HEADER_MD_CREATION_DATE).getValue());
-	assertEquals("clarin.eu:cr1:p_1271859438164", cmdi.getHeaderInformation(CMD_HEADER_MD_PROFILE).getValue());
-	assertEquals("Metadata API test instances", cmdi.getHeaderInformation(CMD_HEADER_MD_COLLECTION_DISPLAY_NAME).getValue());
+        // Header information should match
+        assertEquals("Joe Unit", cmdi.getHeaderInformation(CMD_HEADER_MD_CREATOR).getValue());
+        assertEquals("2009-11-18", cmdi.getHeaderInformation(CMD_HEADER_MD_CREATION_DATE).getValue());
+        assertEquals("clarin.eu:cr1:p_1271859438164", cmdi.getHeaderInformation(CMD_HEADER_MD_PROFILE).getValue());
+        assertEquals("Metadata API test instances", cmdi.getHeaderInformation(CMD_HEADER_MD_COLLECTION_DISPLAY_NAME).getValue());
 
     }
 
@@ -115,63 +115,63 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
      */
     @Test
     public void testReadComponents() throws Exception {
-	CMDIDocument cmdi = readTestDocument(TEXT_CORPUS_INSTANCE_LOCATION);
-	// After read document should be a clean metadata element
-	assertFalse(cmdi.isDirty());
-	assertEquals(3, cmdi.getChildren().size());
+        CMDIDocument cmdi = readTestDocument(TEXT_CORPUS_INSTANCE_LOCATION);
+        // After read document should be a clean metadata element
+        assertFalse(cmdi.isDirty());
+        assertEquals(3, cmdi.getChildren().size());
 
-	final Component collection = (Component) cmdi.getChildElement("Collection");
-	assertNotNull(collection);
-	// Component should be clean, fresh read
-	assertFalse(collection.isDirty());
+        final Component collection = (Component) cmdi.getChildElement("Collection");
+        assertNotNull(collection);
+        // Component should be clean, fresh read
+        assertFalse(collection.isDirty());
 
-	// Get Collection/GeneralInfo/Name element
-	final Component generalInfo = (Component) cmdi.getChildElement("Collection/GeneralInfo");
-	assertNotNull(generalInfo);
-	assertEquals(0, generalInfo.getAttributes().size());
-	// Component should be clean, fresh read
-	assertFalse(generalInfo.isDirty());
+        // Get Collection/GeneralInfo/Name element
+        final Component generalInfo = (Component) cmdi.getChildElement("Collection/GeneralInfo");
+        assertNotNull(generalInfo);
+        assertEquals(0, generalInfo.getAttributes().size());
+        // Component should be clean, fresh read
+        assertFalse(generalInfo.isDirty());
 
-	// Get Collection/GeneralInfo/Name element
-	final Element name = (Element) cmdi.getChildElement("Collection/GeneralInfo/Name");
-	assertNotNull(name);
-	// Name should also be retrievable from Collection component
-	assertEquals(name, collection.getChildElement("GeneralInfo/Name"));
-	// Value should match document
-	assertEquals("TextCorpus test", name.getValue());
-	// Element should be clean, fresh read
-	assertFalse(name.isDirty());
+        // Get Collection/GeneralInfo/Name element
+        final Element name = (Element) cmdi.getChildElement("Collection/GeneralInfo/Name");
+        assertNotNull(name);
+        // Name should also be retrievable from Collection component
+        assertEquals(name, collection.getChildElement("GeneralInfo/Name"));
+        // Value should match document
+        assertEquals("TextCorpus test", name.getValue());
+        // Element should be clean, fresh read
+        assertFalse(name.isDirty());
 
-	// Check component with multiple occurences
-	final Component originLocation = (Component) cmdi.getChildElement("Collection/OriginLocation");
-	assertEquals(2, originLocation.getChildren().size());
-	Element location1code = (Element) originLocation.getChildElement("Location[1]/Country/Code");
-	assertEquals("NL", location1code.getValue());
-	Element location2code = (Element) originLocation.getChildElement("Location[2]/Country/Code");
-	assertEquals("BE", location2code.getValue());
+        // Check component with multiple occurences
+        final Component originLocation = (Component) cmdi.getChildElement("Collection/OriginLocation");
+        assertEquals(2, originLocation.getChildren().size());
+        Element location1code = (Element) originLocation.getChildElement("Location[1]/Country/Code");
+        assertEquals("NL", location1code.getValue());
+        Element location2code = (Element) originLocation.getChildElement("Location[2]/Country/Code");
+        assertEquals("BE", location2code.getValue());
 
-	// Check resource proxies. Read non-metadata resource proxies
-	Collection<Reference> references = generalInfo.getReferences();
-	assertNotNull(references);
-	assertEquals(2, references.size());
-	Iterator<Reference> iterator = references.iterator();
-	ResourceProxy reference = (ResourceProxy) iterator.next();
-	assertEquals("resource1", reference.getId());
-	assertEquals(new URI("http://resources/1"), reference.getURI());
-	assertTrue(reference instanceof DataResourceProxy);
-	reference = (ResourceProxy) iterator.next();
-	assertEquals("resource2", reference.getId());
-	assertEquals(new URI("http://resources/2"), reference.getURI());
-	assertTrue(reference instanceof DataResourceProxy);
+        // Check resource proxies. Read non-metadata resource proxies
+        Collection<Reference> references = generalInfo.getReferences();
+        assertNotNull(references);
+        assertEquals(2, references.size());
+        Iterator<Reference> iterator = references.iterator();
+        ResourceProxy reference = (ResourceProxy) iterator.next();
+        assertEquals("resource1", reference.getId());
+        assertEquals(new URI("http://resources/1"), reference.getURI());
+        assertTrue(reference instanceof DataResourceProxy);
+        reference = (ResourceProxy) iterator.next();
+        assertEquals("resource2", reference.getId());
+        assertEquals(new URI("http://resources/2"), reference.getURI());
+        assertTrue(reference instanceof DataResourceProxy);
 
-	// Read metadata resource proxy
-	references = originLocation.getReferences();
-	assertNotNull(references);
-	assertEquals(1, references.size());
-	reference = (ResourceProxy) references.iterator().next();
-	assertEquals("metadata1", reference.getId());
-	assertEquals(new URI("http://metadata/1"), reference.getURI());
-	assertTrue(reference instanceof MetadataResourceProxy);
+        // Read metadata resource proxy
+        references = originLocation.getReferences();
+        assertNotNull(references);
+        assertEquals(1, references.size());
+        reference = (ResourceProxy) references.iterator().next();
+        assertEquals("metadata1", reference.getId());
+        assertEquals(new URI("http://metadata/1"), reference.getURI());
+        assertTrue(reference instanceof MetadataResourceProxy);
 
     }
 
@@ -180,54 +180,55 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
      */
     @Test
     public void testReadAttributesAndLanguages() throws Exception {
-	CMDIDocument cmdi = readTestDocument(TEXT_CORPUS_INSTANCE_LOCATION);
+        CMDIDocument cmdi = readTestDocument(TEXT_CORPUS_INSTANCE_LOCATION);
 
-	// Get Collection/GeneralInfo/Description/Description
-	final Element description = (Element) cmdi.getChildElement("Collection/GeneralInfo/Description/Description");
-	// Check attributes
-	Collection<Attribute> attributes = description.getAttributes();
-	assertEquals(1, attributes.size());
-	// Check attribute values
-	final Attribute attribute = attributes.iterator().next();
-	assertEquals("nl", attribute.getValue());
-	assertEquals("LanguageID", attribute.getType().getName());
-	assertEquals("", attribute.getType().getNamespaceURI()); // default namespace
+        // Get Collection/GeneralInfo/Description/Description
+        final Element description = (Element) cmdi.getChildElement("Collection/GeneralInfo/Description/Description");
+        // Check attributes
+        Collection<Attribute> attributes = description.getAttributes();
+        assertEquals(1, attributes.size());
+        // Check attribute values
+        final Attribute attribute = attributes.iterator().next();
+        assertEquals("nl", attribute.getValue());
+        assertEquals("LanguageID", attribute.getType().getName());
+        assertEquals("", attribute.getType().getNamespaceURI()); // default namespace
 
-	// Get Collection/GeneralInfo/Name element
-	final MultilingualElement name = (MultilingualElement) cmdi.getChildElement("Collection/GeneralInfo/Name");
-	// Check attributes
-	attributes = name.getAttributes();
-	assertEquals(0, attributes.size());
-	assertEquals("en", name.getLanguage());
+        // Get Collection/GeneralInfo/Name element
+        final MultilingualElement name = (MultilingualElement) cmdi.getChildElement("Collection/GeneralInfo/Name");
+        // Check attributes
+        attributes = name.getAttributes();
+        assertEquals(0, attributes.size());
+        assertEquals("en", name.getLanguage());
     }
 
     private CMDIDocument readTestDocument(String resource) throws SAXException, DOMException, MetadataException, ParserConfigurationException, IOException {
-	final Document dom = getDomDocumentForResource(resource);
-	final CMDIDocument cmdi = reader.read(dom, null);
-	assertNotNull(cmdi);
-	return cmdi;
+        final Document dom = getDomDocumentForResource(resource);
+        final CMDIDocument cmdi = reader.read(dom, URI.create("file:/metadata/document.cmdi"));
+        assertNotNull(cmdi);
+        return cmdi;
     }
 
     /**
-     * Tries to read a CMDI file that uses "cmd:" namespace prefix for all elements in the CMDI namespace
+     * Tries to read a CMDI file that uses "cmd:" namespace prefix for all
+     * elements in the CMDI namespace
      *
      * @throws Exception
      */
     @Test
     public void testReadNamespacePrefixDocument() throws Exception {
-	// Read the document with namespace prefix
-	final CMDIDocument cmdi = readTestDocument("/cmdi/Soundbites-instance-namespace-prefixes.cmdi");
-	// Test profile location
-	assertEquals("http://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/profiles/clarin.eu:cr1:p_1328259700928/xsd", cmdi.getType().getSchemaLocation().toString());
+        // Read the document with namespace prefix
+        final CMDIDocument cmdi = readTestDocument("/cmdi/Soundbites-instance-namespace-prefixes.cmdi");
+        // Test profile location
+        assertEquals("http://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/profiles/clarin.eu:cr1:p_1328259700928/xsd", cmdi.getType().getSchemaLocation().toString());
 
-	// Test header
-	assertNotNull(cmdi.getHeaderInformation(CMD_HEADER_MD_CREATOR));
-	assertEquals("Jan Pieter Kunst", cmdi.getHeaderInformation(CMD_HEADER_MD_CREATOR).getValue());
+        // Test header
+        assertNotNull(cmdi.getHeaderInformation(CMD_HEADER_MD_CREATOR));
+        assertEquals("Jan Pieter Kunst", cmdi.getHeaderInformation(CMD_HEADER_MD_CREATOR).getValue());
 
-	// Test component contents
-	assertEquals("Soundbites-recording", cmdi.getName());
-	assertThat(cmdi.getChildElement("CreationYear"), instanceOf(Element.class));
-	assertThat(cmdi.getChildElement("GeoLocation"), instanceOf(Component.class));
+        // Test component contents
+        assertEquals("Soundbites-recording", cmdi.getName());
+        assertThat(cmdi.getChildElement("CreationYear"), instanceOf(Element.class));
+        assertThat(cmdi.getChildElement("GeoLocation"), instanceOf(Component.class));
     }
 
     /**
@@ -235,12 +236,12 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
      */
     @Test(expected = MetadataException.class)
     public void testReadProfileUriMissing() throws Exception {
-	Document dom = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
-	// Remove schema location info
-	org.w3c.dom.Element cmdElement = (org.w3c.dom.Element) XPathAPI.selectSingleNode(dom, "/:CMD");
-	cmdElement.removeAttribute("xsi:schemaLocation");
-	// Read from DOM. Should fail because of missing URI
-	reader.read(dom, null);
+        Document dom = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
+        // Remove schema location info
+        org.w3c.dom.Element cmdElement = (org.w3c.dom.Element) selectSingleNode(dom, "/:CMD");
+        cmdElement.removeAttribute("xsi:schemaLocation");
+        // Read from DOM. Should fail because of missing URI
+        reader.read(dom, null);
     }
 
     /**
@@ -248,61 +249,61 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
      */
     @Test
     public void testReadProfileUriSyntax() throws Exception {
-	Document dom = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
-	// Replace schema location info by illegal URI
-	org.w3c.dom.Element cmdElement = (org.w3c.dom.Element) XPathAPI.selectSingleNode(dom, "/:CMD");
-	cmdElement.setAttribute("xsi:schemaLocation", CMDIConstants.CMD_NAMESPACE + " http://\"illegal\"");
-	// Read from DOM. Should fail because of syntax error
-	try {
-	    reader.read(dom, null);
-	    fail("Expected URISyntaxException nested in MetadataException");
-	} catch (MetadataException mdEx) {
-	    assertEquals(URISyntaxException.class, mdEx.getCause().getClass());
-	}
+        Document dom = getDomDocumentForResource(TEXT_CORPUS_INSTANCE_LOCATION);
+        // Replace schema location info by illegal URI
+        org.w3c.dom.Element cmdElement = (org.w3c.dom.Element) selectSingleNode(dom, "/:CMD");
+        cmdElement.setAttribute("xsi:schemaLocation", CMDIConstants.CMD_NAMESPACE + " http://\"illegal\"");
+        // Read from DOM. Should fail because of syntax error
+        try {
+            reader.read(dom, null);
+            fail("Expected URISyntaxException nested in MetadataException");
+        } catch (MetadataException mdEx) {
+            assertEquals(URISyntaxException.class, mdEx.getCause().getClass());
+        }
     }
 
     @Test
     public void testGetProfileURI() throws Exception {
-	final XPathFactory xpf = XPathFactory.newInstance();
-	final XPath xPath = xpf.newXPath();
-	xPath.setNamespaceContext(new CMDINamespaceContext());
-	// Test with standard CMD namespace
-	Document document = XMLUnit.buildTestDocument(
-		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-		+ "<CMD xmlns=\"http://www.clarin.eu/cmd/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-		+ "CMDVersion=\"1.1\"\n"
-		+ "xsi:schemaLocation=\"http://www.clarin.eu/cmd/ http://schemalocation\">\n"
-		+ "</CMD>\n");
-	URI profileURI = reader.getProfileURI(document, xPath);
-	assertEquals(new URI("http://schemalocation"), profileURI);
+        final XPathFactory xpf = XPathFactory.newInstance();
+        final XPath xPath = xpf.newXPath();
+        xPath.setNamespaceContext(new CMDINamespaceContext());
+        // Test with standard CMD namespace
+        Document document = XMLUnit.buildTestDocument(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<CMD xmlns=\"http://www.clarin.eu/cmd/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+                + "CMDVersion=\"1.1\"\n"
+                + "xsi:schemaLocation=\"http://www.clarin.eu/cmd/ http://schemalocation\">\n"
+                + "</CMD>\n");
+        URI profileURI = reader.getProfileURI(document, xPath);
+        assertEquals(new URI("http://schemalocation"), profileURI);
 
-	// Test with CMD namespace prefix
-	document = XMLUnit.buildTestDocument(
-		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-		+ "<cmd:CMD xmlns:cmd=\"http://www.clarin.eu/cmd/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-		+ "CMDVersion=\"1.1\"\n"
-		+ "xsi:schemaLocation=\"http://www.clarin.eu/cmd/ http://schemalocation\">\n"
-		+ "</cmd:CMD>\n");
-	profileURI = reader.getProfileURI(document, xPath);
-	assertEquals(new URI("http://schemalocation"), profileURI);
+        // Test with CMD namespace prefix
+        document = XMLUnit.buildTestDocument(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<cmd:CMD xmlns:cmd=\"http://www.clarin.eu/cmd/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+                + "CMDVersion=\"1.1\"\n"
+                + "xsi:schemaLocation=\"http://www.clarin.eu/cmd/ http://schemalocation\">\n"
+                + "</cmd:CMD>\n");
+        profileURI = reader.getProfileURI(document, xPath);
+        assertEquals(new URI("http://schemalocation"), profileURI);
 
-	// Test with non-matching namespaces
-	document = XMLUnit.buildTestDocument(
-		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-		+ "<CMD xmlns=\"http://www.clarin.eu/cmd/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-		+ "CMDVersion=\"1.1\"\n"
-		+ "xsi:schemaLocation=\"http://www.mpi.nl/custom/ http://schemalocation\">\n"
-		+ "</CMD>\n");
-	profileURI = reader.getProfileURI(document, xPath);
-	assertEquals(new URI("http://schemalocation"), profileURI);
+        // Test with non-matching namespaces
+        document = XMLUnit.buildTestDocument(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<CMD xmlns=\"http://www.clarin.eu/cmd/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+                + "CMDVersion=\"1.1\"\n"
+                + "xsi:schemaLocation=\"http://www.mpi.nl/custom/ http://schemalocation\">\n"
+                + "</CMD>\n");
+        profileURI = reader.getProfileURI(document, xPath);
+        assertEquals(new URI("http://schemalocation"), profileURI);
 
-	// Test with no specification at all
-	document = XMLUnit.buildTestDocument(
-		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-		+ "<CMD xmlns=\"http://www.clarin.eu/cmd/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-		+ "CMDVersion=\"1.1\">\n"
-		+ "</CMD>\n");
-	profileURI = reader.getProfileURI(document, xPath);
-	assertNull(profileURI);
+        // Test with no specification at all
+        document = XMLUnit.buildTestDocument(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<CMD xmlns=\"http://www.clarin.eu/cmd/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+                + "CMDVersion=\"1.1\">\n"
+                + "</CMD>\n");
+        profileURI = reader.getProfileURI(document, xPath);
+        assertNull(profileURI);
     }
 }

@@ -17,6 +17,7 @@
 package nl.mpi.metadata.cmdi.api.model.impl;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.Collection;
 import java.util.UUID;
 import nl.mpi.metadata.api.model.Reference;
@@ -51,7 +52,7 @@ public abstract class CMDIMetadataElementImplTest extends CMDIAPITestCase {
 	assertNull(proxy);
 	assertFalse(getInstance().isDirty());
 	// Add proxy to document
-	proxy = new DataResourceProxy(newId, new URI("http://test"), null, "test/test");
+	proxy = new DataResourceProxy(newId, new URI("http://test"), "test/test");
 	getDocument().addDocumentResourceProxy(proxy);
 	// Add known proxy by id
 	ResourceProxy addedReference = getInstance().addDocumentResourceProxyReference(newId);
@@ -69,7 +70,7 @@ public abstract class CMDIMetadataElementImplTest extends CMDIAPITestCase {
 	assertNull(proxy);
 	assertFalse(getInstance().isDirty());
 	// Add proxy to document
-	proxy = new DataResourceProxy(newId, new URI("http://test"), "Resource", "test/test");
+	proxy = new DataResourceProxy(newId, new URI("http://test"), new URL("file:resource.txt"), "Resource", "test/test");
 	getDocument().addDocumentResourceProxy(proxy);
 	// Add reference to element
 	assertNotNull(getInstance().addDocumentResourceProxyReference(newId));
@@ -89,7 +90,7 @@ public abstract class CMDIMetadataElementImplTest extends CMDIAPITestCase {
     public void testGetReferences() throws Exception {
 	// Add ref to document
 	String newId = UUID.randomUUID().toString();
-	ResourceProxy proxy = new DataResourceProxy(newId, new URI("http://test"), "Resource", "test/test");
+	ResourceProxy proxy = new DataResourceProxy(newId, new URI("http://test"), new URL("file:resource.txt"), "Resource", "test/test");
 	getDocument().addDocumentResourceProxy(proxy);
 
 	// References in element should be empty

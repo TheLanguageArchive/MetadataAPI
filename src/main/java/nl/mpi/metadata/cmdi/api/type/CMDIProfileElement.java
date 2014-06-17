@@ -65,7 +65,6 @@ public interface CMDIProfileElement extends ContainedMetadataElementType<CMDIPro
      * Returns an XPath that, when applied to an <em>instance</em> of this profile element, returns a list
      * of the nodes in that instance that are of this type.
      *
-     * @see org.apache.xpath.XPathAPI#selectNodeList(org.w3c.dom.Node, java.lang.String)
      * @return XPath string to find instances
      */
     String getPathString();

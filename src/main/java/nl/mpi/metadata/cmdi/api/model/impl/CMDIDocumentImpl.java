@@ -262,6 +262,16 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
 	resourceProxiesDirtyState.setDirty(true);
     }
 
+    /**
+     * Creates a resource proxy in the document <em>without a location 
+     * attribute</em> (this can be set post-hoc via {@link 
+     * DataResourceProxy#setLocation(java.net.URL) }
+     * @param uri
+     * @param type
+     * @param mimetype
+     * @return
+     * @throws MetadataException 
+     */
     @Override
     public synchronized DataResourceProxy createDocumentResourceReference(URI uri, String type, String mimetype) throws MetadataException {
 	final ResourceProxy resourceProxy = getDocumentReferenceByURI(uri);
@@ -270,7 +280,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
 		// null type should fall back to default
 		type = CMDIConstants.CMD_RESOURCE_PROXY_TYPE_RESOURCE;
 	    }
-	    final DataResourceProxy newResourceProxy = new DataResourceProxy(newResourceProxyId("r"), uri, type, mimetype);
+	    final DataResourceProxy newResourceProxy = new DataResourceProxy(newResourceProxyId("r"), uri, null, type, mimetype);
 	    addDocumentResourceProxy(newResourceProxy);
 	    return newResourceProxy;
 	} else {
@@ -330,6 +340,9 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
      * Creates a new metadata resource proxy in this document if it does not exist yet. If a reference with the same URI already exist,
      * it will be retrieved. In this case, the MIME type will be ignored!
      * New references will not be linked by any element including the document root node.
+     * 
+     * The resource proxy is created <em>without a location attribute</em> (this
+     * can be set post-hoc via {@link MetadataResourceProxy#setLocation(java.net.URL) }
      *
      * @param uri URI for resource proxy
      * @param mimetype MIME type for resource proxy
@@ -341,7 +354,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
     public MetadataResourceProxy createDocumentMetadataReference(URI uri, String mimetype) throws MetadataException {
 	final ResourceProxy resourceProxy = getDocumentReferenceByURI(uri);
 	if (resourceProxy == null) {
-	    final MetadataResourceProxy newResourceProxy = new MetadataResourceProxy(newResourceProxyId("m"), uri, mimetype);
+	    final MetadataResourceProxy newResourceProxy = new MetadataResourceProxy(newResourceProxyId("m"), uri, null, mimetype);
 	    addDocumentResourceProxy(newResourceProxy);
 	    return newResourceProxy;
 	} else {

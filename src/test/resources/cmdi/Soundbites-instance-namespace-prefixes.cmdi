@@ -29,7 +29,7 @@
 		<cmd:MunicipalityCode>1621</cmd:MunicipalityCode>
 		<cmd:Province>Zuid-Holland</cmd:Province>
 		<cmd:ProvinceCode>28</cmd:ProvinceCode>
-		<cmd:KloekeGeoReference>K008p</cmd:KloekeGeoReference>
+		<cmd:KloekeGeoreference>K008p</cmd:KloekeGeoreference>
 		<cmd:GeographicalCoordinates>51.9900030537,4.46444967986</cmd:GeographicalCoordinates>
 		<cmd:Country>
 		    <cmd:Code>NL</cmd:Code>

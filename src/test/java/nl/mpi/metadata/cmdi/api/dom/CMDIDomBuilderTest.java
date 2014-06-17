@@ -17,6 +17,7 @@
 package nl.mpi.metadata.cmdi.api.dom;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.Collections;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -24,6 +25,8 @@ import javax.xml.xpath.XPathFactory;
 import nl.mpi.metadata.api.dom.DomBuildingMode;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.cmdi.api.CMDIAPITestCase;
+
+import static nl.mpi.metadata.cmdi.api.CMDIConstants.*;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.Component;
@@ -38,18 +41,14 @@ import nl.mpi.metadata.cmdi.api.model.impl.MultilingualElementImpl;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import nl.mpi.metadata.cmdi.api.type.impl.ElementTypeImpl;
-import org.apache.xpath.CachedXPathAPI;
-import org.apache.xpath.XPathAPI;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLUnit;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-
-import static nl.mpi.metadata.cmdi.api.CMDIConstants.*;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -73,7 +72,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	assertEquals("TextCorpusProfile", componentsNode.getFirstChild().getLocalName());
 
 	// Mandatory attributes should be added (LanguageID is mandatory, xml:lang is optional)
-	Node descriptionNode = XPathAPI.selectSingleNode(document, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Description/:Description");
+	Node descriptionNode = selectSingleNode(document, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Description/:Description");
 	assertEquals(1, descriptionNode.getAttributes().getLength());
 	assertEquals("LanguageID", descriptionNode.getAttributes().item(0).getLocalName());
     }
@@ -111,13 +110,12 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	Document document = instance.buildDomForDocument(metadataDocument);
 	assertNotNull(document);
 
-	CachedXPathAPI xPathAPI = new CachedXPathAPI();
 	//MdCreator (unchanged header)
-	Node node = xPathAPI.selectSingleNode(document, "/:CMD/:Header/:" + CMD_HEADER_MD_CREATOR);
+	Node node = selectSingleNode(document, "/:CMD/:Header/:" + CMD_HEADER_MD_CREATOR);
 	assertNotNull("MdCreator header", node);
 	assertEquals("MdCreator header content unchanged", "Joe Unit", node.getTextContent());
 	//MdCreationDate (modified header)
-	node = xPathAPI.selectSingleNode(document, "/:CMD/:Header/:" + CMD_HEADER_MD_CREATION_DATE);
+	node = selectSingleNode(document, "/:CMD/:Header/:" + CMD_HEADER_MD_CREATION_DATE);
 	assertNotNull("MdCreationDate header", node);
 	assertEquals("MdCreationDate header content changed", "1999-99-99", node.getTextContent());
 	//MdCreationDate (set attribute)
@@ -127,7 +125,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	assertEquals("MdCreationDate attribute value", "value", attributeNode.getNodeValue());
 
 	//MdProfile (removed header)
-	node = xPathAPI.selectSingleNode(document, "/:CMD/:Header/:" + CMD_HEADER_MD_PROFILE);
+	node = selectSingleNode(document, "/:CMD/:Header/:" + CMD_HEADER_MD_PROFILE);
 	assertNull("MdProfile header removed", node);
     }
 
@@ -138,14 +136,13 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 
 	// Modify resource proxies
 	metadataDocument.removeDocumentResourceProxy("resource1");
-	metadataDocument.addDocumentResourceProxy(new DataResourceProxy("resource3", new URI("http://resources/3"), "MyResourceType", "test/test-resource"));
+	metadataDocument.addDocumentResourceProxy(new DataResourceProxy("resource3", new URI("http://resources/3"), new URL("http://resources/files/3.txt"), "MyResourceType", "test/test-resource"));
 
 	// Build DOM
 	Document document = instance.buildDomForDocument(metadataDocument);
 	assertNotNull(document);
 
-	CachedXPathAPI xPathAPI = new CachedXPathAPI();
-	Node proxiesNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList");
+	Node proxiesNode = selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList");
 	NodeList proxyListchildNodes = proxiesNode.getChildNodes();
 	assertEquals(5, proxyListchildNodes.getLength());
 
@@ -153,38 +150,42 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	assertEquals("resource2", proxyListchildNodes.item(0).getAttributes().getNamedItem("id").getNodeValue());
 
 	assertEquals("metadata1", proxyListchildNodes.item(1).getAttributes().getNamedItem("id").getNodeValue());
-	Node resourceTypeNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[2]/:ResourceType");
+	Node resourceTypeNode = selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[2]/:ResourceType");
 	assertNotNull(resourceTypeNode);
 	assertEquals("Metadata", resourceTypeNode.getTextContent());
-	Node resourceRefNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[2]/:ResourceRef");
+	Node resourceRefNode = selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[2]/:ResourceRef");
 	assertNotNull(resourceRefNode);
 	assertEquals("http://metadata/1", resourceRefNode.getTextContent());
 
 	assertEquals("searchPage1", proxyListchildNodes.item(2).getAttributes().getNamedItem("id").getNodeValue());
-	resourceTypeNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[3]/:ResourceType");
+	resourceTypeNode = selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[3]/:ResourceType");
 	assertNotNull(resourceTypeNode);
 	assertEquals("SearchPage", resourceTypeNode.getTextContent());
-	resourceRefNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[3]/:ResourceRef");
+	resourceRefNode = selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[3]/:ResourceRef");
 	assertNotNull(resourceRefNode);
 	assertEquals("http://www.google.com", resourceRefNode.getTextContent());
 
 	assertEquals("searchService1", proxyListchildNodes.item(3).getAttributes().getNamedItem("id").getNodeValue());
-	resourceTypeNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[4]/:ResourceType");
+	resourceTypeNode = selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[4]/:ResourceType");
 	assertNotNull(resourceTypeNode);
 	assertEquals("SearchService", resourceTypeNode.getTextContent());
-	resourceRefNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[4]/:ResourceRef");
+	resourceRefNode = selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[4]/:ResourceRef");
 	assertNotNull(resourceRefNode);
 	assertEquals("http://cqlservlet.mpi.nl", resourceRefNode.getTextContent());
 
 	// This resource was added after reading from file
 
 	assertEquals("resource3", proxyListchildNodes.item(4).getAttributes().getNamedItem("id").getNodeValue());
-	resourceTypeNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[5]/:ResourceType");
+	resourceTypeNode = selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[5]/:ResourceType");
 	assertNotNull(resourceTypeNode);
 	assertEquals("MyResourceType", resourceTypeNode.getTextContent());
-	resourceRefNode = xPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[5]/:ResourceRef");
+	resourceRefNode = selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[5]/:ResourceRef");
 	assertNotNull(resourceRefNode);
 	assertEquals("http://resources/3", resourceRefNode.getTextContent());
+        
+        final Node locationAttribute = resourceRefNode.getAttributes().getNamedItemNS(CMD_RESOURCE_PROXY_LOCATION_ATTRIBUTE_NAMESPACE, CMD_RESOURCE_PROXY_LOCATION_ATTRIBUTE_NAME);
+        assertNotNull(locationAttribute);
+        assertEquals("http://resources/files/3.txt", locationAttribute.getNodeValue());
     }
 
     @Test
@@ -198,7 +199,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	// Build DOM
 	final Document document = instance.buildDomForDocument(metadataDocument);
 	// Resource ref was modified, see if the change has been written to the DOM
-	final Node resourceRefNode = XPathAPI.selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[1]/:ResourceRef");
+	final Node resourceRefNode = selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[1]/:ResourceRef");
 	assertEquals("http://resources/1/changed", resourceRefNode.getTextContent());
     }
 
@@ -209,15 +210,14 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	// Build DOM
 	Document document = instance.buildDomForDocument(metadataDocument);
 	assertNotNull(document);
-	CachedXPathAPI xPathAPI = new CachedXPathAPI();
 	// Existence of root component node
-	Node rootComponentNode = xPathAPI.selectSingleNode(document, "/:CMD/:Components/:TextCorpusProfile");
+	Node rootComponentNode = selectSingleNode(document, "/:CMD/:Components/:TextCorpusProfile");
 	assertNotNull("Root component node", rootComponentNode);
 	// Existence of child node
-	Node collectionNode = xPathAPI.selectSingleNode(document, "/:CMD/:Components/:TextCorpusProfile/:Collection");
+	Node collectionNode = selectSingleNode(document, "/:CMD/:Components/:TextCorpusProfile/:Collection");
 	assertNotNull("Root child component node", collectionNode);
 	// Content of element node
-	Node nameNode = xPathAPI.selectSingleNode(document, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Name");
+	Node nameNode = selectSingleNode(document, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Name");
 	assertNotNull(nameNode);
 	assertEquals("Content of MimeType element", "TextCorpus test", nameNode.getTextContent());
 	// Attribute on element
@@ -226,11 +226,11 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	assertEquals("en", xmlLangAttributeNode.getNodeValue());
 	assertEquals("lang", xmlLangAttributeNode.getLocalName());
 	assertEquals("http://www.w3.org/XML/1998/namespace", xmlLangAttributeNode.getNamespaceURI());
-	Node languageIdAttributeNode = xPathAPI.selectSingleNode(document, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Description/:Description/@LanguageID");
+	Node languageIdAttributeNode = selectSingleNode(document, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Description/:Description/@LanguageID");
 	assertEquals("LanguageID", languageIdAttributeNode.getLocalName());
 	assertNull("Default namespace for CMD specified attributes", languageIdAttributeNode.getNamespaceURI());
 	// Resource proxy reference on element
-	Node generalInfoRefAttribute = xPathAPI.selectSingleNode(document, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/@ref");
+	Node generalInfoRefAttribute = selectSingleNode(document, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/@ref");
 	assertNotNull(generalInfoRefAttribute);
 	assertEquals("resource1 resource2", generalInfoRefAttribute.getNodeValue());
     }
@@ -313,15 +313,14 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	CMDIDocument document = getNewTestDocument(CMDI_METADATA_ELEMENT_FACTORY);
 	Document baseDocument = instance.getBaseDocument(document);
 
-	CachedXPathAPI xPathAPI = new CachedXPathAPI();
 	// Select an element
-	Node node = xPathAPI.selectSingleNode(baseDocument, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Name");
+	Node node = selectSingleNode(baseDocument, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Name");
 	// Should be there
 	assertNotNull(node);
 	// With content
 	assertEquals("TextCorpus test", node.getTextContent());
 	// Select optional element
-	node = xPathAPI.selectSingleNode(baseDocument, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Description");
+	node = selectSingleNode(baseDocument, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Description");
 	// Should be there as well
 	assertNotNull(node);
     }
@@ -350,18 +349,16 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	CMDIDocument document = new CMDIDocumentImpl(getNewTestProfileAndRead());
 	Document baseDocument = instance.getBaseDocument(document);
 
-	CachedXPathAPI xPathAPI = new CachedXPathAPI();
 	// Select mandatory element 
-
-	Node node = xPathAPI.selectSingleNode(baseDocument, "/:CMD/:Components/:TextCorpusProfile");
+	Node node = selectSingleNode(baseDocument, "/:CMD/:Components/:TextCorpusProfile");
 	// Should be there
 	assertNotNull(node);
 	// Select mandatory element
-	node = xPathAPI.selectSingleNode(baseDocument, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Name");
+	node = selectSingleNode(baseDocument, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:Name");
 	// Should not be there
 	assertNull(node);
 	// Select optional element
-	node = xPathAPI.selectSingleNode(baseDocument, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:OriginLocation");
+	node = selectSingleNode(baseDocument, "/:CMD/:Components/:TextCorpusProfile/:Collection/:GeneralInfo/:OriginLocation");
 	// Should not be there
 	assertNull(node);
     }

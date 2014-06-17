@@ -16,10 +16,10 @@
  */
 package nl.mpi.metadata.cmdi.api.dom;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.xpath.XPath;
@@ -38,8 +38,9 @@ public class CMDINamespaceContext implements NamespaceContext {
     private final Map<String, List<String>> nsPrefixMap;
 
     public CMDINamespaceContext() {
-	prefixNsMap = new HashMap<String, String>();
-	nsPrefixMap = new HashMap<String, List<String>>();
+	prefixNsMap = new ConcurrentHashMap<String, String>();
+	nsPrefixMap = new ConcurrentHashMap<String, List<String>>();
+        add("", CMDIConstants.CMD_NAMESPACE); // default namespace in XPaths
 	add(CMD_PREFIX, CMDIConstants.CMD_NAMESPACE);
 	add(XSI_PREFIX, CMDIConstants.XSI_NAMESPACE);
     }

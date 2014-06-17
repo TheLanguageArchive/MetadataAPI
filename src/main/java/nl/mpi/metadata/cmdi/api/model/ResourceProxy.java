@@ -17,7 +17,7 @@
 package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.URL;
 import nl.mpi.metadata.api.model.DirtyStateProvider;
 import nl.mpi.metadata.api.model.HandleCarrier;
 import nl.mpi.metadata.api.model.Reference;
@@ -33,81 +33,110 @@ public abstract class ResourceProxy implements Reference, HandleCarrier, DirtySt
     private final String id;
     private final String type;
     private URI uri;
+    private URL url;
     private String mimeType;
     private boolean dirty;
     private final HandleUtil handleUtil = new HandleUtil();
 
-    public ResourceProxy(String id, URI uri, String type) {
-	this(id, uri, type, null);
+    /**
+     * Constructs a resource proxy with no {@link #getLocation()  location}
+     *
+     * @param id value for 'id' attribute
+     * @param uri reference location, element content
+     * @param type value for resource type element
+     * @param mimeType value for mime type attribute of type
+     */
+    public ResourceProxy(String id, URI uri, String type, String mimeType) {
+        this(id, uri, null, type, mimeType);
     }
 
-    public ResourceProxy(String id, URI uri, String type, String mimeType) {
-	this.id = id;
-	this.uri = uri;
-	this.mimeType = mimeType;
-	this.type = type;
-
-	this.dirty = true;
+    public ResourceProxy(String id, URI uri, URL url, String type, String mimeType) {
+        this.id = id;
+        this.uri = uri;
+        this.url = url;
+        this.mimeType = mimeType;
+        this.type = type;
     }
 
     public String getId() {
-	return id;
+        return id;
     }
 
-    public synchronized URI getURI() {
-	return uri;
+    @Override
+    public URI getURI() {
+        return uri;
     }
 
-    public synchronized void setURI(URI uri) {
-	this.uri = uri;
-	setDirty(true);
-    }
-
-    public synchronized String getMimetype() {
-	return mimeType;
-    }
-
-    public synchronized void setMimeType(String mimeType) {
-	this.mimeType = mimeType;
-	setDirty(true);
+    @Override
+    public void setURI(URI uri) {
+        this.uri = uri;
+        setDirty(true);
     }
 
     /**
-     * Provides a string representation of the type of this proxy. Usually one of the constants defined in {@link CMDIConstants}.
+     *
+     * @return the content of the file location attribute (may be null)
+     */
+    @Override
+    public URL getLocation() {
+        return url;
+    }
+
+    @Override
+    public void setLocation(URL url) {
+        this.url = url;
+        setDirty(true);
+    }
+
+    @Override
+    public String getMimetype() {
+        return mimeType;
+    }
+
+    @Override
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+        setDirty(true);
+    }
+
+    /**
+     * Provides a string representation of the type of this proxy. Usually one
+     * of the constants defined in {@link CMDIConstants}.
      *
      * @return The type of this resource proxy
      */
+    @Override
     public String getType() {
-	return type;
+        return type;
     }
 
     @Override
     public boolean equals(Object obj) {
-	if (obj == null) {
-	    return false;
-	}
-	if (getClass() != obj.getClass()) {
-	    return false;
-	}
-	final ResourceProxy other = (ResourceProxy) obj;
-	if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
-	    return false;
-	}
-	if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {
-	    return false;
-	}
-	if (this.uri != other.uri && (this.uri == null || !this.uri.equals(other.uri))) {
-	    return false;
-	}
-	return true;
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ResourceProxy other = (ResourceProxy) obj;
+        if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
+            return false;
+        }
+        if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {
+            return false;
+        }
+        if (this.uri != other.uri && (this.uri == null || !this.uri.equals(other.uri))) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public int hashCode() {
-	int hash = 7;
-	hash = 53 * hash + (this.id != null ? this.id.hashCode() : 0);
-	hash = 53 * hash + (this.uri != null ? this.uri.hashCode() : 0);
-	return hash;
+        int hash = 7;
+        hash = 53 * hash + (this.id != null ? this.id.hashCode() : 0);
+        hash = 53 * hash + (this.uri != null ? this.uri.hashCode() : 0);
+        return hash;
     }
 
     /**
@@ -116,7 +145,7 @@ public abstract class ResourceProxy implements Reference, HandleCarrier, DirtySt
      */
     @Override
     public URI getHandle() {
-	return handleUtil.createHandleUri(String.valueOf(getURI()));
+        return handleUtil.createHandleUri(String.valueOf(getURI()));
     }
 
     /**
@@ -126,23 +155,24 @@ public abstract class ResourceProxy implements Reference, HandleCarrier, DirtySt
      */
     @Override
     public void setHandle(URI handle) throws IllegalArgumentException {
-	if (handleUtil.isHandleUri(handle)) {
-	    setURI(handle);
-	} else {
-	    throw new IllegalArgumentException("Illegal handle URI: " + handle.toString());
-	}
+        if (handleUtil.isHandleUri(handle)) {
+            setURI(handle);
+        } else {
+            throw new IllegalArgumentException("Illegal handle URI: " + handle.toString());
+        }
     }
 
     @Override
     public String toString() {
-	return String.format("{%1$s} %2$s", getId(), getURI());
+        return String.format("{%1$s} %2$s", getId(), getURI());
     }
 
+    @Override
     public boolean isDirty() {
-	return dirty;
+        return dirty;
     }
 
     public void setDirty(boolean dirty) {
-	this.dirty = dirty;
+        this.dirty = dirty;
     }
 }

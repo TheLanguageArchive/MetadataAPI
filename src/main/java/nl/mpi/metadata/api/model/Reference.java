@@ -17,6 +17,7 @@
 package nl.mpi.metadata.api.model;
 
 import java.net.URI;
+import java.net.URL;
 
 /**
  *
@@ -24,16 +25,31 @@ import java.net.URI;
  */
 public interface Reference {
 
+    /**
+     *
+     * @return an URI that identifies the document; there <em>may</em> be a
+     * distinct physical location, see {@link #getLocation() }
+     */
     URI getURI();
 
     void setURI(URI uri);
+
+    /**
+     *
+     * @return the physical location of the referenced resource; this may be
+     * null. Also see {@link #getURI() }.
+     */
+    URL getLocation();
+
+    void setLocation(URL url);
 
     String getMimetype();
 
     void setMimeType(String mimeType);
 
     /**
-     * @return A string representation of the type of this resource, {@literal  e.g.} 'Metadata' or 'Resource', depending on type and
+     * @return A string representation of the type of this resource,
+     * {@literal  e.g.} 'Metadata' or 'Resource', depending on type and
      * implementation.
      */
     String getType();

@@ -17,6 +17,7 @@
 package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
+import java.net.URL;
 import nl.mpi.metadata.api.model.ResourceReference;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
 
@@ -27,25 +28,57 @@ import nl.mpi.metadata.cmdi.api.CMDIConstants;
 public class DataResourceProxy extends ResourceProxy implements ResourceReference {
 
     /**
-     * Constructor for a resource proxy with a custom {@link #getType()  proxy type}
+     * Constructor for a resource proxy with a custom
+     * {@link #getType()  proxy type} and no local location
      *
      * @param id Unique identifier for the resource proxy
      * @param uri URI of the referenced resource
-     * @param type a string representation of the type of this resource, usually 'Resource'
+     * @param type a string representation of the type of this resource, usually
+     * 'Resource'
      * @param mimeType mime type of the referenced resource
      */
     public DataResourceProxy(String id, URI uri, String type, String mimeType) {
-	super(id, uri, type, mimeType);
+        super(id, uri, type, mimeType);
     }
 
     /**
-     * Constructor for a resource proxy with {@link #getType() type} set to {@link CMDIConstants#CMD_RESOURCE_PROXY_TYPE_RESOURCE Resource}
+     * Constructor for a resource proxy with a custom
+     * {@link #getType()  proxy type}
+     *
+     * @param id Unique identifier for the resource proxy
+     * @param uri URI of the referenced resource
+     * @param url Local location of the resource
+     * @param type a string representation of the type of this resource, usually
+     * 'Resource'
+     * @param mimeType mime type of the referenced resource
+     */
+    public DataResourceProxy(String id, URI uri, URL url, String type, String mimeType) {
+        super(id, uri, url, type, mimeType);
+    }
+
+    /**
+     * Constructor for a resource proxy with {@link #getType() type} set to
+     * {@link CMDIConstants#CMD_RESOURCE_PROXY_TYPE_RESOURCE Resource} and no
+     * local location
      *
      * @param id Unique identifier for the resource proxy
      * @param uri URI of the referenced resource
      * @param mimeType mime type of the referenced resource
      */
     public DataResourceProxy(String id, URI uri, String mimeType) {
-	this(id, uri, CMDIConstants.CMD_RESOURCE_PROXY_TYPE_RESOURCE, mimeType);
+        super(id, uri, CMDIConstants.CMD_RESOURCE_PROXY_TYPE_RESOURCE, mimeType);
+    }
+
+    /**
+     * Constructor for a resource proxy with {@link #getType() type} set to
+     * {@link CMDIConstants#CMD_RESOURCE_PROXY_TYPE_RESOURCE Resource}
+     *
+     * @param id Unique identifier for the resource proxy
+     * @param uri URI of the referenced resource
+     * @param url Local location of the resource
+     * @param mimeType mime type of the referenced resource
+     */
+    public DataResourceProxy(String id, URI uri, URL url, String mimeType) {
+        super(id, uri, url, CMDIConstants.CMD_RESOURCE_PROXY_TYPE_RESOURCE, mimeType);
     }
 }

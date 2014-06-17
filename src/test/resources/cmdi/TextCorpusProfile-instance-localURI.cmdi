@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- THIS FILE IS BASED ON A MODIFIED VERSION OF THE TextCorpusProfile -->
+<CMD xmlns="http://www.clarin.eu/cmd/"
+     xmlns:lcl="http://www.clarin.eu/cmd/extension"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     CMDVersion="1.1"
+     xsi:schemaLocation="http://www.clarin.eu/cmd/ http://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/profiles/clarin.eu:cr1:p_1271859438164/xsd ">
+    <Header>
+	<MdCreator>Joe Unit</MdCreator>
+	<MdCreationDate>2009-11-18</MdCreationDate>
+	<!-- A reference to the unique identifier of the profile this metadata instance is based on -->
+	<MdSelfLink>TextCorpusProfile-instance.cmdi</MdSelfLink>
+	<MdProfile>clarin.eu:cr1:p_1271859438164</MdProfile>
+	<!-- An (optional but recommended) plain text indication to which collection this file belongs. Used for the Collection facet in the VLO -->
+	<MdCollectionDisplayName>Metadata API test instances</MdCollectionDisplayName>
+    </Header>
+    <Resources>
+	<ResourceProxyList>
+	    <ResourceProxy id="resource1">
+		<ResourceType mimetype="text/plain">Resource</ResourceType>
+		<ResourceRef lcl:localURI="../resources/1">http://resources/1</ResourceRef>
+	    </ResourceProxy>
+	    <ResourceProxy id="resource2">
+		<ResourceType>Resource</ResourceType>
+		<ResourceRef lcl:localURI="file:/other/corpus/resources/2">http://resources/2</ResourceRef>
+	    </ResourceProxy>
+	    <ResourceProxy id="metadata1">
+		<ResourceType mimetype="application/xml">Metadata</ResourceType>
+		<ResourceRef lcl:localURI="childcorpus/1">http://metadata/1</ResourceRef>
+	    </ResourceProxy>
+	    <ResourceProxy id="searchPage1">
+		<ResourceType>SearchPage</ResourceType>
+		<ResourceRef>http://www.google.com</ResourceRef>
+	    </ResourceProxy>
+	    <ResourceProxy id="searchService1">
+		<ResourceType>SearchService</ResourceType>
+		<ResourceRef>http://cqlservlet.mpi.nl</ResourceRef>
+	    </ResourceProxy>
+	</ResourceProxyList>
+	<JournalFileProxyList/>
+	<ResourceRelationList/>
+    </Resources>
+    <Components>
+	<TextCorpusProfile>
+	    <Collection>
+		<GeneralInfo ref="resource1 resource2">
+		    <Name xml:lang="en">TextCorpus test</Name>
+		    <Description>
+			<Description LanguageID="nl">Test voor TextCorpus</Description>
+		    </Description>
+		</GeneralInfo>
+		<OriginLocation ref="metadata1">
+		    <Location>
+			<Country>
+			    <Code>NL</Code>
+			</Country>
+			<Continent>
+			    <Code>EU</Code>
+			</Continent>
+		    </Location>
+		    <Location>
+			<Country>
+			    <Code>BE</Code>
+			</Country>
+			<Continent>
+			    <Code>EU</Code>
+			</Continent>
+		    </Location>
+		</OriginLocation>
+		<Access>
+		    <Availability>Test</Availability>
+		    <Contact/>
+		</Access>
+	    </Collection>
+	    <Corpus>
+		<Modality>
+		    <Modality>Spoken</Modality>
+		</Modality>
+		<Validation>
+		    <Validation>true</Validation>
+		</Validation>
+	    </Corpus>
+	    <TextCorpus>
+		<TextTechnical>
+		    <CharacterEncoding/>
+		    <MimeType>
+			<MimeType>text/html</MimeType>
+		    </MimeType>
+		</TextTechnical>
+	    </TextCorpus>
+	</TextCorpusProfile>
+    </Components>
+</CMD>

@@ -44,7 +44,7 @@ import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.model.Reference;
 import nl.mpi.metadata.api.type.MetadataElementAttributeType;
-import nl.mpi.metadata.cmdi.api.CMDIConstants;
+import static nl.mpi.metadata.cmdi.api.CMDIConstants.*;
 import nl.mpi.metadata.cmdi.api.model.Attribute;
 import nl.mpi.metadata.cmdi.api.model.CMDIContainerMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
@@ -152,7 +152,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 
     private void pruneHeader(CMDIDocument metadataDocument, Document domDocument, XPathFactory xPathFactory) throws DOMException, MetadataDocumentException {
 	try {
-	    final Node headerNode = (Node) newXPath(xPathFactory).evaluate(CMDIConstants.CMD_HEADER_PATH, domDocument, XPathConstants.NODE);
+	    final Node headerNode = (Node) newXPath(xPathFactory).evaluate(CMD_HEADER_PATH, domDocument, XPathConstants.NODE);
 	    // Remove header items
 	    removeChildren(headerNode);
 	} catch (XPathExpressionException tEx) {
@@ -164,7 +164,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 
     private void pruneResourceProxies(CMDIDocument metadataDocument, Document domDocument, XPathFactory xPathFactory) throws DOMException, MetadataDocumentException {
 	try {
-	    Node resourceProxyListNode = (Node) newXPath(xPathFactory).evaluate(CMDIConstants.CMD_RESOURCE_PROXY_LIST_PATH, domDocument, XPathConstants.NODE);
+	    Node resourceProxyListNode = (Node) newXPath(xPathFactory).evaluate(CMD_RESOURCE_PROXY_LIST_PATH, domDocument, XPathConstants.NODE);
 	    // Remove resource proxies
 	    removeChildren(resourceProxyListNode);
 	} catch (XPathExpressionException tEx) {
@@ -181,9 +181,9 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 
     private void setHeaders(CMDIDocument metadataDocument, Document domDocument, XPathFactory xPathFactory) throws MetadataDocumentException {
 	try {
-	    Node headerNode = (Node) newXPath(xPathFactory).evaluate(CMDIConstants.CMD_HEADER_PATH, domDocument, XPathConstants.NODE);
+	    Node headerNode = (Node) newXPath(xPathFactory).evaluate(CMD_HEADER_PATH, domDocument, XPathConstants.NODE);
 	    for (HeaderInfo header : metadataDocument.getHeaderInformation()) {
-		org.w3c.dom.Element headerItemNode = domDocument.createElementNS(CMDIConstants.CMD_NAMESPACE, header.getName());
+		org.w3c.dom.Element headerItemNode = domDocument.createElementNS(CMD_NAMESPACE, header.getName());
 		headerItemNode.setTextContent(header.getValue());
 		for (Entry<String, String> attribute : header.getAttributes().entrySet()) {
 		    headerItemNode.setAttribute(attribute.getKey(), attribute.getValue());
@@ -200,7 +200,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	final Collection<Reference> documentResourceProxies = metadataDocument.getDocumentReferences();
 	if (documentResourceProxies.size() > 0) {
 	    try {
-		final Node proxiesNode = (Node) newXPath(xPathFactory).evaluate(CMDIConstants.CMD_RESOURCE_PROXY_LIST_PATH, domDocument, XPathConstants.NODE);
+		final Node proxiesNode = (Node) newXPath(xPathFactory).evaluate(CMD_RESOURCE_PROXY_LIST_PATH, domDocument, XPathConstants.NODE);
 		for (Reference resourceProxy : documentResourceProxies) {
 		    // We can safely cast resourceProxy to ResourceProxy since only ResourceProxies can be added to CMDIDocument
 		    builResourceProxy(domDocument, proxiesNode, (ResourceProxy) resourceProxy);
@@ -214,26 +214,32 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 
     private void builResourceProxy(Document domDocument, final Node proxiesNode, ResourceProxy resourceProxy) throws MetadataDocumentException, DOMException {
 	// Create proxy node
-	final org.w3c.dom.Element proxyNode = (org.w3c.dom.Element) domDocument.createElementNS(CMDIConstants.CMD_NAMESPACE, CMDIConstants.CMD_RESOURCE_PROXY_ELEMENT);
-	proxyNode.setAttribute(CMDIConstants.CMD_RESOURCE_PROXY_ID_ATTRIBUTE, resourceProxy.getId());
+	final org.w3c.dom.Element proxyNode = (org.w3c.dom.Element) domDocument.createElementNS(CMD_NAMESPACE, CMD_RESOURCE_PROXY_ELEMENT);
+	proxyNode.setAttribute(CMD_RESOURCE_PROXY_ID_ATTRIBUTE, resourceProxy.getId());
 	proxiesNode.appendChild(proxyNode);
 
-	final org.w3c.dom.Element resourceTypeNode = (org.w3c.dom.Element) domDocument.createElementNS(CMDIConstants.CMD_NAMESPACE, CMDIConstants.CMD_RESOURCE_PROXY_TYPE_ELEMENT);
+	final org.w3c.dom.Element resourceTypeNode = (org.w3c.dom.Element) domDocument.createElementNS(CMD_NAMESPACE, CMD_RESOURCE_PROXY_TYPE_ELEMENT);
 	resourceTypeNode.setTextContent(resourceProxy.getType());
 	if (resourceProxy.getMimetype() != null) {
-	    resourceTypeNode.setAttribute(CMDIConstants.CMD_RESOURCE_PROXY_TYPE_MIMETYPE_ATTRIBUTE, resourceProxy.getMimetype());
+	    resourceTypeNode.setAttribute(CMD_RESOURCE_PROXY_TYPE_MIMETYPE_ATTRIBUTE, resourceProxy.getMimetype());
 	}
 	proxyNode.appendChild(resourceTypeNode);
 
-	final Node resourceRefNode = domDocument.createElementNS(CMDIConstants.CMD_NAMESPACE, CMDIConstants.CMD_RESOURCE_PROXY_REF_ELEMENT);
+	final org.w3c.dom.Element resourceRefNode = (org.w3c.dom.Element) domDocument.createElementNS(CMD_NAMESPACE, CMD_RESOURCE_PROXY_REF_ELEMENT);
 	resourceRefNode.setTextContent(resourceProxy.getURI().toString());
+        if(resourceProxy.getLocation() != null) {
+            resourceRefNode.setAttributeNS(
+                    CMD_RESOURCE_PROXY_LOCATION_ATTRIBUTE_NAMESPACE, 
+                    CMD_RESOURCE_PROXY_LOCATION_ATTRIBUTE_PREFIX + ":" + CMD_RESOURCE_PROXY_LOCATION_ATTRIBUTE_NAME, 
+                    resourceProxy.getLocation().toString());
+        }
 	proxyNode.appendChild(resourceRefNode);
     }
 
     private void buildComponents(CMDIDocument metadataDocument, Document domDocument, XPathFactory xPathFactory) throws MetadataDocumentException {
 	try {
 	    final String schemaLocation = metadataDocument.getType().getSchemaLocation().toString();
-	    final Node componentsNode = (Node) newXPath(xPathFactory).evaluate(CMDIConstants.CMD_COMPONENTS_PATH, domDocument, XPathConstants.NODE);
+	    final Node componentsNode = (Node) newXPath(xPathFactory).evaluate(CMD_COMPONENTS_PATH, domDocument, XPathConstants.NODE);
 	    buildMetadataElement(domDocument, componentsNode, metadataDocument, schemaLocation, xPathFactory);
 	} catch (DOMException domEx) {
 	    throw new MetadataDocumentException(metadataDocument, "DOMException while building components in DOM", domEx);
@@ -307,7 +313,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 
     private void buildLanguageAttribute(Document domDocument, org.w3c.dom.Element elementNode, MultilingualElement metadataElement) throws DOMException {
 	if (metadataElement.getLanguage() != null) {
-	    final MetadataElementAttributeType languageAttributeType = metadataElement.getType().getAttributeTypeByName(CMDIConstants.CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAMESPACE_URI, CMDIConstants.CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAME);
+	    final MetadataElementAttributeType languageAttributeType = metadataElement.getType().getAttributeTypeByName(CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAMESPACE_URI, CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAME);
 	    if (languageAttributeType instanceof CMDIAttributeType) {
 		Node attrNode = appendAttributeNode(domDocument, elementNode, ((CMDIAttributeType) languageAttributeType).getSchemaElement());
 		attrNode.setNodeValue(metadataElement.getLanguage());
@@ -323,7 +329,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 		// We can safely cast resourceProxy to ResourceProxy since only ResourceProxies can be added to CMDIDocument
 		refBuilder.append(((ResourceProxy) resourceProxy).getId()).append(" ");
 	    }
-	    elementNode.setAttribute(CMDIConstants.CMD_RESOURCE_PROXY_REFERENCE_ATTRIBUTE, refBuilder.toString().trim());
+	    elementNode.setAttribute(CMD_RESOURCE_PROXY_REFERENCE_ATTRIBUTE, refBuilder.toString().trim());
 	}
     }
 
@@ -385,7 +391,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 
     private boolean shouldTerminateEmptyModeBuilding(final Node currentElement) {
 	// Building in EMPTY mode should stop at first child of /CMD/Components, so check parent node name
-	return currentElement.getParentNode().getNodeName().equals(CMDIConstants.CMD_COMPONENTS_NODE_NAME);
+	return currentElement.getParentNode().getNodeName().equals(CMD_COMPONENTS_NODE_NAME);
     }
 
     private Node appendNode(Document workingDocument, String nameSpaceUri, org.w3c.dom.Element parentElement, SchemaProperty schemaProperty, boolean addRequiredAttributes) {
@@ -419,7 +425,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	    // this is probably not the way to set these, however this will do for now (many other methods have been tested and all failed to function correctly)
 	    currentElement.setAttribute("CMDVersion", "1.1");
 	    currentElement.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-	    currentElement.setAttribute("xsi:schemaLocation", CMDIConstants.CMD_NAMESPACE + " " + nameSpaceUri);
+	    currentElement.setAttribute("xsi:schemaLocation", CMD_NAMESPACE + " " + nameSpaceUri);
 	    workingDocument.appendChild(currentElement);
 	} else {
 	    parentElement.appendChild(currentElement);
@@ -460,7 +466,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 
     private String getPrefixedName(SchemaProperty schemaProperty) {
 	String name = schemaProperty.getName().getLocalPart();
-	if (CMDIConstants.XML_NAMESPACE.equals(schemaProperty.getName().getNamespaceURI())) {
+	if (XML_NAMESPACE.equals(schemaProperty.getName().getNamespaceURI())) {
 	    name = "xml:" + name;
 	}
 	return name;
