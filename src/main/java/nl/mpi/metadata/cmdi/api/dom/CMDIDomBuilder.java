@@ -203,7 +203,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 		final Node proxiesNode = (Node) newXPath(xPathFactory).evaluate(CMD_RESOURCE_PROXY_LIST_PATH, domDocument, XPathConstants.NODE);
 		for (Reference resourceProxy : documentResourceProxies) {
 		    // We can safely cast resourceProxy to ResourceProxy since only ResourceProxies can be added to CMDIDocument
-		    builResourceProxy(domDocument, proxiesNode, (ResourceProxy) resourceProxy);
+		    buildResourceProxy(domDocument, proxiesNode, (ResourceProxy) resourceProxy);
 		}
 		metadataDocument.getResourceProxiesDirtyState().setDirty(false);
 	    } catch (XPathExpressionException tEx) {
@@ -212,7 +212,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	}
     }
 
-    private void builResourceProxy(Document domDocument, final Node proxiesNode, ResourceProxy resourceProxy) throws MetadataDocumentException, DOMException {
+    private void buildResourceProxy(Document domDocument, final Node proxiesNode, ResourceProxy resourceProxy) throws MetadataDocumentException, DOMException {
 	// Create proxy node
 	final org.w3c.dom.Element proxyNode = (org.w3c.dom.Element) domDocument.createElementNS(CMD_NAMESPACE, CMD_RESOURCE_PROXY_ELEMENT);
 	proxyNode.setAttribute(CMD_RESOURCE_PROXY_ID_ATTRIBUTE, resourceProxy.getId());
@@ -226,7 +226,13 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	proxyNode.appendChild(resourceTypeNode);
 
 	final org.w3c.dom.Element resourceRefNode = (org.w3c.dom.Element) domDocument.createElementNS(CMD_NAMESPACE, CMD_RESOURCE_PROXY_REF_ELEMENT);
-	resourceRefNode.setTextContent(resourceProxy.getURI().toString());
+	
+        URI resourceProxyUri = resourceProxy.getURI();
+        String resourceProxyUriStr = "";
+        if(resourceProxyUri != null) {
+            resourceProxyUriStr = resourceProxyUri.toString();
+        }
+        resourceRefNode.setTextContent(resourceProxyUriStr);
         if(resourceProxy.getLocation() != null) {
             resourceRefNode.setAttributeNS(
                     CMD_RESOURCE_PROXY_LOCATION_ATTRIBUTE_NAMESPACE, 

@@ -17,6 +17,7 @@
 package nl.mpi.metadata.cmdi.api.model.impl;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -248,6 +249,26 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
 	}
 	return null;
     }
+    
+    /**
+     * Gets the resource proxy with the specified URI
+     *
+     * @param uri URI of resource proxy to retrieve
+     * @return Resource proxy with the specified URI or null if not found. If there are multiple with the same URI, the first one
+     * encountered is returned
+     */
+    @Override
+    public synchronized ResourceProxy getDocumentReferenceByLocation(URL location) {
+        for(ResourceProxy proxy : resourceProxies.values()) {
+            if(proxy.getLocation() == null) {
+                continue;
+            }
+            if(proxy.getLocation().equals(location)) {
+                return proxy;
+            }
+        }
+        return null;
+    }
 
     /**
      * Adds an existing resource proxy to the resource proxy map for this document.
@@ -274,22 +295,12 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
      */
     @Override
     public synchronized DataResourceProxy createDocumentResourceReference(URI uri, String type, String mimetype) throws MetadataException {
-	final ResourceProxy resourceProxy = getDocumentReferenceByURI(uri);
-	if (resourceProxy == null) {
-	    if (type == null) {
-		// null type should fall back to default
-		type = CMDIConstants.CMD_RESOURCE_PROXY_TYPE_RESOURCE;
-	    }
-	    final DataResourceProxy newResourceProxy = new DataResourceProxy(newResourceProxyId("r"), uri, null, type, mimetype);
-	    addDocumentResourceProxy(newResourceProxy);
-	    return newResourceProxy;
-	} else {
-	    if (resourceProxy instanceof DataResourceProxy) {
-		return (DataResourceProxy) resourceProxy;
-	    } else {
-		throw new MetadataException(String.format("Resource proxy conflict: %1$s found while trying to add DataResourceProxy", resourceProxy.getClass()));
-	    }
-	}
+	return newResourceReference(uri, null, type, mimetype);
+    }
+    
+    @Override
+    public synchronized DataResourceProxy createDocumentResourceReference(URI uri, URL location, String type, String mimetype) throws MetadataException {
+        return newResourceReference(uri, location, type, mimetype);
     }
 
     /**
@@ -352,18 +363,22 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
      */
     @Override
     public MetadataResourceProxy createDocumentMetadataReference(URI uri, String mimetype) throws MetadataException {
-	final ResourceProxy resourceProxy = getDocumentReferenceByURI(uri);
-	if (resourceProxy == null) {
-	    final MetadataResourceProxy newResourceProxy = new MetadataResourceProxy(newResourceProxyId("m"), uri, null, mimetype);
-	    addDocumentResourceProxy(newResourceProxy);
-	    return newResourceProxy;
-	} else {
-	    if (resourceProxy instanceof MetadataResourceProxy) {
-		return (MetadataResourceProxy) resourceProxy;
-	    } else {
-		throw new MetadataException(String.format("Resource proxy conflict: %1$s found while trying to add MetadataResourceProxy", resourceProxy.getClass()));
-	    }
-	}
+	return newMetadataReference(uri, null, mimetype);
+    }
+    
+    /**
+     * @see CMDIDocumentImpl#createDocumentMetadataReference(java.net.URI, java.lang.String)
+     * 
+     * @param uri URI for resource proxy
+     * @param location local URL for resource proxy
+     * @param mimetype MIME type for resource proxy
+     * @return newly created resource or existing resource with specified URI
+     * @throws MetadataException if resource with specified URI already exists but is not a {@link MetadataResourceProxy} (i.e. is a
+     * {@link DataResourceProxy})
+     */
+    @Override
+    public MetadataResourceProxy createDocumentMetadataReference(URI uri, URL location, String mimetype) throws MetadataException {
+        return newMetadataReference(uri, location, mimetype);
     }
 
     /**
@@ -509,6 +524,41 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
 	return resourceProxiesDirtyState;
     }
 
+    
+    private MetadataResourceProxy newMetadataReference(URI uri, URL location, String mimetype) throws MetadataException {
+        final ResourceProxy resourceProxy = getDocumentReferenceByURI(uri);
+	if (resourceProxy == null) {
+	    final MetadataResourceProxy newResourceProxy = new MetadataResourceProxy(newResourceProxyId("m"), uri, location, mimetype);
+	    addDocumentResourceProxy(newResourceProxy);
+	    return newResourceProxy;
+	} else {
+	    if (resourceProxy instanceof MetadataResourceProxy) {
+		return (MetadataResourceProxy) resourceProxy;
+	    } else {
+		throw new MetadataException(String.format("Resource proxy conflict: %1$s found while trying to add MetadataResourceProxy", resourceProxy.getClass()));
+	    }
+	}
+    }
+    
+    private DataResourceProxy newResourceReference(URI uri, URL location, String type, String mimetype) throws MetadataException {
+        final ResourceProxy resourceProxy = getDocumentReferenceByURI(uri);
+	if (resourceProxy == null) {
+	    if (type == null) {
+		// null type should fall back to default
+		type = CMDIConstants.CMD_RESOURCE_PROXY_TYPE_RESOURCE;
+	    }
+	    final DataResourceProxy newResourceProxy = new DataResourceProxy(newResourceProxyId("r"), uri, location, type, mimetype);
+	    addDocumentResourceProxy(newResourceProxy);
+	    return newResourceProxy;
+	} else {
+	    if (resourceProxy instanceof DataResourceProxy) {
+		return (DataResourceProxy) resourceProxy;
+	    } else {
+		throw new MetadataException(String.format("Resource proxy conflict: %1$s found while trying to add DataResourceProxy", resourceProxy.getClass()));
+	    }
+	}
+    }
+    
     /**
      * Dirty state provider for the headers. Has a general state and proxies for the state of the individual headers.
      */

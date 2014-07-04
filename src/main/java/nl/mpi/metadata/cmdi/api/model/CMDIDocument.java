@@ -17,6 +17,7 @@
 package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.Collection;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.events.MetadataDocumentListener;
@@ -64,6 +65,15 @@ public interface CMDIDocument extends CMDIContainerMetadataElement, HandleCarrie
     ResourceProxy getDocumentReferenceByURI(URI uri);
 
     /**
+     * Gets the resource proxy with the specified location (URL)
+     *
+     * @param location URL of resource proxy to retrieve
+     * @return Resource proxy with the specified location or null if not found. If there are multiple with the same location, the first one
+     * encountered is returned
+     */
+    ResourceProxy getDocumentReferenceByLocation(URL location);
+
+    /**
      * @return an <em>unmodifiable</em> copy of the MetadataDocumentListeners collection
      */
     Collection<MetadataDocumentListener> getMetadataDocumentListeners();
@@ -106,6 +116,8 @@ public interface CMDIDocument extends CMDIContainerMetadataElement, HandleCarrie
     void removeHeaderInformation(String name);
 
     MetadataResourceProxy createDocumentMetadataReference(URI uri, String mimetype) throws MetadataException;
+    
+    MetadataResourceProxy createDocumentMetadataReference(URI uri, URL location, String mimetype) throws MetadataException;
 
     /**
      * Creates and adds a new non-metadata resource proxy in this document if it does not exist yet. If a reference with the same URI
@@ -120,6 +132,19 @@ public interface CMDIDocument extends CMDIContainerMetadataElement, HandleCarrie
      * {@link MetadataResourceProxy})
      */
     DataResourceProxy createDocumentResourceReference(URI uri, String type, String mimetype) throws MetadataException;
+    
+    /**
+     * @see CMDIDocument#createDocumentResourceReference(java.net.URI, java.lang.String, java.lang.String)
+     * 
+     * @param uri URI for resource proxy
+     * @param location local URL for resource proxy
+     * @param type type for resource proxy, null for default ({@link CMDIConstants#CMD_RESOURCE_PROXY_TYPE_RESOURCE})
+     * @param mimetype MIME type for resource proxy
+     * @return newly created resource or existing resource with specified URI
+     * @throws MetadataException if resource with specified URI already exists but is not a {@link DataResourceProxy} (i.e. is a
+     * {@link MetadataResourceProxy})
+     */
+    DataResourceProxy createDocumentResourceReference(URI uri, URL location, String type, String mimetype) throws MetadataException;
 
     /**
      *

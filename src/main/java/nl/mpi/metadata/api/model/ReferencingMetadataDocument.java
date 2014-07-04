@@ -17,6 +17,7 @@
 package nl.mpi.metadata.api.model;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import nl.mpi.metadata.api.MetadataException;
@@ -49,6 +50,18 @@ public interface ReferencingMetadataDocument<M extends MetadataElement, R extend
      * @throws MetadataException in case any error occurs while create the reference
      */
     ResourceReference createDocumentResourceReference(URI uri, String type, String mimetype) throws MetadataException;
+    
+    /**
+     * @see ReferencingMetadataDocument#createDocumentMetadataReference(java.net.URI, java.net.URL, java.lang.String)
+     * 
+     * @param uri URI of new reference
+     * @param location local URL of new reference
+     * @param type The type of the reference that should be specified (if supported)
+     * @param mimetype MIME type of new reference that should be specified (if supported)
+     * @return reference as it has been created on this element (null if none created)
+     * @throws MetadataException in case any error occurs while create the reference
+     */
+    ResourceReference createDocumentResourceReference(URI uri, URL location, String type, String mimetype) throws MetadataException;
 
     /**
      * Creates a reference to another metadata instance on this element
@@ -59,6 +72,17 @@ public interface ReferencingMetadataDocument<M extends MetadataElement, R extend
      * @throws MetadataException in case any error occurs while create the reference
      */
     MetadataReference createDocumentMetadataReference(URI uri, String mimetype) throws MetadataException;
+    
+    /**
+     * @see ReferencingMetadataDocument#createDocumentMetadataReference(java.net.URI, java.lang.String)
+     * 
+     * @param uri URI of new reference
+     * @param location local URL of new reference
+     * @param mimetype MIME type of new reference
+     * @return reference as it has been created on this element. Null if none has been created
+     * @throws MetadataException in case any error occurs while create the reference
+     */
+    MetadataReference createDocumentMetadataReference(URI uri, URL location, String mimetype) throws MetadataException;
 
     /**
      * Removes a given resource reference from this element
@@ -79,5 +103,19 @@ public interface ReferencingMetadataDocument<M extends MetadataElement, R extend
      */
     Collection<MetadataElement> getResourceProxyReferences(Reference reference);
 
+    /**
+     * Gets the reference for the given URI
+     * 
+     * @param uri URI of the reference to retrieve
+     * @return reference for the URI, null if not found
+     */
     R getDocumentReferenceByURI(URI uri);
+    
+    /**
+     * Gets the reference for the given local URL
+     * 
+     * @param location local URL of the reference to retrieve
+     * @return reference for the local URL, null if not found
+     */
+    R getDocumentReferenceByLocation(URL location);
 }
