@@ -39,6 +39,7 @@ public class CMDIMetadataElementFactoryImpl implements CMDIMetadataElementFactor
      *
      * @param parentElement container that the newly created element/component will consider its parent
      * @param type element or component type from the profile to instantiate
+     * @param strategy
      * @return new element or component instance depending on the type
      */
     @Override

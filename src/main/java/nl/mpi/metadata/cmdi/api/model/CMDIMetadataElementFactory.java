@@ -16,6 +16,7 @@
  */
 package nl.mpi.metadata.cmdi.api.model;
 
+import nl.mpi.metadata.cmdi.api.model.impl.DisplayValueStrategy;
 import nl.mpi.metadata.cmdi.api.type.CMDIAttributeType;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 
@@ -31,6 +32,7 @@ public interface CMDIMetadataElementFactory {
      *
      * @param parentElement container that the newly created element/component will consider its parent
      * @param type element or component type from the profile to instantiate
+     * @param strategy
      * @return new element or component instance depending on the type
      */
     CMDIMetadataElement createNewMetadataElement(CMDIContainerMetadataElement parentElement, CMDIProfileElement type);

@@ -67,6 +67,11 @@ public class ElementImpl<T> extends CMDIMetadataElementImpl implements Element<T
     public String getDisplayValue() {
 	return getValue() == null ? null : getValue().toString();
     }
+    
+    @Override
+    public String getDisplayValue(DisplayValueStrategy strategy) {
+	return getValue() == null ? null : getValue().toString();
+    }
 
     @Override
     public T getValue() {

@@ -36,6 +36,7 @@ import nl.mpi.metadata.cmdi.api.model.Element;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import nl.mpi.metadata.cmdi.api.type.ComponentType;
 import nl.mpi.metadata.cmdi.api.type.ElementType;
+import nl.mpi.metadata.cmdi.api.type.impl.ComponentTypeImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +68,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
      * Map of {type name => child elements}
      */
     private final Map<String, List<CMDIMetadataElement>> childrenTypeMap;
+    //private final DisplayValueStrategy displayValueStrategy;
     
     public CMDIContainerMetadataElementImpl(final ComponentType type) {
 	this.type = type;
@@ -314,6 +316,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
 	}
     }
     
+    @Override
     public int getChildrenCount() {
 	return children.size();
     }
@@ -359,29 +362,12 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
      */
     @Override
     public String getDisplayValue() {
-	int minPriority = 0;
-	String displayValue = null;
-	// Look for Element (field) children
-	for (MetadataElement child : getChildren()) {
-	    if (child.getType() instanceof ElementType) {
-		final String childDisplayValue = child.getDisplayValue();
-		// Only consider if it has a valid display value
-		if (null != childDisplayValue && !"".equals(childDisplayValue)) {
-		    // Check child priority, 0 == no priority
-		    final int childPriority = ((ElementType) child.getType()).getDisplayPriority();
-		    if (childPriority > 0 && (minPriority == 0 || minPriority > childPriority)) {
-			// Lowest priority thus far. Use display value!
-			minPriority = childPriority;
-			displayValue = childDisplayValue;
-		    }
-		}
-	    }
-	}
-	if (displayValue != null) {
-	    return displayValue;
-	} else {
-	    return getName();
-	}
+        return getDisplayValue(new DefaultDisplayValueStrategy());
+    }
+    
+    @Override
+    public String getDisplayValue(DisplayValueStrategy displayStrategy) {
+        return displayStrategy.getDisplayValue(getChildren(), this);
     }
     
     @Override

@@ -47,6 +47,7 @@ import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElementFactory;
 import nl.mpi.metadata.cmdi.api.model.impl.CMDIMetadataElementFactoryImpl;
+import nl.mpi.metadata.cmdi.api.model.impl.DisplayValueStrategy;
 import nl.mpi.metadata.cmdi.api.type.CMDIAttributeType;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileContainer;
@@ -246,6 +247,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      *
      * @param container element container to add the new element to
      * @param elementType type of the new element to be added
+     * @param strategy
      * @return newly created element, null if not added
      * @throws MetadataElementException if specified types are not compatible, or if an error occurs while registering the child with the
      * container
@@ -255,7 +257,8 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
 	if (!container.getType().canContainType(elementType)) {
 	    throw new MetadataElementException(container, String.format("Element type %1$s cannot be contained by provided container type %2$s", elementType, container.getType()));
 	}
-	CMDIMetadataElement newMetadataElement = metadataElementFactory.createNewMetadataElement(container, elementType);
+	CMDIMetadataElement newMetadataElement = 
+                metadataElementFactory.createNewMetadataElement(container, elementType);
 	if (container.addChildElement(newMetadataElement)) {
 	    return newMetadataElement;
 	} else {

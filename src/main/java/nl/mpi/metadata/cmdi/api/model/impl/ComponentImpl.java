@@ -41,6 +41,7 @@ public class ComponentImpl extends CMDIContainerMetadataElementImpl implements C
 	this.metadataDocument = parent.getMetadataDocument();
     }
 
+    @Override
     public MetadataContainer<CMDIMetadataElement> getParent() {
 	return parent;
     }

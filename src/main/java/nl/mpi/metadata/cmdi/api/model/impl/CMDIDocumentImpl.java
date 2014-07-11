@@ -34,6 +34,7 @@ import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.model.Reference;
+import nl.mpi.metadata.api.type.MetadataElementType;
 import nl.mpi.metadata.api.util.HandleUtil;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
@@ -44,6 +45,8 @@ import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.SettableDirtyStateProvider;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDITypeException;
+import nl.mpi.metadata.cmdi.api.type.ComponentType;
+import nl.mpi.metadata.cmdi.api.type.ElementType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,6 +82,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
      * Create a profile instance that has a location associated
      *
      * @param profile
+     * @param strategy
      * @param fileLocation
      */
     public CMDIDocumentImpl(CMDIProfile profile, URI fileLocation) {
@@ -593,4 +597,22 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
 	    }
 	}
     }
+    
+    @Override
+    public String getDisplayValue() {
+        String displayValue = null;
+        //for (MetadataElement child : getChildren()) {
+        //    MetadataElementType type = child.getType();
+         //   if(type instanceof ElementType) {
+           //
+        displayValue = super.getDisplayValue();
+        //        break;
+          //  } else if(type instanceof ComponentType) {
+            //    displayValue = child.getDisplayValue();
+              //  break;
+           // }
+       // }
+	return displayValue;
+    }
+    
 }

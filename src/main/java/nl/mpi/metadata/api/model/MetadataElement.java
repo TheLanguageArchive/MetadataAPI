@@ -18,6 +18,7 @@ package nl.mpi.metadata.api.model;
 
 import nl.mpi.metadata.api.events.MetadataElementListener;
 import nl.mpi.metadata.api.type.MetadataElementType;
+import nl.mpi.metadata.cmdi.api.model.impl.DisplayValueStrategy;
 
 /**
  *
@@ -36,7 +37,8 @@ public interface MetadataElement {
      * @return Text that should be displayed as value for this element
      */
     String getDisplayValue();
-
+    String getDisplayValue(DisplayValueStrategy displayStrategy);
+    
     /**
      *
      * @return Type of this element
