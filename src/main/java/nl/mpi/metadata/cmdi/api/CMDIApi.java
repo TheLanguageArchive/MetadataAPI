@@ -19,9 +19,11 @@ package nl.mpi.metadata.cmdi.api;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import nl.mpi.metadata.api.MetadataAPI;
@@ -167,7 +169,34 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
     @Override
     public CMDIDocument getMetadataDocument(URL url) throws IOException, MetadataException {
 	logger.debug("Opening stream for {}", url);
-	final InputStream documentStream = url.openStream();
+        final InputStream documentStream;
+        URLConnection openConnection = url.openConnection();
+        if(openConnection instanceof HttpURLConnection) {
+            HttpURLConnection openUrlConnection = (HttpURLConnection)openConnection;
+            /**
+             * Following redirects might not work in all situations, especially when
+             * switching protocols http <--> https for example.
+             */
+            openUrlConnection.setInstanceFollowRedirects(true);
+            logger.debug("Http Url Connection following redirects");
+            documentStream = openUrlConnection.getInputStream();
+            int responseCode = openUrlConnection.getResponseCode();
+            if(responseCode != 200) {
+                if(responseCode >= 300 && responseCode < 400) {
+                    String location = openUrlConnection.getHeaderField("Location");
+                    if(location != null) {
+                        String originalProtocol = url.getProtocol();
+                        String redirectedProtocol = (new URL(location)).getProtocol();
+                        if(originalProtocol.compareTo(redirectedProtocol) != 0) {
+                            throw new IOException("Unexpected HTTP response code, protocol switch ["+originalProtocol+" --> "+redirectedProtocol+"] prevented following redirects.");
+                        }
+                    }
+                } 
+                throw new IOException("Unexpected HTTP response code "+openUrlConnection.getResponseCode()+" != 200. Message = ["+openUrlConnection.getResponseMessage()+"]");
+            }            
+        } else {
+            documentStream = openConnection.getInputStream();
+        }
 	try {
 	    return getMetadataDocument(url, documentStream);
 	} finally {
