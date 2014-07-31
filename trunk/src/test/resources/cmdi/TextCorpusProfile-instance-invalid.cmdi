@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CMD xmlns="http://www.clarin.eu/cmd/"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     CMDVersion="1.1"
+     xsi:schemaLocation="http://www.clarin.eu/cmd/ http://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/profiles/clarin.eu:cr1:p_1271859438164/xsd ">
+   <Header>
+      <MdCreator>Joe Unit</MdCreator>
+      <MdCreationDate>2009-11-18</MdCreationDate>
+      <!-- A reference to the unique identifier of the profile this metadata instance is based on -->
+      <MdProfile>clarin.eu:cr1:p_1271859438164</MdProfile>
+      <!-- An (optional but recommended) plain text indication to which collection this file belongs. Used for the Collection facet in the VLO -->
+      <MdCollectionDisplayName>Metadata API test instances</MdCollectionDisplayName>
+   </Header>
+   <Resources>
+      <ResourceProxyList/>
+      <JournalFileProxyList/>
+      <ResourceRelationList/>
+   </Resources>
+   <Components>
+      <TextCorpusProfile>
+         <Collection>
+            <GeneralInfo>
+               <Name xml:lang="not-a-language">TextCorpus test</Name>
+               <Description>
+                  <Description UnsupportedAttribute="true" LanguageID="nl">Test voor TextCorpus</Description>
+               </Description>
+            </GeneralInfo>
+            <OriginLocation>
+               <Location>
+               </Location>
+            </OriginLocation>
+            <Access>
+               <Availability>Test</Availability>
+               <Contact/>
+            </Access>
+         </Collection>
+         <Corpus>
+            <Modality>
+               <Modality>Not in list</Modality>
+            </Modality>
+            <Validation>
+               <Validation>true</Validation>
+            </Validation>
+         </Corpus>
+         <TextCorpus>
+            <TextTechnical>
+               <CharacterEncoding/>
+               <MimeType>
+                  <MimeType>text/html</MimeType>
+               </MimeType>
+            </TextTechnical>
+         </TextCorpus>
+      </TextCorpusProfile>
+   </Components>
+</CMD>
