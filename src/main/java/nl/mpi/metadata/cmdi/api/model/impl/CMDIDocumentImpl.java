@@ -484,7 +484,9 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
     }
 
     /**
-     * Sets the handle of this object
+     * Sets the handle of this object.
+     * If the passed handle is null, the header information
+     * corresponding to the self handle will be removed from the document.
      *
      * @param handle handle to set, has to be a URL with scheme 'hdl'
      * @throws IllegalArgumentException if the provided handle is of a format that cannot be converted into a handle for this object
@@ -492,7 +494,11 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
      */
     @Override
     public void setHandle(URI handle) throws MetadataException {
-	if (handleUtil.isHandleUri(handle)) {
+        if(handle == null) {
+            logger.debug("Removing handle of {}", this);
+            removeHeaderInformation(CMDIConstants.CMD_HEADER_MD_SELF_LINK);
+        }
+        else if (handleUtil.isHandleUri(handle)) {
 	    logger.debug("Setting handle of {} to {}", this, handle);
 	    putHeaderInformation(new HeaderInfo(CMDIConstants.CMD_HEADER_MD_SELF_LINK, handle.toString()));
 	} else {

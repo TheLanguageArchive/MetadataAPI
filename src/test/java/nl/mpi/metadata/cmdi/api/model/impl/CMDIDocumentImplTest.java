@@ -431,6 +431,13 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 	// Handle is stored in MdSelfLink header element
 	assertEquals("hdl:1234/test", document.getHeaderInformation(CMDIConstants.CMD_HEADER_MD_SELF_LINK).getValue());
     }
+    
+    @Test
+    public void testSetHandleNull() throws MetadataException {
+        document.setHandle(null);
+        // Handle is stored in MdSelfLink header element
+	assertNull(document.getHeaderInformation(CMDIConstants.CMD_HEADER_MD_SELF_LINK));
+    }
 
     @Test
     public void testGetPathString() {
