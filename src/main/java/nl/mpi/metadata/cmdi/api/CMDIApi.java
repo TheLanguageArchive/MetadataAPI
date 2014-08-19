@@ -79,7 +79,8 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      */
     private final EntityResolver entityResolver;
     /**
-     * Service that deserializes an existing CMDI document on disk into a CMDIDocumentImpl object
+     * Service that deserializes an existing CMDI document on disk into a
+     * CMDIDocumentImpl object
      */
     private final MetadataDocumentReader<CMDIDocument> documentReader;
     /**
@@ -95,40 +96,41 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      */
     private final MetadataValidator<CMDIDocument> cmdiValidator;
     /**
-     * Service that caches CMDIProfile's and ensures that only one copy of each profile is opened.
+     * Service that caches CMDIProfile's and ensures that only one copy of each
+     * profile is opened.
      */
     private final CMDIMetadataElementFactory metadataElementFactory;
     private final CMDIProfileContainer profileContainer;
     private final DOMBuilderFactory domBuilderFactory;
     /**
-     * Service that manipulates DOM representation of CMDI documents
-     * TODO: Extract interface and support arbitrary implementations
+     * Service that manipulates DOM representation of CMDI documents TODO:
+     * Extract interface and support arbitrary implementations
      */
     private final CMDIDomBuilder componentBuilder;
 
     /**
-     * Creates an instance of CMDIApi with
-     * a new {@link CMDIEntityResolver}
-     * a new {@link DefaultCMDIValidator},
-     * a new {@link CMDIMetadataElementFactoryImpl}
-     * and a new {@link CMDIDocumentReader}, {@link CMDIDocumentWriter} and {@link CMDIProfileReader} based on those
+     * Creates an instance of CMDIApi with a new {@link CMDIEntityResolver} a
+     * new {@link DefaultCMDIValidator}, a new
+     * {@link CMDIMetadataElementFactoryImpl} and a new
+     * {@link CMDIDocumentReader}, {@link CMDIDocumentWriter} and
+     * {@link CMDIProfileReader} based on those
      */
     public CMDIApi() {
-	this(new CMDIEntityResolver(), new DefaultCMDIValidator(), new CMDIMetadataElementFactoryImpl());
+        this(new CMDIEntityResolver(), new DefaultCMDIValidator(), new CMDIMetadataElementFactoryImpl());
     }
 
     public CMDIApi(EntityResolver entityResolver, MetadataValidator<CMDIDocument> cmdiValidator, CMDIMetadataElementFactory elementFactory) {
-	this.entityResolver = entityResolver;
-	this.cmdiValidator = cmdiValidator;
-	this.metadataElementFactory = elementFactory;
+        this.entityResolver = entityResolver;
+        this.cmdiValidator = cmdiValidator;
+        this.metadataElementFactory = elementFactory;
 
-	this.domBuilderFactory = new CMDIApiDOMBuilderFactory(entityResolver);
-	this.componentBuilder = new CMDIDomBuilder(entityResolver, domBuilderFactory);
-	this.documentWriter = new CMDIDocumentWriter(componentBuilder);
-	
-	this.profileReader = new CMDIProfileReader(entityResolver, domBuilderFactory);
-	this.profileContainer = new CMDIProfileContainerImpl(profileReader);
-	this.documentReader = new CMDIDocumentReader(profileContainer, new CMDIComponentReader(elementFactory), new CMDIResourceProxyReader());
+        this.domBuilderFactory = new CMDIApiDOMBuilderFactory(entityResolver);
+        this.componentBuilder = new CMDIDomBuilder(entityResolver, domBuilderFactory);
+        this.documentWriter = new CMDIDocumentWriter(componentBuilder);
+
+        this.profileReader = new CMDIProfileReader(entityResolver, domBuilderFactory);
+        this.profileContainer = new CMDIProfileContainerImpl(profileReader);
+        this.documentReader = new CMDIDocumentReader(profileContainer, new CMDIComponentReader(elementFactory), new CMDIResourceProxyReader());
     }
 
     /**
@@ -141,187 +143,226 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      * @param elementFactory the CMDIMetadataElementFactory to use
      */
     public CMDIApi(MetadataDocumentReader<CMDIDocument> documentReader, MetadataDocumentWriter<CMDIDocument> documentWriter, MetadataDocumentTypeReader<CMDIProfile> profileReader, MetadataValidator<CMDIDocument> cmdiValidator, EntityResolver entityResolver, CMDIMetadataElementFactory elementFactory) {
-	this.entityResolver = entityResolver;
-	this.cmdiValidator = cmdiValidator;
-	this.metadataElementFactory = elementFactory;
-	this.documentWriter = documentWriter;	
-	this.profileReader = profileReader;
-	this.documentReader = documentReader;
-	
-	this.domBuilderFactory = new CMDIApiDOMBuilderFactory(entityResolver);
-	this.componentBuilder = new CMDIDomBuilder(entityResolver, domBuilderFactory);
-	this.profileContainer = new CMDIProfileContainerImpl(profileReader);
+        this.entityResolver = entityResolver;
+        this.cmdiValidator = cmdiValidator;
+        this.metadataElementFactory = elementFactory;
+        this.documentWriter = documentWriter;
+        this.profileReader = profileReader;
+        this.documentReader = documentReader;
+
+        this.domBuilderFactory = new CMDIApiDOMBuilderFactory(entityResolver);
+        this.componentBuilder = new CMDIDomBuilder(entityResolver, domBuilderFactory);
+        this.profileContainer = new CMDIProfileContainerImpl(profileReader);
     }
 
     @Override
     public void validateMetadataDocument(CMDIDocument document, ErrorHandler errorHandler) throws SAXException {
-	getCmdiValidator().validateMetadataDocument(document, errorHandler);
+        getCmdiValidator().validateMetadataDocument(document, errorHandler);
     }
 
     /**
      * Reads the metadata document at the specified URL
      *
-     * @param url location to read the document from (will be read by means of {@link URL#openStream() })
+     * @param url location to read the document from (will be read by means of {@link URL#openStream()})
      * @return a CMDI document representing the contents at the specified URL
      * @throws IOException in case of a reading error
      * @throws MetadataException in case of a parsing or content error
      */
     @Override
     public CMDIDocument getMetadataDocument(URL url) throws IOException, MetadataException {
-	logger.debug("Opening stream for {}", url);
-        final InputStream documentStream;
+        logger.debug("Opening stream for {}", url);
+        //final InputStream documentStream;
         URLConnection openConnection = url.openConnection();
-        if(openConnection instanceof HttpURLConnection) {
-            HttpURLConnection openUrlConnection = (HttpURLConnection)openConnection;
-            /**
-             * Following redirects might not work in all situations, especially when
-             * switching protocols http <--> https for example.
-             */
-            openUrlConnection.setInstanceFollowRedirects(true);
-            logger.debug("Http Url Connection following redirects");
-            documentStream = openUrlConnection.getInputStream();
-            int responseCode = openUrlConnection.getResponseCode();
-            if(responseCode != 200) {
-                if(responseCode >= 300 && responseCode < 400) {
-                    String location = openUrlConnection.getHeaderField("Location");
-                    if(location != null) {
-                        String originalProtocol = url.getProtocol();
-                        String redirectedProtocol = (new URL(location)).getProtocol();
-                        if(originalProtocol.compareTo(redirectedProtocol) != 0) {
-                            throw new IOException("Unexpected HTTP response code, protocol switch ["+originalProtocol+" --> "+redirectedProtocol+"] prevented following redirects.");
-                        }
-                    }
-                } 
-                throw new IOException("Unexpected HTTP response code "+openUrlConnection.getResponseCode()+" != 200. Message = ["+openUrlConnection.getResponseMessage()+"]");
-            }            
-        } else {
-            documentStream = openConnection.getInputStream();
+        final InputStream documentStream = openConnectionCheckRedirects(openConnection);
+  
+        try {
+            return getMetadataDocument(url, documentStream);
+        } finally {
+            logger.debug("Closing stream for {}", url);
+            documentStream.close();
         }
-	try {
-	    return getMetadataDocument(url, documentStream);
-	} finally {
-	    logger.debug("Closing stream for {}", url);
-	    documentStream.close();
-	}
     }
 
     /**
-     * Loads the metadata document from the provided input stream. The caller is responsible for closing the input stream afterwards!
+     * Loads the metadata document from the provided input stream. The caller is
+     * responsible for closing the input stream afterwards!
      *
-     * @param url URL of the document. This will not be used to locate the contents but will be passed on to the DOM builder (retrieved from
-     * {@link #domBuilderFactory} as the systemId while parsing. It will not be closed in this method!
-     * @param documentStream stream from which the metadata document will be read
-     * @return a CMDI document representing the contents read from the provided stream
+     * @param url URL of the document. This will not be used to locate the
+     * contents but will be passed on to the DOM builder (retrieved from
+     * {@link #domBuilderFactory} as the systemId while parsing. It will not be
+     * closed in this method!
+     * @param documentStream stream from which the metadata document will be
+     * read
+     * @return a CMDI document representing the contents read from the provided
+     * stream
      * @throws IOException in case of a reading error
      * @throws MetadataException in case of a parsing or content error
      * @see DocumentBuilder#parse(java.io.InputStream, java.lang.String)
      */
     @Override
     public CMDIDocument getMetadataDocument(URL url, InputStream documentStream) throws IOException, MetadataException {
-	try {
-	    logger.debug("Reading DOM for {}", url);
-	    Document document = domBuilderFactory.newDOMBuilder().parse(documentStream, url.toExternalForm());
-	    logger.debug("Reading contents of {}", url);
-	    return getDocumentReader().read(document, url.toURI());
-	} catch (SAXException saxEx) {
-	    throw new MetadataException("SAXException while building document from " + url, saxEx);
-	} catch (URISyntaxException usEx) {
-	    // This should not happen, since at this point the stream has already been openend!
-	    throw new RuntimeException("URISyntaxException while building document from " + url, usEx);
-	}
+        try {
+            logger.debug("Reading DOM for {}", url);
+            Document document = domBuilderFactory.newDOMBuilder().parse(documentStream, url.toExternalForm());
+            logger.debug("Reading contents of {}", url);
+            return getDocumentReader().read(document, url.toURI());
+        } catch (SAXException saxEx) {
+            throw new MetadataException("SAXException while building document from " + url, saxEx);
+        } catch (URISyntaxException usEx) {
+            // This should not happen, since at this point the stream has already been openend!
+            throw new RuntimeException("URISyntaxException while building document from " + url, usEx);
+        }
     }
 
     @Override
     public CMDIDocument createMetadataDocument(CMDIProfile type) throws MetadataException, MetadataTypeException {
-	return createMetadataDocument(type, DomBuildingMode.MANDATORY);
+        return createMetadataDocument(type, DomBuildingMode.MANDATORY);
     }
 
     @Override
     public CMDIDocument createMetadataDocument(CMDIProfile type, DomBuildingMode buildingMode) throws MetadataException, MetadataTypeException {
-	// Create new DOM instance
-	Document document;
+        // Create new DOM instance
+        Document document;
 
-	try {
-	    document = componentBuilder.createDomFromSchema(type.getSchemaLocation(), buildingMode);
-	    // TODO: Handle errors properly
-	} catch (FileNotFoundException ex) {
-	    throw new MetadataTypeException(type, ex);
-	} catch (XmlException ex) {
-	    throw new MetadataTypeException(type, ex);
-	} catch (IOException ex) {
-	    throw new MetadataTypeException(type, ex);
-	}
-	try {
-	    // Read from reloaded copy of document. No URI available at this point.
-	    return documentReader.read(document, null);
-	} catch (IOException ex) {
-	    throw new MetadataException(
-		    "I/O exception while reading newly created metadata document. "
-		    + "Most likely the profile schema is not readable. See the inner exception for details.", ex);
-	}
+        try {
+            document = componentBuilder.createDomFromSchema(type.getSchemaLocation(), buildingMode);
+            // TODO: Handle errors properly
+        } catch (FileNotFoundException ex) {
+            throw new MetadataTypeException(type, ex);
+        } catch (XmlException ex) {
+            throw new MetadataTypeException(type, ex);
+        } catch (IOException ex) {
+            throw new MetadataTypeException(type, ex);
+        }
+        try {
+            // Read from reloaded copy of document. No URI available at this point.
+            return documentReader.read(document, null);
+        } catch (IOException ex) {
+            throw new MetadataException(
+                    "I/O exception while reading newly created metadata document. "
+                    + "Most likely the profile schema is not readable. See the inner exception for details.", ex);
+        }
     }
 
     @Override
     public CMDIProfile getMetadataDocumentType(URI uri) throws IOException, MetadataException {
-	return getProfileContainer().getProfile(uri);
+        return getProfileContainer().getProfile(uri);
     }
 
     @Override
     public void writeMetadataDocument(CMDIDocument document, StreamResult target) throws IOException, MetadataException, TransformerException {
-	getDocumentWriter().write(document, target);
+        getDocumentWriter().write(document, target);
     }
 
     /**
-     * Creates a new element of the specified type and adds it to the specified container
+     * Creates a new element of the specified type and adds it to the specified
+     * container
      *
      * @param container element container to add the new element to
      * @param elementType type of the new element to be added
      * @param strategy
      * @return newly created element, null if not added
-     * @throws MetadataElementException if specified types are not compatible, or if an error occurs while registering the child with the
-     * container
+     * @throws MetadataElementException if specified types are not compatible,
+     * or if an error occurs while registering the child with the container
      */
     @Override
     public CMDIMetadataElement insertMetadataElement(CMDIContainerMetadataElement container, CMDIProfileElement elementType) throws MetadataException {
-	if (!container.getType().canContainType(elementType)) {
-	    throw new MetadataElementException(container, String.format("Element type %1$s cannot be contained by provided container type %2$s", elementType, container.getType()));
-	}
-	CMDIMetadataElement newMetadataElement = 
-                metadataElementFactory.createNewMetadataElement(container, elementType);
-	if (container.addChildElement(newMetadataElement)) {
-	    return newMetadataElement;
-	} else {
-	    return null;
-	}
+        if (!container.getType().canContainType(elementType)) {
+            throw new MetadataElementException(container, String.format("Element type %1$s cannot be contained by provided container type %2$s", elementType, container.getType()));
+        }
+        CMDIMetadataElement newMetadataElement
+                = metadataElementFactory.createNewMetadataElement(container, elementType);
+        if (container.addChildElement(newMetadataElement)) {
+            return newMetadataElement;
+        } else {
+            return null;
+        }
     }
 
     @Override
     public Attribute insertAttribute(MetadataElementAttributeContainer<Attribute> container, CMDIAttributeType attributeType) throws MetadataException {
-	if (!(container instanceof CMDIMetadataElement)) {
-	    throw new MetadataException(String.format("Cannot handle container of type %1$s" + container.getClass()));
-	}
+        if (!(container instanceof CMDIMetadataElement)) {
+            throw new MetadataException(String.format("Cannot handle container of type %1$s" + container.getClass()));
+        }
 
-	CMDIMetadataElement containerElement = (CMDIMetadataElement) container;
-	if (!containerElement.getType().getAttributes().contains(attributeType)) {
-	    throw new MetadataElementException(containerElement, String.format("Attribute type %1$s cannot be contained by provided element container type %2$s", attributeType, containerElement.getType()));
-	}
+        CMDIMetadataElement containerElement = (CMDIMetadataElement) container;
+        if (!containerElement.getType().getAttributes().contains(attributeType)) {
+            throw new MetadataElementException(containerElement, String.format("Attribute type %1$s cannot be contained by provided element container type %2$s", attributeType, containerElement.getType()));
+        }
 
-	Attribute attribute = metadataElementFactory.createAttribute(containerElement, attributeType);
-	if (container.addAttribute(attribute)) {
-	    return attribute;
-	} else {
-	    return null;
-	}
+        Attribute attribute = metadataElementFactory.createAttribute(containerElement, attributeType);
+        if (container.addAttribute(attribute)) {
+            return attribute;
+        } else {
+            return null;
+        }
+    }
+
+    private InputStream openConnectionCheckRedirects(URLConnection c) throws IOException, SecurityException {
+        return openConnectionCheckRedirects(c, 5);
+    }
+    
+    /**
+     * Follow redirect and allow http --> https switch (not the other way around!)
+     * See :
+     *  http://download.java.net/jdk7/archive/b123/docs/technotes/guides/deployment/deployment-guide/upgrade-guide/article-17.html
+     * 
+     * @param c
+     * @return
+     * @throws IOException 
+     */
+    private InputStream openConnectionCheckRedirects(URLConnection c, int maxRedirects) throws IOException, SecurityException {
+        boolean redir;
+        int redirects = 0;
+        InputStream in = null;
+        do {
+            if (c instanceof HttpURLConnection) {
+                ((HttpURLConnection) c).setInstanceFollowRedirects(false);
+            }
+            // We want to open the input stream before getting headers
+            // because getHeaderField() et al swallow IOExceptions.
+            in = c.getInputStream();
+            redir = false;
+            if (c instanceof HttpURLConnection) {
+                HttpURLConnection http = (HttpURLConnection) c;
+                int stat = http.getResponseCode();
+                if (stat >= 300 && stat <= 307 && stat != 306 && stat != HttpURLConnection.HTTP_NOT_MODIFIED) {
+                    URL base = http.getURL();
+                    String loc = http.getHeaderField("Location");
+                    URL target = null;
+                    if (loc != null) {
+                        target = new URL(base, loc);
+                    }
+                    http.disconnect();
+                    // Redirection should be allowed only for HTTP and HTTPS, within protocol or HTTP --> HTTPS
+                    // and should be limited to 'maxRedirects' redirections at most.
+                    if (target == null) {
+                        throw new SecurityException("illegal URL redirect");
+                    } else if (!(target.getProtocol().equals("http") || target.getProtocol().equals("https"))) {
+                        throw new SecurityException("illegal URL redirect: unsupported protocol ("+target.getProtocol()+")");        
+                    } else if(redirects >= maxRedirects) {
+                        throw new SecurityException("illegal URL redirect: exceeded redirect limit ("+maxRedirects+")");
+                    } else if(c.getURL().getProtocol().equals("https") && target.getProtocol().equalsIgnoreCase("http")){
+                        throw new SecurityException("illegal URL redirect: HTTPS --> HTTP");
+                    }
+                    redir = true;
+                    c = target.openConnection();
+                    redirects++;
+                }
+            }
+        } while (redir);
+        return in;
     }
 
     //<editor-fold defaultstate="collapsed" desc="Getters and setters for services">
+
     /**
      * Gets the CMDI Document reader used
      *
      * @return the CMDI Document reader used
      */
     public MetadataDocumentReader<CMDIDocument> getDocumentReader() {
-	return documentReader;
+        return documentReader;
     }
 
     /**
@@ -330,14 +371,14 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      * @return the CMDI Document writer used
      */
     public MetadataDocumentWriter<CMDIDocument> getDocumentWriter() {
-	return documentWriter;
+        return documentWriter;
     }
 
     /**
      * @return the profileReader
      */
     public MetadataDocumentTypeReader<CMDIProfile> getProfileReader() {
-	return profileReader;
+        return profileReader;
     }
 
     /**
@@ -346,7 +387,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      * @return the CMDI Validator being used
      */
     public MetadataValidator<CMDIDocument> getCmdiValidator() {
-	return cmdiValidator;
+        return cmdiValidator;
     }
 
     /**
@@ -355,14 +396,14 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
      * @return the SAX EntityResolver being used
      */
     protected EntityResolver getEntityResolver() {
-	return entityResolver;
+        return entityResolver;
     }
 
     /**
      * @return the profileContainer used in this API instance
      */
     public CMDIProfileContainer getProfileContainer() {
-	return profileContainer;
+        return profileContainer;
     }
     //</editor-fold>
 }
