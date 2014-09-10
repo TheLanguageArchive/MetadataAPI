@@ -33,7 +33,7 @@ import org.apache.log4j.Logger;
  */
 public class CmdiAPITestRunner {
 
-    private final static String DEFAULT_URL_STRING = "http://corpus1.mpi.nl/qfs1/media-archive/CMDI/iprosla/IPROSLA_Corpora/IPROSLA_Nijmegen/Abel.cmdi"; //LAAARGE FILE
+    private final static String DEFAULT_URL_STRING = "https://corpus1.mpi.nl/ds/TranslationService/translate?in=1839/00-0000-0000-0005-01ED-1&outFormat=cmdi"; //LAAARGE FILE
 
     public static void main(String[] args) throws MalformedURLException, IOException, MetadataException {
 	Logger root = Logger.getLogger("nl.mpi.metadata");
