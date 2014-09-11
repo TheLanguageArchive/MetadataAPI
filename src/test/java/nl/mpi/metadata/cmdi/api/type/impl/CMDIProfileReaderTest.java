@@ -74,6 +74,7 @@ public class CMDIProfileReaderTest extends CMDIAPITestCase {
         final ControlledVocabularyItem firstItem = items.get(0);
         assertTrue(firstItem instanceof CMDIControlledVocabularyItem);
         assertEquals("aaa", firstItem.getValue());
+        //TODO: implement annotation reading in reader and enable this
 //        assertEquals("Ghotuo", firstItem.getDescription());
 //        final DataCategory vocabDC = ((CMDIControlledVocabularyItem) firstItem).getDataCategory();
 //        assertNotNull(vocabDC);

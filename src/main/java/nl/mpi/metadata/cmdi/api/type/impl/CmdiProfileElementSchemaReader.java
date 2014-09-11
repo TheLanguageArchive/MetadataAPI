@@ -47,13 +47,20 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 /**
- * Takes an existing CMDI profile element and reads properties, attributes and child elements from the schema. Construct a new instance
- * for each profile schema to read. Not thread-safe.
+ * Takes an existing CMDI profile element and reads properties, attributes and
+ * child elements from the schema. Construct a new instance for each profile
+ * schema to read. Not thread-safe.
  *
- * TODO: Can be refactored in such a way that it creates elements (from SchemaProperties) rather than manipulates them. This requires
- * fewer setters on the type model objects
+ * TODO: Can be refactored in such a way that it creates elements (from
+ * SchemaProperties) rather than manipulates them. This requires fewer setters
+ * on the type model objects
  *
- * TODO: Make reading annotations optional (because it requires DOM to be loaded and does XPath processing, which slow things down)
+ * TODO: Make reading annotations optional (because it requires DOM to be loaded
+ * and does XPath processing, which slow things down)
+ *
+ * TODO: performance could potentially be improved by scanning the document once
+ * for all annotations, storing them in a map with element path as key, and
+ * looking them up in this phase.
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
@@ -66,239 +73,246 @@ public class CmdiProfileElementSchemaReader {
     /**
      * Creates a new schema reader for the specified document
      *
-     * @param document DOM representation of the profile schema file to read. It is needed to read annotation data from the schema (i.e.
-     * display priorities,
-     * data categories and element documentation).
+     * @param document DOM representation of the profile schema file to read. It
+     * is needed to read annotation data from the schema (i.e. display
+     * priorities, data categories and element documentation).
      */
     public CmdiProfileElementSchemaReader(Document document) {
-	this.schemaDocument = document;
-	this.xPath = XPathFactory.newInstance().newXPath();
-	xPath.setNamespaceContext(new CMDINamespaceContext());
+        this.schemaDocument = document;
+        this.xPath = XPathFactory.newInstance().newXPath();
+        xPath.setNamespaceContext(new CMDINamespaceContext());
     }
 
     public void readSchema(CMDIProfileElementImpl profileElement) throws CMDITypeException {
 
-	if (profileElement.getSchemaElement() == null) {
-	    throw new CMDITypeException(null, "Cannot read schema, it has not been set or loaded");
-	}
-	logger.debug("Reading schema for {}", profileElement.getSchemaElement().getName());
-	readProperties(profileElement);
-	readAttributes(profileElement);
+        if (profileElement.getSchemaElement() == null) {
+            throw new CMDITypeException(null, "Cannot read schema, it has not been set or loaded");
+        }
+        logger.debug("Reading schema for {}", profileElement.getSchemaElement().getName());
+        readProperties(profileElement);
+        readAttributes(profileElement);
 
-	if (profileElement instanceof ComponentTypeImpl) {
-	    readChildren((ComponentTypeImpl) profileElement);
-	}
+        if (profileElement instanceof ComponentTypeImpl) {
+            readChildren((ComponentTypeImpl) profileElement);
+        }
     }
 
     protected void readProperties(CMDIProfileElementImpl profileElement) {
-	if (profileElement instanceof ComponentTypeImpl) {
-	    readComponentId(profileElement);
-	} else if (profileElement instanceof ControlledVocabularyElementTypeImpl) {
-	    readVocabularyItems((ControlledVocabularyElementTypeImpl) profileElement);
-	}
-	searchForAnnotations(profileElement);
+        if (profileElement instanceof ComponentTypeImpl) {
+            readComponentId(profileElement);
+        } else if (profileElement instanceof ControlledVocabularyElementTypeImpl) {
+            readVocabularyItems((ControlledVocabularyElementTypeImpl) profileElement);
+        }
+        searchForAnnotations(profileElement);
     }
 
     protected void readAttributes(CMDIProfileElementImpl profileElement) {
-	SchemaProperty[] attributeProperties = profileElement.getSchemaElement().getType().getAttributeProperties();
-	if (attributeProperties != null && attributeProperties.length > 0) {
-	    Collection<MetadataElementAttributeType> attributes = new ArrayList<MetadataElementAttributeType>(attributeProperties.length);
-	    Collection<MetadataElementAttributeType> excludedAttributes = new ArrayList<MetadataElementAttributeType>();
-	    for (SchemaProperty attributeProperty : attributeProperties) {
-		readAttribute(attributeProperty, profileElement, attributes, excludedAttributes);
-	    }
-	    profileElement.setAttributes(attributes);
-	    profileElement.setExcludedAttributes(excludedAttributes);
-	} else {
-	    Collection<MetadataElementAttributeType> attributes = Collections.emptySet();
-	    profileElement.setAttributes(attributes);
-	}
+        SchemaProperty[] attributeProperties = profileElement.getSchemaElement().getType().getAttributeProperties();
+        if (attributeProperties != null && attributeProperties.length > 0) {
+            Collection<MetadataElementAttributeType> attributes = new ArrayList<MetadataElementAttributeType>(attributeProperties.length);
+            Collection<MetadataElementAttributeType> excludedAttributes = new ArrayList<MetadataElementAttributeType>();
+            for (SchemaProperty attributeProperty : attributeProperties) {
+                readAttribute(attributeProperty, profileElement, attributes, excludedAttributes);
+            }
+            profileElement.setAttributes(attributes);
+            profileElement.setExcludedAttributes(excludedAttributes);
+        } else {
+            Collection<MetadataElementAttributeType> attributes = Collections.emptySet();
+            profileElement.setAttributes(attributes);
+        }
     }
 
     private void readAttribute(SchemaProperty attributeProperty, CMDIProfileElementImpl profileElement, Collection<MetadataElementAttributeType> attributes, Collection<MetadataElementAttributeType> excludedAttributes) {
-	final QName attributeName = attributeProperty.getName();
-	final String attributeLocalPart = attributeName.getLocalPart();
-	final String attributeNamespaceURI = attributeName.getNamespaceURI();
+        final QName attributeName = attributeProperty.getName();
+        final String attributeLocalPart = attributeName.getLocalPart();
+        final String attributeNamespaceURI = attributeName.getNamespaceURI();
 
-	logger.debug("Creating attribute type '{}' of type {}", attributeName, attributeProperty.getType());
+        logger.debug("Creating attribute type '{}' of type {}", attributeName, attributeProperty.getType());
 
-	//Elements should be checked for xml:lang attribute, if so should be set to multilingual
-	boolean multilingualAttribute = false;
-	if (profileElement instanceof ElementTypeImpl) {
-	    multilingualAttribute = readMultilingual((ElementTypeImpl) profileElement, attributeLocalPart, attributeNamespaceURI);
-	}
+        //Elements should be checked for xml:lang attribute, if so should be set to multilingual
+        boolean multilingualAttribute = false;
+        if (profileElement instanceof ElementTypeImpl) {
+            multilingualAttribute = readMultilingual((ElementTypeImpl) profileElement, attributeLocalPart, attributeNamespaceURI);
+        }
 
-	final String type = attributeProperty.getType().toString();  // consider .getName().getLocalPart()) but getName can
-	CMDIAttributeTypeImpl attribute = new CMDIAttributeTypeImpl(profileElement.getPathString(), attributeNamespaceURI, attributeLocalPart, type);
-	attribute.setSchemaElement(attributeProperty);
+        final String type = attributeProperty.getType().toString();  // consider .getName().getLocalPart()) but getName can
+        CMDIAttributeTypeImpl attribute = new CMDIAttributeTypeImpl(profileElement.getPathString(), attributeNamespaceURI, attributeLocalPart, type);
+        attribute.setSchemaElement(attributeProperty);
 
-	// be null, see documentation
-	attribute.setDefaultValue(attributeProperty.getDefaultText());
-	attribute.setMandatory(attributeProperty.getMinOccurs().compareTo(BigInteger.ZERO) > 0);
-	
-	// Language attribute is an excluded attribute
-	if (multilingualAttribute) {
-	    excludedAttributes.add(attribute);
-	} else {
-	    attributes.add(attribute);
-	}
+        // be null, see documentation
+        attribute.setDefaultValue(attributeProperty.getDefaultText());
+        attribute.setMandatory(attributeProperty.getMinOccurs().compareTo(BigInteger.ZERO) > 0);
+
+        // Language attribute is an excluded attribute
+        if (multilingualAttribute) {
+            excludedAttributes.add(attribute);
+        } else {
+            attributes.add(attribute);
+        }
     }
 
     private boolean readMultilingual(ElementTypeImpl elementType, final String attributeLocalPart, final String attributeNamespaceURI) {
-	final boolean multilingual = CMDIConstants.CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAME.equals(attributeLocalPart)
-		&& CMDIConstants.CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAMESPACE_URI.equals(attributeNamespaceURI);
-	elementType.setMultilingual(multilingual);
-	logger.debug("Set multilingual property of {} to {}", elementType, multilingual);
-	return multilingual;
+        final boolean multilingual = CMDIConstants.CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAME.equals(attributeLocalPart)
+                && CMDIConstants.CMD_ELEMENT_LANGUAGE_ATTRIBUTE_NAMESPACE_URI.equals(attributeNamespaceURI);
+        elementType.setMultilingual(multilingual);
+        logger.debug("Set multilingual property of {} to {}", elementType, multilingual);
+        return multilingual;
     }
 
     /**
-     * Recursively loads children (components, elements) for a {@link ComponentTypeImpl}
+     * Recursively loads children (components, elements) for a
+     * {@link ComponentTypeImpl}
      *
      * @throws CMDITypeException
      */
     private void readChildren(ComponentTypeImpl componentType) throws CMDITypeException {
-	SchemaProperty[] elements = componentType.getSchemaElement().getType().getElementProperties();
+        SchemaProperty[] elements = componentType.getSchemaElement().getType().getElementProperties();
 
-	List<CMDIProfileElement> children;
-	if (elements != null && elements.length > 0) {
-	    children = new ArrayList<CMDIProfileElement>(elements.length);
-	    for (SchemaProperty child : elements) {
+        List<CMDIProfileElement> children;
+        if (elements != null && elements.length > 0) {
+            children = new ArrayList<CMDIProfileElement>(elements.length);
+            for (SchemaProperty child : elements) {
 
-		CMDIProfileElementImpl childElement;
+                CMDIProfileElementImpl childElement;
 
-		// Is the element a Component (if so, it has ComponentId property)
-		boolean isComponent = null != child.getType().getAttributeProperty(new QName("ComponentId"))
-			|| child.getType().getElementProperties().length > 0;
-		if (isComponent) {
-		    // Component id found, so create component
-		    logger.debug("Creating child component type {}", child.getName().toString());
-		    childElement = new ComponentTypeImpl(child, componentType, createChildPath(componentType, child));
-		} else {
+                // Is the element a Component (if so, it has ComponentId property)
+                boolean isComponent = null != child.getType().getAttributeProperty(new QName("ComponentId"))
+                        || child.getType().getElementProperties().length > 0;
+                if (isComponent) {
+                    // Component id found, so create component
+                    logger.debug("Creating child component type {}", child.getName().toString());
+                    childElement = new ComponentTypeImpl(child, componentType, createChildPath(componentType, child));
+                } else {
                     final XmlAnySimpleType[] enumValues = child.getType().getEnumerationValues();
-		    // Not a component, so create element
-		    if (enumValues != null && enumValues.length > 0) {
-			logger.debug("Creating child CV element type {}", child.getName().toString());
-			childElement = new ControlledVocabularyElementTypeImpl(child, componentType, createChildPath(componentType, child));
-		    } else {
-			logger.debug("Creating child element type {}", child.getName().toString());
-			childElement = new ElementTypeImpl(child, componentType, createChildPath(componentType, child));
-		    }
-		}
-		readSchema(childElement);
-		children.add(childElement);
-	    }
-	} else {
-	    children = Collections.emptyList();
-	}
-	componentType.setChildren(children);
+                    // Not a component, so create element
+                    if (enumValues != null && enumValues.length > 0) {
+                        logger.debug("Creating child CV element type {}", child.getName().toString());
+                        childElement = new ControlledVocabularyElementTypeImpl(child, componentType, createChildPath(componentType, child));
+                    } else {
+                        logger.debug("Creating child element type {}", child.getName().toString());
+                        childElement = new ElementTypeImpl(child, componentType, createChildPath(componentType, child));
+                    }
+                }
+                readSchema(childElement);
+                children.add(childElement);
+            }
+        } else {
+            children = Collections.emptyList();
+        }
+        componentType.setChildren(children);
     }
 
     private StringBuilder createChildPath(ComponentTypeImpl componentType, SchemaProperty child) {
-	return new StringBuilder(componentType.getPath()).append("/cmd:").append(child.getName().getLocalPart());
+        return new StringBuilder(componentType.getPath()).append("/cmd:").append(child.getName().getLocalPart());
     }
 
     private void readComponentId(CMDIProfileElementImpl profileElement) {
-	SchemaProperty componentIdAttribute = profileElement.getSchemaElement().getType().getAttributeProperty(new QName("ComponentId"));
-	// attribute may not be present, e.g. for profile root component
-	final String componentId = (componentIdAttribute == null) ? null : componentIdAttribute.getDefaultText();
-	((ComponentTypeImpl) profileElement).setComponentId(componentId);
+        SchemaProperty componentIdAttribute = profileElement.getSchemaElement().getType().getAttributeProperty(new QName("ComponentId"));
+        // attribute may not be present, e.g. for profile root component
+        final String componentId = (componentIdAttribute == null) ? null : componentIdAttribute.getDefaultText();
+        ((ComponentTypeImpl) profileElement).setComponentId(componentId);
     }
 
     /**
      * Reads the allowed controlled vocabulary items from the element type
      */
     private void readVocabularyItems(ControlledVocabularyElementTypeImpl profileElement) {
-	XmlAnySimpleType[] itemTypes = profileElement.getSchemaElement().getType().getEnumerationValues();
-	List<ControlledVocabularyItem> items;
-	if (itemTypes != null && itemTypes.length > 0) {
-	    items = new ArrayList<ControlledVocabularyItem>();
-	    for (XmlAnySimpleType itemType : profileElement.getSchemaElement().getType().getEnumerationValues()) {
-		CMDIControlledVocabularyItemImpl item = new CMDIControlledVocabularyItemImpl();
-		item.setValue(itemType.getStringValue());
-		// TODO: item.setDescription(itemDescription);
-//		item.setDataCategory(itemDataCategory);
-		items.add(item);
-	    }
-	} else {
-	    items = Collections.emptyList();
-	}
-	profileElement.setItems(items);
+        XmlAnySimpleType[] itemTypes = profileElement.getSchemaElement().getType().getEnumerationValues();
+        List<ControlledVocabularyItem> items;
+        if (itemTypes != null && itemTypes.length > 0) {
+            items = new ArrayList<ControlledVocabularyItem>();
+            for (XmlAnySimpleType itemType : profileElement.getSchemaElement().getType().getEnumerationValues()) {
+                CMDIControlledVocabularyItemImpl item = new CMDIControlledVocabularyItemImpl();
+                item.setValue(itemType.getStringValue());
+                //TODO: Find out how to get the datcat and label attributes on the vocabulary item
+                // (Arbil can do this) - also enable related assertions in test
+                // TODO: item.setDescription(itemDescription);
+                // TODO: item.setDataCategory(itemDataCategory);
+                items.add(item);
+            }
+        } else {
+            items = Collections.emptyList();
+        }
+        profileElement.setItems(items);
     }
 
     /**
-     * Searches the schema document for annotations for the specified profile element
+     * Searches the schema document for annotations for the specified profile
+     * element
      */
     private void searchForAnnotations(CMDIProfileElementImpl profileElement) {
-	final SchemaParticle schemaParticle = profileElement.getSchemaElement().getType().getContentModel();
-	if (schemaParticle != null && schemaParticle.getParticleType() == SchemaParticle.ELEMENT) {
-	    SchemaLocalElement schemaLocalElement = (SchemaLocalElement) schemaParticle;
-	    saveAnnotationData(profileElement, schemaLocalElement);
-	} else {
-	    // In case of complex type, try on element specification (xs:element)
-	    if (schemaDocument != null) {
-		// Path to element specification in schema file
-		final String elementPath = profileElement.getPathString().replaceFirst("/cmd:", "//*[@name='").replaceAll("/cmd:", "']//*[@name='") + "']";
-		try {
-		    // Get element specification
-		    Node elementSpecNode = (Node) xPath.evaluate(elementPath, schemaDocument, XPathConstants.NODE);
-		    if (elementSpecNode != null) {
-			// Get all attributes on the xs:element and look for annotation data
-			NamedNodeMap attributes = elementSpecNode.getAttributes();
-			for (int i = 0; i < attributes.getLength(); i++) {
-			    final Node attrNode = attributes.item(i);
-			    // Convert to {nsUri}localname format
-			    final String nodeName = new QName(attrNode.getNamespaceURI(), attrNode.getLocalName()).toString();
-			    // Check for annotation data and if so save to data structure
-			    saveAnnotationData(profileElement, nodeName, attrNode.getNodeValue());
-			}
-		    }
-		} catch (XPathExpressionException ex) {
-		    logger.error(String.format("XPathExpressionException while reading annotation for profile element $1%s", profileElement), ex);
-		}
-	    }
-	}
+        final SchemaParticle schemaParticle = profileElement.getSchemaElement().getType().getContentModel();
+        if (schemaParticle != null && schemaParticle.getParticleType() == SchemaParticle.ELEMENT) {
+            SchemaLocalElement schemaLocalElement = (SchemaLocalElement) schemaParticle;
+            saveAnnotationData(profileElement, schemaLocalElement);
+        } else {
+            // In case of complex type, try on element specification (xs:element)
+            if (schemaDocument != null) {
+                // Path to element specification in schema file
+                final String elementPath = profileElement.getPathString().replaceFirst("/cmd:", "//*[@name='").replaceAll("/cmd:", "']//*[@name='") + "']";
+                try {
+                    // Get element specification
+                    Node elementSpecNode = (Node) xPath.evaluate(elementPath, schemaDocument, XPathConstants.NODE);
+                    if (elementSpecNode != null) {
+                        // Get all attributes on the xs:element and look for annotation data
+                        NamedNodeMap attributes = elementSpecNode.getAttributes();
+                        for (int i = 0; i < attributes.getLength(); i++) {
+                            final Node attrNode = attributes.item(i);
+                            // Convert to {nsUri}localname format
+                            final String nodeName = new QName(attrNode.getNamespaceURI(), attrNode.getLocalName()).toString();
+                            // Check for annotation data and if so save to data structure
+                            saveAnnotationData(profileElement, nodeName, attrNode.getNodeValue());
+                        }
+                    }
+                } catch (XPathExpressionException ex) {
+                    logger.error(String.format("XPathExpressionException while reading annotation for profile element $1%s", profileElement), ex);
+                }
+            }
+        }
     }
 
     private void saveAnnotationData(CMDIProfileElementImpl profileElement, SchemaLocalElement schemaLocalElement) {
-	SchemaAnnotation schemaAnnotation = schemaLocalElement.getAnnotation();
-	if (schemaAnnotation != null) {
-	    for (SchemaAnnotation.Attribute annotationAttribute : schemaAnnotation.getAttributes()) {
-		final String annotationValue = annotationAttribute.getValue();
-		final String annotationName = annotationAttribute.getName().toString();
-		saveAnnotationData(profileElement, annotationName, annotationValue);
-	    }
-	}
+        SchemaAnnotation schemaAnnotation = schemaLocalElement.getAnnotation();
+        if (schemaAnnotation != null) {
+            for (SchemaAnnotation.Attribute annotationAttribute : schemaAnnotation.getAttributes()) {
+                final String annotationValue = annotationAttribute.getValue();
+                final String annotationName = annotationAttribute.getName().toString();
+                saveAnnotationData(profileElement, annotationName, annotationValue);
+            }
+        }
     }
 
     private void saveAnnotationData(CMDIProfileElementImpl profileElement, final String annotationName, final String annotationValue) {
-	//Annotation: {ann}documentation : the title of the book
-	//Annotation: {ann}displaypriority : 1
-	// todo: the url here could be removed provided that it does not make it to unspecific
+        //Annotation: {ann}documentation : the title of the book
+        //Annotation: {ann}displaypriority : 1
+        // todo: the url here could be removed provided that it does not make it to unspecific
 
-	if (!"".equals(annotationValue)) {
-	    if ("{http://www.clarin.eu}displaypriority".equals(annotationName)) {
-		if (profileElement instanceof ElementTypeImpl) {
-		    try {
-			int displayPriority = Integer.parseInt(annotationValue);
-			((ElementTypeImpl) profileElement).setDisplayPriority(displayPriority);
-		    } catch (NumberFormatException nfEx) {
-			logger.warn(String.format("NumberFormatException in display priority (value: %1$s) for element %2$s", annotationValue, profileElement), nfEx);
-		    }
-		}
-	    }
-	    if ("{http://www.clarin.eu}documentation".equals(annotationName)) {
-		profileElement.setDescription(annotationValue);
-	    }
-	    if ("{http://www.isocat.org/ns/dcr}datcat".equals(annotationName)) {
-		try {
-		    URI dcUri = new URI(annotationValue);
-		    DataCategory datCat = new DataCategory(dcUri);
-		    profileElement.setDataCategory(datCat);
-		} catch (URISyntaxException usEx) {
-		    logger.warn(String.format("URISyntaxException in datcat (value: %1$s) for element %2$s", annotationValue, profileElement), usEx);
-		}
-	    }
-	}
+        if (!"".equals(annotationValue)) {
+            if ("{http://www.clarin.eu}displaypriority".equals(annotationName)) {
+                if (profileElement instanceof ElementTypeImpl) {
+                    try {
+                        int displayPriority = Integer.parseInt(annotationValue);
+                        ((ElementTypeImpl) profileElement).setDisplayPriority(displayPriority);
+                    } catch (NumberFormatException nfEx) {
+                        logger.warn(String.format("NumberFormatException in display priority (value: %1$s) for element %2$s", annotationValue, profileElement), nfEx);
+                    }
+                }
+            }
+            if ("{http://www.clarin.eu}documentation".equals(annotationName)) {
+                profileElement.setDescription(annotationValue);
+            }
+            DataCategory datCat = null;
+            if ("{http://www.isocat.org/ns/dcr}datcat".equals(annotationName)) {
+                try {
+                    URI dcUri = new URI(annotationValue);
+                    datCat = new DataCategory(dcUri);
+                } catch (URISyntaxException usEx) {
+                    logger.warn(String.format("URISyntaxException in datcat (value: %1$s) for element %2$s", annotationValue, profileElement), usEx);
+                }
+            }
+            if (datCat != null) {
+                profileElement.setDataCategory(datCat);
+            }
+        }
     }
 }
