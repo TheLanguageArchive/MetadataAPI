@@ -175,8 +175,9 @@ public class CmdiProfileElementSchemaReader {
 		    logger.debug("Creating child component type {}", child.getName().toString());
 		    childElement = new ComponentTypeImpl(child, componentType, createChildPath(componentType, child));
 		} else {
+                    final XmlAnySimpleType[] enumValues = child.getType().getEnumerationValues();
 		    // Not a component, so create element
-		    if (child.getType().hasStringEnumValues()) {
+		    if (enumValues != null && enumValues.length > 0) {
 			logger.debug("Creating child CV element type {}", child.getName().toString());
 			childElement = new ControlledVocabularyElementTypeImpl(child, componentType, createChildPath(componentType, child));
 		    } else {
@@ -216,7 +217,7 @@ public class CmdiProfileElementSchemaReader {
 		CMDIControlledVocabularyItemImpl item = new CMDIControlledVocabularyItemImpl();
 		item.setValue(itemType.getStringValue());
 		// TODO: item.setDescription(itemDescription);
-		// TODO: item.setDataCategory(itemDataCategory);
+//		item.setDataCategory(itemDataCategory);
 		items.add(item);
 	    }
 	} else {
