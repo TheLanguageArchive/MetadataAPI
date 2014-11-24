@@ -25,7 +25,7 @@ public final class CMDIConstants {
     public final static String CMD_NAMESPACE = "http://www.clarin.eu/cmd/";
     public final static String XML_NAMESPACE = "http://www.w3.org/XML/1998/namespace";
     public static final String XSI_NAMESPACE = "http://www.w3.org/2001/XMLSchema-instance";
-    public static final String CMD_RESOURCE_PROXY_LOCATION_ATTRIBUTE_NAMESPACE = "http://www.clarin.eu/cmd/extension"; //TODO: Decide
+    public static final String CMD_RESOURCE_PROXY_LOCATION_ATTRIBUTE_NAMESPACE = "http://lat.mpi.nl/";
     
     /**
      * XPath to CMDI components
@@ -43,7 +43,7 @@ public final class CMDIConstants {
     public final static String CMD_RESOURCE_PROXY_ELEMENT = "ResourceProxy";
     public final static String CMD_RESOURCE_PROXY_TYPE_ELEMENT = "ResourceType";
     public final static String CMD_RESOURCE_PROXY_REF_ELEMENT = "ResourceRef";
-    public final static String CMD_RESOURCE_PROXY_LOCATION_ATTRIBUTE_PREFIX = "lcl";
+    public final static String CMD_RESOURCE_PROXY_LOCATION_ATTRIBUTE_PREFIX = "lat";
     public final static String CMD_RESOURCE_PROXY_LOCATION_ATTRIBUTE_NAME = "localURI";
     public final static String CMD_RESOURCE_PROXY_ID_ATTRIBUTE = "id";
     public final static String CMD_RESOURCE_PROXY_TYPE_METADATA = "Metadata";

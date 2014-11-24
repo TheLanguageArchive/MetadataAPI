@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- THIS FILE IS BASED ON A MODIFIED VERSION OF THE TextCorpusProfile -->
 <CMD xmlns="http://www.clarin.eu/cmd/"
-     xmlns:lcl="http://www.clarin.eu/cmd/extension"
+     xmlns:lat="http://lat.mpi.nl/"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
      CMDVersion="1.1"
      xsi:schemaLocation="http://www.clarin.eu/cmd/ http://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/profiles/clarin.eu:cr1:p_1271859438164/xsd ">
@@ -18,15 +18,15 @@
 	<ResourceProxyList>
 	    <ResourceProxy id="resource1">
 		<ResourceType mimetype="text/plain">Resource</ResourceType>
-		<ResourceRef lcl:localURI="../resources/1">http://resources/1</ResourceRef>
+		<ResourceRef lat:localURI="../resources/1">http://resources/1</ResourceRef>
 	    </ResourceProxy>
 	    <ResourceProxy id="resource2">
 		<ResourceType>Resource</ResourceType>
-		<ResourceRef lcl:localURI="file:/other/corpus/resources/2">http://resources/2</ResourceRef>
+		<ResourceRef lat:localURI="file:/other/corpus/resources/2">http://resources/2</ResourceRef>
 	    </ResourceProxy>
 	    <ResourceProxy id="metadata1">
 		<ResourceType mimetype="application/xml">Metadata</ResourceType>
-		<ResourceRef lcl:localURI="childcorpus/1">http://metadata/1</ResourceRef>
+		<ResourceRef lat:localURI="childcorpus/1">http://metadata/1</ResourceRef>
 	    </ResourceProxy>
 	    <ResourceProxy id="searchPage1">
 		<ResourceType>SearchPage</ResourceType>
