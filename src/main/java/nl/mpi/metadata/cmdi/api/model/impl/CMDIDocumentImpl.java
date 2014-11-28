@@ -34,7 +34,6 @@ import nl.mpi.metadata.api.events.MetadataDocumentListener;
 import nl.mpi.metadata.api.model.HeaderInfo;
 import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.api.model.Reference;
-import nl.mpi.metadata.api.type.MetadataElementType;
 import nl.mpi.metadata.api.util.HandleUtil;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
@@ -45,8 +44,6 @@ import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
 import nl.mpi.metadata.cmdi.api.model.SettableDirtyStateProvider;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
 import nl.mpi.metadata.cmdi.api.type.CMDITypeException;
-import nl.mpi.metadata.cmdi.api.type.ComponentType;
-import nl.mpi.metadata.cmdi.api.type.ElementType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -262,7 +259,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
      * encountered is returned
      */
     @Override
-    public synchronized ResourceProxy getDocumentReferenceByLocation(URL location) {
+    public synchronized ResourceProxy getDocumentReferenceByLocation(URI location) {
         for(ResourceProxy proxy : resourceProxies.values()) {
             if(proxy.getLocation() == null) {
                 continue;
@@ -303,7 +300,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
     }
     
     @Override
-    public synchronized DataResourceProxy createDocumentResourceReference(URI uri, URL location, String type, String mimetype) throws MetadataException {
+    public synchronized DataResourceProxy createDocumentResourceReference(URI uri, URI location, String type, String mimetype) throws MetadataException {
         return newResourceReference(uri, location, type, mimetype);
     }
 
@@ -381,7 +378,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
      * {@link DataResourceProxy})
      */
     @Override
-    public MetadataResourceProxy createDocumentMetadataReference(URI uri, URL location, String mimetype) throws MetadataException {
+    public MetadataResourceProxy createDocumentMetadataReference(URI uri, URI location, String mimetype) throws MetadataException {
         return newMetadataReference(uri, location, mimetype);
     }
 
@@ -535,7 +532,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
     }
 
     
-    private MetadataResourceProxy newMetadataReference(URI uri, URL location, String mimetype) throws MetadataException {
+    private MetadataResourceProxy newMetadataReference(URI uri, URI location, String mimetype) throws MetadataException {
         final ResourceProxy resourceProxy = getDocumentReferenceByURI(uri);
 	if (resourceProxy == null) {
 	    final MetadataResourceProxy newResourceProxy = new MetadataResourceProxy(newResourceProxyId("m"), uri, location, mimetype);
@@ -550,7 +547,7 @@ public class CMDIDocumentImpl extends CMDIContainerMetadataElementImpl implement
 	}
     }
     
-    private DataResourceProxy newResourceReference(URI uri, URL location, String type, String mimetype) throws MetadataException {
+    private DataResourceProxy newResourceReference(URI uri, URI location, String type, String mimetype) throws MetadataException {
         final ResourceProxy resourceProxy = getDocumentReferenceByURI(uri);
 	if (resourceProxy == null) {
 	    if (type == null) {

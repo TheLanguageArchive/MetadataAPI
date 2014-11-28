@@ -18,7 +18,6 @@ package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +34,7 @@ public class ResourceProxyTest {
 
     @Before
     public void setUp() throws Exception {
-	resourceProxy = new ResourceProxyImpl("myId", new URI("http://hdl.handle.net/1234/5678"), new URL("file:resource.txt"), "TestResource", "test/my-mime-type");
+	resourceProxy = new ResourceProxyImpl("myId", new URI("http://hdl.handle.net/1234/5678"), URI.create("file:resource.txt"), "TestResource", "test/my-mime-type");
     }
 
     @After
@@ -112,23 +111,23 @@ public class ResourceProxyTest {
     @Test
     public void testEquals() throws Exception {
 	// ID, Type and URI determine equality
-	ResourceProxy resourceProxy2 = new ResourceProxyImpl("myId", new URI("http://hdl.handle.net/1234/5678"), new URL("file:resource.txt"), "TestResource", "test/my-mime-type");
+	ResourceProxy resourceProxy2 = new ResourceProxyImpl("myId", new URI("http://hdl.handle.net/1234/5678"), URI.create("file:resource.txt"), "TestResource", "test/my-mime-type");
 	assertTrue(resourceProxy2.equals(resourceProxy));
 	assertTrue(resourceProxy.equals(resourceProxy2));
 	// Mime type is not taken into account in comparison
-	ResourceProxy resourceProxy3 = new ResourceProxyImpl("myId", new URI("http://hdl.handle.net/1234/5678"), new URL("file:resource.txt"), "TestResource", "test/some-other-type");
+	ResourceProxy resourceProxy3 = new ResourceProxyImpl("myId", new URI("http://hdl.handle.net/1234/5678"), URI.create("file:resource.txt"), "TestResource", "test/some-other-type");
 	assertTrue(resourceProxy3.equals(resourceProxy));
 	assertTrue(resourceProxy.equals(resourceProxy3));
 	// Differs because of ID
-	ResourceProxy resourceProxy4 = new ResourceProxyImpl("otherId", new URI("http://hdl.handle.net/1234/5678"), new URL("file:resource.txt"), "TestResource", "test/my-mime-type");
+	ResourceProxy resourceProxy4 = new ResourceProxyImpl("otherId", new URI("http://hdl.handle.net/1234/5678"), URI.create("file:resource.txt"), "TestResource", "test/my-mime-type");
 	assertFalse(resourceProxy4.equals(resourceProxy));
 	assertFalse(resourceProxy.equals(resourceProxy4));
 	// Differs because of URI
-	ResourceProxy resourceProxy5 = new ResourceProxyImpl("myId", new URI("http://otheruri"), new URL("file:resource.txt"), "TestResource", "test/my-mime-type");
+	ResourceProxy resourceProxy5 = new ResourceProxyImpl("myId", new URI("http://otheruri"), URI.create("file:resource.txt"), "TestResource", "test/my-mime-type");
 	assertFalse(resourceProxy5.equals(resourceProxy));
 	assertFalse(resourceProxy.equals(resourceProxy5));
 	// Differs because of type
-	ResourceProxy resourceProxy6 = new ResourceProxyImpl("myId", new URI("http://testuri"), new URL("file:resource.txt"), "OtherResourceType", "test/my-mime-type");
+	ResourceProxy resourceProxy6 = new ResourceProxyImpl("myId", new URI("http://testuri"), URI.create("file:resource.txt"), "OtherResourceType", "test/my-mime-type");
 	assertFalse(resourceProxy6.equals(resourceProxy));
 	assertFalse(resourceProxy.equals(resourceProxy6));
     }
@@ -139,22 +138,22 @@ public class ResourceProxyTest {
     @Test
     public void testHashCode() throws Exception {
 	// ID and URI determine equality
-	ResourceProxy resourceProxy2 = new ResourceProxyImpl("myId", new URI("http://hdl.handle.net/1234/5678"), new URL("file:resource.txt"), "TestResource", "test/my-mime-type");
+	ResourceProxy resourceProxy2 = new ResourceProxyImpl("myId", new URI("http://hdl.handle.net/1234/5678"), URI.create("file:resource.txt"), "TestResource", "test/my-mime-type");
 	assertEquals(resourceProxy2.hashCode(), resourceProxy.hashCode());
 	// Mime type is not taken into account in comparison
-	ResourceProxy resourceProxy3 = new ResourceProxyImpl("myId", new URI("http://hdl.handle.net/1234/5678"), new URL("file:resource.txt"), "TestResource", "test/some-other-type");
+	ResourceProxy resourceProxy3 = new ResourceProxyImpl("myId", new URI("http://hdl.handle.net/1234/5678"), URI.create("file:resource.txt"), "TestResource", "test/some-other-type");
 	assertEquals(resourceProxy3.hashCode(), resourceProxy.hashCode());
 	// Differs because of ID
-	ResourceProxy resourceProxy4 = new ResourceProxyImpl("otherId", new URI("http://hdl.handle.net/1234/5678"), new URL("file:resource.txt"), "TestResource", "test/my-mime-type");
+	ResourceProxy resourceProxy4 = new ResourceProxyImpl("otherId", new URI("http://hdl.handle.net/1234/5678"), URI.create("file:resource.txt"), "TestResource", "test/my-mime-type");
 	assertFalse(resourceProxy4.hashCode() == resourceProxy.hashCode());
 	// Differs because of URI
-	ResourceProxy resourceProxy5 = new ResourceProxyImpl("myId", new URI("http://otheruri"), new URL("file:resource.txt"), "TestResource", "test/my-mime-type");
+	ResourceProxy resourceProxy5 = new ResourceProxyImpl("myId", new URI("http://otheruri"), URI.create("file:resource.txt"), "TestResource", "test/my-mime-type");
 	assertFalse(resourceProxy5.hashCode() == resourceProxy.hashCode());
     }
 
     public class ResourceProxyImpl extends ResourceProxy {
 
-	public ResourceProxyImpl(String id, URI uri, URL url, String type, String mimeType) {
+	public ResourceProxyImpl(String id, URI uri, URI url, String type, String mimeType) {
 	    super(id, uri, url, type, mimeType);
 	}
     }

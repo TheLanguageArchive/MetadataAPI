@@ -17,7 +17,6 @@
 package nl.mpi.metadata.api.model;
 
 import java.net.URI;
-import java.net.URL;
 
 /**
  *
@@ -39,9 +38,9 @@ public interface Reference {
      * @return the physical location of the referenced resource; this may be
      * null. Also see {@link #getURI() }.
      */
-    URL getLocation();
+    URI getLocation();
 
-    void setLocation(URL url);
+    void setLocation(URI url);
 
     String getMimetype();
 

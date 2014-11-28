@@ -52,7 +52,7 @@ public class DataResourceProxy extends ResourceProxy implements ResourceReferenc
      * 'Resource'
      * @param mimeType mime type of the referenced resource
      */
-    public DataResourceProxy(String id, URI uri, URL url, String type, String mimeType) {
+    public DataResourceProxy(String id, URI uri, URI url, String type, String mimeType) {
         super(id, uri, url, type, mimeType);
     }
 
@@ -75,10 +75,10 @@ public class DataResourceProxy extends ResourceProxy implements ResourceReferenc
      *
      * @param id Unique identifier for the resource proxy
      * @param uri URI of the referenced resource
-     * @param url Local location of the resource
+     * @param location Local location of the resource
      * @param mimeType mime type of the referenced resource
      */
-    public DataResourceProxy(String id, URI uri, URL url, String mimeType) {
-        super(id, uri, url, CMDIConstants.CMD_RESOURCE_PROXY_TYPE_RESOURCE, mimeType);
+    public DataResourceProxy(String id, URI uri, URI location, String mimeType) {
+        super(id, uri, location, CMDIConstants.CMD_RESOURCE_PROXY_TYPE_RESOURCE, mimeType);
     }
 }

@@ -17,7 +17,6 @@
 package nl.mpi.metadata.cmdi.api.dom;
 
 import java.net.URI;
-import java.net.URL;
 import java.util.Collections;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -136,7 +135,7 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 
 	// Modify resource proxies
 	metadataDocument.removeDocumentResourceProxy("resource1");
-	metadataDocument.addDocumentResourceProxy(new DataResourceProxy("resource3", new URI("http://resources/3"), new URL("http://resources/files/3.txt"), "MyResourceType", "test/test-resource"));
+	metadataDocument.addDocumentResourceProxy(new DataResourceProxy("resource3", new URI("http://resources/3"), URI.create("http://resources/files/3.txt"), "MyResourceType", "test/test-resource"));
 
 	// Build DOM
 	Document document = instance.buildDomForDocument(metadataDocument);

@@ -33,7 +33,7 @@ public abstract class ResourceProxy implements Reference, HandleCarrier, DirtySt
     private final String id;
     private final String type;
     private URI uri;
-    private URL url;
+    private URI location;
     private String mimeType;
     private boolean dirty;
     private final HandleUtil handleUtil = new HandleUtil();
@@ -50,10 +50,10 @@ public abstract class ResourceProxy implements Reference, HandleCarrier, DirtySt
         this(id, uri, null, type, mimeType);
     }
 
-    public ResourceProxy(String id, URI uri, URL url, String type, String mimeType) {
+    public ResourceProxy(String id, URI uri, URI location, String type, String mimeType) {
         this.id = id;
         this.uri = uri;
-        this.url = url;
+        this.location = location;
         this.mimeType = mimeType;
         this.type = type;
     }
@@ -75,16 +75,16 @@ public abstract class ResourceProxy implements Reference, HandleCarrier, DirtySt
 
     /**
      *
-     * @return the content of the file location attribute (may be null)
+     * @return the unresolved content of the file location attribute (may be null)
      */
     @Override
-    public URL getLocation() {
-        return url;
+    public URI getLocation() {
+        return location;
     }
 
     @Override
-    public void setLocation(URL url) {
-        this.url = url;
+    public void setLocation(URI url) {
+        this.location = url;
         setDirty(true);
     }
 

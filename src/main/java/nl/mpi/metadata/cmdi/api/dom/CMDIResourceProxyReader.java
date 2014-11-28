@@ -106,7 +106,7 @@ public class CMDIResourceProxyReader {
         final Node resourceRefNode = getResourceRefNode(xPath, proxyNode);
         final String id = getResourceProxyId(proxyNode);
         final URI resourceRef = getResourceRef(resourceRefNode, xPath);
-        final URL location = getFileLocation(cmdiDocument, resourceRefNode);
+        final URI location = getFileLocation(resourceRefNode);
         final String type = resourceTypeNode.getTextContent();
         final String mimeType = getResourceProxyMimeType(resourceTypeNode);
 
@@ -154,30 +154,17 @@ public class CMDIResourceProxyReader {
         }
     }
 
-    private URL getFileLocation(CMDIDocument cmdiDocument, Node resourceRefNode) throws XPathExpressionException, MetadataException {
+    private URI getFileLocation(Node resourceRefNode) throws XPathExpressionException, MetadataException {
         final Node locationAttribute = resourceRefNode.getAttributes().getNamedItemNS(CMDIConstants.CMD_RESOURCE_PROXY_LOCATION_ATTRIBUTE_NAMESPACE, CMDIConstants.CMD_RESOURCE_PROXY_LOCATION_ATTRIBUTE_NAME);
         if (locationAttribute == null) {
             logger.debug("No location attribute on resource proxy {}", resourceRefNode);
             return null;
         } else {
-            final URI documentLocation = cmdiDocument.getFileLocation();
-            if (documentLocation == null) {
-                try {
-                    return new URL(locationAttribute.getNodeValue());
-                } catch (MalformedURLException ex) {
-                    logger.warn("Failed to create URL for {}", locationAttribute.getNodeValue());
-                    throw new MetadataException("Malformed URL exception in ResourceRef location attribute. No document location, needs to absolute.", ex);
-                }
-            } else {
-                try {
-                    return documentLocation.resolve(locationAttribute.getNodeValue()).toURL();
-                } catch (MalformedURLException ex) {
-                    logger.warn("Failed to create URL for {}. Document location: {}", locationAttribute.getNodeValue(), documentLocation);
-                    throw new MetadataException("Malformed URL exception in processing ResourceRef location attribute or document location", ex);
-                } catch (IllegalArgumentException ex) {
-                    logger.warn("Failed to create URL for {}. Document location: {}", locationAttribute.getNodeValue(), documentLocation);
-                    throw new MetadataException("Illegal argument exception in processing ResourceRef location attribute or document location", ex);
-                }
+            try {
+                return new URI(locationAttribute.getNodeValue());
+            } catch (URISyntaxException ex) {
+                logger.warn("Failed to create URL for {}", locationAttribute.getNodeValue());
+                throw new MetadataException("URI syntax exception in ResourceRef location attribute", ex);
             }
         }
     }

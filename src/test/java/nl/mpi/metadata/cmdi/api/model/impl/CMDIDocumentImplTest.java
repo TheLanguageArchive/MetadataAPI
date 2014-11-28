@@ -19,7 +19,6 @@ package nl.mpi.metadata.cmdi.api.model.impl;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Collection;
 import java.util.UUID;
 import nl.mpi.metadata.api.MetadataException;
@@ -158,11 +157,11 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
     public void testGetDocumentResourceProxyById() throws URISyntaxException, MalformedURLException {
 	assertNull(document.getDocumentResourceProxy("rpId"));
 	// add a proxy
-	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), new URL("file:resource.txt"), "Resource", "test/mime-type");
+	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), URI.create("file:resource.txt"), "Resource", "test/mime-type");
 	document.addDocumentResourceProxy(resourceProxy);
 	assertEquals(resourceProxy, document.getDocumentResourceProxy("rpId"));
 	// replace by proxy with same id
-	DataResourceProxy resourceProxy2 = new DataResourceProxy("rpId", new URI("http://resource2"), new URL("file:resource.txt"), "Resource", "test/mime-type");
+	DataResourceProxy resourceProxy2 = new DataResourceProxy("rpId", new URI("http://resource2"), URI.create("file:resource.txt"), "Resource", "test/mime-type");
 	document.addDocumentResourceProxy(resourceProxy2);
 	assertEquals(resourceProxy2, document.getDocumentResourceProxy("rpId"));
     }
@@ -171,11 +170,11 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
     public void testGetDocumentReferenceByURI() throws URISyntaxException, MalformedURLException {
 	assertNull(document.getDocumentReferenceByURI(new URI("http://resource")));
 	// add a proxy
-	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), new URL("file:resource.txt"), "Resource", "test/mime-type");
+	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), URI.create("file:resource.txt"), "Resource", "test/mime-type");
 	document.addDocumentResourceProxy(resourceProxy);
 	assertEquals(resourceProxy, document.getDocumentReferenceByURI(new URI("http://resource")));
 	// replace by proxy with same id
-	DataResourceProxy resourceProxy2 = new DataResourceProxy("rpId", new URI("http://resource2"), new URL("file:resource.txt"), "Resource", "test/mime-type");
+	DataResourceProxy resourceProxy2 = new DataResourceProxy("rpId", new URI("http://resource2"), URI.create("file:resource.txt"), "Resource", "test/mime-type");
 	document.addDocumentResourceProxy(resourceProxy2);
 	assertNull(document.getDocumentReferenceByURI(new URI("http://resource")));
 	assertEquals(resourceProxy2, document.getDocumentReferenceByURI(new URI("http://resource2")));
@@ -183,16 +182,16 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
     
     @Test
     public void testGetDocumentReferenceByLocation() throws MalformedURLException, URISyntaxException {
-        assertNull(document.getDocumentReferenceByLocation(new URL("file:resource.txt")));
+        assertNull(document.getDocumentReferenceByLocation(URI.create("file:resource.txt")));
         //add a proxy
-        DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), new URL("file:resource.txt"), "Resource", "test/mime-type");
+        DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), URI.create("file:resource.txt"), "Resource", "test/mime-type");
 	document.addDocumentResourceProxy(resourceProxy);
-	assertEquals(resourceProxy, document.getDocumentReferenceByLocation(new URL("file:resource.txt")));
+	assertEquals(resourceProxy, document.getDocumentReferenceByLocation(URI.create("file:resource.txt")));
         // replace by proxy with same id
-	DataResourceProxy resourceProxy2 = new DataResourceProxy("rpId", new URI("http://resource2"), new URL("file:resource2.txt"), "Resource", "test/mime-type");
+	DataResourceProxy resourceProxy2 = new DataResourceProxy("rpId", new URI("http://resource2"), URI.create("file:resource2.txt"), "Resource", "test/mime-type");
 	document.addDocumentResourceProxy(resourceProxy2);
-	assertNull(document.getDocumentReferenceByLocation(new URL("file:resource.txt")));
-	assertEquals(resourceProxy2, document.getDocumentReferenceByLocation(new URL("file:resource2.txt")));
+	assertNull(document.getDocumentReferenceByLocation(URI.create("file:resource.txt")));
+	assertEquals(resourceProxy2, document.getDocumentReferenceByLocation(URI.create("file:resource2.txt")));
     }
 
     @Test
@@ -200,7 +199,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 	document.getResourceProxiesDirtyState().setDirty(false);
 
 	assertEquals(0, document.getDocumentReferencesCount());
-	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), new URL("file:resource.txt"), "Resource", "test/mime-type");
+	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), URI.create("file:resource.txt"), "Resource", "test/mime-type");
 	document.addDocumentResourceProxy(resourceProxy);
 	assertEquals(1, document.getDocumentReferencesCount());
 	assertEquals(resourceProxy, document.getDocumentReferences().iterator().next());
@@ -215,7 +214,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 
     @Test
     public void testRemoveDocumentResourceProxy() throws URISyntaxException, MalformedURLException {
-	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), new URL("file:resource.txt"), "Resource", "test/mime-type");
+	DataResourceProxy resourceProxy = new DataResourceProxy("rpId", new URI("http://resource"), URI.create("file:resource.txt"), "Resource", "test/mime-type");
 	document.addDocumentResourceProxy(resourceProxy);
 	assertEquals(1, document.getDocumentReferencesCount());
 
@@ -250,7 +249,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 
 	try {
 	    // Cause conflict: add md proxy
-	    document.addDocumentResourceProxy(new MetadataResourceProxy("mdrp", new URI("http://resource2"), new URL("file:resource2.txt"), "test/mime-type"));
+	    document.addDocumentResourceProxy(new MetadataResourceProxy("mdrp", new URI("http://resource2"), URI.create("file:resource2.txt"), "test/mime-type"));
 	    // Try to create resource proxy with same URI
 	    document.createDocumentResourceReference(new URI("http://resource2"), null, "test/mime-type");
 	    // Exception gets thrown, shouldn't get this far
@@ -268,7 +267,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
     @Test
     public void testCreateDocumentResourceProxyWithLocation() throws Exception {
 	assertEquals(0, document.getDocumentReferencesCount());
-	DataResourceProxy resourceProxy = document.createDocumentResourceReference(new URI("http://resource"), new URL("file:resource.txt"), null, "test/mime-type");
+	DataResourceProxy resourceProxy = document.createDocumentResourceReference(new URI("http://resource"), URI.create("file:resource.txt"), null, "test/mime-type");
 	assertEquals(1, document.getDocumentReferencesCount());
 	assertThat(resourceProxy, isIn(document.getDocumentReferences()));
 	// Default resource type should have been set
@@ -278,7 +277,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 	// Id should start with r for resource references
 	assertThat(resourceProxy.getId(), startsWith("r"));
 	// Create again, should return same object
-	DataResourceProxy resourceProxy2 = document.createDocumentResourceReference(new URI("http://resource"), new URL("file:resource.txt"), "MyNewResourceType", "test/new-mime-type");
+	DataResourceProxy resourceProxy2 = document.createDocumentResourceReference(new URI("http://resource"), URI.create("file:resource.txt"), "MyNewResourceType", "test/new-mime-type");
 	assertSame(resourceProxy2, resourceProxy);
 	// Nothing should have been added
 	assertEquals(1, document.getDocumentReferencesCount());
@@ -289,9 +288,9 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 
 	try {
 	    // Cause conflict: add md proxy
-	    document.addDocumentResourceProxy(new MetadataResourceProxy("mdrp", new URI("http://resource2"), new URL("file:resource2.txt"), "test/mime-type"));
+	    document.addDocumentResourceProxy(new MetadataResourceProxy("mdrp", new URI("http://resource2"), URI.create("file:resource2.txt"), "test/mime-type"));
 	    // Try to create resource proxy with same URI
-	    document.createDocumentResourceReference(new URI("http://resource2"), new URL("file:resource2.txt"), null, "test/mime-type");
+	    document.createDocumentResourceReference(new URI("http://resource2"), URI.create("file:resource2.txt"), null, "test/mime-type");
 	    // Exception gets thrown, shouldn't get this far
 	    fail("Collision should throw MetadataException");
 	} catch (MetadataException mdEx) {
@@ -326,7 +325,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 
 	try {
 	    // Cause conflict: add resource proxy
-	    document.addDocumentResourceProxy(new DataResourceProxy("mdrp", new URI("http://resource2"), new URL("file:resource2.txt"), "Resource", "test/mime-type"));
+	    document.addDocumentResourceProxy(new DataResourceProxy("mdrp", new URI("http://resource2"), URI.create("file:resource2.txt"), "Resource", "test/mime-type"));
 	    // Try to create metadata proxy with same URI
 	    document.createDocumentMetadataReference(new URI("http://resource2"), "test/mime-type");
 	    // Exception gets thrown, shouldn't get this far
@@ -339,7 +338,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
     @Test
     public void testCreateDocumentMetadataResourceProxyWithLocation() throws Exception {
 	assertEquals(0, document.getDocumentReferencesCount());
-	MetadataResourceProxy resourceProxy = document.createDocumentMetadataReference(new URI("http://resource"), new URL("file:resource.cmdi"), "test/mime-type");
+	MetadataResourceProxy resourceProxy = document.createDocumentMetadataReference(new URI("http://resource"), URI.create("file:resource.cmdi"), "test/mime-type");
 	assertEquals(1, document.getDocumentReferencesCount());
 	assertThat(resourceProxy, isIn(document.getDocumentReferences()));
 	// Mime type should match specified one
@@ -348,7 +347,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 	assertThat(resourceProxy.getId(), startsWith("m"));
 
 	// Create again, should return same object
-	MetadataResourceProxy resourceProxy2 = document.createDocumentMetadataReference(new URI("http://resource"), new URL("file:resource.cmdi"), "test/new-mime-type");
+	MetadataResourceProxy resourceProxy2 = document.createDocumentMetadataReference(new URI("http://resource"), URI.create("file:resource.cmdi"), "test/new-mime-type");
 	assertSame(resourceProxy2, resourceProxy);
 	// Nothing should have been added
 	assertEquals(1, document.getDocumentReferencesCount());
@@ -358,9 +357,9 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 
 	try {
 	    // Cause conflict: add resource proxy
-	    document.addDocumentResourceProxy(new DataResourceProxy("mdrp", new URI("http://resource2"), new URL("file:resource2.txt"), "Resource", "test/mime-type"));
+	    document.addDocumentResourceProxy(new DataResourceProxy("mdrp", new URI("http://resource2"), URI.create("file:resource2.txt"), "Resource", "test/mime-type"));
 	    // Try to create metadata proxy with same URI
-	    document.createDocumentMetadataReference(new URI("http://resource2"), new URL("file:resource2.cmdi"), "test/mime-type");
+	    document.createDocumentMetadataReference(new URI("http://resource2"), URI.create("file:resource2.cmdi"), "test/mime-type");
 	    // Exception gets thrown, shouldn't get this far
 	    fail("Collision should throw MetadataException");
 	} catch (MetadataException mdEx) {
@@ -370,7 +369,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 
     @Test
     public void testRegisterResourceProxyReference() throws Exception {
-	DataResourceProxy proxy = new DataResourceProxy(UUID.randomUUID().toString(), new URI("http://resource"), new URL("file:resource.txt"), "Resource", "test/mime-type");
+	DataResourceProxy proxy = new DataResourceProxy(UUID.randomUUID().toString(), new URI("http://resource"), URI.create("file:resource.txt"), "Resource", "test/mime-type");
 	// No references yet
 	assertEquals(0, document.getResourceProxyReferences(proxy).size());
 
@@ -387,7 +386,7 @@ public class CMDIDocumentImplTest extends CMDIMetadataElementImplTest {
 
     @Test
     public void testUnregisterResourceProxyReference() throws Exception {
-	DataResourceProxy proxy = new DataResourceProxy(UUID.randomUUID().toString(), new URI("http://resource"), new URL("file:resource.txt"), "Resource", "test/mime-type");
+	DataResourceProxy proxy = new DataResourceProxy(UUID.randomUUID().toString(), new URI("http://resource"), URI.create("file:resource.txt"), "Resource", "test/mime-type");
 
 	// Add a reference to the proxy
 	CMDIMetadataElement element = mockContext.mock(CMDIMetadataElement.class);

@@ -71,7 +71,7 @@ public interface CMDIDocument extends CMDIContainerMetadataElement, HandleCarrie
      * @return Resource proxy with the specified location or null if not found. If there are multiple with the same location, the first one
      * encountered is returned
      */
-    ResourceProxy getDocumentReferenceByLocation(URL location);
+    ResourceProxy getDocumentReferenceByLocation(URI location);
 
     /**
      * @return an <em>unmodifiable</em> copy of the MetadataDocumentListeners collection
@@ -117,7 +117,7 @@ public interface CMDIDocument extends CMDIContainerMetadataElement, HandleCarrie
 
     MetadataResourceProxy createDocumentMetadataReference(URI uri, String mimetype) throws MetadataException;
     
-    MetadataResourceProxy createDocumentMetadataReference(URI uri, URL location, String mimetype) throws MetadataException;
+    MetadataResourceProxy createDocumentMetadataReference(URI uri, URI location, String mimetype) throws MetadataException;
 
     /**
      * Creates and adds a new non-metadata resource proxy in this document if it does not exist yet. If a reference with the same URI
@@ -144,7 +144,7 @@ public interface CMDIDocument extends CMDIContainerMetadataElement, HandleCarrie
      * @throws MetadataException if resource with specified URI already exists but is not a {@link DataResourceProxy} (i.e. is a
      * {@link MetadataResourceProxy})
      */
-    DataResourceProxy createDocumentResourceReference(URI uri, URL location, String type, String mimetype) throws MetadataException;
+    DataResourceProxy createDocumentResourceReference(URI uri, URI location, String type, String mimetype) throws MetadataException;
 
     /**
      *

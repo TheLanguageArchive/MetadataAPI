@@ -19,7 +19,6 @@ package nl.mpi.metadata.cmdi.api.dom;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -76,7 +75,7 @@ public class CMDIResourceProxyReaderTest extends CMDIAPITestCase {
             assertEquals(DataResourceProxy.class, resource1.getClass());
             assertEquals("text/plain", resource1.getMimetype());
             assertEquals(new URI("http://resources/1"), resource1.getURI());
-            assertEquals("relative path '../resources/1' should get resolved", new URL("file://corpus/resources/1"), resource1.getLocation());
+            assertEquals("relative path should be kept", URI.create("../resources/1"), resource1.getLocation());
         }
         {
             ResourceProxy resource2 = document.getDocumentResourceProxy("resource2");
@@ -84,7 +83,7 @@ public class CMDIResourceProxyReaderTest extends CMDIAPITestCase {
             assertEquals(DataResourceProxy.class, resource2.getClass());
             assertNull("Resource should have no mimetype", resource2.getMimetype());
             assertEquals(new URI("http://resources/2"), resource2.getURI());
-            assertEquals("absolute path should be kept", new URL("file:/other/corpus/resources/2"), resource2.getLocation());
+            assertEquals("absolute path should be kept", URI.create("file:/other/corpus/resources/2"), resource2.getLocation());
         }
         {
             ResourceProxy metadata1 = document.getDocumentResourceProxy("metadata1");
@@ -92,7 +91,7 @@ public class CMDIResourceProxyReaderTest extends CMDIAPITestCase {
             assertEquals(MetadataResourceProxy.class, metadata1.getClass());
             assertEquals("application/xml", metadata1.getMimetype());
             assertEquals(new URI("http://metadata/1"), metadata1.getURI());
-            assertEquals("relative path 'childcorpus/1' should get resolved", new URL("file://corpus/metadata/childcorpus/1"), metadata1.getLocation());
+            assertEquals("relative path 'childcorpus/1' should be kept", URI.create("childcorpus/1"), metadata1.getLocation());
         }
         {
             ResourceProxy searchPage = document.getDocumentResourceProxy("searchPage1");

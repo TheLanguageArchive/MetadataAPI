@@ -61,7 +61,7 @@ public interface ReferencingMetadataDocument<M extends MetadataElement, R extend
      * @return reference as it has been created on this element (null if none created)
      * @throws MetadataException in case any error occurs while create the reference
      */
-    ResourceReference createDocumentResourceReference(URI uri, URL location, String type, String mimetype) throws MetadataException;
+    ResourceReference createDocumentResourceReference(URI uri, URI location, String type, String mimetype) throws MetadataException;
 
     /**
      * Creates a reference to another metadata instance on this element
@@ -82,7 +82,7 @@ public interface ReferencingMetadataDocument<M extends MetadataElement, R extend
      * @return reference as it has been created on this element. Null if none has been created
      * @throws MetadataException in case any error occurs while create the reference
      */
-    MetadataReference createDocumentMetadataReference(URI uri, URL location, String mimetype) throws MetadataException;
+    MetadataReference createDocumentMetadataReference(URI uri, URI location, String mimetype) throws MetadataException;
 
     /**
      * Removes a given resource reference from this element
@@ -117,5 +117,5 @@ public interface ReferencingMetadataDocument<M extends MetadataElement, R extend
      * @param location local URL of the reference to retrieve
      * @return reference for the local URL, null if not found
      */
-    R getDocumentReferenceByLocation(URL location);
+    R getDocumentReferenceByLocation(URI location);
 }

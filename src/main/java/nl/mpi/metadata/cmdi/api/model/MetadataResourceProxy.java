@@ -17,7 +17,6 @@
 package nl.mpi.metadata.cmdi.api.model;
 
 import java.net.URI;
-import java.net.URL;
 import nl.mpi.metadata.api.model.MetadataReference;
 import nl.mpi.metadata.cmdi.api.CMDIConstants;
 
@@ -33,7 +32,7 @@ public class MetadataResourceProxy extends ResourceProxy implements MetadataRefe
         super(id, uri, CMDIConstants.CMD_RESOURCE_PROXY_TYPE_METADATA, mimeType);
     }
 
-    public MetadataResourceProxy(String id, URI uri, URL url, String mimeType) {
-        super(id, uri, url, CMDIConstants.CMD_RESOURCE_PROXY_TYPE_METADATA, mimeType);
+    public MetadataResourceProxy(String id, URI uri, URI location, String mimeType) {
+        super(id, uri, location, CMDIConstants.CMD_RESOURCE_PROXY_TYPE_METADATA, mimeType);
     }
 }

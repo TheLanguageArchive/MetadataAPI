@@ -19,23 +19,15 @@ package nl.mpi.metadata.cmdi.api;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URI;
-import java.net.URL;
 import java.util.Properties;
 import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import nl.mpi.metadata.api.MetadataException;
-import nl.mpi.metadata.api.dom.MetadataDocumentWriter;
-import nl.mpi.metadata.cmdi.api.dom.CMDIApiDOMBuilderFactory;
 import nl.mpi.metadata.cmdi.api.dom.CMDIDocumentWriter;
-import nl.mpi.metadata.cmdi.api.dom.CMDIDomBuilder;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.DataResourceProxy;
-import nl.mpi.metadata.cmdi.api.model.ResourceProxy;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfile;
-import nl.mpi.metadata.cmdi.util.CMDIEntityResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +55,7 @@ public class CmdiAPITestWriter {
             final CMDIDocument document = api.createMetadataDocument(profile);
 
             // add some stuff
-            document.addDocumentResourceProxy(new DataResourceProxy("res1", URI.create("http://resource/1.txt"), new URL("file:/resources/1.txt"), "text/plain"));
+            document.addDocumentResourceProxy(new DataResourceProxy("res1", URI.create("http://resource/1.txt"), URI.create("file:/resources/1.txt"), "text/plain"));
 
             final StringWriter stringWriter = new StringWriter();
             api.writeMetadataDocument(document, new StreamResult(stringWriter));
