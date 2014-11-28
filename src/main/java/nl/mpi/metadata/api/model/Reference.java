@@ -35,8 +35,8 @@ public interface Reference {
 
     /**
      *
-     * @return the physical location of the referenced resource; this may be
-     * null. Also see {@link #getURI() }.
+     * @return the (unresolved) physical location of the referenced resource as
+     * specified in the document; this may be null. Also see {@link #getURI() }.
      */
     URI getLocation();
 
