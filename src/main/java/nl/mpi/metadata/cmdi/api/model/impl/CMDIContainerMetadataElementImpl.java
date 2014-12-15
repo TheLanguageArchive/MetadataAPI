@@ -277,7 +277,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
 	if (elements != null) {
 	    final int elementIndex = (elementIndexString == null || elementIndexString.length() == 0)
 		    ? 0
-		    : Integer.valueOf(elementIndexString) - 1; // In the path, counting starts at 1, so substract to get array index
+		    : Integer.parseInt(elementIndexString) - 1; // In the path, counting starts at 1, so substract to get array index
 	    try {
 		final CMDIMetadataElement childElement = elements.get(elementIndex);
 		if (childPath != null && childPath.length() > 0) {
