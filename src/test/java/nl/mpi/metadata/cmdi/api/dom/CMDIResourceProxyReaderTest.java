@@ -68,7 +68,7 @@ public class CMDIResourceProxyReaderTest extends CMDIAPITestCase {
         Document domDocument = getDomDocumentForResource(TEXT_CORPUS_LOCAL_URI_INSTANCE_LOCATION);
         instance.readResourceProxies(document, domDocument, newXPath());
 
-        assertEquals(5, document.getDocumentReferences().size());
+        assertEquals(6, document.getDocumentReferences().size());
         {
             ResourceProxy resource1 = document.getDocumentResourceProxy("resource1");
             assertNotNull(resource1);
@@ -94,9 +94,18 @@ public class CMDIResourceProxyReaderTest extends CMDIAPITestCase {
             assertEquals("relative path 'childcorpus/1' should be kept", URI.create("childcorpus/1"), metadata1.getLocation());
         }
         {
+            ResourceProxy landingPage = document.getDocumentResourceProxy("landingPage");
+            assertNotNull(landingPage);
+            assertEquals(DataResourceProxy.class, landingPage.getClass());
+            assertEquals("LandingPage", landingPage.getType());
+            assertNull(landingPage.getMimetype());
+            assertEquals(new URI("hdl:1839/00-0000-0000-0001-2345-6@view"), landingPage.getURI());
+        }
+        {
             ResourceProxy searchPage = document.getDocumentResourceProxy("searchPage1");
             assertNotNull(searchPage);
             assertEquals(DataResourceProxy.class, searchPage.getClass());
+            assertEquals("SearchPage", searchPage.getType());
             assertNull(searchPage.getMimetype());
             assertEquals(new URI("http://www.google.com"), searchPage.getURI());
         }

@@ -28,6 +28,10 @@
 		<ResourceType mimetype="application/xml">Metadata</ResourceType>
 		<ResourceRef lat:localURI="childcorpus/1">http://metadata/1</ResourceRef>
 	    </ResourceProxy>
+            <ResourceProxy id="landingPage">
+                <ResourceType>LandingPage</ResourceType>
+                <ResourceRef>hdl:1839/00-0000-0000-0001-2345-6@view</ResourceRef>
+            </ResourceProxy>
 	    <ResourceProxy id="searchPage1">
 		<ResourceType>SearchPage</ResourceType>
 		<ResourceRef>http://www.google.com</ResourceRef>

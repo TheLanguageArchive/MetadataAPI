@@ -143,9 +143,10 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 
 	Node proxiesNode = selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList");
 	NodeList proxyListchildNodes = proxiesNode.getChildNodes();
-	assertEquals(5, proxyListchildNodes.getLength());
+	assertEquals(6, proxyListchildNodes.getLength());
 
 	// Check existing resource proxy items read from file
+        // Resource 1 has been removed
 	assertEquals("resource2", proxyListchildNodes.item(0).getAttributes().getNamedItem("id").getNodeValue());
 
 	assertEquals("metadata1", proxyListchildNodes.item(1).getAttributes().getNamedItem("id").getNodeValue());
@@ -156,29 +157,37 @@ public class CMDIDomBuilderTest extends CMDIAPITestCase {
 	assertNotNull(resourceRefNode);
 	assertEquals("http://metadata/1", resourceRefNode.getTextContent());
 
-	assertEquals("searchPage1", proxyListchildNodes.item(2).getAttributes().getNamedItem("id").getNodeValue());
+	assertEquals("landingPage", proxyListchildNodes.item(2).getAttributes().getNamedItem("id").getNodeValue());
 	resourceTypeNode = selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[3]/:ResourceType");
 	assertNotNull(resourceTypeNode);
-	assertEquals("SearchPage", resourceTypeNode.getTextContent());
+	assertEquals("LandingPage", resourceTypeNode.getTextContent());
 	resourceRefNode = selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[3]/:ResourceRef");
+	assertNotNull(resourceRefNode);
+	assertEquals("hdl:1839/00-0000-0000-0001-2345-6@view", resourceRefNode.getTextContent());
+        
+	assertEquals("searchPage1", proxyListchildNodes.item(3).getAttributes().getNamedItem("id").getNodeValue());
+	resourceTypeNode = selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[4]/:ResourceType");
+	assertNotNull(resourceTypeNode);
+	assertEquals("SearchPage", resourceTypeNode.getTextContent());
+	resourceRefNode = selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[4]/:ResourceRef");
 	assertNotNull(resourceRefNode);
 	assertEquals("http://www.google.com", resourceRefNode.getTextContent());
 
-	assertEquals("searchService1", proxyListchildNodes.item(3).getAttributes().getNamedItem("id").getNodeValue());
-	resourceTypeNode = selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[4]/:ResourceType");
+	assertEquals("searchService1", proxyListchildNodes.item(4).getAttributes().getNamedItem("id").getNodeValue());
+	resourceTypeNode = selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[5]/:ResourceType");
 	assertNotNull(resourceTypeNode);
 	assertEquals("SearchService", resourceTypeNode.getTextContent());
-	resourceRefNode = selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[4]/:ResourceRef");
+	resourceRefNode = selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[5]/:ResourceRef");
 	assertNotNull(resourceRefNode);
 	assertEquals("http://cqlservlet.mpi.nl", resourceRefNode.getTextContent());
 
 	// This resource was added after reading from file
 
-	assertEquals("resource3", proxyListchildNodes.item(4).getAttributes().getNamedItem("id").getNodeValue());
-	resourceTypeNode = selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[5]/:ResourceType");
+	assertEquals("resource3", proxyListchildNodes.item(5).getAttributes().getNamedItem("id").getNodeValue());
+	resourceTypeNode = selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[6]/:ResourceType");
 	assertNotNull(resourceTypeNode);
 	assertEquals("MyResourceType", resourceTypeNode.getTextContent());
-	resourceRefNode = selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[5]/:ResourceRef");
+	resourceRefNode = selectSingleNode(document, "/:CMD/:Resources/:ResourceProxyList/:ResourceProxy[6]/:ResourceRef");
 	assertNotNull(resourceRefNode);
 	assertEquals("http://resources/3", resourceRefNode.getTextContent());
         

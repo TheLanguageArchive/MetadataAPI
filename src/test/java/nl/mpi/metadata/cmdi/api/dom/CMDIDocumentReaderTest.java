@@ -172,7 +172,6 @@ public class CMDIDocumentReaderTest extends CMDIAPITestCase {
         assertEquals("metadata1", reference.getId());
         assertEquals(new URI("http://metadata/1"), reference.getURI());
         assertTrue(reference instanceof MetadataResourceProxy);
-
     }
 
     /**
