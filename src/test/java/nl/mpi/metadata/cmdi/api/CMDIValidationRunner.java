@@ -17,6 +17,7 @@
 package nl.mpi.metadata.cmdi.api;
 
 import java.net.URL;
+import java.util.concurrent.atomic.AtomicInteger;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ import org.xml.sax.SAXParseException;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIValidationRunner {
-
+    
     private final static Logger logger = LoggerFactory.getLogger(CMDIValidationRunner.class);
     private final static URL DOCUMENT = CMDIValidationRunner.class.getResource("/cmdi/orphanCollection.cmdi");
 
@@ -44,23 +45,32 @@ public class CMDIValidationRunner {
         final CMDIDocument document = api.getMetadataDocument(DOCUMENT);
         
         logger.info("Validating document");
+        
+        final AtomicInteger count = new AtomicInteger(0);
+        
         api.validateMetadataDocument(document, new ErrorHandler() {
-
+            
             @Override
             public void warning(SAXParseException exception) throws SAXException {
+                count.incrementAndGet();
                 logger.warn("Warning while validating {}", DOCUMENT, exception);
             }
-
+            
             @Override
             public void error(SAXParseException exception) throws SAXException {
+                count.incrementAndGet();
                 logger.error("Error while validating {}", DOCUMENT, exception);
             }
-
+            
             @Override
             public void fatalError(SAXParseException exception) throws SAXException {
+                count.incrementAndGet();
                 logger.error("Fatal error while validating {}", DOCUMENT, exception);
             }
+            
         });
+        
+        logger.info("Validation complete. Found {} warnings or errors", count);
     }
-
+    
 }
