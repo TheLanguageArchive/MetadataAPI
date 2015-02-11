@@ -32,7 +32,8 @@ import org.xml.sax.SAXParseException;
 public class CMDIValidationRunner {
     
     private final static Logger logger = LoggerFactory.getLogger(CMDIValidationRunner.class);
-    private final static URL DOCUMENT = CMDIValidationRunner.class.getResource("/cmdi/orphanCollection.cmdi");
+//    private final static URL DOCUMENT = CMDIValidationRunner.class.getResource("/cmdi/orphanCollection.cmdi");
+    private final static URL DOCUMENT = CMDIValidationRunner.class.getResource("/cmdi/SmallTestProfile-instance-invalid.cmdi"); //invalid CMDI
 
     /**
      * @param args the command line arguments
@@ -53,19 +54,19 @@ public class CMDIValidationRunner {
             @Override
             public void warning(SAXParseException exception) throws SAXException {
                 count.incrementAndGet();
-                logger.warn("Warning while validating {}", DOCUMENT, exception);
+                logger.warn("line {}: {}", exception.getLineNumber(), exception.getMessage());
             }
             
             @Override
             public void error(SAXParseException exception) throws SAXException {
                 count.incrementAndGet();
-                logger.error("Error while validating {}", DOCUMENT, exception);
+                logger.error("line {}: {}", exception.getLineNumber(), exception.getMessage());
             }
             
             @Override
             public void fatalError(SAXParseException exception) throws SAXException {
                 count.incrementAndGet();
-                logger.error("Fatal error while validating {}", DOCUMENT, exception);
+                logger.error("line {}: FATAL - {}", exception.getLineNumber(), exception.getMessage());
             }
             
         });
