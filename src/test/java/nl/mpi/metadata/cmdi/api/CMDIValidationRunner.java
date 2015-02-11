@@ -32,8 +32,8 @@ import org.xml.sax.SAXParseException;
 public class CMDIValidationRunner {
     
     private final static Logger logger = LoggerFactory.getLogger(CMDIValidationRunner.class);
-//    private final static URL DOCUMENT = CMDIValidationRunner.class.getResource("/cmdi/orphanCollection.cmdi");
-    private final static URL DOCUMENT = CMDIValidationRunner.class.getResource("/cmdi/SmallTestProfile-instance-invalid.cmdi"); //invalid CMDI
+    private final static URL DOCUMENT = CMDIValidationRunner.class.getResource("/cmdi/orphanCollection.cmdi");
+//    private final static URL DOCUMENT = CMDIValidationRunner.class.getResource("/cmdi/SmallTestProfile-instance-invalid.cmdi"); //invalid CMDI
 
     /**
      * @param args the command line arguments
