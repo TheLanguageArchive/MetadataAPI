@@ -72,7 +72,7 @@ import org.xml.sax.SAXException;
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
 public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMDIAttributeType, Attribute, CMDIContainerMetadataElement, CMDIDocument> {
-
+    
     private final static Logger logger = LoggerFactory.getLogger(CMDIApi.class);
     /**
      * SAX entity resolver for custom resolving of resources while parsing
@@ -118,16 +118,16 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
     public CMDIApi() {
         this(new CMDIEntityResolver(), new DefaultCMDIValidator(), new CMDIMetadataElementFactoryImpl());
     }
-
+    
     public CMDIApi(EntityResolver entityResolver, MetadataValidator<CMDIDocument> cmdiValidator, CMDIMetadataElementFactory elementFactory) {
         this.entityResolver = entityResolver;
         this.cmdiValidator = cmdiValidator;
         this.metadataElementFactory = elementFactory;
-
+        
         this.domBuilderFactory = new CMDIApiDOMBuilderFactory(entityResolver);
         this.componentBuilder = new CMDIDomBuilder(entityResolver, domBuilderFactory);
         this.documentWriter = new CMDIDocumentWriter(componentBuilder);
-
+        
         this.profileReader = new CMDIProfileReader(entityResolver, domBuilderFactory);
         this.profileContainer = new CMDIProfileContainerImpl(profileReader);
         this.documentReader = new CMDIDocumentReader(profileContainer, new CMDIComponentReader(elementFactory), new CMDIResourceProxyReader());
@@ -149,21 +149,24 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
         this.documentWriter = documentWriter;
         this.profileReader = profileReader;
         this.documentReader = documentReader;
-
+        
         this.domBuilderFactory = new CMDIApiDOMBuilderFactory(entityResolver);
         this.componentBuilder = new CMDIDomBuilder(entityResolver, domBuilderFactory);
         this.profileContainer = new CMDIProfileContainerImpl(profileReader);
     }
-
+    
     @Override
     public void validateMetadataDocument(CMDIDocument document, ErrorHandler errorHandler) throws SAXException {
-        getCmdiValidator().validateMetadataDocument(document, errorHandler);
+        final MetadataValidator<CMDIDocument> validator = getCmdiValidator();
+        logger.debug("Validating with validator {}", validator);
+        validator.validateMetadataDocument(document, errorHandler);
     }
 
     /**
      * Reads the metadata document at the specified URL
      *
-     * @param url location to read the document from (will be read by means of {@link URL#openStream()})
+     * @param url location to read the document from (will be read by means of
+     * {@link URL#openStream()})
      * @return a CMDI document representing the contents at the specified URL
      * @throws IOException in case of a reading error
      * @throws MetadataException in case of a parsing or content error
@@ -174,7 +177,7 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
         //final InputStream documentStream;
         URLConnection openConnection = url.openConnection();
         final InputStream documentStream = openConnectionCheckRedirects(openConnection);
-  
+        
         try {
             return getMetadataDocument(url, documentStream);
         } finally {
@@ -213,17 +216,17 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
             throw new RuntimeException("URISyntaxException while building document from " + url, usEx);
         }
     }
-
+    
     @Override
     public CMDIDocument createMetadataDocument(CMDIProfile type) throws MetadataException, MetadataTypeException {
         return createMetadataDocument(type, DomBuildingMode.MANDATORY);
     }
-
+    
     @Override
     public CMDIDocument createMetadataDocument(CMDIProfile type, DomBuildingMode buildingMode) throws MetadataException, MetadataTypeException {
         // Create new DOM instance
         Document document;
-
+        
         try {
             document = componentBuilder.createDomFromSchema(type.getSchemaLocation(), buildingMode);
             // TODO: Handle errors properly
@@ -243,12 +246,12 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
                     + "Most likely the profile schema is not readable. See the inner exception for details.", ex);
         }
     }
-
+    
     @Override
     public CMDIProfile getMetadataDocumentType(URI uri) throws IOException, MetadataException {
         return getProfileContainer().getProfile(uri);
     }
-
+    
     @Override
     public void writeMetadataDocument(CMDIDocument document, StreamResult target) throws IOException, MetadataException, TransformerException {
         getDocumentWriter().write(document, target);
@@ -278,18 +281,18 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
             return null;
         }
     }
-
+    
     @Override
     public Attribute insertAttribute(MetadataElementAttributeContainer<Attribute> container, CMDIAttributeType attributeType) throws MetadataException {
         if (!(container instanceof CMDIMetadataElement)) {
             throw new MetadataException(String.format("Cannot handle container of type %1$s" + container.getClass()));
         }
-
+        
         CMDIMetadataElement containerElement = (CMDIMetadataElement) container;
         if (!containerElement.getType().getAttributes().contains(attributeType)) {
             throw new MetadataElementException(containerElement, String.format("Attribute type %1$s cannot be contained by provided element container type %2$s", attributeType, containerElement.getType()));
         }
-
+        
         Attribute attribute = metadataElementFactory.createAttribute(containerElement, attributeType);
         if (container.addAttribute(attribute)) {
             return attribute;
@@ -297,19 +300,19 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
             return null;
         }
     }
-
+    
     private InputStream openConnectionCheckRedirects(URLConnection c) throws IOException, SecurityException {
         return openConnectionCheckRedirects(c, 5);
     }
-    
+
     /**
-     * Follow redirect and allow http --> https switch (not the other way around!)
-     * See :
-     *  http://download.java.net/jdk7/archive/b123/docs/technotes/guides/deployment/deployment-guide/upgrade-guide/article-17.html
-     * 
+     * Follow redirect and allow http --> https switch (not the other way
+     * around!) See :
+     * http://download.java.net/jdk7/archive/b123/docs/technotes/guides/deployment/deployment-guide/upgrade-guide/article-17.html
+     *
      * @param c
      * @return
-     * @throws IOException 
+     * @throws IOException
      */
     private InputStream openConnectionCheckRedirects(URLConnection c, int maxRedirects) throws IOException, SecurityException {
         boolean redir;
@@ -339,10 +342,10 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
                     if (target == null) {
                         throw new SecurityException("illegal URL redirect");
                     } else if (!(target.getProtocol().equals("http") || target.getProtocol().equals("https"))) {
-                        throw new SecurityException("illegal URL redirect: unsupported protocol ("+target.getProtocol()+")");        
-                    } else if(redirects >= maxRedirects) {
-                        throw new SecurityException("illegal URL redirect: exceeded redirect limit ("+maxRedirects+")");
-                    } else if(c.getURL().getProtocol().equals("https") && target.getProtocol().equalsIgnoreCase("http")){
+                        throw new SecurityException("illegal URL redirect: unsupported protocol (" + target.getProtocol() + ")");                        
+                    } else if (redirects >= maxRedirects) {
+                        throw new SecurityException("illegal URL redirect: exceeded redirect limit (" + maxRedirects + ")");
+                    } else if (c.getURL().getProtocol().equals("https") && target.getProtocol().equalsIgnoreCase("http")) {
                         throw new SecurityException("illegal URL redirect: HTTPS --> HTTP");
                     }
                     redir = true;
@@ -355,7 +358,6 @@ public class CMDIApi implements MetadataAPI<CMDIProfile, CMDIProfileElement, CMD
     }
 
     //<editor-fold defaultstate="collapsed" desc="Getters and setters for services">
-
     /**
      * Gets the CMDI Document reader used
      *

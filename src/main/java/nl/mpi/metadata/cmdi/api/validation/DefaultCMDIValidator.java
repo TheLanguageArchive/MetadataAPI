@@ -61,8 +61,7 @@ public class DefaultCMDIValidator implements MetadataValidator<CMDIDocument> {
         try {
             final Validator validator = createValidator(document.getType().getSchemaLocation().toURL());
             validator.setErrorHandler(errorHandler);
-            
-            logger.debug("Validator of type '{}' created", validator.getClass());
+
             logger.trace("Validator details: {}", validator);
 
             // TODO: if file location is null, write to temporary file
@@ -74,10 +73,14 @@ public class DefaultCMDIValidator implements MetadataValidator<CMDIDocument> {
     }
 
     protected Validator createValidator(URL schemaFile) throws SAXException {
-        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         schemaFactory.setResourceResolver(getResourceResolver());
-        Schema schema = schemaFactory.newSchema(schemaFile);
-        Validator validator = schema.newValidator();
+
+        logger.debug("Creating schema for {} with {}", schemaFile, schemaFactory);
+        final Schema schema = schemaFactory.newSchema(schemaFile);
+        final Validator validator = schema.newValidator();
+
+        logger.debug("Validator of type '{}' created", validator.getClass());
         return validator;
     }
 
