@@ -49,7 +49,7 @@ public class CMDIApiRunner {
         logger.info("------ Opening metadata document");
         final CMDIDocument document = api.getMetadataDocument(new File(file).toURI().toURL());
         logger.info("------ Validating metadata document");
-        api.validateMetadataDocument(document, new DefaultErrorHandler(System.err));
+        api.validateMetadataDocument(document, new DefaultErrorHandler(System.out));
         logger.info("------ Validation finished");
     }
 
