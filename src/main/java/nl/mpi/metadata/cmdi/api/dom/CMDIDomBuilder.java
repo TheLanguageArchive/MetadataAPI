@@ -246,7 +246,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	try {
 	    final String schemaLocation = metadataDocument.getType().getSchemaLocation().toString();
 	    final Node componentsNode = (Node) newXPath(xPathFactory).evaluate(CMD_COMPONENTS_PATH, domDocument, XPathConstants.NODE);
-	    buildMetadataElement(domDocument, componentsNode, metadataDocument, schemaLocation, xPathFactory);
+	    buildMetadataElement(domDocument, componentsNode, metadataDocument, schemaLocation, xPathFactory, false);
 	} catch (DOMException domEx) {
 	    throw new MetadataDocumentException(metadataDocument, "DOMException while building components in DOM", domEx);
 	} catch (XPathExpressionException tEx) {
@@ -254,7 +254,7 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	}
     }
 
-    private void buildMetadataElement(Document domDocument, Node parentNode, CMDIMetadataElement metadataElement, String schemaLocation, XPathFactory xPathFactory) throws DOMException, XPathExpressionException {
+    private void buildMetadataElement(Document domDocument, Node parentNode, CMDIMetadataElement metadataElement, String schemaLocation, XPathFactory xPathFactory, boolean forceDirty) throws DOMException, XPathExpressionException {
 	logger.debug("Building metadata element [{}]", metadataElement);
 
 	final SchemaProperty elementSchemaProperty = metadataElement.getType().getSchemaElement();
@@ -270,7 +270,9 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 	    throw ex;
 	}
 
-	if (metadataElement.isDirty()) {
+        // dirty or force treat as dirty?
+        final boolean dirty = metadataElement.isDirty() || forceDirty;
+	if (dirty) {
 	    logger.debug("Metadata element is dirty. Rewriting component in DOM.");
 	    if (elementNode != null) {
 		parentNode.removeChild(elementNode);
@@ -298,7 +300,8 @@ public class CMDIDomBuilder implements MetadataDOMBuilder<CMDIDocument> {
 		logger.debug("Element is container. Iterating over {} child elements", ((CMDIContainerMetadataElement) metadataElement).getChildrenCount());
 	    }
 	    for (MetadataElement child : ((CMDIContainerMetadataElement) metadataElement).getChildren()) {
-		buildMetadataElement(domDocument, elementNode, (CMDIMetadataElement) child, schemaLocation, xPathFactory);
+                // children should be treated as dirty if parent is (forced) dirty
+		buildMetadataElement(domDocument, elementNode, (CMDIMetadataElement) child, schemaLocation, xPathFactory, dirty);
 	    }
 	}
     }
