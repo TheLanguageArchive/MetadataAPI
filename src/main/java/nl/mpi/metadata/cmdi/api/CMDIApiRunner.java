@@ -16,11 +16,13 @@
  */
 package nl.mpi.metadata.cmdi.api;
 
-import com.sun.org.apache.xml.internal.utils.DefaultErrorHandler;
 import java.io.File;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.ext.DefaultHandler2;
 
 /**
  *
@@ -49,7 +51,23 @@ public class CMDIApiRunner {
         logger.info("------ Opening metadata document");
         final CMDIDocument document = api.getMetadataDocument(new File(file).toURI().toURL());
         logger.info("------ Validating metadata document");
-        api.validateMetadataDocument(document, new DefaultErrorHandler(System.out));
+        api.validateMetadataDocument(document, new DefaultHandler2() {
+
+            @Override
+            public void warning(SAXParseException e) throws SAXException {
+                logger.warn("SAX warning", e);
+            }
+            @Override
+            public void error(SAXParseException e) throws SAXException {
+                logger.error("SAX error", e);
+            }
+
+            @Override
+            public void fatalError(SAXParseException e) throws SAXException {
+                logger.error("SAX fatal error", e);
+            }
+
+        });
         logger.info("------ Validation finished");
     }
 
