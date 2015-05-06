@@ -1,0 +1,20 @@
+MetadataAPI: version history
+
+1.5.0 (May 2015)
+----------------
+* Fixed an [issue](https://trac.mpi.nl/ticket/4624) that caused child components
+and elements in metadata instances to disappear on write.
+
+1.4.0 (December 2014)
+---------------------
+* Fixed reading of vocabulary
+* LocalURI attribute on resource proxies
+* Location in references (ResourceProxy in CMDI implementation) now stored and
+accessed as URI. No automatic resolution against the document location takes
+places anymore.
+
+1.3 (August 2014)
+-----------------
+* Adjusted the method that sets the handle. Now, when null is passed as the 
+handle, the self handle (in the header information) will be removed from the 
+file.
