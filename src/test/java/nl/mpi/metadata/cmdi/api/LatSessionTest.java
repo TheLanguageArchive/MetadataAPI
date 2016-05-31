@@ -112,8 +112,8 @@ public class LatSessionTest extends CMDIAPITestCase {
         final Element sessionElement = (Element) document.getElementsByTagName("lat-session").item(0);
         final Node resourcesNode = sessionElement.getElementsByTagName("Resources").item(0);
         final Node referencesNode = sessionElement.getElementsByTagName("References").item(0);
-        assertTrue("<Resources> should appear before <References> in XML",
-                resourcesNode.compareDocumentPosition(referencesNode) < 0);
+        assertThat("<Resources> should appear before <References> in XML",
+                Integer.valueOf(resourcesNode.compareDocumentPosition(referencesNode)), lessThan(0));
     }
 
     protected CMDIDocument saveAndReload(CMDIDocument metadataDocument) throws TransformerException, MetadataException, IOException {
