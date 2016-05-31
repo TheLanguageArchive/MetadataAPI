@@ -60,6 +60,10 @@ public class LatSessionTest extends CMDIAPITestCase {
         //case to test: removing one of Resources/WrittenResource should not alter order
 
         CMDIDocument metadataDocument = api.getMetadataDocument(DOC_URL);
+        //test order of children
+        testChildOrder(metadataDocument);
+        //also on serialised version
+        testChildOrder(saveDoc(metadataDocument));
 
         //get and check children
         assertThat(metadataDocument.getChildElement("Resources"), instanceOf(MetadataContainer.class));
@@ -67,8 +71,7 @@ public class LatSessionTest extends CMDIAPITestCase {
         assertThat(resources.getChildElement("WrittenResource[1]"), instanceOf(ContainedMetadataElement.class));
         ContainedMetadataElement writtenResource = (ContainedMetadataElement) resources.getChildElement("WrittenResource[1]");
 
-        //test order of children
-        testChildOrder(metadataDocument);
+        //now time for some manipulations...
 
         //remove one of the children of 'Resources'
         assertEquals("2 resources expected from original file", 2, resources.getChildrenCount());
@@ -114,12 +117,6 @@ public class LatSessionTest extends CMDIAPITestCase {
         final Node referencesNode = sessionElement.getElementsByTagName("References").item(0);
         assertThat("<Resources> should appear before <References> in XML",
                 Integer.valueOf(resourcesNode.compareDocumentPosition(referencesNode)), lessThan(0));
-    }
-
-    protected CMDIDocument saveAndReload(CMDIDocument metadataDocument) throws TransformerException, MetadataException, IOException {
-        //save and reload
-        final File outFile = saveDoc(metadataDocument);
-        return api.getMetadataDocument(outFile.toURI().toURL());
     }
 
     protected File saveDoc(CMDIDocument metadataDocument) throws IOException, MetadataException, TransformerException {
