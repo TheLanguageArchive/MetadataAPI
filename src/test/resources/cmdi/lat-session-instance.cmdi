@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CMD xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns="http://www.clarin.eu/cmd/"
+     xmlns:cmd="http://www.clarin.eu/cmd/"
+     xmlns:imdi="http://www.mpi.nl/IMDI/Schema/IMDI"
+     xmlns:lat="http://lat.mpi.nl/"
+     xmlns:iso="http://www.iso.org/"
+     xmlns:sil="http://www.sil.org/"
+     xmlns:xs="http://www.w3.org/2001/XMLSchema"
+     xmlns:functx="http://www.functx.com"
+     CMDVersion="1.1"
+     xsi:schemaLocation="http://www.clarin.eu/cmd/ http://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/profiles/clarin.eu:cr1:p_1407745712035/xsd">
+   <Header>
+      <MdCreator>Admin</MdCreator>
+      <MdCreationDate>2008-04-02</MdCreationDate>
+      <MdSelfLink>hdl:1839/00-0000-0000-0005-932D-4</MdSelfLink>
+      <MdProfile>clarin.eu:cr1:p_1407745712035</MdProfile>
+   </Header>
+   <Resources>
+      <ResourceProxyList>
+         <ResourceProxy id="d1897012e447">
+            <ResourceType mimetype="audio/x-wav">Resource</ResourceType>
+            <ResourceRef lat:localURI="../Media/TNa040603-0802.wav">hdl:1839/00-0000-0000-0005-9332-C</ResourceRef>
+         </ResourceProxy>
+         <ResourceProxy id="d1897012e509">
+            <ResourceType mimetype="video/x-mpeg1">Resource</ResourceType>
+            <ResourceRef lat:localURI="../Media/TNa040603-0801.mpg">hdl:1839/00-0000-0000-0005-932E-D</ResourceRef>
+         </ResourceProxy>
+         <ResourceProxy id="d1897012e568">
+            <ResourceType mimetype="video/x-mpeg2">Resource</ResourceType>
+            <ResourceRef lat:localURI="../Media/TNa040603-0801.mpeg">hdl:1839/00-0000-0000-0005-932F-7</ResourceRef>
+         </ResourceProxy>
+         <ResourceProxy id="d1897012e627">
+            <ResourceType mimetype="audio/x-wav">Resource</ResourceType>
+            <ResourceRef lat:localURI="../Media/TNa040603-0801.wav">hdl:1839/00-0000-0000-0005-9330-1</ResourceRef>
+         </ResourceProxy>
+         <ResourceProxy id="d1897012e686">
+            <ResourceType mimetype="text/x-toolbox-text">Resource</ResourceType>
+            <ResourceRef lat:localURI="../Annotations/TNa040603-0802.tbt">hdl:1839/00-0000-0000-0017-DA3F-7</ResourceRef>
+         </ResourceProxy>
+         <ResourceProxy id="d1897012e771">
+            <ResourceType mimetype="text/x-eaf+xml">Resource</ResourceType>
+            <ResourceRef lat:localURI="../Annotations/TNa040603-0802.eaf">hdl:1839/00-0000-0000-0017-DA40-1</ResourceRef>
+         </ResourceProxy>
+         <ResourceProxy id="d1897012e855">
+            <ResourceType mimetype="application/pdf">Resource</ResourceType>
+            <ResourceRef lat:localURI="../../../../../_Nlohan_variety/Texts/Descriptive_and_procedural_texts/Livelihoods/Annotations/TNa040603-08_FreeTranslationAfrikaans.pdf">hdl:1839/00-0000-0000-0009-E7EF-7</ResourceRef>
+         </ResourceProxy>
+         <ResourceProxy id="landingpage">
+            <ResourceType>LandingPage</ResourceType>
+            <ResourceRef>hdl:1839/00-0000-0000-0005-932D-4@view</ResourceRef>
+         </ResourceProxy>
+      </ResourceProxyList>
+      <JournalFileProxyList/>
+      <ResourceRelationList/>
+   </Resources>
+   <Components>
+      <lat-session>
+         <History>NAME:IMDI_1_9_TO_3_0 DATE:2005-10-26T16:03:48-02:00. NAME:imdi2cmdi.xslt DATE:2016-03-18T17:22:02.426+01:00.</History>
+         <Name>TNa040603-08</Name>
+         <Title>Plea for job opportunities</Title>
+         <Date>2004-06-03</Date>
+         <descriptions>
+            <Description xml:lang="eng">Participant was asked to talk about his working experiences
+</Description>
+         </descriptions>
+         <Location>
+            <Continent>Africa</Continent>
+            <Country>Namibia</Country>
+            <Region/>
+            <Address>Omaheke Region, Gobabis District, Aminuis Constituency, Korridor 18</Address>
+         </Location>
+         <Project>
+            <Name>Taa</Name>
+            <Title>A Pan-Dialectal Documentation of Taa (formerly: Documentation of Western !Xoon)</Title>
+            <Id/>
+            <Contact>
+               <Name>Tom Güldemann, Roland Kießling, Gertrud Boden, Christfried Naumann</Name>
+               <Address>Max-Planck-Institute for Evolutionary Anthropology, Linguistics Department, Deutscher Platz 6, D-04103 Leipzig</Address>
+               <Email>Gertrud.Boden@uni-koeln.de, gueldema@rz.uni-leipzig.de, Roland.Kiessling@hamburg.de, naumann@eva.mpg.de</Email>
+               <Organisation>Max Planck Institute for Evolutionary Anthropology, Department of Linguistics</Organisation>
+            </Contact>
+            <descriptions>
+               <Description xml:lang="eng">A Pan-Dialectal Documentation of Taa
+The project is based at the Linguistics Department of the Max-Planck-Institute for Evolutionary Anthropology in Leipzig, Head of Department: Prof. Dr. B. Comrie.
+Researchers Linguistics:
+Tom Güldemann, Roland Kießling, Christfried Naumann
+Researcher Anthropology: Gertrud Boden</Description>
+            </descriptions>
+         </Project>
+         <Keys>
+            <Key Name="Location" Type="OpenVocabulary">Korridor 18</Key>
+         </Keys>
+         <Content>
+            <Genre>Unspecified</Genre>
+            <SubGenre>Unspecified</SubGenre>
+            <Task>Unspecified</Task>
+            <Modalities>speech</Modalities>
+            <Subject/>
+            <CommunicationContext>
+               <Interactivity>non-interactive</Interactivity>
+               <PlanningType>semi-spontaneous</PlanningType>
+               <Involvement>Unspecified</Involvement>
+               <SocialContext>Unspecified</SocialContext>
+               <EventStructure>Unspecified</EventStructure>
+               <Channel>Unspecified</Channel>
+            </CommunicationContext>
+            <Content_Languages>
+               <Content_Language>
+                  <Id>ISO639-3:nmn</Id>
+                  <Name>'N|ohan</Name>
+                  <Dominant>true</Dominant>
+                  <SourceLanguage>Unspecified</SourceLanguage>
+                  <TargetLanguage>Unspecified</TargetLanguage>
+               </Content_Language>
+               <Content_Language>
+                  <Id>ISO639-3:afr</Id>
+                  <Name>Afrikaans</Name>
+                  <Dominant>Unspecified</Dominant>
+                  <SourceLanguage>Unspecified</SourceLanguage>
+                  <TargetLanguage>Unspecified</TargetLanguage>
+               </Content_Language>
+               <Content_Language>
+                  <Id>ISO639-3:xkv</Id>
+                  <Name>Kgalagadi</Name>
+                  <Dominant>Unspecified</Dominant>
+                  <SourceLanguage>Unspecified</SourceLanguage>
+                  <TargetLanguage>Unspecified</TargetLanguage>
+               </Content_Language>
+            </Content_Languages>
+            <descriptions>
+               <Description xml:lang="eng">This file was generated from an IMDI 1.9 file and transformed to IMDI 3.0. The substructure of Genre is replaced by two elements named "Genre" and "SubGenre". The original content of Genre substructure was: Interactional = '', Discursive = '', Performance = ''. These values have been added as Keys to the Content information.</Description>
+               <Description xml:lang="eng">Participant makes a plea for job opportunities
+</Description>
+            </descriptions>
+         </Content>
+         <Actors>
+            <Actor>
+               <Role>Author</Role>
+               <Name>65-KM</Name>
+               <FullName/>
+               <Code/>
+               <FamilySocialRole>Unspecified</FamilySocialRole>
+               <EthnicGroup/>
+               <BirthDate>1930</BirthDate>
+               <Sex>Male</Sex>
+               <Education/>
+               <Anonymized>Unspecified</Anonymized>
+               <Age>
+                  <AgeRange>
+                     <MinimumAge>
+                        <years>73</years>
+                     </MinimumAge>
+                     <MaximumAge>
+                        <years>74</years>
+                     </MaximumAge>
+                  </AgeRange>
+               </Age>
+               <Contact/>
+               <Keys>
+                  <Key Name="BirthDate" Type="OpenVocabulary">1930-YY-YY</Key>
+                  <Key Name="ParticipantAge" Type="OpenVocabulary">70-75</Key>
+               </Keys>
+               <descriptions>
+                  <Description>Old man</Description>
+               </descriptions>
+               <Actor_Languages>
+                  <Actor_Language>
+                     <Id>ISO639-3:tsn</Id>
+                     <Name>Tswana</Name>
+                     <MotherTongue>Unspecified</MotherTongue>
+                     <PrimaryLanguage>Unspecified</PrimaryLanguage>
+                  </Actor_Language>
+                  <Actor_Language>
+                     <Id>ISO639-3:afr</Id>
+                     <Name>Afrikaans</Name>
+                     <MotherTongue>Unspecified</MotherTongue>
+                     <PrimaryLanguage>Unspecified</PrimaryLanguage>
+                  </Actor_Language>
+                  <Actor_Language>
+                     <Id>ISO639-3:xkv</Id>
+                     <Name>Kgalagadi</Name>
+                     <MotherTongue>Unspecified</MotherTongue>
+                     <PrimaryLanguage>Unspecified</PrimaryLanguage>
+                  </Actor_Language>
+                  <Actor_Language>
+                     <Id>ISO639-3:her</Id>
+                     <Name>Herero</Name>
+                     <MotherTongue>Unspecified</MotherTongue>
+                     <PrimaryLanguage>Unspecified</PrimaryLanguage>
+                  </Actor_Language>
+                  <Actor_Language>
+                     <Id>ISO639-3:nmn</Id>
+                     <Name>'N|ohan</Name>
+                     <MotherTongue>true</MotherTongue>
+                     <PrimaryLanguage>true</PrimaryLanguage>
+                  </Actor_Language>
+                  <Actor_Language>
+                     <Id>ISO639-3:naq</Id>
+                     <Name>Nama</Name>
+                     <MotherTongue>Unspecified</MotherTongue>
+                     <PrimaryLanguage>Unspecified</PrimaryLanguage>
+                  </Actor_Language>
+               </Actor_Languages>
+            </Actor>
+            <Actor>
+               <Role>Collector</Role>
+               <Name>Christfried Naumann</Name>
+               <FullName>Christfried Naumann</FullName>
+               <Code>Unspecified</Code>
+               <FamilySocialRole>Unspecified</FamilySocialRole>
+               <EthnicGroup/>
+               <BirthDate>Unspecified</BirthDate>
+               <Sex>Unspecified</Sex>
+               <Education/>
+               <Anonymized>false</Anonymized>
+               <Age>
+                  <EstimatedAge>Unspecified</EstimatedAge>
+               </Age>
+               <Contact>
+                  <Name>Gertrud Boden</Name>
+                  <Email>Gertrud.Boden@uni-koeln.de</Email>
+               </Contact>
+               <descriptions>
+                  <Description>Description</Description>
+               </descriptions>
+               <Actor_Languages/>
+            </Actor>
+            <Actor>
+               <Role>Collector</Role>
+               <Name>Gertrud Boden</Name>
+               <FullName/>
+               <Code/>
+               <FamilySocialRole>Unspecified</FamilySocialRole>
+               <EthnicGroup/>
+               <BirthDate>Unspecified</BirthDate>
+               <Sex>Unspecified</Sex>
+               <Education>Unspecified</Education>
+               <Anonymized>Unspecified</Anonymized>
+               <Age>
+                  <EstimatedAge>Unspecified</EstimatedAge>
+               </Age>
+               <Contact/>
+               <Actor_Languages/>
+            </Actor>
+         </Actors>
+         <Resources>
+            <WrittenResource ref="d1897012e686">
+               <Date>Unspecified</Date>
+               <Type>Primary Text</Type>
+               <SubType>Unspecified</SubType>
+               <Format>text/x-toolbox-text</Format>
+               <Size>21 KB</Size>
+               <Derivation>Analysis</Derivation>
+               <CharacterEncoding/>
+               <ContentEncoding/>
+               <LanguageId>Unspecified</LanguageId>
+               <Anonymized>Unspecified</Anonymized>
+               <Validation>
+                  <Type>Unspecified</Type>
+                  <Methodology>Unspecified</Methodology>
+                  <Level>Unspecified</Level>
+               </Validation>
+               <Access>
+                  <Availability/>
+                  <Date>Unspecified</Date>
+                  <Owner/>
+                  <Publisher/>
+                  <Contact/>
+               </Access>
+            </WrittenResource>
+            <WrittenResource ref="d1897012e771">
+               <Date>Unspecified</Date>
+               <Type>Annotation</Type>
+               <SubType>Unspecified</SubType>
+               <Format>text/x-eaf+xml</Format>
+               <Size>319 KB</Size>
+               <Derivation>Analysis</Derivation>
+               <CharacterEncoding/>
+               <ContentEncoding/>
+               <LanguageId>Unspecified</LanguageId>
+               <Anonymized>Unspecified</Anonymized>
+               <Validation>
+                  <Type>Unspecified</Type>
+                  <Methodology>Unspecified</Methodology>
+                  <Level>Unspecified</Level>
+               </Validation>
+               <Access>
+                  <Availability/>
+                  <Date>Unspecified</Date>
+                  <Owner/>
+                  <Publisher/>
+                  <Contact/>
+               </Access>
+            </WrittenResource>
+         </Resources>
+         <References/>
+      </lat-session>
+   </Components>
+</CMD>
