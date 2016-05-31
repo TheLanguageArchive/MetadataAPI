@@ -72,7 +72,6 @@ public class LatSessionTest extends CMDIAPITestCase {
         ContainedMetadataElement writtenResource = (ContainedMetadataElement) resources.getChildElement("WrittenResource[1]");
 
         //now time for some manipulations...
-
         //remove one of the children of 'Resources'
         assertEquals("2 resources expected from original file", 2, resources.getChildrenCount());
         writtenResource.getParent().removeChildElement(writtenResource);
@@ -115,8 +114,8 @@ public class LatSessionTest extends CMDIAPITestCase {
         final Element sessionElement = (Element) document.getElementsByTagName("lat-session").item(0);
         final Node resourcesNode = sessionElement.getElementsByTagName("Resources").item(0);
         final Node referencesNode = sessionElement.getElementsByTagName("References").item(0);
-        assertThat("<Resources> should appear before <References> in XML",
-                Integer.valueOf(resourcesNode.compareDocumentPosition(referencesNode)), lessThan(0));
+        assertEquals("<Resources> should appear before <References> in XML",
+                Node.DOCUMENT_POSITION_PRECEDING, referencesNode.compareDocumentPosition(resourcesNode));
     }
 
     protected File saveDoc(CMDIDocument metadataDocument) throws IOException, MetadataException, TransformerException {
