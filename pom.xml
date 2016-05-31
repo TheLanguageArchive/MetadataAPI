@@ -166,17 +166,16 @@
         </profile>
     </profiles>
     
-    <distributionManagement>
-        <snapshotRepository>
-            <id>MPI-Snapshots</id>
-            <url>https://lux15.mpi.nl/nexus/content/repositories/MPI-Snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>MPI</id>
-            <name>MPI Repository</name>
-            <url>https://lux15.mpi.nl/nexus/content/repositories/MPI</url>
-        </repository>
-    </distributionManagement>
+<distributionManagement>
+	<snapshotRepository>
+		<id>CLARIN</id>
+		<url>https://nexus.clarin.eu/content/repositories/Clarin</url>
+	</snapshotRepository>
+	<repository>
+		<id>CLARIN-Snapshot</id>
+		<url>https://nexus.clarin.eu/content/repositories/clarin-snapshot</url>
+	</repository>
+</distributionManagement>
     
     <!--
 	<distributionManagement>
