@@ -18,9 +18,10 @@ package nl.mpi.metadata.cmdi.api;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.net.URL;
 import java.util.List;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import nl.mpi.metadata.api.MetadataException;
@@ -28,12 +29,15 @@ import nl.mpi.metadata.api.model.ContainedMetadataElement;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
-import nl.mpi.metadata.cmdi.api.model.CMDIMetadataElement;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -43,10 +47,12 @@ public class LatSessionTest extends CMDIAPITestCase {
 
     private final URL DOC_URL = getClass().getResource("/cmdi/lat-session-instance.cmdi");
     private CMDIApi api;
+    private DocumentBuilderFactory dbFactory;
 
     @Before
     public void setUp() {
         api = new CMDIApi();
+        dbFactory = DocumentBuilderFactory.newInstance();
     }
 
     @Test
@@ -60,7 +66,7 @@ public class LatSessionTest extends CMDIAPITestCase {
         MetadataContainer resources = (MetadataContainer) metadataDocument.getChildElement("Resources");
         assertThat(resources.getChildElement("WrittenResource[1]"), instanceOf(ContainedMetadataElement.class));
         ContainedMetadataElement writtenResource = (ContainedMetadataElement) resources.getChildElement("WrittenResource[1]");
-        
+
         //test order of children
         testChildOrder(metadataDocument);
 
@@ -72,9 +78,11 @@ public class LatSessionTest extends CMDIAPITestCase {
         //order of children at root level should not have changed
         testChildOrder(metadataDocument);
         //save and reload
-        metadataDocument = saveAndReload(metadataDocument);
+        File outFile = saveDoc(metadataDocument);
+        metadataDocument = api.getMetadataDocument(outFile.toURI().toURL());
         //order of children at root level should not have changed
         testChildOrder(metadataDocument);
+        testChildOrder(outFile);
 
         //remove remaining resource
         assertEquals("1 resources expected from altered document", 1, resources.getChildrenCount());
@@ -84,16 +92,28 @@ public class LatSessionTest extends CMDIAPITestCase {
 
         //order of children at root level should not have changed
         testChildOrder(metadataDocument);
+
         //save and reload
-        metadataDocument = saveAndReload(metadataDocument);
+        outFile = saveDoc(metadataDocument);
+        metadataDocument = api.getMetadataDocument(outFile.toURI().toURL());
         //order of children at root level should not have changed
         testChildOrder(metadataDocument);
+        testChildOrder(outFile);
     }
 
     protected void testChildOrder(CMDIDocument metadataDocument) {
-        List<MetadataElement> docChildren = metadataDocument.getChildren();
+        final List<MetadataElement> docChildren = metadataDocument.getChildren();
         assertEquals("Resources", docChildren.get(10).getName());
         assertEquals("References", docChildren.get(11).getName());
+    }
+
+    private void testChildOrder(File outFile) throws ParserConfigurationException, SAXException, IOException {
+        final Document document = dbFactory.newDocumentBuilder().parse(outFile);
+        final Element sessionElement = (Element) document.getElementsByTagName("lat-session").item(0);
+        final Node resourcesNode = sessionElement.getElementsByTagName("Resources").item(0);
+        final Node referencesNode = sessionElement.getElementsByTagName("References").item(0);
+        assertTrue("<Resources> should appear before <References> in XML",
+                resourcesNode.compareDocumentPosition(referencesNode) < 0);
     }
 
     protected CMDIDocument saveAndReload(CMDIDocument metadataDocument) throws TransformerException, MetadataException, IOException {
