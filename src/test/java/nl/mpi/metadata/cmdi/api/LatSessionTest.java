@@ -20,13 +20,16 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Properties;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import nl.mpi.metadata.api.MetadataException;
 import nl.mpi.metadata.api.model.ContainedMetadataElement;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataElement;
+import nl.mpi.metadata.cmdi.api.dom.CMDIDocumentWriter;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import nl.mpi.metadata.cmdi.api.model.Component;
 import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
@@ -59,6 +62,11 @@ public class LatSessionTest extends CMDIAPITestCase {
     @Before
     public void setup() {
         api = new CMDIApi();
+
+        //produce nicely formatted output. not really crucial for this test...
+        final Properties writerProps = new Properties();
+        writerProps.put(OutputKeys.INDENT, "yes");
+        ((CMDIDocumentWriter) api.getDocumentWriter()).setOutputProperties(writerProps);
     }
 
     @Test

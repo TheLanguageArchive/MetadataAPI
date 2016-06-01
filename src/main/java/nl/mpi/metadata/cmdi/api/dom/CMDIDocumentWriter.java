@@ -17,6 +17,7 @@
 package nl.mpi.metadata.cmdi.api.dom;
 
 import java.util.Properties;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -27,10 +28,25 @@ import javax.xml.transform.dom.DOMSource;
 import nl.mpi.metadata.api.MetadataDocumentException;
 import nl.mpi.metadata.api.dom.MetadataDOMBuilder;
 import nl.mpi.metadata.api.dom.MetadataDocumentWriter;
+import nl.mpi.metadata.cmdi.api.CMDIApi;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
 import org.w3c.dom.Document;
 
 /**
+ * Document writer for {@link CMDIDocument} that uses a
+ * {@link MetadataDOMBuilder} and a {@link Transformer} (obtained via
+ * {@link TransformerFactory})to serialize a CMDI document to XML.
+ *
+ * To achieve nicely formatted output, use the {@link OutputKeys#INDENT}
+ * property in the following way, provided that it is supported by the
+ * transformer on the classpath:
+ *
+ * <pre>{@code
+ *  final Properties writerProps = new Properties();
+ *  writerProps.put(OutputKeys.INDENT, "yes"); ((CMDIDocumentWriter)
+ *  api.getDocumentWriter()).setOutputProperties(writerProps);
+ * }
+ * </pre>
  *
  * @author Twan Goosen <twan.goosen@mpi.nl>
  */
@@ -40,47 +56,51 @@ public class CMDIDocumentWriter implements MetadataDocumentWriter<CMDIDocument> 
     private Properties outputProperties;
 
     public CMDIDocumentWriter(MetadataDOMBuilder<CMDIDocument> domWriter) {
-	this.domBuilder = domWriter;
+        this.domBuilder = domWriter;
     }
 
     /**
-     * Writes the specified metadata document to the provided outputStream. The transformer used for this is
-     * obtained by calling {@code TransformerFactory.newInstance()}
+     * Writes the specified metadata document to the provided outputStream. The
+     * transformer used for this is obtained by calling
+     * {@code TransformerFactory.newInstance()}
      *
      * @param metadataDocument metadata document to write
      * @param outputResult output target
      */
     public void write(CMDIDocument metadataDocument, Result outputResult) throws MetadataDocumentException, TransformerException {
-	Document dom = domBuilder.buildDomForDocument(metadataDocument);
-	Source source = new DOMSource(dom);
+        Document dom = domBuilder.buildDomForDocument(metadataDocument);
+        Source source = new DOMSource(dom);
 
-	Transformer transformer = getNewTransformer();
-	transformer.transform(source, outputResult);
+        Transformer transformer = getNewTransformer();
+        transformer.transform(source, outputResult);
     }
 
     protected Transformer getNewTransformer() throws TransformerConfigurationException {
-	TransformerFactory transformerFactory = TransformerFactory.newInstance();
-	Transformer transformer = transformerFactory.newTransformer();
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
 
-	if (getOutputProperties() != null) {
-	    transformer.setOutputProperties(getOutputProperties());
-	}
-	return transformer;
+        if (getOutputProperties() != null) {
+            transformer.setOutputProperties(getOutputProperties());
+        }
+        return transformer;
     }
 
     /**
-     * @return outputProperties to use when serializing the metadata document to XML. If null, defaults are used.
+     * @return outputProperties to use when serializing the metadata document to
+     * XML. If null, defaults are used.
      */
     public final Properties getOutputProperties() {
-	return outputProperties;
+        return outputProperties;
     }
 
     /**
-     * @param outputProperties outputProperties to use when serializing the metadata document to XML. The will be passed to the transformer
-     * object through {@link Transformer#setOutputProperties(java.util.Properties)}. Set to null to keep defaults (i.e. the call to
-     * Transformer will not be made).
+     * @param outputProperties outputProperties to use when serializing the
+     * metadata document to XML. The will be passed to the transformer object
+     * through {@link Transformer#setOutputProperties(java.util.Properties)}.
+     * Set to null to keep defaults (i.e. the call to Transformer will not be
+     * made).
      */
     public final void setOutputProperties(Properties outputProperties) {
-	this.outputProperties = outputProperties;
+        this.outputProperties = outputProperties;
     }
 }
