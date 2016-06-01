@@ -67,6 +67,9 @@ public class LatSessionTest extends CMDIAPITestCase {
 
         CMDIDocument metadataDocument = api.getMetadataDocument(DOC_URL);
 
+        //verify that original resource is fine
+        testResourcesOrder("Original file", saveDoc(metadataDocument));
+
         assertThat(metadataDocument.getChildElement("Resources"), instanceOf(Component.class));
         Component resources = (Component) metadataDocument.getChildElement("Resources");
 
@@ -95,7 +98,7 @@ public class LatSessionTest extends CMDIAPITestCase {
 
         //check dom
         File outFile = saveDoc(metadataDocument);
-        testResourcesOrder(outFile);
+        testResourcesOrder("After insertion of resource children", outFile);
     }
 
     @Test
@@ -161,7 +164,7 @@ public class LatSessionTest extends CMDIAPITestCase {
                 Node.DOCUMENT_POSITION_PRECEDING, referencesNode.compareDocumentPosition(resourcesNode));
     }
 
-    private void testResourcesOrder(File outFile) throws Exception {
+    private void testResourcesOrder(String message, File outFile) throws Exception {
         final Document document = dbFactory.newDocumentBuilder().parse(outFile);
         final Element sessionElement = (Element) document.getElementsByTagName("lat-session").item(0);
         final Element resourcesElement = (Element) sessionElement.getElementsByTagName("Resources").item(0);
@@ -173,7 +176,7 @@ public class LatSessionTest extends CMDIAPITestCase {
                 final Node mf = mediaFiles.item(m);
                 final Node wr = writtenResources.item(w);
                 if (Node.DOCUMENT_POSITION_PRECEDING != wr.compareDocumentPosition(mf)) {
-                    fail(String.format("Mediafile %s (#%d) should preceed WrittenResource %s (#%d)", mf, m, wr, w));
+                    fail(String.format("%s: node %s (#%d) should preceed node %s (#%d)", message, mf, m, wr, w));
                 }
             }
         }
