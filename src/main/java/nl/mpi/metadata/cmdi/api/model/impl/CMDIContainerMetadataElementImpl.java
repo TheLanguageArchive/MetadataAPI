@@ -85,6 +85,7 @@ public abstract class CMDIContainerMetadataElementImpl extends CMDIMetadataEleme
     @Override
     public synchronized boolean addChildElement(CMDIMetadataElement element) throws MetadataElementException {
 	if (!children.contains(element)) {
+            setDirty(true);
 	    addToChildren(element);
 	    addToChildrenTypeMap(element);
 	    return true;
