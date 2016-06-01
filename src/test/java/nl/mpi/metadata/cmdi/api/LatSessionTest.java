@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import nl.mpi.metadata.api.MetadataException;
@@ -29,15 +28,18 @@ import nl.mpi.metadata.api.model.ContainedMetadataElement;
 import nl.mpi.metadata.api.model.MetadataContainer;
 import nl.mpi.metadata.api.model.MetadataElement;
 import nl.mpi.metadata.cmdi.api.model.CMDIDocument;
+import nl.mpi.metadata.cmdi.api.model.Component;
+import nl.mpi.metadata.cmdi.api.type.CMDIProfileElement;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
+import org.junit.BeforeClass;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
+import org.w3c.dom.NodeList;
 
 /**
  *
@@ -47,12 +49,53 @@ public class LatSessionTest extends CMDIAPITestCase {
 
     private final URL DOC_URL = getClass().getResource("/cmdi/lat-session-instance.cmdi");
     private CMDIApi api;
-    private DocumentBuilderFactory dbFactory;
+    private static DocumentBuilderFactory dbFactory;
+
+    @BeforeClass
+    public static void setupClass() {
+        dbFactory = DocumentBuilderFactory.newInstance();
+    }
 
     @Before
-    public void setUp() {
+    public void setup() {
         api = new CMDIApi();
-        dbFactory = DocumentBuilderFactory.newInstance();
+    }
+
+    @Test
+    public void testInsertResources() throws Exception {
+        //case to test: correct element order after insertion of elements (MediaFile/WrittenResource) in arbitrary order
+
+        CMDIDocument metadataDocument = api.getMetadataDocument(DOC_URL);
+
+        assertThat(metadataDocument.getChildElement("Resources"), instanceOf(Component.class));
+        Component resources = (Component) metadataDocument.getChildElement("Resources");
+
+        CMDIProfileElement wrType = resources.getType().getType("WrittenResource");
+        assertNotNull(wrType);
+        assertTrue(resources.canAddInstanceOfType(wrType));
+
+        CMDIProfileElement mfType = resources.getType().getType("MediaFile");
+        assertNotNull(mfType);
+        assertTrue(resources.canAddInstanceOfType(mfType));
+
+        //insert media file
+        Component mf1 = (Component) api.insertMetadataElement(resources, mfType);
+        //insert written resource
+        Component wr1 = (Component) api.insertMetadataElement(resources, wrType);
+        //insert media file
+        Component mf2 = (Component) api.insertMetadataElement(resources, mfType);
+        //insert written resource
+        Component wr2 = (Component) api.insertMetadataElement(resources, wrType);
+
+        List<MetadataElement> resourceChildren = resources.getChildren();
+        assertTrue(resourceChildren.contains(mf1)
+                && resourceChildren.contains(mf2)
+                && resourceChildren.contains(wr1)
+                && resourceChildren.contains(wr2));
+
+        //check dom
+        File outFile = saveDoc(metadataDocument);
+        testResourcesOrder(outFile);
     }
 
     @Test
@@ -61,9 +104,9 @@ public class LatSessionTest extends CMDIAPITestCase {
 
         CMDIDocument metadataDocument = api.getMetadataDocument(DOC_URL);
         //test order of children
-        testChildOrder(metadataDocument);
+        testRootChildOrder(metadataDocument);
         //also on serialised version
-        testChildOrder(saveDoc(metadataDocument));
+        testRootChildOrder(saveDoc(metadataDocument));
 
         //get and check children
         assertThat(metadataDocument.getChildElement("Resources"), instanceOf(MetadataContainer.class));
@@ -78,13 +121,13 @@ public class LatSessionTest extends CMDIAPITestCase {
         assertEquals("Removal should reduce child count", 1, resources.getChildrenCount());
 
         //order of children at root level should not have changed
-        testChildOrder(metadataDocument);
+        testRootChildOrder(metadataDocument);
         //save and reload
         File outFile = saveDoc(metadataDocument);
         metadataDocument = api.getMetadataDocument(outFile.toURI().toURL());
         //order of children at root level should not have changed
-        testChildOrder(metadataDocument);
-        testChildOrder(outFile);
+        testRootChildOrder(metadataDocument);
+        testRootChildOrder(outFile);
 
         //remove remaining resource
         assertEquals("1 resources expected from altered document", 1, resources.getChildrenCount());
@@ -93,29 +136,47 @@ public class LatSessionTest extends CMDIAPITestCase {
         assertEquals("Removal should reduce child count", 0, resources.getChildrenCount());
 
         //order of children at root level should not have changed
-        testChildOrder(metadataDocument);
+        testRootChildOrder(metadataDocument);
 
         //save and reload
         outFile = saveDoc(metadataDocument);
         metadataDocument = api.getMetadataDocument(outFile.toURI().toURL());
         //order of children at root level should not have changed
-        testChildOrder(metadataDocument);
-        testChildOrder(outFile);
+        testRootChildOrder(metadataDocument);
+        testRootChildOrder(outFile);
     }
 
-    protected void testChildOrder(CMDIDocument metadataDocument) {
+    protected void testRootChildOrder(CMDIDocument metadataDocument) {
         final List<MetadataElement> docChildren = metadataDocument.getChildren();
         assertEquals("Resources", docChildren.get(10).getName());
         assertEquals("References", docChildren.get(11).getName());
     }
 
-    private void testChildOrder(File outFile) throws ParserConfigurationException, SAXException, IOException {
+    private void testRootChildOrder(File outFile) throws Exception {
         final Document document = dbFactory.newDocumentBuilder().parse(outFile);
         final Element sessionElement = (Element) document.getElementsByTagName("lat-session").item(0);
         final Node resourcesNode = sessionElement.getElementsByTagName("Resources").item(0);
         final Node referencesNode = sessionElement.getElementsByTagName("References").item(0);
         assertEquals("<Resources> should appear before <References> in XML",
                 Node.DOCUMENT_POSITION_PRECEDING, referencesNode.compareDocumentPosition(resourcesNode));
+    }
+
+    private void testResourcesOrder(File outFile) throws Exception {
+        final Document document = dbFactory.newDocumentBuilder().parse(outFile);
+        final Element sessionElement = (Element) document.getElementsByTagName("lat-session").item(0);
+        final Element resourcesElement = (Element) sessionElement.getElementsByTagName("Resources").item(0);
+        final NodeList mediaFiles = resourcesElement.getElementsByTagName("MediaFile");
+        final NodeList writtenResources = resourcesElement.getElementsByTagName("WrittenResource");
+        //test: all media files should come before all written resource files
+        for (int m = 0; m < mediaFiles.getLength(); m++) {
+            for (int w = 0; w < writtenResources.getLength(); w++) {
+                final Node mf = mediaFiles.item(m);
+                final Node wr = writtenResources.item(w);
+                if (Node.DOCUMENT_POSITION_PRECEDING != wr.compareDocumentPosition(mf)) {
+                    fail(String.format("Mediafile %s (#%d) should preceed WrittenResource %s (#%d)", mf, m, wr, w));
+                }
+            }
+        }
     }
 
     protected File saveDoc(CMDIDocument metadataDocument) throws IOException, MetadataException, TransformerException {
