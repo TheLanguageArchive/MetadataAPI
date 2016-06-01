@@ -163,8 +163,6 @@ public class CMDIContainerMetadataElementImplTest extends CMDIMetadataElementImp
 	assertTrue(collection.addChildElement(originLocation));
 	assertTrue(collection.addChildElement(new CMDIContainerMetadataElementImpl(originLocationType, document)));
 	assertEquals(2, collection.getChildrenCount());
-	// Adding children should NOT change the dirty state
-	assertFalse(collection.isDirty());
 
 	// Remove first child
 	assertTrue(collection.removeChildElement(originLocation));
