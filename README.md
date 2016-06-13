@@ -7,18 +7,28 @@ Maintained and written by Twan Goosen <twan.goosen@mpi.nl>.
 
 ## Building and Deploying
 
-MetadataAPI is a single maven project and builds to a jar that can be used as a dependency in other projets. The latest stable version released and deployed to our Nexus Maven repository is 1.0. To use it in your project, add the following to its pom:
+MetadataAPI is a single maven project and builds to a jar that can be used as a dependency in other projets. You can build the latest stable version from the `master` branch or get it from the [TLA Nexus Maven repository](https://lux15.mpi.nl/nexus/content/repositories/MPI/). To use it in your project, add the following to its pom:
 
 ```xml
 <dependencies>
-...
-  <dependency>
-    <groupId>nl.mpi</groupId>
-    <artifactId>metadata-api</artifactId>
-    <version>1.0</version>
-  </dependency>
-  ...
+	...
+	<dependency>
+		<groupId>nl.mpi</groupId>
+		<artifactId>metadata-api</artifactId>
+		<version>1.0</version>
+	</dependency>
+	...
 </dependencies>
+...
+<repositories>
+	...
+	<repository>
+		<id>MPI</id>
+		<name>MPI LAT Repository</name>
+		<url>https://lux15.mpi.nl/nexus/content/groups/public</url>
+	</repository>
+  	...
+</repositories>
 ```
 
 ## Documentation
